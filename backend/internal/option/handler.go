@@ -173,6 +173,10 @@ func (h *Handler) reject(w http.ResponseWriter, r *http.Request) {
 		httputil.WriteError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	if err := httputil.Validate(req); err != nil {
+		httputil.WriteValidationError(w, err)
+		return
+	}
 
 	o, err := h.svc.Reject(r.Context(), id, req)
 	if err != nil {

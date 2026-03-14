@@ -1,6 +1,7 @@
 package agentrun
 
 import (
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -82,6 +83,9 @@ func ComputeDiff(prev, curr []SnapshotItem) Diff {
 			d.Removed = append(d.Removed, DiffEntry{ID: item.ID, Name: item.Name, Status: "removed"})
 		}
 	}
+
+	sort.Slice(d.Added, func(i, j int) bool { return d.Added[i].Name < d.Added[j].Name })
+	sort.Slice(d.Removed, func(i, j int) bool { return d.Removed[i].Name < d.Removed[j].Name })
 
 	return d
 }
