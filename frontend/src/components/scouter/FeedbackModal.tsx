@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import styles from './FeedbackModal.module.css'
 
 interface FeedbackModalProps {
@@ -12,10 +12,36 @@ interface FeedbackModalProps {
 export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPending }: FeedbackModalProps) {
   const [feedback, setFeedback] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isPending) setSubmitted(false)
   }, [isPending])
+
+  // Focus trap: cycle Tab/Shift+Tab among focusable elements
+  useEffect(() => {
+    const el = modalRef.current
+    if (!el) return
+    const focusable = el.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), textarea, input, [tabindex]:not([tabindex="-1"])'
+    )
+    if (focusable.length === 0) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') { onClose(); return }
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus() }
+      }
+    }
+
+    el.addEventListener('keydown', handleKeyDown)
+    return () => el.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   return (
     <div
@@ -23,6 +49,7 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
+        ref={modalRef}
         className={styles.modal}
         role="dialog"
         aria-modal="true"
@@ -35,7 +62,6 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
           placeholder={placeholder ?? 'Add optional guidance for the agent...'}
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
-          onKeyDown={(e) => e.key === 'Escape' && onClose()}
           rows={4}
           autoFocus
         />

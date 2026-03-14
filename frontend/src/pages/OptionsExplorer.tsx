@@ -90,7 +90,9 @@ export default function OptionsExplorer() {
                     onClick={() => setViewMode(mode)}
                     className={`${styles.viewToggleBtn}${viewMode === mode ? ` ${styles.active}` : ''}`}
                   >
-                    {mode === 'grid' ? '⊞ Grid' : '⊟ Compare'}
+                    {mode === 'grid'
+                      ? <><span aria-hidden="true">⊞</span> Grid</>
+                      : <><span aria-hidden="true">⊟</span> Compare</>}
                   </button>
                 ))}
               </div>
@@ -111,7 +113,7 @@ export default function OptionsExplorer() {
                 disabled={researchPending}
                 className={styles.researchBtn}
               >
-                {researchPending ? '⚡ Running...' : '⚡ Re-run Research'}
+                <span aria-hidden="true">⚡</span>{researchPending ? ' Running...' : ' Re-run Research'}
               </button>
             </div>
           </div>

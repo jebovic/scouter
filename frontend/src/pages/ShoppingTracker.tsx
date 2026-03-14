@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, LoadingPulse, BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList } from '../components/shopping'
-import { CostBreakdown } from '../components/shopping'
-import { PriceHistoryChart } from '../components/shopping'
+import { Topnav, BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
+import { ShoppingList, CostBreakdown, PriceHistoryModal } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -12,7 +10,6 @@ import {
   usePinShoppingItem,
   useDeletePinnedShoppingItems,
   usePriceIntel,
-  usePriceSnapshots,
   useCreateShoppingItem,
   useAgentRuns,
 } from '../hooks'
@@ -107,7 +104,7 @@ export default function ShoppingTracker() {
                 onClick={() => setShowFeedback(true)}
                 disabled={pricingPending}
               >
-                {pricingPending ? '💰 Scouting...' : '💰 Price Intel'}
+                <span aria-hidden="true">💰</span>{pricingPending ? ' Scouting...' : ' Price Intel'}
               </button>
             </div>
           </div>
@@ -125,8 +122,13 @@ export default function ShoppingTracker() {
               className={styles.overlay}
               onClick={(e) => e.target === e.currentTarget && setShowAddForm(false)}
             >
-              <div className={styles.modal}>
-                <h3 className={styles.modalTitle}>ADD ITEM</h3>
+              <div
+                className={styles.modal}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-item-modal-title"
+              >
+                <h3 id="add-item-modal-title" className={styles.modalTitle}>ADD ITEM</h3>
                 <div className={styles.formFields}>
                   {[
                     { key: 'name', label: 'Item Name', type: 'text', required: true },
@@ -147,7 +149,9 @@ export default function ShoppingTracker() {
                         onChange={(e) =>
                           setAddForm((prev) => ({
                             ...prev,
-                            [key]: type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value,
+                            [key]: type === 'number'
+                              ? (e.target.value === '' ? undefined : parseFloat(e.target.value))
+                              : e.target.value,
                           }))
                         }
                       />
@@ -227,30 +231,3 @@ export default function ShoppingTracker() {
   )
 }
 
-function PriceHistoryModal({ item, currency, onClose }: { item: ShoppingItem; currency: string; onClose: () => void }) {
-  const { snapshots, isLoading } = usePriceSnapshots(item.missionId, item.id)
-
-  return (
-    <div
-      className={styles.overlay}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className={styles.historyModal}>
-        <div className={styles.historyModalHeader}>
-          <div>
-            <h3 className={styles.historyTitle}>PRICE HISTORY</h3>
-            <p className={styles.historySubtitle}>{item.name} @ {item.merchant}</p>
-          </div>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
-        </div>
-        {isLoading ? (
-          <LoadingPulse label="Loading history..." />
-        ) : snapshots.length === 0 ? (
-          <p className={styles.noHistory}>No price history yet</p>
-        ) : (
-          <PriceHistoryChart snapshots={snapshots} currency={currency} />
-        )}
-      </div>
-    </div>
-  )
-}

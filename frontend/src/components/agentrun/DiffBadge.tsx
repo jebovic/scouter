@@ -16,16 +16,22 @@ export function DiffBadge({ diff }: DiffBadgeProps) {
     return <span className={`${styles.badge} ${styles.noChanges}`}>no changes</span>
   }
 
+  const label = [
+    added > 0 ? `${added} added` : '',
+    removed > 0 ? `${removed} removed` : '',
+    changed > 0 ? `${changed} changed` : '',
+  ].filter(Boolean).join(', ')
+
   return (
-    <span className={styles.wrapper}>
+    <span className={styles.wrapper} aria-label={label}>
       {added > 0 && (
-        <span className={`${styles.badge} ${styles.added}`}>+{added}</span>
+        <span className={`${styles.badge} ${styles.added}`} aria-hidden="true">+{added}</span>
       )}
       {removed > 0 && (
-        <span className={`${styles.badge} ${styles.removed}`}>-{removed}</span>
+        <span className={`${styles.badge} ${styles.removed}`} aria-hidden="true">-{removed}</span>
       )}
       {changed > 0 && (
-        <span className={`${styles.badge} ${styles.changed}`}>~{changed}</span>
+        <span className={`${styles.badge} ${styles.changed}`} aria-hidden="true">~{changed}</span>
       )}
     </span>
   )
