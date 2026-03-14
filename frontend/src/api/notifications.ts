@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { apiFetch } from './client'
-import type { Notification } from '../types'
 
 // ── Zod schemas ─────────────────────────────────────────────────────────────
 
@@ -15,11 +14,13 @@ export const NotificationSchema = z.object({
   createdAt: z.string(),
 })
 
+export type Notification = z.infer<typeof NotificationSchema>
+
 // ── API functions ────────────────────────────────────────────────────────────
 
 export async function listNotifications(limit = 50): Promise<Notification[]> {
   const data = await apiFetch<unknown>(`/api/notifications?limit=${limit}`)
-  return z.array(NotificationSchema).parse(data) as Notification[]
+  return z.array(NotificationSchema).parse(data)
 }
 
 export async function getUnreadCount(): Promise<number> {

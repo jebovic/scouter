@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNotifications, useUnreadCount, useMarkNotificationRead, useMarkAllRead } from '../../hooks'
+import { useNotifications, useMarkNotificationRead, useMarkAllRead } from '../../hooks'
 import styles from './NotificationBell.module.css'
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false)
   const { notifications } = useNotifications()
-  const unread = useUnreadCount()
+  const unread = notifications.filter((n) => !n.read).length
   const markRead = useMarkNotificationRead()
   const markAll = useMarkAllRead()
   const ref = useRef<HTMLDivElement>(null)
@@ -66,7 +66,7 @@ export function NotificationBell() {
                   onClick={() => !n.read && markRead(n.id)}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && !n.read && markRead(n.id)}
                 >
-                  <span className={styles.type}>{n.type.replace('_', ' ')}</span>
+                  <span className={styles.type}>{n.type.replaceAll('_', ' ')}</span>
                   <span className={styles.itemTitle}>{n.title}</span>
                   <span className={styles.body}>{n.body}</span>
                 </li>

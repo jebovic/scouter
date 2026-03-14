@@ -8,9 +8,11 @@ interface DealScoreBadgeProps {
 export function DealScoreBadge({ score }: DealScoreBadgeProps) {
   const pct = score.pctBelowAvg
   const isGood = pct > 0
-  const label = isGood
-    ? `${pct.toFixed(1)}% below avg`
-    : `${Math.abs(pct).toFixed(1)}% above avg`
+  const label = pct === 0
+    ? 'at avg'
+    : isGood
+      ? `${pct.toFixed(1)}% below avg`
+      : `${Math.abs(pct).toFixed(1)}% above avg`
 
   return (
     <span className={`${styles.badge} ${isGood ? styles.good : styles.bad}`} title={`Historical avg: ${score.historicalAvg.toFixed(2)}`}>
