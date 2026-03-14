@@ -1,0 +1,64 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* boolean */
+.boolTrue {
+  color: var(--green);
+  font-size: 0.85rem;
+}
+
+.boolFalse {
+  color: var(--coral);
+  font-size: 0.85rem;
+}
+
+/* price */
+.price {
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  font-size: 0.85rem;
+}
+
+/* score */
+.scoreWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scoreTrack {
+  height: 4px;
+  width: 60px;
+  background: var(--raised);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scoreFill {
+  height: 100%;
+  width: var(--score-width);
+  background: var(--score-color);
+  border-radius: 2px;
+}
+
+.scoreText {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--score-text-color);
+}
+
+/* default */
+.defaultValue {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+}

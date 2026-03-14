@@ -1,4 +1,5 @@
 import type { MissionCategory } from '../../types'
+import styles from './CategoryTemplate.module.css'
 
 interface CategoryTemplateProps {
   category: MissionCategory
@@ -36,37 +37,15 @@ export function CategoryTemplate({ category }: CategoryTemplateProps) {
   const tmpl = TEMPLATES[category]
 
   return (
-    <div
-      style={{
-        padding: '12px 16px',
-        borderRadius: 'var(--radius-sm)',
-        background: 'var(--raised)',
-        border: '1px solid var(--border)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-      }}
-    >
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+    <div className={styles.root}>
+      <div className={styles.tagList}>
         {tmpl.costCategories.map((cat) => (
-          <span
-            key={cat}
-            style={{
-              padding: '2px 8px',
-              borderRadius: 4,
-              fontSize: '0.75rem',
-              background: 'var(--surface)',
-              color: 'var(--text-mid)',
-              border: '1px solid var(--border)',
-            }}
-          >
+          <span key={cat} className={styles.tag}>
             {cat}
           </span>
         ))}
       </div>
-      <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', margin: 0, fontStyle: 'italic' }}>
-        💡 {tmpl.tip}
-      </p>
+      <p className={styles.tip}>💡 {tmpl.tip}</p>
     </div>
   )
 }

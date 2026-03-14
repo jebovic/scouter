@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { ShoppingItem } from '../../types'
+import styles from './CostBreakdown.module.css'
 
 interface CostBreakdownProps {
   items: ShoppingItem[]
@@ -25,7 +26,7 @@ export function CostBreakdown({ items, currency = 'USD' }: CostBreakdownProps) {
 
   if (data.length === 0) {
     return (
-      <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+      <div className={styles.empty}>
         No items tracked
       </div>
     )

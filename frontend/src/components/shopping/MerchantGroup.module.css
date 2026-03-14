@@ -1,0 +1,29 @@
+.root {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.merchantName {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  letter-spacing: 0.05em;
+}
+
+.total {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--gold);
+}

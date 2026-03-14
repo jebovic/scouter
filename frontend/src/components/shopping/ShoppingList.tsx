@@ -1,6 +1,7 @@
 import { MerchantGroup } from './MerchantGroup'
 import { LoadingPulse } from '../scouter'
 import type { ShoppingItem, ItemStatus } from '../../types'
+import styles from './ShoppingList.module.css'
 
 interface ShoppingListProps {
   items: ShoppingItem[]
@@ -8,13 +9,14 @@ interface ShoppingListProps {
   currency?: string
   onStatusChange?: (itemId: string, status: ItemStatus) => void
   onPriceClick?: (item: ShoppingItem) => void
+  onPin?: (itemId: string) => void
 }
 
-export function ShoppingList({ items, isLoading, currency, onStatusChange, onPriceClick }: ShoppingListProps) {
+export function ShoppingList({ items, isLoading, currency, onStatusChange, onPriceClick, onPin }: ShoppingListProps) {
   if (isLoading) return <LoadingPulse label="Loading items..." />
   if (items.length === 0) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.85rem' }}>
+      <div className={styles.empty}>
         No items yet. Run Price Intel to populate this list.
       </div>
     )
@@ -22,13 +24,11 @@ export function ShoppingList({ items, isLoading, currency, onStatusChange, onPri
 
   const byMerchant = items.reduce<Record<string, ShoppingItem[]>>((acc, item) => {
     const key = item.merchant || 'Unknown'
-    if (!acc[key]) acc[key] = []
-    acc[key].push(item)
-    return acc
+    return { ...acc, [key]: [...(acc[key] ?? []), item] }
   }, {})
 
   return (
-    <div>
+    <div className={styles.root}>
       {Object.entries(byMerchant).map(([merchant, merchantItems]) => (
         <MerchantGroup
           key={merchant}
@@ -37,6 +37,7 @@ export function ShoppingList({ items, isLoading, currency, onStatusChange, onPri
           currency={currency}
           onStatusChange={onStatusChange}
           onPriceClick={onPriceClick}
+          onPin={onPin}
         />
       ))}
     </div>

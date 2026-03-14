@@ -82,3 +82,15 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (
 func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 	return s.repo.Delete(ctx, id)
 }
+
+func (s *Service) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
+	return s.repo.Pin(ctx, id)
+}
+
+func (s *Service) Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error) {
+	return s.repo.Reject(ctx, id, req)
+}
+
+func (s *Service) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
+	return s.repo.DeletePinned(ctx, missionID)
+}

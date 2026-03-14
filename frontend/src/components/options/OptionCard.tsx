@@ -7,6 +7,8 @@ interface OptionCardProps {
   currency?: string
   score?: number
   onBadgeChange?: (badge: Option['badge']) => void
+  onPin?: (optionId: string) => void
+  onReject?: (optionId: string) => void
 }
 
 const BADGES: Option['badge'][] = ['recommended', 'alternative', 'watch', 'rejected']
@@ -18,7 +20,7 @@ function scoreColor(s: number): { text: string; bg: string } {
   return { text: 'var(--coral)', bg: 'var(--coral-dim)' }
 }
 
-export function OptionCard({ option, currency = 'USD', score, onBadgeChange }: OptionCardProps) {
+export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onPin, onReject }: OptionCardProps) {
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
 
@@ -160,6 +162,63 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange }: O
         >
           View →
         </a>
+      )}
+
+      {(onPin || onReject) && (
+        <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
+          {onPin && (
+            <button
+              onClick={() => onPin(option.id)}
+              style={{
+                flex: 1,
+                padding: '4px 0',
+                borderRadius: 4,
+                border: `1px solid ${option.pinned ? 'var(--cyan)' : 'var(--border)'}`,
+                background: option.pinned ? 'var(--cyan-dim)' : 'transparent',
+                color: option.pinned ? 'var(--cyan)' : 'var(--text-dim)',
+                cursor: 'pointer',
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-mono)',
+                letterSpacing: '0.05em',
+                transition: 'all 0.15s',
+              }}
+            >
+              {option.pinned ? '📌 PINNED' : '📌 PIN'}
+            </button>
+          )}
+          {onReject && !option.pinned && (
+            <button
+              onClick={() => onReject(option.id)}
+              style={{
+                flex: 1,
+                padding: '4px 0',
+                borderRadius: 4,
+                border: `1px solid ${option.rejected ? 'var(--coral)' : 'var(--border)'}`,
+                background: option.rejected ? 'var(--coral-dim)' : 'transparent',
+                color: option.rejected ? 'var(--coral)' : 'var(--text-dim)',
+                cursor: 'pointer',
+                fontSize: '0.65rem',
+                fontFamily: 'var(--font-mono)',
+                letterSpacing: '0.05em',
+                transition: 'all 0.15s',
+              }}
+            >
+              {option.rejected ? '✕ REJECTED' : '✕ REJECT'}
+            </button>
+          )}
+          {option.rejectReason && (
+            <div
+              style={{
+                fontSize: '0.65rem',
+                color: 'var(--text-dim)',
+                fontStyle: 'italic',
+                alignSelf: 'center',
+              }}
+            >
+              {option.rejectReason}
+            </div>
+          )}
+        </div>
       )}
     </Card>
   )

@@ -67,6 +67,19 @@
   --budget-ok:   var(--green);
   --budget-warn: var(--gold);
   --budget-over: var(--coral);
+
+  /* ── Layout ───────────────────────────────────────────── */
+  --sidebar-width:     260px;
+  --sidebar-collapsed: 48px;
+  --topnav-height:     52px;
+
+  /* ── Skeleton ─────────────────────────────────────────── */
+  --skeleton-base:  var(--raised);
+  --skeleton-shine: var(--border-glow);
+
+  /* ── Breakpoints (reference, used as literals in @media) ─ */
+  /* --bp-mobile:  640px  */
+  /* --bp-desktop: 1024px */
 }
 
 /* ── Animations ─────────────────────────────────────────── */
@@ -100,4 +113,9 @@
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }

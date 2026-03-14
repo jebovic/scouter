@@ -1,0 +1,30 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--phase-color);
+  background: var(--phase-bg);
+  border: 1px solid var(--phase-border);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--phase-color);
+  box-shadow: 0 0 6px var(--phase-color);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+  }
+}

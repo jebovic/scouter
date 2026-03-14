@@ -26,9 +26,11 @@ func (h *Handler) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", h.list)
 	r.Post("/", h.create)
+	r.Delete("/pinned", h.deletePinned)
 	r.Get("/{itemID}", h.get)
 	r.Put("/{itemID}", h.update)
 	r.Delete("/{itemID}", h.delete)
+	r.Patch("/{itemID}/pin", h.pin)
 	r.Post("/{itemID}/snapshots", h.addSnapshot)
 	r.Get("/{itemID}/snapshots", h.listSnapshots)
 	return r
@@ -179,4 +181,37 @@ func (h *Handler) listSnapshots(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httputil.WriteJSON(w, http.StatusOK, snapshots)
+}
+
+func (h *Handler) pin(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "itemID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid item id")
+		return
+	}
+
+	item, err := h.svc.Pin(r.Context(), id)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if item == nil {
+		httputil.WriteError(w, http.StatusNotFound, "item not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, item)
+}
+
+func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {
+	missionID, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+
+	if err := h.svc.DeletePinned(r.Context(), missionID); err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -21,6 +21,7 @@ export const ShoppingItemSchema = z.object({
   status: z.enum(['buy', 'flash-sale', 'preorder', 'defer', 'watch', 'crisis']),
   note: z.string().nullish(),
   url: z.string().nullish(),
+  pinned: z.boolean().default(false),
   createdAt: z.string(),
 })
 
@@ -82,6 +83,17 @@ export async function addPriceSnapshot(
     { method: 'POST', body: JSON.stringify(req) },
   )
   return PriceSnapshotSchema.parse(data) as PriceSnapshot
+}
+
+export async function pinShoppingItem(missionId: string, itemId: string): Promise<ShoppingItem> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/shopping/${itemId}/pin`, {
+    method: 'PATCH',
+  })
+  return ShoppingItemSchema.parse(data) as ShoppingItem
+}
+
+export async function deletePinnedShoppingItems(missionId: string): Promise<void> {
+  await apiFetch<void>(`/api/missions/${missionId}/shopping/pinned`, { method: 'DELETE' })
 }
 
 // Snapshots are not paginated — the backend returns a bare array (not the paged envelope).

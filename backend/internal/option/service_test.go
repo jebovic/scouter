@@ -100,6 +100,43 @@ func (m *mockRepo) DeleteByMission(_ context.Context, missionID uuid.UUID) error
 	return nil
 }
 
+func (m *mockRepo) Pin(_ context.Context, id uuid.UUID) (*Option, error) {
+	if m.nextErr != nil {
+		return nil, m.nextErr
+	}
+	o, ok := m.options[id]
+	if !ok {
+		return nil, nil
+	}
+	o.Pinned = true
+	return o, nil
+}
+
+func (m *mockRepo) Reject(_ context.Context, id uuid.UUID, req RejectRequest) (*Option, error) {
+	if m.nextErr != nil {
+		return nil, m.nextErr
+	}
+	o, ok := m.options[id]
+	if !ok {
+		return nil, nil
+	}
+	o.Rejected = true
+	o.RejectReason = req.Reason
+	return o, nil
+}
+
+func (m *mockRepo) DeletePinned(_ context.Context, missionID uuid.UUID) error {
+	if m.nextErr != nil {
+		return m.nextErr
+	}
+	for id, o := range m.options {
+		if o.MissionID == missionID && o.Pinned {
+			delete(m.options, id)
+		}
+	}
+	return nil
+}
+
 func TestService_Create_RequiresName(t *testing.T) {
 	svc := NewService(newMockRepo())
 	_, err := svc.Create(context.Background(), uuid.New(), CreateRequest{Name: ""})

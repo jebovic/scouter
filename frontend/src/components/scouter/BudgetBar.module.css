@@ -1,0 +1,43 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--raised);
+  overflow: hidden;
+  position: relative;
+}
+
+.fill {
+  height: 100%;
+  width: var(--bar-width);
+  background: var(--bar-color);
+  border-radius: 3px;
+  transition: width 0.4s ease, background 0.3s ease;
+  box-shadow: 0 0 10px var(--bar-glow);
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.spent {
+  color: var(--bar-color);
+}
+
+.budget {
+  color: var(--text-dim);
+}
+
+@media (max-width: 640px) {
+  .labels {
+    font-size: 0.7rem;
+  }
+}

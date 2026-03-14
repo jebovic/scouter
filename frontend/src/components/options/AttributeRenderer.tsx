@@ -1,4 +1,5 @@
 import type { Attribute } from '../../types'
+import styles from './AttributeRenderer.module.css'
 
 interface AttributeRendererProps {
   attribute: Attribute
@@ -12,58 +13,49 @@ export function AttributeRenderer({ attribute, currency = 'USD' }: AttributeRend
     switch (type) {
       case 'boolean':
         return (
-          <span style={{ color: value ? 'var(--green)' : 'var(--coral)', fontSize: '0.85rem' }}>
+          <span className={value ? styles.boolTrue : styles.boolFalse}>
             {value ? '✓' : '✗'}
           </span>
         )
       case 'price':
         return (
-          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--cyan)', fontSize: '0.85rem' }}>
+          <span className={styles.price}>
             {new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(
               Number(value),
             )}
           </span>
         )
-      case 'score':
+      case 'score': {
+        const scoreColor =
+          pass === true ? 'var(--green)' : pass === false ? 'var(--coral)' : 'var(--cyan)'
+        const scoreTextColor =
+          pass === true ? 'var(--green)' : pass === false ? 'var(--coral)' : 'var(--text-mid)'
+        const scoreWidth = `${Math.min((Number(value) / (max ?? 10)) * 100, 100)}%`
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div
-              style={{
-                height: 4,
-                width: 60,
-                background: 'var(--raised)',
-                borderRadius: 2,
-                overflow: 'hidden',
-              }}
-            >
+          <div className={styles.scoreWrapper}>
+            <div className={styles.scoreTrack}>
               <div
-                style={{
-                  height: '100%',
-                  width: `${Math.min((Number(value) / (max ?? 10)) * 100, 100)}%`,
-                  background:
-                    pass === true
-                      ? 'var(--green)'
-                      : pass === false
-                      ? 'var(--coral)'
-                      : 'var(--cyan)',
-                  borderRadius: 2,
-                }}
+                className={styles.scoreFill}
+                style={
+                  {
+                    '--score-width': scoreWidth,
+                    '--score-color': scoreColor,
+                  } as React.CSSProperties
+                }
               />
             </div>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                color: pass === true ? 'var(--green)' : pass === false ? 'var(--coral)' : 'var(--text-mid)',
-              }}
+              className={styles.scoreText}
+              style={{ '--score-text-color': scoreTextColor } as React.CSSProperties}
             >
               {String(value)}{max ? `/${max}` : ''}
             </span>
           </div>
         )
+      }
       default:
         return (
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-mid)' }}>
+          <span className={styles.defaultValue}>
             {String(value)}
           </span>
         )
@@ -71,8 +63,8 @@ export function AttributeRenderer({ attribute, currency = 'USD' }: AttributeRend
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-      <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', flexShrink: 0 }}>
+    <div className={styles.row}>
+      <span className={styles.label}>
         {attribute.label}
       </span>
       {renderValue()}

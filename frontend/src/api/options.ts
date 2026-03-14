@@ -30,6 +30,9 @@ export const OptionSchema = z.object({
   notes: z.string().nullish(),
   warnings: z.array(z.string()),
   url: z.string().nullish(),
+  pinned: z.boolean().default(false),
+  rejected: z.boolean().default(false),
+  rejectReason: z.string().nullish(),
   createdAt: z.string(),
 })
 
@@ -70,4 +73,27 @@ export async function updateOption(
 
 export async function deleteOption(missionId: string, optionId: string): Promise<void> {
   await apiFetch<void>(`/api/missions/${missionId}/options/${optionId}`, { method: 'DELETE' })
+}
+
+export async function pinOption(missionId: string, optionId: string): Promise<Option> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/options/${optionId}/pin`, {
+    method: 'PATCH',
+  })
+  return OptionSchema.parse(data) as Option
+}
+
+export async function rejectOption(
+  missionId: string,
+  optionId: string,
+  reason: string,
+): Promise<Option> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/options/${optionId}/reject`, {
+    method: 'PATCH',
+    body: JSON.stringify({ reason }),
+  })
+  return OptionSchema.parse(data) as Option
+}
+
+export async function deletePinnedOptions(missionId: string): Promise<void> {
+  await apiFetch<void>(`/api/missions/${missionId}/options/pinned`, { method: 'DELETE' })
 }

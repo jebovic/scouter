@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import styles from './ToastProvider.module.css'
 
 export type ToastVariant = 'success' | 'error' | 'info'
 
@@ -45,19 +46,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '1.5rem',
-          right: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-          zIndex: 9999,
-          maxWidth: 360,
-          pointerEvents: 'none',
-        }}
-      >
+      <div className={styles.container}>
         {toasts.map((t) => (
           <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
         ))}
@@ -73,38 +62,19 @@ const variantColor: Record<ToastVariant, string> = {
 }
 
 function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: (id: string) => void }) {
+  const color = variantColor[t.variant]
   return (
     <div
+      className={styles.toast}
       style={{
-        background: 'var(--surface)',
-        border: `1px solid ${variantColor[t.variant]}`,
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.75rem 1rem',
-        fontFamily: 'var(--font-mono)',
-        fontSize: '0.8rem',
-        color: variantColor[t.variant],
-        boxShadow: `0 0 12px ${variantColor[t.variant]}33`,
-        animation: 'fade-in 0.2s ease both',
-        pointerEvents: 'auto',
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '0.5rem',
-      }}
+        '--toast-color': color,
+        '--toast-glow': `${color}33`,
+      } as React.CSSProperties}
     >
-      <span style={{ flex: 1 }}>{t.message}</span>
+      <span className={styles.toastMessage}>{t.message}</span>
       <button
         onClick={() => onDismiss(t.id)}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: variantColor[t.variant],
-          cursor: 'pointer',
-          padding: 0,
-          fontSize: '1rem',
-          lineHeight: 1,
-          opacity: 0.7,
-          flexShrink: 0,
-        }}
+        className={styles.dismissBtn}
         aria-label="Dismiss"
       >
         ×

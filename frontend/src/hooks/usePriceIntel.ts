@@ -6,9 +6,10 @@ export function usePriceIntel(missionId: string) {
   const qc = useQueryClient()
   const { toast } = useToast()
   const { mutateAsync, isPending, error, isSuccess } = useMutation({
-    mutationFn: () => triggerPricing(missionId),
+    mutationFn: (feedback?: string) => triggerPricing(missionId, feedback),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['shopping', missionId] })
+      qc.invalidateQueries({ queryKey: ['agent-runs', missionId] })
       toast('Price intel updated', 'success')
     },
     onError: (err: unknown) => toast(`Price intel failed: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),

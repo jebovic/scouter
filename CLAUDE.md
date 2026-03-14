@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–4 complete. Phase 5 planned (detailed spec in ROADMAP.md) — ready to implement.
+- Phases 1–6 complete. Phase 7 next (detailed spec in ROADMAP.md).
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -13,7 +13,9 @@
   6. frontend-design review phase frontend changes
   7. update documentations (readme, claude.md, roadmap)
   8. Architect review front, back, architectural direction
-  9. fix → close phase
+  9. fix
+  10. commit and push everything
+  11. close phase
 
 ## Core Rules
 - Always read a file before editing it
@@ -103,7 +105,20 @@ Backend is **fully implemented** (Phases 1–4 complete, all go-reviewer issues 
 - Service-layer input validation in `mission.Service.Create` (defense-in-depth)
 - Graceful shutdown timeout: 65s (exceeds 60s LLM call timeout)
 
+## Frontend Status (Phase 6 complete)
+- **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
+- **Responsive**: breakpoints at 640px and 1024px across all pages and components
+- **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
+- **Empty states**: `EmptyState` with icon, title, description, CTA action across all pages
+- **Onboarding**: `useOnboarding` + `OnboardingOverlay` (3-step, localStorage dismissed, wired in App)
+- **Keyboard shortcuts**: `useKeyboardShortcuts` hook (ref-stable, preventDefault); `N` new mission, `R` research, `P` pricing
+- **Sidebar**: collapsible mission list drawer, wired in App via `SidebarContext` (`src/contexts/sidebar.tsx`)
+- **Breadcrumb**: `Breadcrumb` component with `missionSlug` + `missionName` + `subPage` props
+- **Test suite**: Vitest + jsdom + Testing Library; 53 tests across 7 files
+- **Phase 7 note**: migrate to React Router v7 Layout pattern (`Layout.tsx` with `<Outlet />`) to remove per-page `<Topnav />` duplication
+
 ## CSS Conventions
 - Import `frontend/src/styles/theme.css` for all SCOUTER tokens
 - Card-based layout, 16px border-radius, `var(--surface)` background
 - Status badges: `buy`(green), `flash-sale`(orange+pulse), `preorder`(gold), `defer`(text-dim), `watch`(purple), `crisis`(coral), `recommended`(cyan), `rejected`(coral-dim)
+- Dynamic values use CSS custom properties: `style={{ '--var': value } as React.CSSProperties}` consumed as `var(--var)` in module CSS

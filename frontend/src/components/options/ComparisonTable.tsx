@@ -1,4 +1,5 @@
 import type { Option } from '../../types'
+import styles from './ComparisonTable.module.css'
 
 interface ComparisonTableProps {
   options: Option[]
@@ -18,45 +19,16 @@ export function ComparisonTable({ options, currency = 'USD' }: ComparisonTablePr
       .map((a) => [a.key, a.label]),
   )
 
-  const cellStyle: React.CSSProperties = {
-    padding: '8px 12px',
-    borderBottom: '1px solid var(--border)',
-    fontSize: '0.8rem',
-    verticalAlign: 'middle',
-  }
-  const headerStyle: React.CSSProperties = {
-    ...cellStyle,
-    color: 'var(--text-dim)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: '0.7rem',
-    letterSpacing: '0.05em',
-    background: 'var(--raised)',
-    whiteSpace: 'nowrap',
-  }
-
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          background: 'var(--surface)',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-          border: '1px solid var(--border)',
-        }}
-      >
+    <div className={styles.wrapper}>
+      <table className={styles.table}>
         <thead>
           <tr>
-            <th style={{ ...headerStyle, textAlign: 'left' }}>ATTRIBUTE</th>
+            <th className={`${styles.headerCell} ${styles.headerLeft}`}>ATTRIBUTE</th>
             {options.map((o) => (
               <th
                 key={o.id}
-                style={{
-                  ...headerStyle,
-                  textAlign: 'center',
-                  color: o.badge === 'recommended' ? 'var(--cyan)' : 'var(--text-dim)',
-                }}
+                className={`${styles.headerCell} ${styles.headerCenter} ${o.badge === 'recommended' ? styles.headerRecommended : ''}`}
               >
                 {o.name}
               </th>
@@ -66,9 +38,9 @@ export function ComparisonTable({ options, currency = 'USD' }: ComparisonTablePr
         <tbody>
           {/* Price row */}
           <tr>
-            <td style={{ ...cellStyle, color: 'var(--text-dim)' }}>Best Price</td>
+            <td className={`${styles.cell} ${styles.cellLabel}`}>Best Price</td>
             {options.map((o) => (
-              <td key={o.id} style={{ ...cellStyle, textAlign: 'center', fontFamily: 'var(--font-mono)', color: 'var(--cyan)' }}>
+              <td key={o.id} className={`${styles.cell} ${styles.cellPrice}`}>
                 {o.priceRange
                   ? new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(
                       o.priceRange.best,
@@ -80,21 +52,20 @@ export function ComparisonTable({ options, currency = 'USD' }: ComparisonTablePr
           {/* Attribute rows */}
           {attrKeys.map((key) => (
             <tr key={key}>
-              <td style={{ ...cellStyle, color: 'var(--text-dim)' }}>{attrLabels[key] ?? key}</td>
+              <td className={`${styles.cell} ${styles.cellLabel}`}>{attrLabels[key] ?? key}</td>
               {options.map((o) => {
                 const attr = o.attributes.find((a) => a.key === key)
                 return (
-                  <td key={o.id} style={{ ...cellStyle, textAlign: 'center' }}>
+                  <td key={o.id} className={`${styles.cell} ${styles.cellCenter}`}>
                     {attr ? (
                       <span
-                        style={{
-                          color:
-                            attr.pass === true
-                              ? 'var(--green)'
-                              : attr.pass === false
-                              ? 'var(--coral)'
-                              : 'var(--text-mid)',
-                        }}
+                        className={
+                          attr.pass === true
+                            ? styles.attrPass
+                            : attr.pass === false
+                            ? styles.attrFail
+                            : styles.attrNeutral
+                        }
                       >
                         {attr.type === 'boolean'
                           ? attr.value
@@ -103,7 +74,7 @@ export function ComparisonTable({ options, currency = 'USD' }: ComparisonTablePr
                           : String(attr.value)}
                       </span>
                     ) : (
-                      <span style={{ color: 'var(--text-dim)' }}>—</span>
+                      <span className={styles.attrMissing}>—</span>
                     )}
                   </td>
                 )

@@ -6,11 +6,12 @@ interface ShoppingItemRowProps {
   currency?: string
   onStatusChange?: (status: ItemStatus) => void
   onPriceClick?: () => void
+  onPin?: (itemId: string) => void
 }
 
 const STATUSES: ItemStatus[] = ['buy', 'watch', 'flash-sale', 'preorder', 'defer', 'crisis']
 
-export function ShoppingItemRow({ item, currency = 'USD', onStatusChange, onPriceClick }: ShoppingItemRowProps) {
+export function ShoppingItemRow({ item, currency = 'USD', onStatusChange, onPriceClick, onPin }: ShoppingItemRowProps) {
   const priceDelta = item.originalEstimate != null
     ? item.price - item.originalEstimate
     : null
@@ -22,12 +23,13 @@ export function ShoppingItemRow({ item, currency = 'USD', onStatusChange, onPric
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr auto auto auto',
+        gridTemplateColumns: '1fr auto auto auto auto',
         alignItems: 'center',
         gap: 12,
         padding: '10px 16px',
         borderBottom: '1px solid var(--border)',
         transition: 'background 0.15s',
+        opacity: item.pinned ? 1 : undefined,
       }}
     >
       <div>
@@ -67,6 +69,26 @@ export function ShoppingItemRow({ item, currency = 'USD', onStatusChange, onPric
       </div>
 
       <Badge variant={item.status} />
+
+      {onPin && (
+        <button
+          onClick={() => onPin(item.id)}
+          title={item.pinned ? 'Pinned — will survive re-run' : 'Pin this item'}
+          style={{
+            background: 'none',
+            border: `1px solid ${item.pinned ? 'var(--cyan)' : 'var(--border)'}`,
+            borderRadius: 4,
+            color: item.pinned ? 'var(--cyan)' : 'var(--text-dim)',
+            cursor: 'pointer',
+            padding: '2px 6px',
+            fontSize: '0.7rem',
+            fontFamily: 'var(--font-mono)',
+            transition: 'all 0.15s',
+          }}
+        >
+          📌
+        </button>
+      )}
 
       {onStatusChange && (
         <select

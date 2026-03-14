@@ -1,0 +1,359 @@
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.panelDefault {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.panelWinner {
+  border: 1px solid var(--green);
+  box-shadow: 0 0 20px rgba(0, 214, 143, 0.08);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.panelTitle {
+  font-family: var(--font-display);
+  color: var(--text-mid);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.runBtn {
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+
+.runBtnActive {
+  background: rgba(0, 214, 143, 0.08);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.runBtnPending {
+  background: var(--surface);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Weight sliders section */
+.weightsBox {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weightsLabel {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+/* WeightSlider sub-component */
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sliderLabel {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  min-width: 56px;
+  transition: color 0.2s;
+}
+
+.sliderTrackWrap {
+  flex: 1;
+  position: relative;
+}
+
+.sliderFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 3px;
+  border-radius: 2px;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  pointer-events: none;
+  transition: width 0.15s ease;
+  /* width and background set via CSS custom properties */
+  width: var(--fill-width);
+  background: var(--fill-color);
+}
+
+.sliderInput {
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  /* accent-color set via inline style custom property */
+  accent-color: var(--slider-color);
+}
+
+.sliderValue {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  min-width: 16px;
+  text-align: right;
+  transition: color 0.2s;
+}
+
+/* ScoreBar sub-component */
+.scoreBarRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scoreTrack {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.scoreFill {
+  height: 100%;
+  border-radius: 3px;
+  /* width / background / animation set inline via custom props */
+  width: var(--bar-width);
+  background: var(--bar-gradient);
+  box-shadow: var(--bar-shadow);
+  animation: bar-fill 0.7s cubic-bezier(0.4, 0, 0.2, 1) var(--bar-delay, 0ms) both;
+}
+
+.scoreValue {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  min-width: 28px;
+  text-align: right;
+  letter-spacing: 0.05em;
+  /* color set inline */
+}
+
+/* Empty / loading states */
+.emptyState {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Winner card */
+.winnerCard {
+  background: linear-gradient(135deg, rgba(0, 214, 143, 0.08) 0%, rgba(0, 214, 143, 0.03) 100%);
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  animation: glow-pulse 3s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.winnerCorner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-bottom: 40px solid transparent;
+  border-right: 40px solid rgba(0, 214, 143, 0.15);
+}
+
+.topPickLabel {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.winnerName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+/* Sub-score grid (3-col) — stacks to 1-col at 640px */
+.scoreGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 10px;
+}
+
+.scoreCell {
+  background: var(--raised);
+  border-radius: 4px;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.scoreCellLabel {
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.scoreCellValue {
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  /* color set inline */
+}
+
+/* Ranked list */
+.rankedList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.rankedItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rankedItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  font-family: var(--font-body);
+}
+
+.rankedRank {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  min-width: 18px;
+}
+
+/* Eliminated section */
+.eliminatedSection {
+  margin-bottom: 1rem;
+}
+
+.eliminatedLabel {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--coral);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.eliminatedRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  padding: 3px 0;
+  opacity: 0.6;
+}
+
+.eliminatedName {
+  color: var(--coral);
+  text-decoration: line-through;
+  text-decoration-color: var(--coral);
+}
+
+.eliminatedReason {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+}
+
+/* Advisor / LLM summary */
+.summary {
+  background: linear-gradient(135deg, var(--raised) 0%, rgba(0, 229, 255, 0.04) 100%);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.65;
+  font-family: var(--font-body);
+  border-left: 2px solid var(--cyan);
+  animation: fade-in 0.6s ease both;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--cyan);
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.summaryArrow {
+  opacity: 0.6;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Score sub-grid: 3-col → 1-col */
+  .scoreGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Weight sliders stack: label above row */
+  .sliderRow {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .sliderLabel {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .sliderTrackWrap {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .panel {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,31 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.crumb {
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: color 0.15s;
+}
+
+.crumb:hover {
+  color: var(--cyan);
+}
+
+.sep {
+  color: var(--border-glow);
+  user-select: none;
+}
+
+.current {
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

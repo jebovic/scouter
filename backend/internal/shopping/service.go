@@ -97,3 +97,11 @@ func (s *Service) ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]Pri
 	}
 	return snapshots, nil
 }
+
+func (s *Service) Pin(ctx context.Context, id uuid.UUID) (*Item, error) {
+	return s.repo.Pin(ctx, id)
+}
+
+func (s *Service) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
+	return s.repo.DeletePinned(ctx, missionID)
+}

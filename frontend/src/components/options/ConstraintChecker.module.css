@@ -1,0 +1,56 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heading {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.constraintRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--constraint-bg);
+  border: 1px solid var(--constraint-border);
+}
+
+.icon {
+  font-size: 0.75rem;
+}
+
+.constraintLabel {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  flex: 1;
+}
+
+.attrValue {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.hardBadge {
+  font-size: 0.6rem;
+  color: var(--coral);
+  font-family: var(--font-mono);
+}
+
+.hardFailSummary {
+  font-size: 0.7rem;
+  color: var(--coral);
+  margin-top: 4px;
+}
+
+.softFailSummary {
+  font-size: 0.7rem;
+  color: var(--gold);
+  margin-top: 4px;
+}

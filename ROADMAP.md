@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–4 complete. Phase 5 planned (see plan below), pending implementation.
+> Current status: Phases 1–6 complete. Phase 7 next.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -14,7 +14,9 @@
 6. frontend-design review phase frontend changes
 7. update documentations (readme, claude.md, roadmap)
 8. Architect review front, back, architectural direction
-9. fix → close phase
+9. fix
+10. commit and push everything
+11. close phase
 ```
 
 ---
@@ -26,8 +28,8 @@
 | 1+2 | Core backend + frontend | Functional | — | ✅ Done |
 | 3 | Decision Engine & Scoring | Functional | Critical | ✅ Done |
 | 4 | Polish & Hardening | Infrastructure | Critical | ✅ Done |
-| **5** | Agent Feedback Loop | Agent | **High** | ⬜ |
-| 6 | Interface Overhaul (responsive, onboarding) | Interface | High | ⬜ |
+| **5** | Agent Feedback Loop | Agent | **High** | ✅ Done |
+| 6 | Interface Overhaul (responsive, onboarding) | Interface | High | ✅ Done |
 | 7 | Price Alerts & Deal Intelligence | Functional | High | ⬜ |
 | 8 | Mission Templates & Quick-Start | Interface | Medium | ⬜ |
 | 9 | Export, Share & Archive | Functional | Medium | ⬜ |

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { listOptions, updateOption, deleteOption } from '../api'
+import { listOptions, updateOption, deleteOption, pinOption, rejectOption, deletePinnedOptions } from '../api'
 import { useToast } from '../components/scouter'
 import type { OptionUpdateRequest } from '../types'
 
@@ -43,4 +43,47 @@ export function useDeleteOption(missionId: string) {
     onError: (err: unknown) => toast(`Failed to remove option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { deleteOption: mutateAsync, isPending }
+}
+
+export function usePinOption(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (optionId: string) => pinOption(missionId, optionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      toast('Option pinned', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to pin option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { pinOption: mutateAsync, isPending }
+}
+
+export function useRejectOption(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: ({ optionId, reason }: { optionId: string; reason: string }) =>
+      rejectOption(missionId, optionId, reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      toast('Option rejected', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to reject option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { rejectOption: mutateAsync, isPending }
+}
+
+export function useDeletePinnedOptions(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: () => deletePinnedOptions(missionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      toast('Pinned options cleared', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to clear pinned options: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { deletePinnedOptions: mutateAsync, isPending }
 }

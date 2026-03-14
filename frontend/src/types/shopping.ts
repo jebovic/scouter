@@ -11,6 +11,7 @@ export interface ShoppingItem {
   status: ItemStatus
   note?: string
   url?: string
+  pinned: boolean
   createdAt: string
 }
 

@@ -1,3 +1,5 @@
+import styles from './BudgetBar.module.css'
+
 interface BudgetBarProps {
   spent: number
   budget: number
@@ -23,40 +25,25 @@ export function BudgetBar({ spent, budget, currency = 'USD' }: BudgetBarProps) {
     : 'var(--budget-ok)'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div
-        style={{
-          height: 6,
-          borderRadius: 3,
-          background: 'var(--raised)',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
+    <div className={styles.wrapper}>
+      <div className={styles.track}>
         <div
-          className="budget-bar-fill"
+          className={`budget-bar-fill ${styles.fill}`}
           style={{
-            height: '100%',
-            width: `${pct}%`,
-            background: barColor,
-            borderRadius: 3,
-            transition: 'width 0.4s ease, background 0.3s ease',
-            boxShadow: `0 0 10px ${barColor}80`,
-          }}
+            '--bar-width': `${pct}%`,
+            '--bar-color': barColor,
+            '--bar-glow': `${barColor}80`,
+          } as React.CSSProperties}
         />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '0.75rem',
-          fontFamily: 'var(--font-mono)',
-        }}
-      >
-        <span style={{ color: barColor }}>
+      <div className={styles.labels}>
+        <span
+          className={styles.spent}
+          style={{ '--bar-color': barColor } as React.CSSProperties}
+        >
           {formatCurrency(spent, currency)}
         </span>
-        <span style={{ color: 'var(--text-dim)' }}>
+        <span className={styles.budget}>
           / {formatCurrency(budget, currency)}
         </span>
       </div>

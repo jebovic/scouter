@@ -8,17 +8,20 @@ import (
 
 // Option is a researched alternative within a mission.
 type Option struct {
-	ID         uuid.UUID   `json:"id"`
-	MissionID  uuid.UUID   `json:"missionId"`
-	Name       string      `json:"name"`
-	Category   string      `json:"category"`
-	Badge      string      `json:"badge"` // recommended | alternative | rejected | watch
-	Attributes []Attribute `json:"attributes"`
-	PriceRange *PriceRange `json:"priceRange,omitempty"`
-	Notes      string      `json:"notes,omitempty"`
-	Warnings   []string    `json:"warnings"`
-	URL        string      `json:"url,omitempty"`
-	CreatedAt  time.Time   `json:"createdAt"`
+	ID           uuid.UUID   `json:"id"`
+	MissionID    uuid.UUID   `json:"missionId"`
+	Name         string      `json:"name"`
+	Category     string      `json:"category"`
+	Badge        string      `json:"badge"` // recommended | alternative | rejected | watch
+	Attributes   []Attribute `json:"attributes"`
+	PriceRange   *PriceRange `json:"priceRange,omitempty"`
+	Notes        string      `json:"notes,omitempty"`
+	Warnings     []string    `json:"warnings"`
+	URL          string      `json:"url,omitempty"`
+	Pinned       bool        `json:"pinned"`
+	Rejected     bool        `json:"rejected"`
+	RejectReason string      `json:"rejectReason,omitempty"`
+	CreatedAt    time.Time   `json:"createdAt"`
 }
 
 // Attribute is a typed key-value pair describing an aspect of an option.
@@ -57,4 +60,9 @@ type UpdateRequest struct {
 	PriceRange *PriceRange `json:"priceRange,omitempty"`
 	Notes      *string     `json:"notes,omitempty"`
 	Warnings   []string    `json:"warnings,omitempty"`
+}
+
+// RejectRequest is the payload for rejecting an option.
+type RejectRequest struct {
+	Reason string `json:"reason,omitempty"`
 }

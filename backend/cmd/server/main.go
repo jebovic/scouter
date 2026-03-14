@@ -14,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
@@ -62,6 +63,7 @@ func main() {
 	optionRepo := option.NewRepository(pool)
 	shoppingRepo := shopping.NewRepository(pool)
 	usageRepo := usage.NewRepository(pool)
+	agentRunRepo := agentrun.NewRepository(pool)
 
 	// Services
 	missionSvc := mission.NewService(missionRepo)
@@ -70,8 +72,8 @@ func main() {
 	usageSvc := usage.NewService(usageRepo)
 
 	// Agents
-	researchAgent := research.NewAgent(provider, optionRepo, usageSvc)
-	pricingAgent := pricing.NewAgent(provider, shoppingRepo, usageSvc)
+	researchAgent := research.NewAgent(provider, optionRepo, agentRunRepo, usageSvc)
+	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
 	decisionAgent := decision.NewAgent(provider, usageSvc)
 
 	// Decision
@@ -86,6 +88,7 @@ func main() {
 	pricingHandler := pricing.NewHandler(pricingAgent, missionSvc, optionRepo)
 	usageHandler := usage.NewHandler(usageSvc)
 	decisionHandler := decision.NewHandler(decisionSvc)
+	agentRunHandler := agentrun.NewHandler(agentRunRepo)
 
 	// Router
 	r := chi.NewRouter()
@@ -118,6 +121,7 @@ func main() {
 	r.Mount("/api/missions/{missionID}/research", researchHandler.Routes())
 	r.Mount("/api/missions/{missionID}/pricing", pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
+	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
 
 	addr := ":" + cfg.Port
 	srv := &http.Server{Addr: addr, Handler: r}

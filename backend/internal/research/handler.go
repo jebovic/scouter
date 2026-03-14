@@ -1,6 +1,7 @@
 package research
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -48,9 +49,15 @@ func (h *Handler) runResearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	options, err := h.agent.Run(r.Context(), *m)
+	var fb *FeedbackInput
+	var input FeedbackInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err == nil && input.Feedback != "" {
+		fb = &input
+	}
+
+	options, err := h.agent.Run(r.Context(), *m, fb)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, err.Error())
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 

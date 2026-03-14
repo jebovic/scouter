@@ -123,6 +123,30 @@ func (m *mockRepo) ListPriceHistory(_ context.Context, itemID uuid.UUID) ([]Pric
 	return out, nil
 }
 
+func (m *mockRepo) Pin(_ context.Context, id uuid.UUID) (*Item, error) {
+	if m.nextErr != nil {
+		return nil, m.nextErr
+	}
+	it, ok := m.items[id]
+	if !ok {
+		return nil, nil
+	}
+	it.Pinned = true
+	return it, nil
+}
+
+func (m *mockRepo) DeletePinned(_ context.Context, missionID uuid.UUID) error {
+	if m.nextErr != nil {
+		return m.nextErr
+	}
+	for id, it := range m.items {
+		if it.MissionID == missionID && it.Pinned {
+			delete(m.items, id)
+		}
+	}
+	return nil
+}
+
 func TestService_Create_RequiresName(t *testing.T) {
 	svc := NewService(newMockRepo())
 	_, err := svc.Create(context.Background(), uuid.New(), CreateRequest{Name: "", Price: 10})

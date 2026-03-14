@@ -1,3 +1,5 @@
+import styles from './Badge.module.css'
+
 type BadgeVariant =
   | 'buy'
   | 'flash-sale'
@@ -44,19 +46,12 @@ export function Badge({ variant, label }: BadgeProps) {
 
   return (
     <span
+      className={isFlash ? `${styles.badge} ${styles.badgeFlash}` : styles.badge}
       style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 'var(--radius-sm)',
-        fontSize: '0.7rem',
-        fontFamily: 'var(--font-mono)',
-        fontWeight: 600,
-        letterSpacing: '0.08em',
-        color,
-        background: bg,
-        border: `1px solid ${color}40`,
-        animation: isFlash ? 'pulse-badge 1.5s ease-in-out infinite' : undefined,
-      }}
+        '--badge-color': color,
+        '--badge-bg': bg,
+        '--badge-border': `${color}40`,
+      } as React.CSSProperties}
     >
       {label ?? LABELS[variant]}
     </span>

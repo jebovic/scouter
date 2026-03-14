@@ -1,0 +1,44 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--text-mid);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  padding: 2rem;
+}
+
+.track {
+  position: relative;
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--raised);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.scanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 14px;
+  background: linear-gradient(90deg, transparent, var(--scan-color), transparent);
+  border-radius: 2px;
+  animation: scan-line 1.4s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--scan-color);
+}
+
+.label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .wrapper {
+    padding: 1.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}

@@ -8,9 +8,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
+	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/option"
@@ -18,30 +20,54 @@ import (
 	"github.com/jibei/scouter/internal/usage"
 )
 
+const (
+	maxFeedbackLen = 500
+	maxPinnedItems = 10
+)
+
+// FeedbackInput is the optional body accepted by the pricing endpoint.
+type FeedbackInput struct {
+	Feedback string `json:"feedback"`
+}
+
 // Agent uses the LLM to find prices and merchants for mission options.
 type Agent struct {
 	provider     llm.Provider
 	shoppingRepo shopping.Repository
+	agentRunRepo agentrun.Repository
 	usageSvc     *usage.Service
 }
 
 // NewAgent creates a new PricingAgent.
-func NewAgent(provider llm.Provider, shoppingRepo shopping.Repository, usageSvc *usage.Service) *Agent {
-	return &Agent{provider: provider, shoppingRepo: shoppingRepo, usageSvc: usageSvc}
+func NewAgent(provider llm.Provider, shoppingRepo shopping.Repository, agentRunRepo agentrun.Repository, usageSvc *usage.Service) *Agent {
+	return &Agent{provider: provider, shoppingRepo: shoppingRepo, agentRunRepo: agentRunRepo, usageSvc: usageSvc}
 }
 
 // Run performs LLM-based price research for the given options, persists shopping items, and returns them.
-// Clears existing shopping items for the mission before persisting new ones (idempotent re-runs).
-func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Option) ([]shopping.Item, error) {
+// Clears existing non-pinned shopping items before persisting new ones.
+func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Option, fb *FeedbackInput) ([]shopping.Item, error) {
 	if len(options) == 0 {
 		return []shopping.Item{}, nil
+	}
+
+	// Load pinned items as feedback context before clearing.
+	existing, err := a.shoppingRepo.ListByMission(ctx, m.ID)
+	if err != nil {
+		return nil, fmt.Errorf("load existing shopping items: %w", err)
+	}
+
+	var pinned []shopping.Item
+	for _, item := range existing {
+		if item.Pinned {
+			pinned = append(pinned, item)
+		}
 	}
 
 	if err := a.shoppingRepo.DeleteByMission(ctx, m.ID); err != nil {
 		return nil, fmt.Errorf("clear existing shopping items: %w", err)
 	}
 
-	req := a.buildRequest(m, options)
+	req := a.buildRequest(m, options, fb, pinned)
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
@@ -67,10 +93,87 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Opt
 		results = append(results, *created)
 	}
 
+	a.recordRun(ctx, m, fb, pinned, results)
+
 	return results, nil
 }
 
-func (a *Agent) buildRequest(m mission.Mission, options []option.Option) llm.CompletionRequest {
+// recordRun persists an agent_run record; errors are logged but do not fail the request.
+func (a *Agent) recordRun(ctx context.Context, m mission.Mission, fb *FeedbackInput, pinned []shopping.Item, results []shopping.Item) {
+	feedbackText := ""
+	if fb != nil {
+		feedbackText = agentrun.Truncate(fb.Feedback, maxFeedbackLen)
+	}
+
+	pinnedItems := shoppingToSnapshotItems(pinned, maxPinnedItems)
+
+	inputSnap := agentrun.InputSnapshotSummary{
+		MissionName: m.Name,
+		Feedback:    feedbackText,
+		Pinned:      pinnedItems,
+	}
+	inputJSON, err := json.Marshal(inputSnap)
+	if err != nil {
+		log.Printf("agentrun: marshal pricing input snapshot: %v", err)
+		return
+	}
+
+	currItems := shoppingToSnapshotItems(results, len(results))
+	resultSnap := agentrun.ResultSnapshot{Items: currItems}
+	resultJSON, err := json.Marshal(resultSnap)
+	if err != nil {
+		log.Printf("agentrun: marshal pricing result snapshot: %v", err)
+		return
+	}
+
+	// Compute diff against previous run.
+	var prevItems []agentrun.SnapshotItem
+	if prev, err := a.agentRunRepo.GetLatestByMission(ctx, m.ID, agentrun.AgentTypePricing); err == nil && prev != nil {
+		var prevSnap agentrun.ResultSnapshot
+		if err := json.Unmarshal(prev.ResultSnapshot, &prevSnap); err == nil {
+			prevItems = prevSnap.Items
+		}
+	}
+	diff := agentrun.ComputeDiff(prevItems, currItems)
+	diffJSON, err := json.Marshal(diff)
+	if err != nil {
+		log.Printf("agentrun: marshal pricing diff: %v", err)
+		return
+	}
+
+	run := agentrun.Run{
+		MissionID:      m.ID,
+		AgentType:      agentrun.AgentTypePricing,
+		InputSnapshot:  inputJSON,
+		ResultSnapshot: resultJSON,
+		Diff:           diffJSON,
+		Feedback:       feedbackText,
+	}
+	if _, err := a.agentRunRepo.Create(ctx, run); err != nil {
+		log.Printf("agentrun: persist pricing run: %v", err)
+	}
+}
+
+func shoppingToSnapshotItems(items []shopping.Item, limit int) []agentrun.SnapshotItem {
+	if len(items) == 0 {
+		return nil
+	}
+	n := len(items)
+	if n > limit {
+		n = limit
+	}
+	result := make([]agentrun.SnapshotItem, n)
+	for i := 0; i < n; i++ {
+		result[i] = agentrun.SnapshotItem{
+			ID:   items[i].ID.String(),
+			Name: items[i].Name,
+		}
+	}
+	return result
+}
+
+
+func (a *Agent) buildRequest(m mission.Mission, options []option.Option, fb *FeedbackInput, pinned []shopping.Item) llm.CompletionRequest {
 	var sb strings.Builder
 	for i, o := range options {
 		priceHint := ""
@@ -80,6 +183,21 @@ func (a *Agent) buildRequest(m mission.Mission, options []option.Option) llm.Com
 		fmt.Fprintf(&sb, "%d. %s [%s]%s\n", i+1, o.Name, o.Badge, priceHint)
 	}
 
+	var feedbackSection strings.Builder
+	if fb != nil && strings.TrimSpace(fb.Feedback) != "" {
+		fmt.Fprintf(&feedbackSection, "\nUser feedback from previous run:\n%s\n", agentrun.Truncate(fb.Feedback, maxFeedbackLen))
+	}
+	if len(pinned) > 0 {
+		feedbackSection.WriteString("\nMust-include items (user has pinned these — always return them):\n")
+		n := len(pinned)
+		if n > maxPinnedItems {
+			n = maxPinnedItems
+		}
+		for i := 0; i < n; i++ {
+			fmt.Fprintf(&feedbackSection, "- %s (%s)\n", pinned[i].Name, pinned[i].Merchant)
+		}
+	}
+
 	prompt := fmt.Sprintf(`You are a price intelligence specialist helping optimize a purchase budget.
 
 Mission: %s
@@ -87,7 +205,7 @@ Budget: %.2f %s
 Currency: %s
 
 Options to price:
-%s
+%s%s
 For each option, find the best available prices across merchants. Use the submit_pricing_items tool to return structured results.
 
 Guidelines:
@@ -97,7 +215,7 @@ Guidelines:
 - Calculate TCO where relevant (include shipping, warranties, accessories)
 - Flag seasonal sales or price drop patterns in notes
 - Group items by cost_category matching the mission's cost categories where possible`,
-		m.Name, m.Budget, m.Currency, m.Currency, sb.String())
+		m.Name, m.Budget, m.Currency, m.Currency, sb.String(), feedbackSection.String())
 
 	return llm.CompletionRequest{
 		Messages:  []llm.Message{{Role: "user", Content: prompt}},

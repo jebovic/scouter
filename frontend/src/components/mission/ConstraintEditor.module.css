@@ -1,0 +1,97 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.tagList {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.tagHard {
+  background: var(--coral-dim);
+  color: var(--coral);
+  border: 1px solid rgba(255, 61, 113, 0.18);
+}
+
+.tagSoft {
+  background: var(--raised);
+  color: var(--text-mid);
+  border: 1px solid var(--border);
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.addRow {
+  display: flex;
+  gap: 6px;
+}
+
+.inputBase {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  outline: none;
+}
+
+.inputLabel {
+  flex: 2;
+}
+
+.inputValue {
+  flex: 1;
+}
+
+.addBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--raised);
+  color: var(--cyan);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .addRow {
+    flex-wrap: wrap;
+  }
+
+  .inputLabel,
+  .inputValue {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 0;
+  }
+}

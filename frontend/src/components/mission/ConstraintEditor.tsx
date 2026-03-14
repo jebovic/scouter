@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Constraint } from '../../types'
+import styles from './ConstraintEditor.module.css'
 
 interface ConstraintEditorProps {
   constraints: Constraint[]
@@ -23,94 +24,48 @@ export function ConstraintEditor({ constraints, onChange }: ConstraintEditorProp
     onChange(constraints.filter((c) => c.key !== key))
   }
 
-  const inputStyle: React.CSSProperties = {
-    background: 'var(--raised)',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius-sm)',
-    color: 'var(--text)',
-    padding: '6px 10px',
-    fontSize: '0.8rem',
-    fontFamily: 'var(--font-body)',
-    outline: 'none',
-  }
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
-        CONSTRAINTS
-      </div>
+    <div className={styles.root}>
+      <div className={styles.sectionLabel}>CONSTRAINTS</div>
 
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <div className={styles.tagList}>
         {constraints.map((c) => (
           <span
             key={c.key}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 10px',
-              borderRadius: 4,
-              fontSize: '0.75rem',
-              background: c.type === 'hard' ? 'var(--coral-dim)' : 'var(--raised)',
-              color: c.type === 'hard' ? 'var(--coral)' : 'var(--text-mid)',
-              border: `1px solid ${c.type === 'hard' ? 'var(--coral)30' : 'var(--border)'}`,
-            }}
+            className={`${styles.tag} ${c.type === 'hard' ? styles.tagHard : styles.tagSoft}`}
           >
             {c.label}: {String(c.value)}
-            <button
-              onClick={() => remove(c.key)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'inherit',
-                cursor: 'pointer',
-                fontSize: '0.8rem',
-                padding: 0,
-                lineHeight: 1,
-                opacity: 0.6,
-              }}
-            >
+            <button onClick={() => remove(c.key)} className={styles.removeBtn}>
               ×
             </button>
           </span>
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div className={styles.addRow}>
         <input
-          style={{ ...inputStyle, flex: 2 }}
+          className={`${styles.inputBase} ${styles.inputLabel}`}
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Label"
           onKeyDown={(e) => e.key === 'Enter' && add()}
         />
         <input
-          style={{ ...inputStyle, flex: 1 }}
+          className={`${styles.inputBase} ${styles.inputValue}`}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Value"
           onKeyDown={(e) => e.key === 'Enter' && add()}
         />
         <select
-          style={{ ...inputStyle }}
+          className={styles.inputBase}
           value={type}
           onChange={(e) => setType(e.target.value as 'hard' | 'soft')}
         >
           <option value="hard">Hard</option>
           <option value="soft">Soft</option>
         </select>
-        <button
-          onClick={add}
-          style={{
-            padding: '6px 14px',
-            borderRadius: 'var(--radius-sm)',
-            border: '1px solid var(--border)',
-            background: 'var(--raised)',
-            color: 'var(--cyan)',
-            cursor: 'pointer',
-            fontSize: '0.85rem',
-          }}
-        >
+        <button onClick={add} className={styles.addBtn}>
           +
         </button>
       </div>

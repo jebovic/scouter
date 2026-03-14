@@ -1,0 +1,95 @@
+@import '../../styles/theme.css';
+
+.container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.header {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--raised);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: var(--raised);
+}
+
+.rowLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rowRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.agentType {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.agentType.research {
+  color: var(--cyan);
+}
+
+.agentType.pricing {
+  color: var(--gold);
+}
+
+.feedback {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 240px;
+}
+
+.timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.loading,
+.empty {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  padding: 16px 14px;
+  font-family: var(--font-mono);
+}

@@ -26,9 +26,12 @@ func (h *Handler) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", h.list)
 	r.Post("/", h.create)
+	r.Delete("/pinned", h.deletePinned)
 	r.Get("/{optionID}", h.get)
 	r.Put("/{optionID}", h.update)
 	r.Delete("/{optionID}", h.delete)
+	r.Patch("/{optionID}/pin", h.pin)
+	r.Patch("/{optionID}/reject", h.reject)
 	return r
 }
 
@@ -133,6 +136,64 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.svc.Delete(r.Context(), id); err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) pin(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "optionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid option id")
+		return
+	}
+
+	o, err := h.svc.Pin(r.Context(), id)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if o == nil {
+		httputil.WriteError(w, http.StatusNotFound, "option not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, o)
+}
+
+func (h *Handler) reject(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "optionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid option id")
+		return
+	}
+
+	var req RejectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	o, err := h.svc.Reject(r.Context(), id, req)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if o == nil {
+		httputil.WriteError(w, http.StatusNotFound, "option not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, o)
+}
+
+func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {
+	missionID, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+
+	if err := h.svc.DeletePinned(r.Context(), missionID); err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}

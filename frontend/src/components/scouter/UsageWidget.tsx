@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useUsageSummary } from '../../hooks/useUsage'
 import type { UsagePeriod } from '../../api/usage'
+import styles from './UsageWidget.module.css'
 
 const PERIODS: { value: UsagePeriod; label: string }[] = [
   { value: '24h', label: '24H' },
@@ -25,44 +26,19 @@ export function UsageWidget() {
   const anthropicStats = summary?.by_provider.find((p) => p.provider === 'anthropic')
   const ollamaStats = summary?.by_provider.find((p) => p.provider === 'ollama')
 
+  const fallbackCalls = summary?.fallback_calls ?? 0
+
   return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius)',
-        padding: '1.25rem 1.5rem',
-        minWidth: 260,
-      }}
-    >
+    <div className={styles.widget}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.65rem',
-            letterSpacing: '0.15em',
-            color: 'var(--border-glow)',
-          }}
-        >
-          LLM USAGE
-        </span>
-        <div style={{ display: 'flex', gap: 4 }}>
+      <div className={styles.header}>
+        <span className={styles.title}>LLM USAGE</span>
+        <div className={styles.periodToggle}>
           {PERIODS.map((p) => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              style={{
-                padding: '2px 8px',
-                fontSize: '0.65rem',
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.08em',
-                border: `1px solid ${period === p.value ? 'var(--cyan)' : 'var(--border)'}`,
-                background: period === p.value ? 'var(--cyan-dim)' : 'transparent',
-                color: period === p.value ? 'var(--cyan)' : 'var(--text-dim)',
-                borderRadius: 4,
-                cursor: 'pointer',
-              }}
+              className={period === p.value ? `${styles.periodBtn} ${styles.periodBtnActive}` : styles.periodBtn}
             >
               {p.label}
             </button>
@@ -71,15 +47,11 @@ export function UsageWidget() {
       </div>
 
       {isLoading ? (
-        <div style={{ color: 'var(--text-dim)', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
-          loading...
-        </div>
+        <div className={styles.loading}>loading...</div>
       ) : error ? (
-        <div style={{ color: 'var(--coral)', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
-          usage unavailable
-        </div>
+        <div className={styles.errorMsg}>usage unavailable</div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <div className={styles.statsList}>
           {/* Ollama row */}
           <StatRow
             label="Ollama"
@@ -103,9 +75,19 @@ export function UsageWidget() {
             }
           />
           {/* Divider */}
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '0.5rem', marginTop: '0.1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--text-dim)' }}>
-              <span>fallback calls: <span style={{ color: (summary?.fallback_calls ?? 0) > 0 ? 'var(--coral)' : 'var(--text-dim)' }}>{summary?.fallback_calls ?? 0}</span></span>
+          <div className={styles.divider}>
+            <div className={styles.totals}>
+              <span>
+                fallback calls:{' '}
+                <span
+                  className={styles.fallbackCount}
+                  style={{
+                    '--fallback-color': fallbackCalls > 0 ? 'var(--coral)' : 'var(--text-dim)',
+                  } as React.CSSProperties}
+                >
+                  {fallbackCalls}
+                </span>
+              </span>
               <span>total tokens: {fmt((summary?.total_input_tokens ?? 0) + (summary?.total_output_tokens ?? 0))}</span>
             </div>
           </div>
@@ -131,19 +113,23 @@ function StatRow({
   costLabel: string
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.75rem',
-        fontFamily: 'var(--font-mono)',
-      }}
-    >
-      <span style={{ color, fontWeight: 600, minWidth: 110 }}>{label}</span>
-      <span style={{ color: 'var(--text-mid)' }}>{calls} calls</span>
-      <span style={{ color: 'var(--text-dim)' }}>{fmt(inputTokens + outputTokens)} tok</span>
-      <span style={{ color: calls > 0 ? 'var(--text-mid)' : 'var(--text-dim)' }}>{costLabel}</span>
+    <div className={styles.statRow}>
+      <span
+        className={styles.statLabel}
+        style={{ '--stat-color': color } as React.CSSProperties}
+      >
+        {label}
+      </span>
+      <span className={styles.statCalls}>{calls} calls</span>
+      <span className={styles.statTokens}>{fmt(inputTokens + outputTokens)} tok</span>
+      <span
+        className={styles.statCost}
+        style={{
+          '--stat-cost-color': calls > 0 ? 'var(--text-mid)' : 'var(--text-dim)',
+        } as React.CSSProperties}
+      >
+        {costLabel}
+      </span>
     </div>
   )
 }

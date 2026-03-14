@@ -1,0 +1,142 @@
+.card {
+  max-width: 480px;
+  width: 100%;
+}
+
+.title {
+  font-family: var(--font-display);
+  color: var(--cyan);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.input {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  width: 100%;
+  outline: none;
+}
+
+.categoryRow {
+  display: flex;
+  gap: 8px;
+}
+
+.categoryBtn {
+  flex: 1;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.15s;
+}
+
+.categoryBtnActive {
+  border: 1px solid var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.categoryBtnInactive {
+  border: 1px solid var(--border);
+  background: var(--raised);
+  color: var(--text-mid);
+}
+
+/* budget + currency side by side */
+.budgetRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.selectNarrow {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+  width: auto;
+  outline: none;
+}
+
+.error {
+  color: var(--coral);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  padding: 6px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.submitBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  transition: all 0.15s;
+}
+
+.submitBtnActive {
+  background: var(--cyan-dim);
+  cursor: pointer;
+}
+
+.submitBtnDisabled {
+  background: var(--raised);
+  cursor: not-allowed;
+}
+
+.cancelBtn {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* budget + currency stack vertically */
+  .budgetRow {
+    grid-template-columns: 1fr;
+  }
+
+  .selectNarrow {
+    width: 100%;
+  }
+}

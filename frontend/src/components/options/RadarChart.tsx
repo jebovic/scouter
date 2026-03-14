@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { Option } from '../../types'
+import styles from './RadarChart.module.css'
 
 interface RadarChartProps {
   options: Option[]
@@ -42,27 +43,29 @@ export function RadarChart({ options }: RadarChartProps) {
   })
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <ReRadarChart data={data}>
-        <PolarGrid stroke="#2a3558" />
-        <PolarAngleAxis
-          dataKey="subject"
-          tick={{ fill: '#6b7db3', fontSize: 11, fontFamily: 'var(--font-mono)' }}
-        />
-        {options.map((o, i) => (
-          <Radar
-            key={o.id}
-            name={o.name}
-            dataKey={o.name}
-            stroke={COLORS[i % COLORS.length]}
-            fill={COLORS[i % COLORS.length]}
-            fillOpacity={0.15}
+    <div className={styles.container}>
+      <ResponsiveContainer width="100%" height={300}>
+        <ReRadarChart data={data}>
+          <PolarGrid stroke="#2a3558" />
+          <PolarAngleAxis
+            dataKey="subject"
+            tick={{ fill: '#6b7db3', fontSize: 11, fontFamily: 'var(--font-mono)' }}
           />
-        ))}
-        <Legend
-          wrapperStyle={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-mid)' }}
-        />
-      </ReRadarChart>
-    </ResponsiveContainer>
+          {options.map((o, i) => (
+            <Radar
+              key={o.id}
+              name={o.name}
+              dataKey={o.name}
+              stroke={COLORS[i % COLORS.length]}
+              fill={COLORS[i % COLORS.length]}
+              fillOpacity={0.15}
+            />
+          ))}
+          <Legend
+            wrapperStyle={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-mid)' }}
+          />
+        </ReRadarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

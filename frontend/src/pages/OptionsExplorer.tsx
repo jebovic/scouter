@@ -1,13 +1,24 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, LoadingPulse } from '../components/scouter'
+import { Topnav, ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
 import { OptionCard } from '../components/options'
 import { ComparisonTable } from '../components/options'
 import { RadarChart } from '../components/options'
 import { ConstraintChecker } from '../components/options'
-import { useMission, useOptions, useResearch, useDecision } from '../hooks'
+import { AgentRunHistory } from '../components/agentrun'
+import {
+  useMission,
+  useOptions,
+  usePinOption,
+  useRejectOption,
+  useDeletePinnedOptions,
+  useResearch,
+  useDecision,
+  useAgentRuns,
+} from '../hooks'
 import type { OptionBadge } from '../types'
+import styles from './OptionsExplorer.module.css'
 
 type ViewMode = 'grid' | 'compare'
 
@@ -25,20 +36,31 @@ export default function OptionsExplorer() {
   const { mission, isLoading: missionLoading } = useMission(slug!)
   const { options, isLoading: optionsLoading } = useOptions(mission?.id ?? '')
   const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
+  const { pinOption } = usePinOption(mission?.id ?? '')
+  const { rejectOption } = useRejectOption(mission?.id ?? '')
+  const { deletePinnedOptions } = useDeletePinnedOptions(mission?.id ?? '')
   const { decision } = useDecision(mission?.id ?? '')
+  const { runs, isLoading: runsLoading } = useAgentRuns(mission?.id ?? '', 'research')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [badgeFilter, setBadgeFilter] = useState<OptionBadge | 'all'>('all')
+  const [showFeedback, setShowFeedback] = useState(false)
+  const [rejectTarget, setRejectTarget] = useState<string | null>(null)
 
   const isLoading = missionLoading || optionsLoading
 
   const filtered = badgeFilter === 'all' ? options : options.filter((o) => o.badge === badgeFilter)
+  const pinnedCount = options.filter((o) => o.pinned).length
 
   if (isLoading) {
     return (
       <div className="page grid-bg scanlines">
         <Topnav missionSlug={slug} />
-        <main style={{ flex: 1, padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <LoadingPulse label="Loading options..." />
+        <main className={styles.main}>
+          <div className="container">
+            <ScouterGrid cols={2}>
+              <SkeletonGrid count={4} />
+            </ScouterGrid>
+          </div>
         </main>
       </div>
     )
@@ -47,83 +69,47 @@ export default function OptionsExplorer() {
   return (
     <div className="page grid-bg scanlines">
       <Topnav missionSlug={slug} missionName={mission?.name} />
-      <main style={{ flex: 1, padding: '2rem' }}>
+      <main className={styles.main}>
         <div className="container">
           {/* Header */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '2rem',
-              flexWrap: 'wrap',
-              gap: '1rem',
-            }}
-          >
+          <div className={styles.header}>
             <div>
-              <h1
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  color: 'var(--cyan)',
-                  letterSpacing: '0.1em',
-                  fontSize: '1.8rem',
-                }}
-              >
-                {t('nav.options')}
-              </h1>
-              <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginTop: 4 }}>
+              <h1 className={styles.title}>{t('nav.options')}</h1>
+              <p className={styles.subtitle}>
                 {filtered.length} option{filtered.length !== 1 ? 's' : ''}
                 {badgeFilter !== 'all' ? ` (${badgeFilter})` : ''}
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div className={styles.actions}>
               {/* View mode toggle */}
-              <div
-                style={{
-                  display: 'flex',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-sm)',
-                  overflow: 'hidden',
-                }}
-              >
+              <div className={styles.viewToggle}>
                 {(['grid', 'compare'] as ViewMode[]).map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode)}
-                    style={{
-                      padding: '6px 14px',
-                      border: 'none',
-                      background: viewMode === mode ? 'var(--cyan-dim)' : 'transparent',
-                      color: viewMode === mode ? 'var(--cyan)' : 'var(--text-dim)',
-                      cursor: 'pointer',
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '0.75rem',
-                      letterSpacing: '0.08em',
-                      textTransform: 'uppercase',
-                    }}
+                    className={`${styles.viewToggleBtn}${viewMode === mode ? ` ${styles.active}` : ''}`}
                   >
                     {mode === 'grid' ? '⊞ Grid' : '⊟ Compare'}
                   </button>
                 ))}
               </div>
 
+              {/* Clear pinned */}
+              {pinnedCount > 0 && (
+                <button
+                  onClick={() => deletePinnedOptions()}
+                  className={styles.clearPinnedBtn}
+                >
+                  Clear Pinned ({pinnedCount})
+                </button>
+              )}
+
               {/* Research button */}
               <button
-                onClick={() => triggerResearch()}
+                onClick={() => setShowFeedback(true)}
                 disabled={researchPending}
-                style={{
-                  padding: '8px 18px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--gold)',
-                  background: 'rgba(255,198,0,0.08)',
-                  color: 'var(--gold)',
-                  cursor: researchPending ? 'not-allowed' : 'pointer',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.06em',
-                  opacity: researchPending ? 0.6 : 1,
-                }}
+                className={styles.researchBtn}
               >
                 {researchPending ? '⚡ Running...' : '⚡ Re-run Research'}
               </button>
@@ -131,55 +117,48 @@ export default function OptionsExplorer() {
           </div>
 
           {/* Badge filters */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <div className={styles.filterBar}>
             {BADGE_FILTERS.map((f) => (
               <button
                 key={f.value}
                 onClick={() => setBadgeFilter(f.value)}
-                style={{
-                  padding: '4px 12px',
-                  borderRadius: 'var(--radius-sm)',
-                  border: `1px solid ${badgeFilter === f.value ? 'var(--cyan)' : 'var(--border)'}`,
-                  background: badgeFilter === f.value ? 'var(--cyan-dim)' : 'transparent',
-                  color: badgeFilter === f.value ? 'var(--cyan)' : 'var(--text-dim)',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.06em',
-                }}
+                className={`${styles.filterBtn}${badgeFilter === f.value ? ` ${styles.active}` : ''}`}
               >
                 {f.label}
               </button>
             ))}
           </div>
 
+          {/* Agent run history */}
+          {(runs.length > 0 || runsLoading) && (
+            <div className={styles.historySection}>
+              <AgentRunHistory runs={runs} isLoading={runsLoading} />
+            </div>
+          )}
+
           {/* Empty state */}
           {options.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--text-dim)', animation: 'fade-in 0.5s ease both' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--border-glow)', letterSpacing: '0.15em', marginBottom: '1.5rem' }}>
-                {'[ AWAITING INTELLIGENCE ]'}
-              </div>
-              <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--text-mid)', fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
-                NO CONTACTS
-              </p>
-              <p style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--text-dim)' }}>
-                Run the Research Agent to discover options
-              </p>
-            </div>
+            <EmptyState
+              icon="🔍"
+              title="NO OPTIONS FOUND"
+              description="Run the Research Agent to discover options for this mission"
+              actionLabel="RUN RESEARCH"
+              onAction={() => setShowFeedback(true)}
+            />
           ) : viewMode === 'compare' ? (
-            <div>
+            <div className={styles.compareSection}>
               <ComparisonTable options={filtered} />
               {mission && (
-                <div style={{ marginTop: '2rem' }}>
+                <div className={styles.constraintList}>
                   {filtered.map((o) => (
-                <div key={o.id} style={{ marginBottom: '0.5rem' }}>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>{o.name}</div>
-                  <ConstraintChecker option={o} constraints={mission.constraints} />
-                </div>
-              ))}
+                    <div key={o.id} className={styles.constraintItem}>
+                      <div className={styles.constraintLabel}>{o.name}</div>
+                      <ConstraintChecker option={o} constraints={mission.constraints} />
+                    </div>
+                  ))}
                 </div>
               )}
-              <div style={{ marginTop: '2rem' }}>
+              <div className={styles.radarWrapper}>
                 <RadarChart options={filtered} />
               </div>
             </div>
@@ -187,22 +166,18 @@ export default function OptionsExplorer() {
             <div>
               {/* Radar chart above grid when ≥3 options */}
               {filtered.length >= 3 && (
-                <div style={{ marginBottom: '2rem' }}>
+                <div className={styles.radarWrapperAbove}>
                   <RadarChart options={filtered} />
                 </div>
               )}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                  gap: '1.25rem',
-                }}
-              >
+              <div className={styles.optionsGrid}>
                 {filtered.map((option) => (
                   <OptionCard
                     key={option.id}
                     option={option}
                     score={decision?.scores.find((s) => s.optionId === option.id)?.score}
+                    onPin={(id) => pinOption(id)}
+                    onReject={(id) => setRejectTarget(id)}
                   />
                 ))}
               </div>
@@ -210,6 +185,31 @@ export default function OptionsExplorer() {
           )}
         </div>
       </main>
+
+      {showFeedback && (
+        <FeedbackModal
+          title="RE-RUN RESEARCH"
+          placeholder='Optional: guide the agent (e.g. "focus on options under $800 with good warranty")'
+          onConfirm={(feedback) => {
+            triggerResearch(feedback || undefined)
+            setShowFeedback(false)
+          }}
+          onClose={() => setShowFeedback(false)}
+          isPending={researchPending}
+        />
+      )}
+
+      {rejectTarget && (
+        <FeedbackModal
+          title="REJECT OPTION"
+          placeholder="Reason for rejection (e.g. 'too expensive', 'not available in my region')"
+          onConfirm={(reason) => {
+            rejectOption({ optionId: rejectTarget, reason: reason || 'Rejected by user' })
+            setRejectTarget(null)
+          }}
+          onClose={() => setRejectTarget(null)}
+        />
+      )}
     </div>
   )
 }

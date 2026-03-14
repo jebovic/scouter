@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { PriceSnapshot } from '../../types'
+import styles from './PriceHistoryChart.module.css'
 
 interface PriceHistoryChartProps {
   snapshots: PriceSnapshot[]
@@ -17,7 +18,7 @@ interface PriceHistoryChartProps {
 export function PriceHistoryChart({ snapshots, currency = 'USD' }: PriceHistoryChartProps) {
   if (snapshots.length === 0) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+      <div className={styles.empty}>
         No price history yet
       </div>
     )

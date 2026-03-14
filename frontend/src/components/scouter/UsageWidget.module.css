@@ -1,0 +1,131 @@
+.widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  min-width: 260px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--border-glow);
+}
+
+.periodToggle {
+  display: flex;
+  gap: 4px;
+}
+
+.periodBtn {
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.periodBtnActive {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.loading {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.errorMsg {
+  color: var(--coral);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.divider {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+.totals {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+/* StatRow */
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.statLabel {
+  font-weight: 600;
+  min-width: 110px;
+  color: var(--stat-color);
+}
+
+.statCalls {
+  color: var(--text-mid);
+}
+
+.statTokens {
+  color: var(--text-dim);
+}
+
+.statCost {
+  color: var(--stat-cost-color);
+}
+
+.fallbackCount {
+  color: var(--fallback-color);
+}
+
+@media (max-width: 1024px) {
+  .widget {
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .widget {
+    min-width: unset;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .statRow {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .statLabel {
+    min-width: unset;
+    width: 100%;
+  }
+}

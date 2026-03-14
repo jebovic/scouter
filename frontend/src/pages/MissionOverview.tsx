@@ -1,8 +1,9 @@
+import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Topnav, LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
 import { CategoryTemplate, DecisionPanel } from '../components/mission'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission } from '../hooks'
+import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts } from '../hooks'
 import type { MissionPhase } from '../types'
 
 const PHASES: MissionPhase[] = ['researching', 'comparing', 'buying', 'done']
@@ -25,14 +26,20 @@ export default function MissionOverview() {
   }
 
   async function handleResearch() {
-    await triggerResearch()
+    await triggerResearch(undefined)
     navigate(`/missions/${slug}/options`)
   }
 
   async function handlePricing() {
-    await triggerPricing()
+    await triggerPricing(undefined)
     navigate(`/missions/${slug}/shopping`)
   }
+
+  const shortcuts = useMemo(() => ({
+    r: () => { if (!researchPending) handleResearch() },
+    p: () => { if (!pricingPending) handlePricing() },
+  }), [researchPending, pricingPending]) // eslint-disable-line react-hooks/exhaustive-deps
+  useKeyboardShortcuts(shortcuts)
 
   if (isLoading) {
     return (

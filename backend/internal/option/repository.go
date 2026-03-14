@@ -21,6 +21,9 @@ type Repository interface {
 	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Option, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	DeleteByMission(ctx context.Context, missionID uuid.UUID) error
+	Pin(ctx context.Context, id uuid.UUID) (*Option, error)
+	Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error)
+	DeletePinned(ctx context.Context, missionID uuid.UUID) error
 }
 
 type pgRepository struct {
@@ -32,9 +35,11 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	return &pgRepository{pool: pool}
 }
 
+const selectCols = `id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, pinned, rejected, reject_reason, created_at`
+
 func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID) ([]Option, error) {
 	rows, err := r.pool.Query(ctx, `
-		SELECT id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, created_at
+		SELECT `+selectCols+`
 		FROM options WHERE mission_id = $1 ORDER BY created_at ASC`, missionID)
 	if err != nil {
 		return nil, fmt.Errorf("list options: %w", err)
@@ -54,7 +59,7 @@ func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID) (
 
 func (r *pgRepository) ListByMissionPaged(ctx context.Context, missionID uuid.UUID, cursor *time.Time, limit int) ([]Option, error) {
 	rows, err := r.pool.Query(ctx, `
-		SELECT id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, created_at
+		SELECT `+selectCols+`
 		FROM options
 		WHERE mission_id = $1 AND ($2::timestamptz IS NULL OR created_at > $2)
 		ORDER BY created_at ASC
@@ -77,7 +82,7 @@ func (r *pgRepository) ListByMissionPaged(ctx context.Context, missionID uuid.UU
 
 func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*Option, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, created_at
+		SELECT `+selectCols+`
 		FROM options WHERE id = $1`, id)
 	o, err := scanOption(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -107,7 +112,7 @@ func (r *pgRepository) Create(ctx context.Context, o Option) (*Option, error) {
 	row := r.pool.QueryRow(ctx, `
 		INSERT INTO options (mission_id, name, category, badge, attributes, price_range, notes, warnings, url)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		RETURNING id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, created_at`,
+		RETURNING `+selectCols,
 		o.MissionID, o.Name, o.Category, o.Badge,
 		attrsJSON, priceRangeJSON, o.Notes, warningsJSON, o.URL)
 
@@ -145,7 +150,7 @@ func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateReque
 		  notes       = COALESCE($5, notes),
 		  warnings    = CASE WHEN $6::jsonb IS NOT NULL THEN $6 ELSE warnings END
 		WHERE id = $1
-		RETURNING id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, created_at`,
+		RETURNING `+selectCols,
 		id, req.Badge, attrsJSON, priceRangeJSON, req.Notes, warningsJSON)
 
 	o, err := scanOption(row)
@@ -157,12 +162,52 @@ func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateReque
 
 func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := r.pool.Exec(ctx, `DELETE FROM options WHERE id = $1`, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("delete option: %w", err)
+	}
+	return nil
 }
 
+// DeleteByMission deletes non-pinned, non-rejected options for a mission.
+// Pinned and rejected rows are preserved as positive/negative examples for the LLM.
 func (r *pgRepository) DeleteByMission(ctx context.Context, missionID uuid.UUID) error {
-	_, err := r.pool.Exec(ctx, `DELETE FROM options WHERE mission_id = $1`, missionID)
-	return err
+	_, err := r.pool.Exec(ctx, `
+		DELETE FROM options WHERE mission_id = $1 AND pinned = false AND rejected = false`, missionID)
+	if err != nil {
+		return fmt.Errorf("delete options by mission: %w", err)
+	}
+	return nil
+}
+
+func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE options SET pinned = true WHERE id = $1
+		RETURNING `+selectCols, id)
+	o, err := scanOption(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return o, err
+}
+
+func (r *pgRepository) Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE options SET rejected = true, reject_reason = $2 WHERE id = $1
+		RETURNING `+selectCols, id, req.Reason)
+	o, err := scanOption(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return o, err
+}
+
+// DeletePinned removes only pinned options for a mission (e.g. user clears their pin list).
+func (r *pgRepository) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM options WHERE mission_id = $1 AND pinned = true`, missionID)
+	if err != nil {
+		return fmt.Errorf("delete pinned options: %w", err)
+	}
+	return nil
 }
 
 type scanner interface {
@@ -172,15 +217,20 @@ type scanner interface {
 func scanOption(s scanner) (*Option, error) {
 	var o Option
 	var attrsRaw, warningsRaw, priceRangeRaw []byte
+	var rejectReason *string
 
 	err := s.Scan(
 		&o.ID, &o.MissionID, &o.Name, &o.Category, &o.Badge,
-		&attrsRaw, &priceRangeRaw, &o.Notes, &warningsRaw, &o.URL, &o.CreatedAt,
+		&attrsRaw, &priceRangeRaw, &o.Notes, &warningsRaw, &o.URL,
+		&o.Pinned, &o.Rejected, &rejectReason, &o.CreatedAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("scan option: %w", err)
 	}
 
+	if rejectReason != nil {
+		o.RejectReason = *rejectReason
+	}
 	if len(attrsRaw) > 0 {
 		if err := json.Unmarshal(attrsRaw, &o.Attributes); err != nil {
 			return nil, fmt.Errorf("unmarshal attributes: %w", err)

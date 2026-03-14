@@ -7,35 +7,65 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
+	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/usage"
 )
 
+const (
+	maxFeedbackLen  = 500
+	maxPinnedItems  = 10
+	maxRejectedItems = 10
+)
+
+// FeedbackInput is the optional body accepted by the research endpoint.
+type FeedbackInput struct {
+	Feedback string `json:"feedback"`
+}
+
 // Agent uses the LLM to discover and structure research options for a mission.
 type Agent struct {
-	provider llm.Provider
-	optRepo  option.Repository
-	usageSvc *usage.Service
+	provider     llm.Provider
+	optRepo      option.Repository
+	agentRunRepo agentrun.Repository
+	usageSvc     *usage.Service
 }
 
 // NewAgent creates a new ResearchAgent.
-func NewAgent(provider llm.Provider, optRepo option.Repository, usageSvc *usage.Service) *Agent {
-	return &Agent{provider: provider, optRepo: optRepo, usageSvc: usageSvc}
+func NewAgent(provider llm.Provider, optRepo option.Repository, agentRunRepo agentrun.Repository, usageSvc *usage.Service) *Agent {
+	return &Agent{provider: provider, optRepo: optRepo, agentRunRepo: agentRunRepo, usageSvc: usageSvc}
 }
 
 // Run performs LLM-based research for the mission, persists results, and returns them.
-// Clears existing options for the mission before persisting new ones (idempotent re-runs).
-func (a *Agent) Run(ctx context.Context, m mission.Mission) ([]option.Option, error) {
+// Clears existing non-pinned, non-rejected options before persisting new ones.
+func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) ([]option.Option, error) {
+	// Load current pinned/rejected options as feedback context.
+	existing, err := a.optRepo.ListByMission(ctx, m.ID)
+	if err != nil {
+		return nil, fmt.Errorf("load existing options: %w", err)
+	}
+
+	var pinned, rejected []option.Option
+	for _, o := range existing {
+		switch {
+		case o.Pinned:
+			pinned = append(pinned, o)
+		case o.Rejected:
+			rejected = append(rejected, o)
+		}
+	}
+
 	if err := a.optRepo.DeleteByMission(ctx, m.ID); err != nil {
 		return nil, fmt.Errorf("clear existing options: %w", err)
 	}
 
-	req := a.buildRequest(m)
+	req := a.buildRequest(m, fb, pinned, rejected)
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
@@ -61,10 +91,91 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission) ([]option.Option, er
 		results = append(results, *created)
 	}
 
+	a.recordRun(ctx, m, fb, pinned, rejected, results)
+
 	return results, nil
 }
 
-func (a *Agent) buildRequest(m mission.Mission) llm.CompletionRequest {
+// recordRun persists an agent_run record; errors are logged but do not fail the request.
+func (a *Agent) recordRun(ctx context.Context, m mission.Mission, fb *FeedbackInput, pinned, rejected []option.Option, results []option.Option) {
+	feedbackText := ""
+	if fb != nil {
+		feedbackText = agentrun.Truncate(fb.Feedback, maxFeedbackLen)
+	}
+
+	pinnedItems := optionsToSnapshotItems(pinned, maxPinnedItems)
+	rejectedItems := optionsToSnapshotItems(rejected, maxRejectedItems)
+
+	inputSnap := agentrun.InputSnapshotSummary{
+		MissionName: m.Name,
+		Feedback:    feedbackText,
+		Pinned:      pinnedItems,
+		Rejected:    rejectedItems,
+	}
+	inputJSON, err := json.Marshal(inputSnap)
+	if err != nil {
+		log.Printf("agentrun: marshal input snapshot: %v", err)
+		return
+	}
+
+	currItems := optionsToSnapshotItems(results, len(results))
+	resultSnap := agentrun.ResultSnapshot{Items: currItems}
+	resultJSON, err := json.Marshal(resultSnap)
+	if err != nil {
+		log.Printf("agentrun: marshal result snapshot: %v", err)
+		return
+	}
+
+	// Compute diff against previous run.
+	var prevItems []agentrun.SnapshotItem
+	if prev, err := a.agentRunRepo.GetLatestByMission(ctx, m.ID, agentrun.AgentTypeResearch); err == nil && prev != nil {
+		var prevSnap agentrun.ResultSnapshot
+		if err := json.Unmarshal(prev.ResultSnapshot, &prevSnap); err == nil {
+			prevItems = prevSnap.Items
+		}
+	}
+	diff := agentrun.ComputeDiff(prevItems, currItems)
+	diffJSON, err := json.Marshal(diff)
+	if err != nil {
+		log.Printf("agentrun: marshal diff: %v", err)
+		return
+	}
+
+	run := agentrun.Run{
+		MissionID:      m.ID,
+		AgentType:      agentrun.AgentTypeResearch,
+		InputSnapshot:  inputJSON,
+		ResultSnapshot: resultJSON,
+		Diff:           diffJSON,
+		Feedback:       feedbackText,
+	}
+	if _, err := a.agentRunRepo.Create(ctx, run); err != nil {
+		log.Printf("agentrun: persist research run: %v", err)
+	}
+}
+
+func optionsToSnapshotItems(opts []option.Option, limit int) []agentrun.SnapshotItem {
+	if len(opts) == 0 {
+		return nil
+	}
+	n := len(opts)
+	if n > limit {
+		n = limit
+	}
+	items := make([]agentrun.SnapshotItem, n)
+	for i := 0; i < n; i++ {
+		items[i] = agentrun.SnapshotItem{
+			ID:       opts[i].ID.String(),
+			Name:     opts[i].Name,
+			Category: opts[i].Category,
+			Badge:    opts[i].Badge,
+		}
+	}
+	return items
+}
+
+
+func (a *Agent) buildRequest(m mission.Mission, fb *FeedbackInput, pinned, rejected []option.Option) llm.CompletionRequest {
 	var sb strings.Builder
 	for _, c := range m.Constraints {
 		qualifier := "preferred"
@@ -74,13 +185,42 @@ func (a *Agent) buildRequest(m mission.Mission) llm.CompletionRequest {
 		fmt.Fprintf(&sb, "- %s (%s): %v\n", c.Label, qualifier, c.Value)
 	}
 
+	var feedbackSection strings.Builder
+	if fb != nil && strings.TrimSpace(fb.Feedback) != "" {
+		fmt.Fprintf(&feedbackSection, "\nUser feedback from previous run:\n%s\n", agentrun.Truncate(fb.Feedback, maxFeedbackLen))
+	}
+	if len(pinned) > 0 {
+		feedbackSection.WriteString("\nMust-include options (user has pinned these — always return them):\n")
+		n := len(pinned)
+		if n > maxPinnedItems {
+			n = maxPinnedItems
+		}
+		for i := 0; i < n; i++ {
+			fmt.Fprintf(&feedbackSection, "- %s\n", pinned[i].Name)
+		}
+	}
+	if len(rejected) > 0 {
+		feedbackSection.WriteString("\nExcluded options (user has rejected these — do NOT include them):\n")
+		n := len(rejected)
+		if n > maxRejectedItems {
+			n = maxRejectedItems
+		}
+		for i := 0; i < n; i++ {
+			reason := ""
+			if rejected[i].RejectReason != "" {
+				reason = fmt.Sprintf(" (reason: %s)", rejected[i].RejectReason)
+			}
+			fmt.Fprintf(&feedbackSection, "- %s%s\n", rejected[i].Name, reason)
+		}
+	}
+
 	prompt := fmt.Sprintf(`You are a thorough research specialist helping with a major purchase decision.
 
 Mission: %s
 Category: %s
 Budget: %.2f %s
 Constraints:
-%s
+%s%s
 Research the best options available. Use the submit_research_options tool to return structured results.
 
 Guidelines:
@@ -90,7 +230,7 @@ Guidelines:
   options worth monitoring as "watch", and poor fits as "rejected"
 - Add warnings for known issues, discontinued models, or constraint violations
 - Attributes should cover the most decision-relevant specs (not exhaustive)`,
-		m.Name, m.Category, m.Budget, m.Currency, sb.String())
+		m.Name, m.Category, m.Budget, m.Currency, sb.String(), feedbackSection.String())
 
 	return llm.CompletionRequest{
 		Messages:  []llm.Message{{Role: "user", Content: prompt}},

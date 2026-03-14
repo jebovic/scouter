@@ -1,8 +1,33 @@
 import type { Option, Constraint } from '../../types'
+import styles from './ConstraintChecker.module.css'
 
 interface ConstraintCheckerProps {
   option: Option
   constraints: Constraint[]
+}
+
+function getConstraintVars(pass: boolean | null, type: 'hard' | 'soft'): React.CSSProperties {
+  if (pass === true) {
+    return {
+      '--constraint-bg': 'var(--green-dim)',
+      '--constraint-border': 'var(--green)30',
+    } as React.CSSProperties
+  }
+  if (pass === false) {
+    return type === 'hard'
+      ? ({
+          '--constraint-bg': 'var(--coral-dim)',
+          '--constraint-border': 'var(--coral)30',
+        } as React.CSSProperties)
+      : ({
+          '--constraint-bg': 'var(--gold-dim)',
+          '--constraint-border': 'var(--gold)30',
+        } as React.CSSProperties)
+  }
+  return {
+    '--constraint-bg': 'var(--raised)',
+    '--constraint-border': 'var(--border)',
+  } as React.CSSProperties
 }
 
 export function ConstraintChecker({ option, constraints }: ConstraintCheckerProps) {
@@ -18,63 +43,33 @@ export function ConstraintChecker({ option, constraints }: ConstraintCheckerProp
   const softFails = results.filter((r) => r.constraint.type === 'soft' && r.pass === false)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
-        CONSTRAINTS
-      </div>
+    <div className={styles.root}>
+      <div className={styles.heading}>CONSTRAINTS</div>
       {results.map(({ constraint, pass, attrValue }) => (
         <div
           key={constraint.key}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '4px 8px',
-            borderRadius: 4,
-            background:
-              pass === true
-                ? 'var(--green-dim)'
-                : pass === false
-                ? constraint.type === 'hard'
-                  ? 'var(--coral-dim)'
-                  : 'var(--gold-dim)'
-                : 'var(--raised)',
-            border: `1px solid ${
-              pass === true
-                ? 'var(--green)30'
-                : pass === false
-                ? constraint.type === 'hard'
-                  ? 'var(--coral)30'
-                  : 'var(--gold)30'
-                : 'var(--border)'
-            }`,
-          }}
+          className={styles.constraintRow}
+          style={getConstraintVars(pass, constraint.type)}
         >
-          <span style={{ fontSize: '0.75rem' }}>
+          <span className={styles.icon}>
             {pass === true ? '✓' : pass === false ? '✗' : '?'}
           </span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-mid)', flex: 1 }}>
-            {constraint.label}
-          </span>
+          <span className={styles.constraintLabel}>{constraint.label}</span>
           {attrValue !== undefined && (
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontFamily: 'var(--font-mono)' }}>
-              {String(attrValue)}
-            </span>
+            <span className={styles.attrValue}>{String(attrValue)}</span>
           )}
           {constraint.type === 'hard' && (
-            <span style={{ fontSize: '0.6rem', color: 'var(--coral)', fontFamily: 'var(--font-mono)' }}>
-              HARD
-            </span>
+            <span className={styles.hardBadge}>HARD</span>
           )}
         </div>
       ))}
       {hardFails.length > 0 && (
-        <div style={{ fontSize: '0.7rem', color: 'var(--coral)', marginTop: 4 }}>
+        <div className={styles.hardFailSummary}>
           ⚠ {hardFails.length} hard constraint{hardFails.length > 1 ? 's' : ''} failed
         </div>
       )}
       {softFails.length > 0 && hardFails.length === 0 && (
-        <div style={{ fontSize: '0.7rem', color: 'var(--gold)', marginTop: 4 }}>
+        <div className={styles.softFailSummary}>
           {softFails.length} soft constraint{softFails.length > 1 ? 's' : ''} not met
         </div>
       )}

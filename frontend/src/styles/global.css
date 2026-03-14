@@ -150,8 +150,21 @@ code, pre, .mono { font-family: var(--font-mono); }
   animation: fade-in 0.4s ease both;
 }
 
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .container { padding: 0 var(--gap); }
   h1 { font-size: 1.5rem; }
 }

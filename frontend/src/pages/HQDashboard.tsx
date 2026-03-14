@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Topnav, LoadingPulse, ScouterGrid, UsageWidget } from '../components/scouter'
+import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid } from '../components/scouter'
 import { MissionCard, MissionForm } from '../components/mission'
-import { useMissions, useCreateMission } from '../hooks'
+import { useMissions, useCreateMission, useKeyboardShortcuts } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 import type { MissionCreateRequest } from '../types'
+import styles from './HQDashboard.module.css'
 
 export default function HQDashboard() {
   const { t } = useTranslation()
@@ -13,6 +14,11 @@ export default function HQDashboard() {
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
+
+  const shortcuts = useMemo(() => ({
+    n: () => setShowForm(true),
+  }), [])
+  useKeyboardShortcuts(shortcuts)
 
   async function handleCreate(req: MissionCreateRequest) {
     setCreateError(null)
@@ -28,63 +34,23 @@ export default function HQDashboard() {
   return (
     <div className="page grid-bg scanlines">
       <Topnav />
-      <main style={{ flex: 1, padding: '2rem' }}>
+      <main className={styles.main}>
         <div className="container">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '2rem',
-            }}
-          >
+          <div className={styles.header}>
             <div>
-              <h1
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  color: 'var(--cyan)',
-                  letterSpacing: '0.1em',
-                  fontSize: '1.8rem',
-                }}
-              >
-                {t('nav.missionControl')}
-              </h1>
-              <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem', marginTop: 4 }}>
+              <h1 className={styles.title}>{t('nav.missionControl')}</h1>
+              <p className={styles.subtitle}>
                 {missions.length} active mission{missions.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <button
-              onClick={() => setShowForm(true)}
-              style={{
-                padding: '10px 20px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--cyan)',
-                background: 'var(--cyan-dim)',
-                color: 'var(--cyan)',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-display)',
-                fontWeight: 700,
-                fontSize: '0.875rem',
-                letterSpacing: '0.06em',
-                transition: 'all 0.15s',
-              }}
-            >
+            <button className={styles.createBtn} onClick={() => setShowForm(true)}>
               + {t('mission.create')}
             </button>
           </div>
 
           {showForm && (
             <div
-              style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(5,8,16,0.85)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 200,
-                padding: '1rem',
-              }}
+              className={styles.overlay}
               onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
             >
               <MissionForm
@@ -96,40 +62,22 @@ export default function HQDashboard() {
             </div>
           )}
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div className={styles.usageWrapper}>
             <UsageWidget />
           </div>
 
           {isLoading ? (
-            <LoadingPulse label="Loading missions..." />
+            <ScouterGrid cols={3}>
+              <SkeletonGrid count={6} />
+            </ScouterGrid>
           ) : missions.length === 0 ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '5rem 2rem',
-                color: 'var(--text-dim)',
-                animation: 'fade-in 0.5s ease both',
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.65rem',
-                  color: 'var(--border-glow)',
-                  letterSpacing: '0.15em',
-                  marginBottom: '1.5rem',
-                  lineHeight: 1.6,
-                }}
-              >
-                {'[ NO ACTIVE MISSIONS ]'}
-              </div>
-              <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--text-mid)', fontFamily: 'var(--font-display)', letterSpacing: '0.08em' }}>
-                STANDBY
-              </p>
-              <p style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--text-dim)' }}>
-                Create your first mission to begin scouting
-              </p>
-            </div>
+            <EmptyState
+              icon="🎯"
+              title="NO ACTIVE MISSIONS"
+              description="Create your first mission to start researching a purchase"
+              actionLabel="+ NEW MISSION"
+              onAction={() => setShowForm(true)}
+            />
           ) : (
             <ScouterGrid>
               {missions.map((mission) => (

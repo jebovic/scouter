@@ -4,6 +4,8 @@ import {
   createShoppingItem,
   updateShoppingItem,
   deleteShoppingItem,
+  pinShoppingItem,
+  deletePinnedShoppingItems,
   addPriceSnapshot,
   listPriceSnapshots,
 } from '../api'
@@ -64,6 +66,34 @@ export function useDeleteShoppingItem(missionId: string) {
     onError: (err: unknown) => toast(`Failed to remove item: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { deleteItem: mutateAsync, isPending }
+}
+
+export function usePinShoppingItem(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (itemId: string) => pinShoppingItem(missionId, itemId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['shopping', missionId] })
+      toast('Item pinned', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to pin item: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { pinItem: mutateAsync, isPending }
+}
+
+export function useDeletePinnedShoppingItems(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: () => deletePinnedShoppingItems(missionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['shopping', missionId] })
+      toast('Pinned items cleared', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to clear pinned items: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { deletePinnedItems: mutateAsync, isPending }
 }
 
 export function usePriceSnapshots(missionId: string, itemId: string) {

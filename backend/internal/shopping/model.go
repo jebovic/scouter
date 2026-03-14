@@ -18,6 +18,7 @@ type Item struct {
 	Status           string    `json:"status"` // buy | flash-sale | preorder | defer | watch | crisis
 	Note             string    `json:"note,omitempty"`
 	URL              string    `json:"url,omitempty"`
+	Pinned           bool      `json:"pinned"`
 	CreatedAt        time.Time `json:"createdAt"`
 }
 
@@ -55,3 +56,4 @@ type PriceSnapshotRequest struct {
 	Price float64 `json:"price" validate:"gte=0"`
 	Note  string  `json:"note,omitempty"`
 }
+

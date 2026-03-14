@@ -87,12 +87,18 @@ const AgentResultSchema = z.object({
 
 export type AgentResult = z.infer<typeof AgentResultSchema>
 
-export async function triggerResearch(missionId: string): Promise<AgentResult> {
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/research`, { method: 'POST' })
+export async function triggerResearch(missionId: string, feedback?: string): Promise<AgentResult> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/research`, {
+    method: 'POST',
+    body: feedback ? JSON.stringify({ feedback }) : undefined,
+  })
   return AgentResultSchema.parse(data)
 }
 
-export async function triggerPricing(missionId: string): Promise<AgentResult> {
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/pricing`, { method: 'POST' })
+export async function triggerPricing(missionId: string, feedback?: string): Promise<AgentResult> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/pricing`, {
+    method: 'POST',
+    body: feedback ? JSON.stringify({ feedback }) : undefined,
+  })
   return AgentResultSchema.parse(data)
 }

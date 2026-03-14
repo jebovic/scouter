@@ -1,0 +1,23 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--badge-color);
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+}
+
+.badgeFlash {
+  animation: pulse-badge 1.5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+}

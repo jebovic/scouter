@@ -27,6 +27,9 @@ export interface Option {
   notes?: string
   warnings: string[]
   url?: string
+  pinned: boolean
+  rejected: boolean
+  rejectReason?: string
   createdAt: string
 }
 
