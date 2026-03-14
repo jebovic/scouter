@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–8 complete. Phase 9 next.
+> Current status: Phases 1–8 complete. Phase 9 next (Ollama Smart Routing).
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -32,12 +32,13 @@
 | 6 | Interface Overhaul (responsive, onboarding) | Interface | High | ✅ Done |
 | 7 | Price Alerts & Deal Intelligence | Functional | High | ✅ Done |
 | 8 | Mission Templates & Quick-Start | Interface | Medium | ✅ Done |
-| 9 | Export, Share & Archive | Functional | Medium | ⬜ |
-| 10 | Semantic Search (pgvector) | Agent + Infra | Medium | ⬜ |
-| 11 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |
-| 12 | Settings, Data Management & Deployment | Infrastructure | Low | ⬜ |
+| **9** | **Ollama Smart Routing & Model Optimization** | **Infrastructure** | **High** | ⬜ |
+| 10 | Export, Share & Archive | Functional | Medium | ⬜ |
+| 11 | Semantic Search (pgvector) | Agent + Infra | Medium | ⬜ |
+| 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |
+| 13 | Settings, Data Management & Deployment | Infrastructure | Low | ⬜ |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8+9 in parallel → 10+11 in parallel → 12
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel
 
 ---
 
@@ -223,7 +224,63 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
-## Phase 9: Export, Share & Archive
+## Phase 9: Ollama Smart Routing & Model Optimization
+
+**Type**: Infrastructure | **Priority**: High | **Complexity**: Medium
+**Depends on**: Phase 8 (structurant — makes all agents smarter before building on them)
+
+**User Value**: Turns the Ollama-only constraint into an asset. Agents automatically use the best available local model, fall back gracefully across the pool (heavy → fast → cloud), and surface model identity + quality degradation so the user always knows what ran.
+
+### Design Principles
+- `Provider` interface **unchanged** — routing hints carried via `context.Context` (`RequestOpts`), not on `CompletionRequest`
+- JSON fallback stays in **agents** (they own their schemas); shared helper `RetryAsJSON` in `internal/llm/`
+- **Capability-matched priority pool** instead of named tiers (heavy/fast/cloud = defaults, configurable)
+- Separate `EmbedProvider` interface stub prepared for Phase 11 (pgvector)
+
+### Features
+- Multi-model Ollama pool: configure 2-3 models via env; each has capability flags (tool-use, long-context)
+- `SmartRouter` routes `CapToolUse` requests to tool-capable models only; cascades on infra error
+- Ollama cloud model as last-resort (API key auth, separate rate limiter + token budget)
+- JSON-mode fallback in ResearchAgent/PricingAgent: on tool-parse failure, retry without tools asking for JSON
+- `GET /api/health/llm` — per-model status (healthy, circuit state, last latency)
+- Structured `slog` per LLM call: model name, latency, tokens, was_fallback, degraded
+- Frontend: `LLMStatus` dot in Topnav polls health every 60s
+
+### Backend
+- `internal/llm/requestopts.go` — `RequestOpts`, `WithRequestOpts(ctx)`, `GetRequestOpts(ctx)`, `Capability` bitmask
+- `internal/llm/pool.go` — `ModelEntry` + `ModelPool` with `ForCapabilities()` filter
+- `internal/llm/smart_router.go` — replaces `RoutingProvider` as default; circuit breaker per model
+- `internal/llm/fallback.go` — `RetryAsJSON` shared helper
+- `internal/llm/health.go` — `PoolHealth`, `ModelStatus`
+- `internal/llm/ollama.go` — add optional API key header + `Ping(ctx)` method
+- `internal/llm/provider.go` — add `ModelName`, `Degraded`, `Attempts` to `CompletionResponse`; add `EmbedProvider` stub
+- `internal/config/config.go` — new env vars; `OLLAMA_MODEL` backward-compat alias
+- `cmd/server/main.go` — wire `SmartRouter`, add `/api/health/llm`
+- Research + Pricing agents — `WithRequestOpts(ctx, CapToolUse)` + `RetryAsJSON` fallback
+- Decision agent — `WithRequestOpts(ctx, label)` + wire existing text fallback through helper
+
+### New Environment Variables
+| Variable | Default | Notes |
+|---|---|---|
+| `OLLAMA_HEAVY_MODEL` | `qwen2.5:14b` | Primary, tool-use capable |
+| `OLLAMA_FAST_MODEL` | `qwen2.5:3b` | Lighter fallback |
+| `OLLAMA_HEAVY_TIMEOUT` | `180` | Seconds |
+| `OLLAMA_FAST_TIMEOUT` | `60` | Seconds |
+| `OLLAMA_CLOUD_URL` | (empty) | Disabled when empty |
+| `OLLAMA_CLOUD_MODEL` | (empty) | Required if cloud URL set |
+| `OLLAMA_CLOUD_API_KEY` | (empty) | Bearer token |
+| `OLLAMA_CLOUD_RPM` | `10` | Rate limit for cloud |
+| `OLLAMA_EMBED_MODEL` | (empty) | Phase 11 prep |
+| `OLLAMA_MODEL` | `qwen2.5:7b` | Legacy alias → heavy model |
+
+### Frontend
+- `LLMStatus` dot component in Topnav (green/yellow/red per model, polls `/api/health/llm` every 60s)
+
+### No DB Changes
+
+---
+
+## Phase 10: Export, Share & Archive
 
 **Type**: Functional | **Priority**: Medium | **Complexity**: Medium
 **Depends on**: Phase 4
@@ -249,10 +306,10 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
-## Phase 10: Semantic Search & Smart Suggestions (pgvector)
+## Phase 11: Semantic Search & Smart Suggestions (pgvector)
 
 **Type**: Agent + Infrastructure | **Priority**: Medium | **Complexity**: High
-**Depends on**: Phase 5
+**Depends on**: Phase 5 (and benefits from `OLLAMA_EMBED_MODEL` configured in Phase 9)
 
 **User Value**: "Find that laptop with good battery under $1000" — natural language search across all missions + cross-mission suggestions.
 
@@ -270,7 +327,7 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
-## Phase 11: Mission Lifecycle & Post-Purchase Tracking
+## Phase 12: Mission Lifecycle & Post-Purchase Tracking
 
 **Type**: Functional + Interface | **Priority**: Medium | **Complexity**: Medium
 **Depends on**: Phase 3
@@ -299,10 +356,10 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
-## Phase 12: Settings, Data Management & Deployment Polish
+## Phase 13: Settings, Data Management & Deployment Polish
 
 **Type**: Infrastructure | **Priority**: Low | **Complexity**: Medium
-**Depends on**: Phase 9
+**Depends on**: Phase 10
 
 **User Value**: Configure preferences, manage data, deploy with confidence.
 

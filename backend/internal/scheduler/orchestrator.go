@@ -17,13 +17,19 @@ import (
 	"github.com/jibei/scouter/internal/shopping"
 )
 
+// pricingRunner is the subset of *pricing.Agent used by the Orchestrator.
+// Defined here so tests can inject a stub without depending on the full Agent.
+type pricingRunner interface {
+	Run(ctx context.Context, m mission.Mission, opts []option.Option, fb *pricing.FeedbackInput) ([]shopping.Item, error)
+}
+
 // Orchestrator runs periodic price checks across active missions.
 type Orchestrator struct {
 	missionRepo  mission.Repository
 	optionRepo   option.Repository
 	shoppingRepo shopping.Repository
 	notifRepo    notification.Repository
-	pricingAgent *pricing.Agent
+	pricingAgent pricingRunner
 	maxMissions  int
 	log          *slog.Logger
 }
@@ -34,7 +40,7 @@ func NewOrchestrator(
 	optionRepo option.Repository,
 	shoppingRepo shopping.Repository,
 	notifRepo notification.Repository,
-	pricingAgent *pricing.Agent,
+	pricingAgent pricingRunner,
 	maxMissions int,
 	log *slog.Logger,
 ) *Orchestrator {
@@ -126,7 +132,7 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 		_, err = o.notifRepo.Create(ctx, notification.CreateRequest{
 			MissionID: m.ID,
 			ItemID:    &itemID,
-			Type:      "target_hit",
+			Type:      notification.TypeTargetHit,
 			Title:     fmt.Sprintf("Target price hit: %s", item.Name),
 			Body:      fmt.Sprintf("Current price %.2f has reached your target of %.2f.", item.Price, *item.TargetPrice),
 		})
@@ -141,7 +147,7 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 		_, err = o.notifRepo.Create(ctx, notification.CreateRequest{
 			MissionID: m.ID,
 			ItemID:    &itemID,
-			Type:      "price_drop",
+			Type:      notification.TypePriceDrop,
 			Title:     fmt.Sprintf("Price drop: %s", item.Name),
 			Body:      fmt.Sprintf("Price dropped to %.2f (%.1f%% below average).", item.Price, score.PctBelowAvg),
 		})

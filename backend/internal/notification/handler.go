@@ -3,6 +3,7 @@ package notification
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ import (
 )
 
 const defaultNotifLimit = 50
+const maxNotifLimit = 200
 
 // Handler exposes notification endpoints as chi routes.
 // Routes are mounted at /api/notifications.
@@ -34,10 +36,14 @@ func (h *Handler) Routes() chi.Router {
 }
 
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
-	p := httputil.ParsePageParams(r)
-	limit := p.Limit
-	if limit <= 0 {
-		limit = defaultNotifLimit
+	limit := defaultNotifLimit
+	if raw := r.URL.Query().Get("limit"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+			if n > maxNotifLimit {
+				n = maxNotifLimit
+			}
+			limit = n
+		}
 	}
 
 	notifs, err := h.repo.List(r.Context(), limit)
