@@ -68,6 +68,8 @@ func (o *Orchestrator) RunPriceChecks(ctx context.Context) {
 	checked := 0
 	for _, m := range missions[:limit] {
 		if ctx.Err() != nil {
+			o.log.Warn("price check: context expired, missions skipped",
+				"missions_checked", checked, "missions_total", limit)
 			break
 		}
 		if err := o.checkMission(ctx, m); err != nil {
@@ -76,7 +78,8 @@ func (o *Orchestrator) RunPriceChecks(ctx context.Context) {
 		checked++
 	}
 
-	o.log.Info("price check run complete", "missions_checked", checked, "duration", time.Since(start))
+	o.log.Info("price check run complete",
+		"missions_checked", checked, "missions_total", limit, "duration", time.Since(start))
 }
 
 func (o *Orchestrator) checkMission(ctx context.Context, m mission.Mission) error {

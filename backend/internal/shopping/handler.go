@@ -2,6 +2,7 @@ package shopping
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
@@ -95,7 +96,12 @@ func (h *Handler) create(w http.ResponseWriter, r *http.Request) {
 
 	item, err := h.svc.Create(r.Context(), missionID, req)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, err.Error())
+		var ve ValidationError
+		if errors.As(err, &ve) {
+			httputil.WriteError(w, http.StatusBadRequest, ve.Error())
+		} else {
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		}
 		return
 	}
 	httputil.WriteJSON(w, http.StatusCreated, item)
@@ -163,7 +169,12 @@ func (h *Handler) addSnapshot(w http.ResponseWriter, r *http.Request) {
 
 	snap, err := h.svc.AddPriceSnapshot(r.Context(), itemID, req)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, err.Error())
+		var ve ValidationError
+		if errors.As(err, &ve) {
+			httputil.WriteError(w, http.StatusBadRequest, ve.Error())
+		} else {
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		}
 		return
 	}
 	httputil.WriteJSON(w, http.StatusCreated, snap)

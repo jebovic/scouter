@@ -9,6 +9,12 @@ import (
 	"github.com/jibei/scouter/internal/dealintel"
 )
 
+// ValidationError is returned by the service for business-rule violations.
+// Handlers map this to HTTP 400; all other errors map to HTTP 500.
+type ValidationError string
+
+func (e ValidationError) Error() string { return string(e) }
+
 // Service handles shopping item business logic.
 type Service struct {
 	repo Repository
@@ -47,10 +53,10 @@ func (s *Service) GetByID(ctx context.Context, id uuid.UUID) (*Item, error) {
 
 func (s *Service) Create(ctx context.Context, missionID uuid.UUID, req CreateRequest) (*Item, error) {
 	if req.Name == "" {
-		return nil, fmt.Errorf("name is required")
+		return nil, ValidationError("name is required")
 	}
 	if req.Price < 0 {
-		return nil, fmt.Errorf("price must be non-negative")
+		return nil, ValidationError("price must be non-negative")
 	}
 
 	status := req.Status
@@ -84,7 +90,7 @@ func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 
 func (s *Service) AddPriceSnapshot(ctx context.Context, itemID uuid.UUID, req PriceSnapshotRequest) (*PriceSnapshot, error) {
 	if req.Price < 0 {
-		return nil, fmt.Errorf("price must be non-negative")
+		return nil, ValidationError("price must be non-negative")
 	}
 	return s.repo.AddPriceSnapshot(ctx, itemID, req)
 }

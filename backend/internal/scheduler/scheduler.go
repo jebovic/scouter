@@ -20,6 +20,8 @@ func New(cronExpr string, o *Orchestrator, log *slog.Logger) (*Scheduler, error)
 	c := cron.New(cron.WithLocation(time.UTC))
 	s := &Scheduler{cron: c, orchestrator: o, log: log}
 
+	// Job timeout is 55s; Stop() waits up to 60s — the 5s gap lets the job
+	// context expire and unblock cleanly before the drain deadline fires.
 	_, err := c.AddFunc(cronExpr, func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
 		defer cancel()
