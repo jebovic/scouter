@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/httputil"
 )
 
@@ -19,20 +20,10 @@ func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
 }
 
-// Routes mounts mission routes on a chi router.
-func (h *Handler) Routes() chi.Router {
-	r := chi.NewRouter()
-	r.Get("/", h.List)
-	r.Post("/", h.Create)
-	r.Get("/{slug}", h.Get)
-	r.Patch("/{slug}", h.Update)
-	r.Delete("/{slug}", h.Delete)
-	return r
-}
-
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	p := httputil.ParsePageParams(r)
-	missions, err := h.svc.ListPaged(r.Context(), p.Cursor, p.Limit)
+	includeArchived := r.URL.Query().Get("include_archived") == "true"
+	missions, err := h.svc.ListPaged(r.Context(), p.Cursor, p.Limit, includeArchived)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -120,6 +111,80 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.svc.Delete(r.Context(), m.ID); err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Archive sets archived_at on a mission, hiding it from the default dashboard list.
+func (h *Handler) Archive(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+	m, err := h.svc.Archive(r.Context(), id)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if m == nil {
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, m)
+}
+
+// Unarchive clears archived_at, restoring a mission to the dashboard.
+func (h *Handler) Unarchive(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+	m, err := h.svc.Unarchive(r.Context(), id)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if m == nil {
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, m)
+}
+
+// Share generates or returns the existing share token for a mission.
+func (h *Handler) Share(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+	m, err := h.svc.GenerateShareToken(r.Context(), id)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if m == nil {
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, map[string]string{
+		"shareToken": *m.ShareToken,
+		"shareURL":   "/shared/" + *m.ShareToken,
+	})
+}
+
+// RevokeShare removes the share token from a mission.
+func (h *Handler) RevokeShare(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+	if err := h.svc.RevokeShareToken(r.Context(), id); err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}

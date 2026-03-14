@@ -1,14 +1,14 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–9 complete. Phase 10 next (see below).
+> Current status: Phases 1–11 complete. Phase 12 next (see below).
 
 ## Phase Implementation Workflow (repeat for every phase)
 
 ```
 1. /everything-claude-code:plan + architect  →  detailed plan for the phase
 2. follow ECC tdd workflow to implerment the phase with specialized agents (go coding for backend, frontend agent with /frontend-design and /frontend-patterns skills for frontend), parallelize where possible
-3. make test  (backend Go tests)
+3. run tests  (backend Go tests)
 4. ecc go review
 5. npm run build + npm run typecheck  (frontend)
 6. frontend-design review phase frontend changes
@@ -32,9 +32,9 @@
 | 6 | Interface Overhaul (responsive, onboarding) | Interface | High | ✅ Done |
 | 7 | Price Alerts & Deal Intelligence | Functional | High | ✅ Done |
 | 8 | Mission Templates & Quick-Start | Interface | Medium | ✅ Done |
-| **9** | **Ollama Smart Routing & Model Optimization** | **Infrastructure** | **High** | ⬜ |
-| 10 | Export, Share & Archive | Functional | Medium | ⬜ |
-| 11 | Semantic Search (pgvector) | Agent + Infra | Medium | ⬜ |
+| 9 | Ollama Smart Routing & Model Optimization | Infrastructure | High | ✅ Done |
+| 10 | Export, Share & Archive | Functional | Medium | ✅ Done |
+| **11** | **Semantic Search (pgvector)** | **Agent + Infra** | **Medium** | ✅ Done |
 | 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |
 | 13 | Settings, Data Management & Deployment | Infrastructure | Low | ⬜ |
 

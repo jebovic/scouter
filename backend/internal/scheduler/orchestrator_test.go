@@ -27,13 +27,16 @@ func (m *mockMissionRepo) ListActive(_ context.Context) ([]mission.Mission, erro
 }
 
 func (m *mockMissionRepo) List(_ context.Context) ([]mission.Mission, error) { return nil, nil }
-func (m *mockMissionRepo) ListPaged(_ context.Context, _ *time.Time, _ int) ([]mission.Mission, error) {
+func (m *mockMissionRepo) ListPaged(_ context.Context, _ *time.Time, _ int, _ bool) ([]mission.Mission, error) {
 	return nil, nil
 }
 func (m *mockMissionRepo) GetByID(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
 	return nil, nil
 }
 func (m *mockMissionRepo) GetBySlug(_ context.Context, _ string) (*mission.Mission, error) {
+	return nil, nil
+}
+func (m *mockMissionRepo) GetByShareToken(_ context.Context, _ string) (*mission.Mission, error) {
 	return nil, nil
 }
 func (m *mockMissionRepo) Create(_ context.Context, _ mission.Mission) (*mission.Mission, error) {
@@ -43,6 +46,16 @@ func (m *mockMissionRepo) Update(_ context.Context, _ uuid.UUID, _ mission.Updat
 	return nil, nil
 }
 func (m *mockMissionRepo) Delete(_ context.Context, _ uuid.UUID) error { return nil }
+func (m *mockMissionRepo) SetShareToken(_ context.Context, _ uuid.UUID, _ string) (*mission.Mission, error) {
+	return nil, nil
+}
+func (m *mockMissionRepo) ClearShareToken(_ context.Context, _ uuid.UUID) error { return nil }
+func (m *mockMissionRepo) Archive(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
+	return nil, nil
+}
+func (m *mockMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
+	return nil, nil
+}
 
 // ---- mock option repository ----
 

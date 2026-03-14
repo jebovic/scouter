@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/mission"
@@ -35,11 +36,18 @@ type Agent struct {
 	optRepo      option.Repository
 	agentRunRepo agentrun.Repository
 	usageSvc     *usage.Service
+	embedCh      chan<- uuid.UUID // optional; nil disables embedding
 }
 
 // NewAgent creates a new ResearchAgent.
 func NewAgent(provider llm.Provider, optRepo option.Repository, agentRunRepo agentrun.Repository, usageSvc *usage.Service) *Agent {
 	return &Agent{provider: provider, optRepo: optRepo, agentRunRepo: agentRunRepo, usageSvc: usageSvc}
+}
+
+// SetEmbedChannel attaches an embed job channel so that each newly persisted option
+// is automatically queued for embedding.
+func (a *Agent) SetEmbedChannel(ch chan<- uuid.UUID) {
+	a.embedCh = ch
 }
 
 // Run performs LLM-based research for the mission, persists results, and returns them.
@@ -107,6 +115,12 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 		created, err := a.optRepo.Create(ctx, o)
 		if err != nil {
 			return nil, fmt.Errorf("persist option %q: %w", o.Name, err)
+		}
+		if a.embedCh != nil {
+			select {
+			case a.embedCh <- created.ID:
+			default:
+			}
 		}
 		results = append(results, *created)
 	}

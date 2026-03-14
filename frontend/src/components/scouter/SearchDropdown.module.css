@@ -1,0 +1,130 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 0.6rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem 0.3rem 1.8rem;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.15s, width 0.2s;
+}
+
+.input:focus {
+  border-color: var(--cyan);
+  width: 260px;
+}
+
+.input::placeholder {
+  color: var(--text-dim);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 340px;
+  background: var(--surface-raised, var(--surface));
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.1s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.result:hover {
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.resultBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.resultName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultMeta {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 1px;
+}
+
+.resultScore {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--cyan-dim);
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-align: center;
+  transition: color 0.15s;
+}
+
+.footer:hover {
+  color: var(--cyan);
+}
+
+@media (max-width: 640px) {
+  .input {
+    width: 140px;
+  }
+
+  .input:focus {
+    width: 180px;
+  }
+
+  .dropdown {
+    width: 280px;
+  }
+}

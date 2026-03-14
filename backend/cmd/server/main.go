@@ -19,6 +19,9 @@ import (
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
+	"github.com/jibei/scouter/internal/embedding"
+	"github.com/jibei/scouter/internal/export"
+	"github.com/jibei/scouter/internal/httputil"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/notification"
@@ -26,6 +29,7 @@ import (
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/scheduler"
+	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
@@ -76,8 +80,17 @@ func main() {
 	shoppingSvc := shopping.NewService(shoppingRepo)
 	usageSvc := usage.NewService(usageRepo)
 
+	// Embedding worker (Phase 11)
+	embedder := llm.NewOllamaEmbedder(cfg.OllamaBaseURL, cfg.OllamaEmbedModel, "", cfg.OllamaFastTimeout)
+	embedRepo := embedding.NewRepository(pool)
+	embedWorker := embedding.NewWorker(embedder, optionRepo, embedRepo)
+	embedWorker.Start(ctx)
+	// Wire embed channel into option service and research agent.
+	optionSvc.WithEmbedChannel(embedWorker.Jobs())
+
 	// Agents
 	researchAgent := research.NewAgent(provider, optionRepo, agentRunRepo, usageSvc)
+	researchAgent.SetEmbedChannel(embedWorker.Jobs())
 	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
 	decisionAgent := decision.NewAgent(provider, usageSvc)
 
@@ -112,6 +125,14 @@ func main() {
 		}
 		sched.Start()
 	}
+
+	// Search (Phase 11)
+	searchRepo := search.NewRepository(pool)
+	searchHandler := search.NewHandler(searchRepo, embedder, embedRepo, embedWorker)
+
+	// Export
+	exportGatherer := export.NewGatherer(missionRepo, optionRepo, shoppingRepo, decisionRepo)
+	exportHandler := export.NewHandler(exportGatherer)
 
 	// Templates (no DB dependency — compiled into binary)
 	templateReg := template.NewRegistry()
@@ -149,6 +170,33 @@ func main() {
 	r.Mount("/api/missions/{missionID}/pricing", pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
+
+	// Export, share, archive
+	r.Get("/api/missions/{missionID}/export", exportHandler.Export)
+	r.Post("/api/missions/{missionID}/share", missionHandler.Share)
+	r.Delete("/api/missions/{missionID}/share", missionHandler.RevokeShare)
+	r.Post("/api/missions/{missionID}/archive", missionHandler.Archive)
+	r.Post("/api/missions/{missionID}/unarchive", missionHandler.Unarchive)
+
+	// Public shared mission (accessible without auth, always CORS-open)
+	r.With(corsMiddleware).Get("/api/shared/{token}", func(w http.ResponseWriter, r *http.Request) {
+		token := chi.URLParam(r, "token")
+		m, err := missionSvc.GetByShareToken(r.Context(), token)
+		if err != nil {
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+			return
+		}
+		if m == nil {
+			httputil.WriteError(w, http.StatusNotFound, "not found")
+			return
+		}
+		httputil.WriteJSON(w, http.StatusOK, m)
+	})
+
+	// Semantic search (Phase 11)
+	r.Get("/api/search", searchHandler.Search)
+	r.Get("/api/options/{optionID}/similar", searchHandler.Similar)
+	r.Post("/api/search/reindex", searchHandler.Reindex)
 
 	// Notifications
 	r.Mount("/api/notifications", notifHandler.Routes())
@@ -190,6 +238,12 @@ func main() {
 			sched.Stop()
 		}()
 	}
+	// Wait for embedding worker to drain in-flight jobs.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		embedWorker.Wait()
+	}()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)
 	}

@@ -30,6 +30,8 @@ type Mission struct {
 	CostCategories []string        `json:"costCategories"`
 	Timeline       []TimelineEvent `json:"timeline"`
 	WeightProfile  WeightProfile   `json:"weightProfile"`
+	ShareToken     *string         `json:"shareToken,omitempty"`
+	ArchivedAt     *time.Time      `json:"archivedAt,omitempty"`
 	CreatedAt      time.Time       `json:"createdAt"`
 	UpdatedAt      time.Time       `json:"updatedAt"`
 }

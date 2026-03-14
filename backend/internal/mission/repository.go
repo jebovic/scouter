@@ -2,6 +2,8 @@ package mission
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,13 +17,18 @@ import (
 // Repository defines the data access interface for missions.
 type Repository interface {
 	List(ctx context.Context) ([]Mission, error)
-	ListPaged(ctx context.Context, cursor *time.Time, limit int) ([]Mission, error)
+	ListPaged(ctx context.Context, cursor *time.Time, limit int, includeArchived bool) ([]Mission, error)
 	ListActive(ctx context.Context) ([]Mission, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*Mission, error)
 	GetBySlug(ctx context.Context, slug string) (*Mission, error)
+	GetByShareToken(ctx context.Context, token string) (*Mission, error)
 	Create(ctx context.Context, m Mission) (*Mission, error)
 	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Mission, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	SetShareToken(ctx context.Context, id uuid.UUID, token string) (*Mission, error)
+	ClearShareToken(ctx context.Context, id uuid.UUID) error
+	Archive(ctx context.Context, id uuid.UUID) (*Mission, error)
+	Unarchive(ctx context.Context, id uuid.UUID) (*Mission, error)
 }
 
 type pgRepository struct {
@@ -33,10 +40,13 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	return &pgRepository{pool: pool}
 }
 
+const selectCols = `id, slug, name, icon, category, budget, currency, locale, phase,
+		       constraints, cost_categories, timeline, weight_profile,
+		       share_token, archived_at, created_at, updated_at`
+
 func (r *pgRepository) List(ctx context.Context) ([]Mission, error) {
 	rows, err := r.pool.Query(ctx, `
-		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
-		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
+		SELECT `+selectCols+`
 		FROM missions ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, fmt.Errorf("list missions: %w", err)
@@ -56,9 +66,10 @@ func (r *pgRepository) List(ctx context.Context) ([]Mission, error) {
 
 func (r *pgRepository) ListActive(ctx context.Context) ([]Mission, error) {
 	rows, err := r.pool.Query(ctx, `
-		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
-		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
-		FROM missions WHERE phase != 'done' ORDER BY created_at DESC`)
+		SELECT `+selectCols+`
+		FROM missions
+		WHERE phase != 'done' AND archived_at IS NULL
+		ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, fmt.Errorf("list active missions: %w", err)
 	}
@@ -75,14 +86,25 @@ func (r *pgRepository) ListActive(ctx context.Context) ([]Mission, error) {
 	return missions, rows.Err()
 }
 
-func (r *pgRepository) ListPaged(ctx context.Context, cursor *time.Time, limit int) ([]Mission, error) {
-	rows, err := r.pool.Query(ctx, `
-		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
-		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
+func (r *pgRepository) ListPaged(ctx context.Context, cursor *time.Time, limit int, includeArchived bool) ([]Mission, error) {
+	var query string
+	if includeArchived {
+		query = `
+		SELECT ` + selectCols + `
 		FROM missions
 		WHERE ($1::timestamptz IS NULL OR created_at < $1)
 		ORDER BY created_at DESC
-		LIMIT $2`, cursor, limit+1)
+		LIMIT $2`
+	} else {
+		query = `
+		SELECT ` + selectCols + `
+		FROM missions
+		WHERE ($1::timestamptz IS NULL OR created_at < $1)
+		  AND archived_at IS NULL
+		ORDER BY created_at DESC
+		LIMIT $2`
+	}
+	rows, err := r.pool.Query(ctx, query, cursor, limit+1)
 	if err != nil {
 		return nil, fmt.Errorf("list missions paged: %w", err)
 	}
@@ -101,8 +123,7 @@ func (r *pgRepository) ListPaged(ctx context.Context, cursor *time.Time, limit i
 
 func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*Mission, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
-		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
+		SELECT `+selectCols+`
 		FROM missions WHERE id = $1`, id)
 
 	m, err := scanMission(row)
@@ -114,9 +135,20 @@ func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*Mission, err
 
 func (r *pgRepository) GetBySlug(ctx context.Context, slug string) (*Mission, error) {
 	row := r.pool.QueryRow(ctx, `
-		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
-		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
+		SELECT `+selectCols+`
 		FROM missions WHERE slug = $1`, slug)
+
+	m, err := scanMission(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return m, err
+}
+
+func (r *pgRepository) GetByShareToken(ctx context.Context, token string) (*Mission, error) {
+	row := r.pool.QueryRow(ctx, `
+		SELECT `+selectCols+`
+		FROM missions WHERE share_token = $1`, token)
 
 	m, err := scanMission(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -142,8 +174,7 @@ func (r *pgRepository) Create(ctx context.Context, m Mission) (*Mission, error) 
 	row := r.pool.QueryRow(ctx, `
 		INSERT INTO missions (slug, name, icon, category, budget, currency, locale, phase, constraints, cost_categories, timeline)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		RETURNING id, slug, name, icon, category, budget, currency, locale, phase,
-		          constraints, cost_categories, timeline, weight_profile, created_at, updated_at`,
+		RETURNING `+selectCols,
 		m.Slug, m.Name, m.Icon, m.Category, m.Budget, m.Currency, m.Locale, m.Phase,
 		constraintsJSON, categoriesJSON, timelineJSON)
 
@@ -183,8 +214,7 @@ func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateReque
 		  weight_profile  = CASE WHEN $9::jsonb IS NOT NULL THEN $9 ELSE weight_profile END,
 		  updated_at      = now()
 		WHERE id = $1
-		RETURNING id, slug, name, icon, category, budget, currency, locale, phase,
-		          constraints, cost_categories, timeline, weight_profile, created_at, updated_at`,
+		RETURNING `+selectCols,
 		id, req.Name, req.Icon, req.Budget, req.Phase,
 		string(constraintsJSON), string(categoriesJSON), string(timelineJSON),
 		nullableJSON(weightProfileJSON))
@@ -210,6 +240,60 @@ func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+func (r *pgRepository) SetShareToken(ctx context.Context, id uuid.UUID, token string) (*Mission, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE missions SET share_token = $2, updated_at = now()
+		WHERE id = $1
+		RETURNING `+selectCols, id, token)
+
+	m, err := scanMission(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return m, err
+}
+
+func (r *pgRepository) ClearShareToken(ctx context.Context, id uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, `
+		UPDATE missions SET share_token = NULL, updated_at = now() WHERE id = $1`, id)
+	return err
+}
+
+func (r *pgRepository) Archive(ctx context.Context, id uuid.UUID) (*Mission, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE missions SET archived_at = now(), updated_at = now()
+		WHERE id = $1
+		RETURNING `+selectCols, id)
+
+	m, err := scanMission(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return m, err
+}
+
+func (r *pgRepository) Unarchive(ctx context.Context, id uuid.UUID) (*Mission, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE missions SET archived_at = NULL, updated_at = now()
+		WHERE id = $1
+		RETURNING `+selectCols, id)
+
+	m, err := scanMission(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return m, err
+}
+
+// GenerateShareToken creates a cryptographically random 32-byte base64url token.
+func GenerateShareToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", fmt.Errorf("generate share token: %w", err)
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
 type scanner interface {
 	Scan(dest ...any) error
 }
@@ -222,6 +306,7 @@ func scanMission(s scanner) (*Mission, error) {
 		&m.ID, &m.Slug, &m.Name, &m.Icon, &m.Category,
 		&m.Budget, &m.Currency, &m.Locale, &m.Phase,
 		&constraintsRaw, &categoriesRaw, &timelineRaw, &weightProfileRaw,
+		&m.ShareToken, &m.ArchivedAt,
 		&m.CreatedAt, &m.UpdatedAt,
 	)
 	if err != nil {

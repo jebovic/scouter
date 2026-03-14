@@ -46,7 +46,7 @@ func (m *mockRepo) ListActive(_ context.Context) ([]Mission, error) {
 	return out, nil
 }
 
-func (m *mockRepo) ListPaged(_ context.Context, _ *time.Time, limit int) ([]Mission, error) {
+func (m *mockRepo) ListPaged(_ context.Context, _ *time.Time, limit int, _ bool) ([]Mission, error) {
 	if m.nextErr != nil {
 		return nil, m.nextErr
 	}
@@ -117,6 +117,20 @@ func (m *mockRepo) Delete(_ context.Context, id uuid.UUID) error {
 	}
 	return nil
 }
+
+func (m *mockRepo) GetByShareToken(_ context.Context, _ string) (*Mission, error) {
+	return nil, nil
+}
+
+func (m *mockRepo) SetShareToken(_ context.Context, _ uuid.UUID, _ string) (*Mission, error) {
+	return nil, nil
+}
+
+func (m *mockRepo) ClearShareToken(_ context.Context, _ uuid.UUID) error { return nil }
+
+func (m *mockRepo) Archive(_ context.Context, _ uuid.UUID) (*Mission, error) { return nil, nil }
+
+func (m *mockRepo) Unarchive(_ context.Context, _ uuid.UUID) (*Mission, error) { return nil, nil }
 
 func TestService_Create_Validation(t *testing.T) {
 	tests := []struct {

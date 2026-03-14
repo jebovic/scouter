@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useSidebar } from '../../contexts/sidebar'
 import { LLMStatus } from './LLMStatus'
 import { NotificationBell } from './NotificationBell'
+import { SearchDropdown } from './SearchDropdown'
 import styles from './Topnav.module.css'
 
 interface TopnavProps {
@@ -75,6 +76,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       )}
 
       <div className={styles.actions}>
+        <SearchDropdown />
         <LLMStatus />
         <NotificationBell />
       </div>

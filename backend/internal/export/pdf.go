@@ -1,0 +1,161 @@
+package export
+
+import (
+	"bytes"
+	"fmt"
+
+	"github.com/go-pdf/fpdf"
+)
+
+// ToPDF renders ExportData as a PDF report.
+func ToPDF(data *ExportData) ([]byte, error) {
+	pdf := fpdf.New("P", "mm", "A4", "")
+	pdf.SetMargins(15, 15, 15)
+	pdf.AddPage()
+
+	// Title
+	pdf.SetFont("Helvetica", "B", 18)
+	pdf.CellFormat(0, 10, data.Mission.Name, "", 1, "L", false, 0, "")
+
+	// Meta
+	pdf.SetFont("Helvetica", "", 11)
+	pdf.CellFormat(0, 7,
+		fmt.Sprintf("Category: %s   Phase: %s   Budget: %.2f %s",
+			data.Mission.Category, data.Mission.Phase,
+			data.Mission.Budget, data.Mission.Currency),
+		"", 1, "L", false, 0, "")
+	pdf.CellFormat(0, 7,
+		fmt.Sprintf("Exported: %s", data.ExportedAt.UTC().Format("2006-01-02")),
+		"", 1, "L", false, 0, "")
+	pdf.Ln(4)
+
+	// Options section
+	pdf.SetFont("Helvetica", "B", 13)
+	pdf.CellFormat(0, 8, fmt.Sprintf("Options (%d)", len(data.Options)), "B", 1, "L", false, 0, "")
+	pdf.Ln(2)
+
+	for _, opt := range data.Options {
+		// Option header
+		pdf.SetFont("Helvetica", "B", 11)
+		name := opt.Name
+		if len(name) > 60 {
+			name = name[:57] + "..."
+		}
+		pdf.CellFormat(0, 7, fmt.Sprintf("%s  [%s]", name, opt.Badge), "", 1, "L", false, 0, "")
+
+		pdf.SetFont("Helvetica", "", 10)
+		if opt.PriceRange != nil {
+			pdf.CellFormat(0, 6,
+				fmt.Sprintf("  Price: %.2f %s (%.2f – %.2f)",
+					opt.PriceRange.Best, data.Mission.Currency,
+					opt.PriceRange.Min, opt.PriceRange.Max),
+				"", 1, "L", false, 0, "")
+		}
+		if opt.Notes != "" {
+			note := opt.Notes
+			if len(note) > 100 {
+				note = note[:97] + "..."
+			}
+			pdf.CellFormat(0, 6, "  "+note, "", 1, "L", false, 0, "")
+		}
+		pdf.Ln(1)
+	}
+	pdf.Ln(4)
+
+	// Shopping list section
+	pdf.SetFont("Helvetica", "B", 13)
+	pdf.CellFormat(0, 8, fmt.Sprintf("Shopping List (%d items)", len(data.ShoppingItems)), "B", 1, "L", false, 0, "")
+	pdf.Ln(2)
+
+	if len(data.ShoppingItems) > 0 {
+		// Table header
+		pdf.SetFont("Helvetica", "B", 9)
+		pdf.SetFillColor(230, 230, 230)
+		pdf.CellFormat(60, 6, "Item", "1", 0, "L", true, 0, "")
+		pdf.CellFormat(40, 6, "Merchant", "1", 0, "L", true, 0, "")
+		pdf.CellFormat(30, 6, "Price", "1", 0, "R", true, 0, "")
+		pdf.CellFormat(30, 6, "Status", "1", 1, "L", true, 0, "")
+
+		pdf.SetFont("Helvetica", "", 9)
+		pdf.SetFillColor(255, 255, 255)
+		var total float64
+		for _, item := range data.ShoppingItems {
+			name := item.Name
+			if len(name) > 35 {
+				name = name[:32] + "..."
+			}
+			merchant := item.Merchant
+			if len(merchant) > 22 {
+				merchant = merchant[:19] + "..."
+			}
+			pdf.CellFormat(60, 6, name, "1", 0, "L", false, 0, "")
+			pdf.CellFormat(40, 6, merchant, "1", 0, "L", false, 0, "")
+			pdf.CellFormat(30, 6, fmt.Sprintf("%.2f %s", item.Price, data.Mission.Currency), "1", 0, "R", false, 0, "")
+			pdf.CellFormat(30, 6, item.Status, "1", 1, "L", false, 0, "")
+			total += item.Price
+		}
+		// Total row
+		pdf.SetFont("Helvetica", "B", 9)
+		pdf.CellFormat(60, 6, "Total", "1", 0, "L", false, 0, "")
+		pdf.CellFormat(40, 6, "", "1", 0, "L", false, 0, "")
+		pdf.CellFormat(30, 6, fmt.Sprintf("%.2f %s", total, data.Mission.Currency), "1", 0, "R", false, 0, "")
+		pdf.CellFormat(30, 6, "", "1", 1, "L", false, 0, "")
+	} else {
+		pdf.SetFont("Helvetica", "I", 10)
+		pdf.CellFormat(0, 6, "No shopping items.", "", 1, "L", false, 0, "")
+	}
+	pdf.Ln(4)
+
+	// Decision section
+	pdf.SetFont("Helvetica", "B", 13)
+	pdf.CellFormat(0, 8, "Decision Summary", "B", 1, "L", false, 0, "")
+	pdf.Ln(2)
+
+	if data.Decision != nil {
+		pdf.SetFont("Helvetica", "", 10)
+		summary := data.Decision.Summary
+		pdf.MultiCell(0, 6, summary, "", "L", false)
+		pdf.Ln(2)
+
+		if len(data.Decision.Scores) > 0 {
+			pdf.SetFont("Helvetica", "B", 9)
+			pdf.SetFillColor(230, 230, 230)
+			pdf.CellFormat(70, 6, "Option", "1", 0, "L", true, 0, "")
+			pdf.CellFormat(20, 6, "Score", "1", 0, "C", true, 0, "")
+			pdf.CellFormat(20, 6, "Price", "1", 0, "C", true, 0, "")
+			pdf.CellFormat(20, 6, "Quality", "1", 0, "C", true, 0, "")
+			pdf.CellFormat(20, 6, "Features", "1", 1, "C", true, 0, "")
+
+			pdf.SetFont("Helvetica", "", 9)
+			pdf.SetFillColor(255, 255, 255)
+			for _, sc := range data.Decision.Scores {
+				name := sc.OptionName
+				if len(name) > 40 {
+					name = name[:37] + "..."
+				}
+				if sc.Eliminated {
+					name += " ⚠"
+				}
+				pdf.CellFormat(70, 6, name, "1", 0, "L", false, 0, "")
+				pdf.CellFormat(20, 6, fmt.Sprintf("%.1f", sc.Score), "1", 0, "C", false, 0, "")
+				pdf.CellFormat(20, 6, fmt.Sprintf("%.1f", sc.PriceScore), "1", 0, "C", false, 0, "")
+				pdf.CellFormat(20, 6, fmt.Sprintf("%.1f", sc.QualScore), "1", 0, "C", false, 0, "")
+				pdf.CellFormat(20, 6, fmt.Sprintf("%.1f", sc.FeatScore), "1", 1, "C", false, 0, "")
+			}
+		}
+	} else {
+		pdf.SetFont("Helvetica", "I", 10)
+		pdf.CellFormat(0, 6, "No decision has been run for this mission.", "", 1, "L", false, 0, "")
+	}
+
+	// Footer
+	pdf.SetY(-15)
+	pdf.SetFont("Helvetica", "I", 8)
+	pdf.CellFormat(0, 10, "Generated by SCOUTER", "", 0, "C", false, 0, "")
+
+	var buf bytes.Buffer
+	if err := pdf.Output(&buf); err != nil {
+		return nil, fmt.Errorf("export pdf: %w", err)
+	}
+	return buf.Bytes(), nil
+}

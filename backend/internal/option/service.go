@@ -10,12 +10,19 @@ import (
 
 // Service handles option business logic.
 type Service struct {
-	repo Repository
+	repo    Repository
+	embedCh chan<- uuid.UUID // optional; nil disables embedding
 }
 
 // NewService creates a new option service.
 func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
+}
+
+// WithEmbedChannel attaches an embed job channel so that new options are
+// automatically queued for embedding after creation.
+func (s *Service) WithEmbedChannel(ch chan<- uuid.UUID) {
+	s.embedCh = ch
 }
 
 func (s *Service) ListByMission(ctx context.Context, missionID uuid.UUID) ([]Option, error) {
@@ -72,7 +79,17 @@ func (s *Service) Create(ctx context.Context, missionID uuid.UUID, req CreateReq
 		o.Warnings = []string{}
 	}
 
-	return s.repo.Create(ctx, o)
+	created, err := s.repo.Create(ctx, o)
+	if err != nil {
+		return nil, err
+	}
+	if s.embedCh != nil {
+		select {
+		case s.embedCh <- created.ID:
+		default: // non-blocking; worker logs drops
+		}
+	}
+	return created, nil
 }
 
 func (s *Service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Option, error) {

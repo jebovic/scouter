@@ -7,7 +7,7 @@
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
   2. follow ECC tdd workflow to implerment the phase with specialized agents (go coding for backend, frontend agent with /frontend-design and /frontend-patterns skills for frontend), parallelize where possible
-  3. make test  (backend Go tests)
+  3. run tests (backend Go tests)
   4. ecc go review
   5. npm run build + npm run typecheck  (frontend)
   6. frontend-design review phase frontend changes
@@ -104,7 +104,7 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 | `PORT` | `8080` | backend listen port |
 | `ENV` | `production` | `development` enables permissive CORS |
 
-## Backend Status (Phases 1–8 complete)
+## Backend Status (Phases 1–11 complete)
 - All handlers use `httputil.WriteJSON`/`WriteError` — no raw error leaks
 - `errors.Is(err, pgx.ErrNoRows)` throughout all repositories
 - `param.NewOpt(v)` used in Anthropic SDK; CORS gated on `ENV=development`; 1 MiB body cap
@@ -113,8 +113,10 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Phase 7**: `internal/dealintel/` (trend+score, pure Go, TDD); `internal/notification/` (CRUD + mark-read); `internal/scheduler/` (robfig/cron, price-check alerts); `shopping_items.target_price`; `notifications` table (migration 006)
 - **Phase 8**: `internal/template/` (registry, 15 built-in templates, compiled in binary); `GET /api/templates`, `GET /api/templates/:id`
 - **Phase 9**: `internal/llm/` — `SmartRouter` (capability-matched pool, per-model circuit breakers, rate limiters, cascade on infra errors), `RequestOpts`/`WithRequestOpts` context routing hints, `RetryAsJSON` fallback, `HasRequestOpts`, `ModelPool.ForCapabilities`; all agents updated with `WithRequestOpts` + `RetryAsJSON`; `GET /api/health/llm`; `buildSmartRouter` in main.go (heavy→fast→cloud→Anthropic priority pool); `LLMStatus` dot in Topnav (60s poll)
+- **Phase 10**: `internal/export/` (Gatherer + Handler, JSON export); `GET /api/missions/:id/export`; share token (SetShareToken/ClearShareToken), archive/unarchive; `GET /api/shared/:token` (CORS-open); migration 008 (share_token, archived_at on missions)
+- **Phase 11**: `internal/llm/embed_ollama.go` (`OllamaEmbedder` — `/api/embed` endpoint); `internal/embedding/` (text builder, async worker 2 goroutines, repo); `internal/search/` (cosine ANN via `<=>`, CTE similar query, handler); `GET /api/search`, `GET /api/options/:id/similar`, `POST /api/search/reindex`; migration 009 (IVFFlat index `lists=10`); option + research agents wire embed channel
 
-## Frontend Status (Phases 1–8 complete)
+## Frontend Status (Phases 1–11 complete)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
 - **Responsive**: breakpoints at 640px and 1024px across all pages and components
 - **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
@@ -126,6 +128,7 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Templates (Phase 8)**: `TemplateCard`, `TemplateGallery`, `TemplatePreview` (accessible modal); `useTemplates` (24h stale); `MissionForm` `initialValues` prop; `HQDashboard` wired end-to-end
 - **Layout migration (Phase 7)**: React Router v7 Outlet pattern — `Layout.tsx` (root shell: sidebar+onboarding), `MissionLayout.tsx` (page wrapper+Topnav); mission pages now return just `<main>` content
 - **Deal intel (Phase 7)**: `TrendBadge`, `DealScoreBadge`, `PriceSparkline` in `ShoppingItemRow`; `NotificationBell` in `Topnav`; `useNotifications` (60s poll); `getDealScore` API; `target_price` inline edit
+- **Semantic Search (Phase 11)**: `src/api/search.ts` (Zod schemas + fetch for search/similar/reindex); `useSearch` (300ms debounce, 2-char min), `useSimilarOptions`; `SearchDropdown` in Topnav (5-result instant dropdown, Enter → `/search`); `SearchPage` (`/search` route, full results, URL-synced query); `SimilarOptions` component (link to mission options page)
 - **Test suite**: Vitest + jsdom + Testing Library; 71 tests across 10 files
 
 ## CSS Conventions
