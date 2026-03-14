@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–6 complete. Phase 7 next (detailed spec in ROADMAP.md).
+- Phases 1–6 + 8 complete. Phase 7 in progress (detailed spec in ROADMAP.md).
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -67,7 +67,7 @@ frontend/
     api/                    -- typed fetch wrappers + Zod schemas per resource
     components/
       scouter/              -- Card, Badge, BudgetBar, StatusBadge, Topnav, LoadingPulse, ScouterGrid
-      mission/              -- MissionCard, MissionForm, ConstraintEditor, CategoryTemplate
+      mission/              -- MissionCard, MissionForm, ConstraintEditor, CategoryTemplate, TemplateCard, TemplateGallery, TemplatePreview
       options/              -- OptionCard, AttributeRenderer, ComparisonTable, ConstraintChecker, RadarChart
       shopping/             -- ShoppingList, MerchantGroup, ShoppingItemRow, PriceHistoryChart, CostBreakdown
     pages/                  -- HQDashboard, MissionOverview, OptionsExplorer, ShoppingTracker
@@ -105,7 +105,7 @@ Backend is **fully implemented** (Phases 1–4 complete, all go-reviewer issues 
 - Service-layer input validation in `mission.Service.Create` (defense-in-depth)
 - Graceful shutdown timeout: 65s (exceeds 60s LLM call timeout)
 
-## Frontend Status (Phase 6 complete)
+## Frontend Status (Phases 6 + 8 complete)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
 - **Responsive**: breakpoints at 640px and 1024px across all pages and components
 - **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
@@ -114,7 +114,8 @@ Backend is **fully implemented** (Phases 1–4 complete, all go-reviewer issues 
 - **Keyboard shortcuts**: `useKeyboardShortcuts` hook (ref-stable, preventDefault); `N` new mission, `R` research, `P` pricing
 - **Sidebar**: collapsible mission list drawer, wired in App via `SidebarContext` (`src/contexts/sidebar.tsx`)
 - **Breadcrumb**: `Breadcrumb` component with `missionSlug` + `missionName` + `subPage` props
-- **Test suite**: Vitest + jsdom + Testing Library; 53 tests across 7 files
+- **Templates (Phase 8)**: `TemplateCard` (card-as-button), `TemplateGallery` (skeleton + empty state), `TemplatePreview` (accessible modal: `role="dialog"`, Escape key, backdrop click, `autoFocus`); `useTemplates` hook with 24h stale time; `MissionForm` accepts `initialValues` prop; `HQDashboard` wired end-to-end
+- **Test suite**: Vitest + jsdom + Testing Library; 71 tests across 10 files
 - **Phase 7 note**: migrate to React Router v7 Layout pattern (`Layout.tsx` with `<Outlet />`) to remove per-page `<Topnav />` duplication
 
 ## CSS Conventions

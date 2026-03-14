@@ -1,19 +1,22 @@
 import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid } from '../components/scouter'
-import { MissionCard, MissionForm } from '../components/mission'
-import { useMissions, useCreateMission, useKeyboardShortcuts } from '../hooks'
+import { MissionCard, MissionForm, TemplateGallery, TemplatePreview } from '../components/mission'
+import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates } from '../hooks'
 import { useNavigate } from 'react-router-dom'
-import type { MissionCreateRequest } from '../types'
+import type { MissionCreateRequest, Template } from '../types'
 import styles from './HQDashboard.module.css'
 
 export default function HQDashboard() {
   const { t } = useTranslation()
   const { missions, isLoading } = useMissions()
   const { createMission, isPending } = useCreateMission()
+  const { templates, isLoading: templatesLoading } = useTemplates()
   const navigate = useNavigate()
   const [showForm, setShowForm] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
+  const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
+  const [formInitialValues, setFormInitialValues] = useState<Partial<MissionCreateRequest> | undefined>()
 
   const shortcuts = useMemo(() => ({
     n: () => setShowForm(true),
@@ -25,10 +28,24 @@ export default function HQDashboard() {
     try {
       const mission = await createMission(req)
       setShowForm(false)
+      setFormInitialValues(undefined)
       navigate(`/missions/${mission.slug}`)
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Failed to create mission')
     }
+  }
+
+  function handleApplyTemplate(template: Template) {
+    setPreviewTemplate(null)
+    setFormInitialValues({
+      name: '',
+      icon: template.icon,
+      category: template.category,
+      constraints: template.constraints,
+      costCategories: template.costCategories,
+      budget: template.suggestedBudget?.min,
+    })
+    setShowForm(true)
   }
 
   return (
@@ -54,12 +71,22 @@ export default function HQDashboard() {
               onClick={(e) => e.target === e.currentTarget && setShowForm(false)}
             >
               <MissionForm
+                key={formInitialValues?.icon ?? 'blank'}
                 onSubmit={handleCreate}
-                onCancel={() => setShowForm(false)}
+                onCancel={() => { setShowForm(false); setFormInitialValues(undefined) }}
                 loading={isPending}
                 error={createError ?? undefined}
+                initialValues={formInitialValues}
               />
             </div>
+          )}
+
+          {previewTemplate && (
+            <TemplatePreview
+              template={previewTemplate}
+              onApply={handleApplyTemplate}
+              onClose={() => setPreviewTemplate(null)}
+            />
           )}
 
           <div className={styles.usageWrapper}>
@@ -85,6 +112,14 @@ export default function HQDashboard() {
               ))}
             </ScouterGrid>
           )}
+
+          <div className={styles.templatesSection}>
+            <TemplateGallery
+              templates={templates}
+              onSelect={(t) => setPreviewTemplate(t)}
+              isLoading={templatesLoading}
+            />
+          </div>
         </div>
       </main>
     </div>

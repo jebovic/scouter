@@ -15,6 +15,7 @@ type Item struct {
 	CostCategory     string    `json:"costCategory"`
 	Price            float64   `json:"price"`
 	OriginalEstimate *float64  `json:"originalEstimate,omitempty"`
+	TargetPrice      *float64  `json:"targetPrice,omitempty"`
 	Status           string    `json:"status"` // buy | flash-sale | preorder | defer | watch | crisis
 	Note             string    `json:"note,omitempty"`
 	URL              string    `json:"url,omitempty"`
@@ -38,6 +39,7 @@ type CreateRequest struct {
 	CostCategory     string   `json:"costCategory"`
 	Price            float64  `json:"price"                         validate:"gte=0"`
 	OriginalEstimate *float64 `json:"originalEstimate,omitempty"    validate:"omitempty,gte=0"`
+	TargetPrice      *float64 `json:"targetPrice,omitempty"         validate:"omitempty,gte=0"`
 	Status           string   `json:"status"                        validate:"required,oneof=buy flash-sale preorder defer watch crisis recommended"`
 	Note             string   `json:"note,omitempty"`
 	URL              string   `json:"url,omitempty"`
@@ -45,10 +47,11 @@ type CreateRequest struct {
 
 // UpdateRequest is the payload for updating a shopping item.
 type UpdateRequest struct {
-	Price    *float64 `json:"price,omitempty"    validate:"omitempty,gte=0"`
-	Status   *string  `json:"status,omitempty"   validate:"omitempty,oneof=buy flash-sale preorder defer watch crisis recommended"`
-	Note     *string  `json:"note,omitempty"`
-	Merchant *string  `json:"merchant,omitempty"`
+	Price       *float64 `json:"price,omitempty"       validate:"omitempty,gte=0"`
+	TargetPrice *float64 `json:"targetPrice,omitempty" validate:"omitempty,gte=0"`
+	Status      *string  `json:"status,omitempty"      validate:"omitempty,oneof=buy flash-sale preorder defer watch crisis recommended"`
+	Note        *string  `json:"note,omitempty"`
+	Merchant    *string  `json:"merchant,omitempty"`
 }
 
 // PriceSnapshotRequest records a new price snapshot.

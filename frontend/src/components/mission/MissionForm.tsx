@@ -19,15 +19,16 @@ interface MissionFormProps {
   onCancel: () => void
   loading?: boolean
   error?: string
+  initialValues?: Partial<MissionCreateRequest>
 }
 
-export function MissionForm({ onSubmit, onCancel, loading, error }: MissionFormProps) {
+export function MissionForm({ onSubmit, onCancel, loading, error, initialValues }: MissionFormProps) {
   const { t } = useTranslation()
-  const [name, setName] = useState('')
-  const [icon, setIcon] = useState('🎯')
-  const [category, setCategory] = useState<MissionCategory>('custom')
-  const [budget, setBudget] = useState('')
-  const [currency, setCurrency] = useState('USD')
+  const [name, setName] = useState(initialValues?.name ?? '')
+  const [icon, setIcon] = useState(initialValues?.icon ?? '🎯')
+  const [category, setCategory] = useState<MissionCategory>(initialValues?.category ?? 'custom')
+  const [budget, setBudget] = useState(initialValues?.budget != null ? String(initialValues.budget) : '')
+  const [currency, setCurrency] = useState(initialValues?.currency ?? 'USD')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,8 +40,8 @@ export function MissionForm({ onSubmit, onCancel, loading, error }: MissionFormP
       budget: parseFloat(budget),
       currency,
       locale: navigator.language,
-      constraints: [],
-      costCategories: [],
+      constraints: initialValues?.constraints ?? [],
+      costCategories: initialValues?.costCategories ?? [],
     })
   }
 

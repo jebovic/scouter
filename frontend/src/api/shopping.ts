@@ -6,6 +6,7 @@ import type {
   ShoppingItemCreateRequest,
   ShoppingItemUpdateRequest,
   PriceSnapshotRequest,
+  DealScore,
 } from '../types'
 
 // ── Zod schemas ─────────────────────────────────────────────────────────────
@@ -18,11 +19,21 @@ export const ShoppingItemSchema = z.object({
   costCategory: z.string(),
   price: z.number(),
   originalEstimate: z.number().nullish(),
-  status: z.enum(['buy', 'flash-sale', 'preorder', 'defer', 'watch', 'crisis']),
+  targetPrice: z.number().nullish(),
+  status: z.enum(['buy', 'flash-sale', 'preorder', 'defer', 'watch', 'crisis', 'recommended', 'rejected']),
   note: z.string().nullish(),
   url: z.string().nullish(),
   pinned: z.boolean().default(false),
   createdAt: z.string(),
+})
+
+export const DealScoreSchema = z.object({
+  score: z.number(),
+  pctBelowAvg: z.number(),
+  pctBelowTarget: z.number(),
+  historicalAvg: z.number(),
+  trend: z.enum(['dropping', 'stable', 'rising']),
+  snapshotCount: z.number(),
 })
 
 export const PriceSnapshotSchema = z.object({
@@ -105,4 +116,16 @@ export async function listPriceSnapshots(
     `/api/missions/${missionId}/shopping/${itemId}/snapshots`,
   )
   return z.array(PriceSnapshotSchema).parse(data) as PriceSnapshot[]
+}
+
+// getDealScore returns null when there are insufficient price snapshots.
+export async function getDealScore(
+  missionId: string,
+  itemId: string,
+): Promise<DealScore | null> {
+  const data = await apiFetch<unknown>(
+    `/api/missions/${missionId}/shopping/${itemId}/deal-score`,
+  )
+  if (data === null || data === undefined) return null
+  return DealScoreSchema.parse(data) as DealScore
 }

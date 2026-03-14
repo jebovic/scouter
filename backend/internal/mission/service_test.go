@@ -33,6 +33,19 @@ func (m *mockRepo) List(_ context.Context) ([]Mission, error) {
 	return out, nil
 }
 
+func (m *mockRepo) ListActive(_ context.Context) ([]Mission, error) {
+	if m.nextErr != nil {
+		return nil, m.nextErr
+	}
+	out := make([]Mission, 0)
+	for _, v := range m.missions {
+		if v.Phase != "done" {
+			out = append(out, *v)
+		}
+	}
+	return out, nil
+}
+
 func (m *mockRepo) ListPaged(_ context.Context, _ *time.Time, limit int) ([]Mission, error) {
 	if m.nextErr != nil {
 		return nil, m.nextErr

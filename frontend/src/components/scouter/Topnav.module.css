@@ -91,6 +91,20 @@
   border-color: rgba(0, 229, 255, 0.25);
 }
 
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* When subNav is present, it sets margin-left: auto — override actions */
+.subNav ~ .actions,
+.subNav + .actions {
+  margin-left: 0;
+}
+
 /* Mobile: stack the sub-nav links below the main nav bar */
 @media (max-width: 640px) {
   .nav {

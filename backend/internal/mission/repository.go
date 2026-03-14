@@ -16,6 +16,7 @@ import (
 type Repository interface {
 	List(ctx context.Context) ([]Mission, error)
 	ListPaged(ctx context.Context, cursor *time.Time, limit int) ([]Mission, error)
+	ListActive(ctx context.Context) ([]Mission, error)
 	GetByID(ctx context.Context, id uuid.UUID) (*Mission, error)
 	GetBySlug(ctx context.Context, slug string) (*Mission, error)
 	Create(ctx context.Context, m Mission) (*Mission, error)
@@ -39,6 +40,27 @@ func (r *pgRepository) List(ctx context.Context) ([]Mission, error) {
 		FROM missions ORDER BY created_at DESC`)
 	if err != nil {
 		return nil, fmt.Errorf("list missions: %w", err)
+	}
+	defer rows.Close()
+
+	var missions []Mission
+	for rows.Next() {
+		m, err := scanMission(rows)
+		if err != nil {
+			return nil, err
+		}
+		missions = append(missions, *m)
+	}
+	return missions, rows.Err()
+}
+
+func (r *pgRepository) ListActive(ctx context.Context) ([]Mission, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT id, slug, name, icon, category, budget, currency, locale, phase,
+		       constraints, cost_categories, timeline, weight_profile, created_at, updated_at
+		FROM missions WHERE phase != 'done' ORDER BY created_at DESC`)
+	if err != nil {
+		return nil, fmt.Errorf("list active missions: %w", err)
 	}
 	defer rows.Close()
 

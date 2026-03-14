@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jibei/scouter/internal/dealintel"
 )
 
 // Service handles shopping item business logic.
@@ -64,6 +65,7 @@ func (s *Service) Create(ctx context.Context, missionID uuid.UUID, req CreateReq
 		CostCategory:     req.CostCategory,
 		Price:            req.Price,
 		OriginalEstimate: req.OriginalEstimate,
+		TargetPrice:      req.TargetPrice,
 		Status:           status,
 		Note:             req.Note,
 		URL:              req.URL,
@@ -104,4 +106,28 @@ func (s *Service) Pin(ctx context.Context, id uuid.UUID) (*Item, error) {
 
 func (s *Service) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
 	return s.repo.DeletePinned(ctx, missionID)
+}
+
+// GetDealScore computes deal intelligence for a shopping item.
+// Returns (nil, false, nil) when the item is not found.
+// Returns (nil, true, nil) when there are fewer than 3 price history snapshots.
+func (s *Service) GetDealScore(ctx context.Context, itemID uuid.UUID) (*dealintel.DealScore, bool, error) {
+	item, err := s.repo.GetByID(ctx, itemID)
+	if err != nil {
+		return nil, false, err
+	}
+	if item == nil {
+		return nil, false, nil
+	}
+
+	snapshots, err := s.repo.ListPriceHistory(ctx, itemID)
+	if err != nil {
+		return nil, true, err
+	}
+
+	points := make([]dealintel.PricePoint, len(snapshots))
+	for i, snap := range snapshots {
+		points[i] = dealintel.PricePoint{Price: snap.Price, RecordedAt: snap.RecordedAt}
+	}
+	return dealintel.ComputeDealScore(item.Price, item.TargetPrice, points), true, nil
 }

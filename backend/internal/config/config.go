@@ -3,17 +3,21 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Config holds all environment-derived configuration for the server.
 type Config struct {
-	DatabaseURL      string
-	AnthropicAPIKey  string
-	LLMProvider      string // "anthropic" | "ollama"
-	OllamaBaseURL    string
-	OllamaModel      string
-	Port             string
-	Env              string // "development" | "production"
+	DatabaseURL          string
+	AnthropicAPIKey      string
+	LLMProvider          string // "anthropic" | "ollama"
+	OllamaBaseURL        string
+	OllamaModel          string
+	Port                 string
+	Env                  string // "development" | "production"
+	PriceCheckEnabled    bool
+	PriceCheckCron       string // cron expression, e.g. "0 */6 * * *"
+	PriceCheckMaxMissions int
 }
 
 // Load reads required environment variables, returning an error if any are missing.
@@ -50,6 +54,20 @@ func Load() (*Config, error) {
 	}
 	if cfg.Env == "" {
 		cfg.Env = "production"
+	}
+
+	cfg.PriceCheckEnabled = os.Getenv("PRICE_CHECK_ENABLED") == "true"
+	cfg.PriceCheckCron = os.Getenv("PRICE_CHECK_CRON")
+	if cfg.PriceCheckCron == "" {
+		cfg.PriceCheckCron = "0 */6 * * *"
+	}
+	if v := os.Getenv("PRICE_CHECK_MAX_MISSIONS"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			cfg.PriceCheckMaxMissions = n
+		}
+	}
+	if cfg.PriceCheckMaxMissions == 0 {
+		cfg.PriceCheckMaxMissions = 10
 	}
 
 	return cfg, nil

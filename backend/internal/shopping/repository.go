@@ -35,7 +35,7 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	return &pgRepository{pool: pool}
 }
 
-const selectCols = `id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, pinned, created_at`
+const selectCols = `id, mission_id, name, merchant, cost_category, price, original_estimate, target_price, status, note, url, pinned, created_at`
 
 func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID) ([]Item, error) {
 	rows, err := r.pool.Query(ctx, `
@@ -93,11 +93,11 @@ func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*Item, error)
 
 func (r *pgRepository) Create(ctx context.Context, item Item) (*Item, error) {
 	row := r.pool.QueryRow(ctx, `
-		INSERT INTO shopping_items (mission_id, name, merchant, cost_category, price, original_estimate, status, note, url)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO shopping_items (mission_id, name, merchant, cost_category, price, original_estimate, target_price, status, note, url)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING `+selectCols,
 		item.MissionID, item.Name, item.Merchant, item.CostCategory,
-		item.Price, item.OriginalEstimate, item.Status, item.Note, item.URL)
+		item.Price, item.OriginalEstimate, item.TargetPrice, item.Status, item.Note, item.URL)
 
 	return scanItem(row)
 }
@@ -105,13 +105,14 @@ func (r *pgRepository) Create(ctx context.Context, item Item) (*Item, error) {
 func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Item, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE shopping_items SET
-		  price    = COALESCE($2, price),
-		  status   = COALESCE($3, status),
-		  note     = COALESCE($4, note),
-		  merchant = COALESCE($5, merchant)
+		  price        = COALESCE($2, price),
+		  status       = COALESCE($3, status),
+		  note         = COALESCE($4, note),
+		  merchant     = COALESCE($5, merchant),
+		  target_price = COALESCE($6, target_price)
 		WHERE id = $1
 		RETURNING `+selectCols,
-		id, req.Price, req.Status, req.Note, req.Merchant)
+		id, req.Price, req.Status, req.Note, req.Merchant, req.TargetPrice)
 
 	item, err := scanItem(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -196,7 +197,7 @@ func scanItem(s scanner) (*Item, error) {
 	var item Item
 	err := s.Scan(
 		&item.ID, &item.MissionID, &item.Name, &item.Merchant, &item.CostCategory,
-		&item.Price, &item.OriginalEstimate, &item.Status, &item.Note, &item.URL,
+		&item.Price, &item.OriginalEstimate, &item.TargetPrice, &item.Status, &item.Note, &item.URL,
 		&item.Pinned, &item.CreatedAt,
 	)
 	if err != nil {

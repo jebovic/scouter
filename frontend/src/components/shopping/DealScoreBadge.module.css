@@ -1,0 +1,21 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+}
+
+.good {
+  background: color-mix(in srgb, var(--status-buy) 15%, transparent);
+  color: var(--status-buy);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 30%, transparent);
+}
+
+.bad {
+  background: color-mix(in srgb, var(--status-crisis) 12%, transparent);
+  color: var(--status-crisis);
+  border: 1px solid color-mix(in srgb, var(--status-crisis) 25%, transparent);
+}

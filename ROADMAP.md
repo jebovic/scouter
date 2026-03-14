@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–6 complete. Phase 7 next.
+> Current status: Phases 1–6 + 8 complete. Phase 7 in progress.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -31,7 +31,7 @@
 | **5** | Agent Feedback Loop | Agent | **High** | ✅ Done |
 | 6 | Interface Overhaul (responsive, onboarding) | Interface | High | ✅ Done |
 | 7 | Price Alerts & Deal Intelligence | Functional | High | ⬜ |
-| 8 | Mission Templates & Quick-Start | Interface | Medium | ⬜ |
+| 8 | Mission Templates & Quick-Start | Interface | Medium | ✅ Done |
 | 9 | Export, Share & Archive | Functional | Medium | ⬜ |
 | 10 | Semantic Search (pgvector) | Agent + Infra | Medium | ⬜ |
 | 11 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |

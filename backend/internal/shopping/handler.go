@@ -33,6 +33,7 @@ func (h *Handler) Routes() chi.Router {
 	r.Patch("/{itemID}/pin", h.pin)
 	r.Post("/{itemID}/snapshots", h.addSnapshot)
 	r.Get("/{itemID}/snapshots", h.listSnapshots)
+	r.Get("/{itemID}/deal-score", h.getDealScore)
 	return r
 }
 
@@ -200,6 +201,26 @@ func (h *Handler) pin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httputil.WriteJSON(w, http.StatusOK, item)
+}
+
+func (h *Handler) getDealScore(w http.ResponseWriter, r *http.Request) {
+	itemID, err := uuid.Parse(chi.URLParam(r, "itemID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid item id")
+		return
+	}
+
+	score, found, err := h.svc.GetDealScore(r.Context(), itemID)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if !found {
+		httputil.WriteError(w, http.StatusNotFound, "item not found")
+		return
+	}
+	// score may be nil when fewer than 3 price history snapshots exist — that is valid
+	httputil.WriteJSON(w, http.StatusOK, score)
 }
 
 func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {

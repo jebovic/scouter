@@ -1,4 +1,15 @@
-export type ItemStatus = 'buy' | 'flash-sale' | 'preorder' | 'defer' | 'watch' | 'crisis'
+export type ItemStatus = 'buy' | 'flash-sale' | 'preorder' | 'defer' | 'watch' | 'crisis' | 'recommended' | 'rejected'
+
+export type PriceTrend = 'dropping' | 'stable' | 'rising'
+
+export interface DealScore {
+  score: number
+  pctBelowAvg: number
+  pctBelowTarget: number
+  historicalAvg: number
+  trend: PriceTrend
+  snapshotCount: number
+}
 
 export interface ShoppingItem {
   id: string
@@ -8,6 +19,7 @@ export interface ShoppingItem {
   costCategory: string
   price: number
   originalEstimate?: number
+  targetPrice?: number
   status: ItemStatus
   note?: string
   url?: string

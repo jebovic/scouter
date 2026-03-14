@@ -20,9 +20,11 @@ import (
 	"github.com/jibei/scouter/internal/decision"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/mission"
+	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/research"
+	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
@@ -63,6 +65,7 @@ func main() {
 	missionRepo := mission.NewRepository(pool)
 	optionRepo := option.NewRepository(pool)
 	shoppingRepo := shopping.NewRepository(pool)
+	notifRepo := notification.NewRepository(pool)
 	usageRepo := usage.NewRepository(pool)
 	agentRunRepo := agentrun.NewRepository(pool)
 
@@ -85,12 +88,29 @@ func main() {
 	missionHandler := mission.NewHandler(missionSvc)
 	optionHandler := option.NewHandler(optionSvc)
 	shoppingHandler := shopping.NewHandler(shoppingSvc)
+	notifHandler := notification.NewHandler(notifRepo)
 	researchHandler := research.NewHandler(researchAgent, missionSvc)
 	pricingHandler := pricing.NewHandler(pricingAgent, missionSvc, optionRepo)
 	usageHandler := usage.NewHandler(usageSvc)
 	decisionHandler := decision.NewHandler(decisionSvc)
 	agentRunSvc := agentrun.NewService(agentRunRepo)
 	agentRunHandler := agentrun.NewHandler(agentRunSvc)
+
+	// Price check scheduler (opt-in via PRICE_CHECK_ENABLED=true)
+	var sched *scheduler.Scheduler
+	if cfg.PriceCheckEnabled {
+		orch := scheduler.NewOrchestrator(
+			missionRepo, optionRepo, shoppingRepo, notifRepo,
+			pricingAgent, cfg.PriceCheckMaxMissions, log,
+		)
+		var schedErr error
+		sched, schedErr = scheduler.New(cfg.PriceCheckCron, orch, log)
+		if schedErr != nil {
+			log.Error("scheduler init failed", "err", schedErr)
+			os.Exit(1)
+		}
+		sched.Start()
+	}
 
 	// Templates (no DB dependency — compiled into binary)
 	templateReg := template.NewRegistry()
@@ -129,6 +149,9 @@ func main() {
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
 
+	// Notifications
+	r.Mount("/api/notifications", notifHandler.Routes())
+
 	// Templates
 	r.Get("/api/templates", templateHandler.List)
 	r.Get("/api/templates/{slug}", templateHandler.Get)
@@ -147,7 +170,12 @@ func main() {
 	<-ctx.Done()
 	log.Info("shutting down")
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 65*time.Second)
+	// Drain scheduler first so any running price check can finish.
+	if sched != nil {
+		sched.Stop()
+	}
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)
