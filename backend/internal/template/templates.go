@@ -4,6 +4,9 @@ import "github.com/jibei/scouter/internal/mission"
 
 // catalog is the hardcoded list of built-in mission templates.
 // To add a template, append an entry here — no DB migration needed.
+// Do not reassign or append to catalog after package init; NewRegistry captures
+// the slice header and the backing array would diverge from r.all if catalog
+// were ever replaced via append.
 var catalog = []Template{
 	{
 		Slug:        "laptop",

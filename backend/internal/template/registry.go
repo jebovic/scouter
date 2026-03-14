@@ -1,6 +1,12 @@
 package template
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// ErrNotFound is returned by GetBySlug when no template matches the slug.
+var ErrNotFound = errors.New("template not found")
 
 // Registry holds all built-in templates indexed by slug for O(1) lookup.
 type Registry struct {
@@ -29,7 +35,7 @@ func (r *Registry) All() []Template {
 func (r *Registry) GetBySlug(slug string) (Template, error) {
 	t, ok := r.bySlug[slug]
 	if !ok {
-		return Template{}, fmt.Errorf("template %q not found", slug)
+		return Template{}, fmt.Errorf("%w: %s", ErrNotFound, slug)
 	}
 	return t, nil
 }
