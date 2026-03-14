@@ -27,6 +27,7 @@ const trendThreshold = 0.03
 // ComputeTrend classifies the price direction from a series of snapshots.
 // Returns TrendStable when fewer than 2 data points are available.
 // Uses the change from the oldest to the newest snapshot.
+// Snapshots must be ordered oldest-first by RecordedAt.
 func ComputeTrend(snapshots []PricePoint) Trend {
 	if len(snapshots) < 2 {
 		return TrendStable

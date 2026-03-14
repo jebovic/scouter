@@ -125,6 +125,19 @@ func (m *mockRepo) Reject(_ context.Context, id uuid.UUID, req RejectRequest) (*
 	return o, nil
 }
 
+func (m *mockRepo) Unreject(_ context.Context, id uuid.UUID) (*Option, error) {
+	if m.nextErr != nil {
+		return nil, m.nextErr
+	}
+	o, ok := m.options[id]
+	if !ok {
+		return nil, nil
+	}
+	o.Rejected = false
+	o.RejectReason = ""
+	return o, nil
+}
+
 func (m *mockRepo) DeletePinned(_ context.Context, missionID uuid.UUID) error {
 	if m.nextErr != nil {
 		return m.nextErr

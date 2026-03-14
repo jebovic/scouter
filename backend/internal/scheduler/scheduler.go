@@ -17,7 +17,7 @@ type Scheduler struct {
 
 // New creates a new Scheduler. Call Start to begin scheduling.
 func New(cronExpr string, o *Orchestrator, log *slog.Logger) (*Scheduler, error) {
-	c := cron.New()
+	c := cron.New(cron.WithLocation(time.UTC))
 	s := &Scheduler{cron: c, orchestrator: o, log: log}
 
 	_, err := c.AddFunc(cronExpr, func() {

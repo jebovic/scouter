@@ -6,11 +6,8 @@ const minSnapshotsForScore = 3
 
 // DealScore holds computed deal intelligence for a shopping item.
 type DealScore struct {
-	// Score is the percentage below historical average (positive = good deal).
-	// Negative means current price is above average.
-	Score float64 `json:"score"`
-
 	// PctBelowAvg is (historicalAvg - currentPrice) / historicalAvg * 100.
+	// Positive means the current price is below average (good deal).
 	PctBelowAvg float64 `json:"pctBelowAvg"`
 
 	// PctBelowTarget is (targetPrice - currentPrice) / targetPrice * 100.
@@ -31,6 +28,7 @@ type DealScore struct {
 // ComputeDealScore computes deal intelligence for an item given its current price,
 // optional target price, and historical price snapshots.
 // Returns nil when there are fewer than minSnapshotsForScore data points.
+// Snapshots must be ordered oldest-first by RecordedAt (as returned by ListPriceHistory).
 func ComputeDealScore(currentPrice float64, targetPrice *float64, snapshots []PricePoint) *DealScore {
 	if len(snapshots) < minSnapshotsForScore {
 		return nil
@@ -54,7 +52,6 @@ func ComputeDealScore(currentPrice float64, targetPrice *float64, snapshots []Pr
 	}
 
 	return &DealScore{
-		Score:          pctBelowAvg,
 		PctBelowAvg:    pctBelowAvg,
 		PctBelowTarget: pctBelowTarget,
 		HistoricalAvg:  avg,

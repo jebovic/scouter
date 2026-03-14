@@ -102,15 +102,15 @@ func TestComputeDealScore(t *testing.T) {
 				t.Fatalf("unexpected nil DealScore")
 			}
 
-			if tc.wantPositive && got.Score <= 0 {
-				t.Errorf("expected positive score, got %.2f", got.Score)
+			if tc.wantPositive && got.PctBelowAvg <= 0 {
+				t.Errorf("expected positive score, got %.2f", got.PctBelowAvg)
 			}
-			if tc.wantNegative && got.Score >= 0 {
-				t.Errorf("expected negative score, got %.2f", got.Score)
+			if tc.wantNegative && got.PctBelowAvg >= 0 {
+				t.Errorf("expected negative score, got %.2f", got.PctBelowAvg)
 			}
 			if !tc.wantPositive && !tc.wantNegative {
-				if math.Abs(got.Score) > 1e-9 {
-					t.Errorf("expected ~0 score, got %.2f", got.Score)
+				if math.Abs(got.PctBelowAvg) > 1e-9 {
+					t.Errorf("expected ~0 score, got %.2f", got.PctBelowAvg)
 				}
 			}
 			if tc.wantTargetHit && got.PctBelowTarget < 0 {

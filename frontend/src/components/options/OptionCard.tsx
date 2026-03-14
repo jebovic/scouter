@@ -9,6 +9,7 @@ interface OptionCardProps {
   onBadgeChange?: (badge: Option['badge']) => void
   onPin?: (optionId: string) => void
   onReject?: (optionId: string) => void
+  onUnreject?: (optionId: string) => void
 }
 
 const BADGES: Option['badge'][] = ['recommended', 'alternative', 'watch', 'rejected']
@@ -20,7 +21,7 @@ function scoreColor(s: number): { text: string; bg: string } {
   return { text: 'var(--coral)', bg: 'var(--coral-dim)' }
 }
 
-export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onPin, onReject }: OptionCardProps) {
+export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onPin, onReject, onUnreject }: OptionCardProps) {
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
 
@@ -188,9 +189,9 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
               {option.pinned ? '📌 PINNED' : '📌 PIN'}
             </button>
           )}
-          {onReject && !option.pinned && (
+          {!option.pinned && (option.rejected ? onUnreject : onReject) && (
             <button
-              onClick={() => onReject(option.id)}
+              onClick={() => option.rejected ? onUnreject!(option.id) : onReject!(option.id)}
               style={{
                 flex: 1,
                 padding: '4px 0',

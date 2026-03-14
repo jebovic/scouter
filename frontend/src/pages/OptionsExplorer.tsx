@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
+import { ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
 import { OptionCard } from '../components/options'
 import { ComparisonTable } from '../components/options'
 import { RadarChart } from '../components/options'
@@ -12,6 +12,7 @@ import {
   useOptions,
   usePinOption,
   useRejectOption,
+  useUnrejectOption,
   useDeletePinnedOptions,
   useResearch,
   useDecision,
@@ -38,6 +39,7 @@ export default function OptionsExplorer() {
   const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
   const { pinOption } = usePinOption(mission?.id ?? '')
   const { rejectOption } = useRejectOption(mission?.id ?? '')
+  const { unrejectOption } = useUnrejectOption(mission?.id ?? '')
   const { deletePinnedOptions } = useDeletePinnedOptions(mission?.id ?? '')
   const { decision } = useDecision(mission?.id ?? '')
   const { runs, isLoading: runsLoading } = useAgentRuns(mission?.id ?? '', 'research')
@@ -53,23 +55,19 @@ export default function OptionsExplorer() {
 
   if (isLoading) {
     return (
-      <div className="page grid-bg scanlines">
-        <Topnav missionSlug={slug} />
-        <main className={styles.main}>
-          <div className="container">
-            <ScouterGrid cols={2}>
-              <SkeletonGrid count={4} />
-            </ScouterGrid>
-          </div>
-        </main>
-      </div>
+      <main className={styles.main}>
+        <div className="container">
+          <ScouterGrid cols={2}>
+            <SkeletonGrid count={4} />
+          </ScouterGrid>
+        </div>
+      </main>
     )
   }
 
   return (
-    <div className="page grid-bg scanlines">
-      <Topnav missionSlug={slug} missionName={mission?.name} />
-      <main className={styles.main}>
+    <>
+    <main className={styles.main}>
         <div className="container">
           {/* Header */}
           <div className={styles.header}>
@@ -180,6 +178,7 @@ export default function OptionsExplorer() {
                     score={decision?.scores.find((s) => s.optionId === option.id)?.score}
                     onPin={(id) => pinOption(id)}
                     onReject={(id) => setRejectTarget(id)}
+                    onUnreject={(id) => unrejectOption(id)}
                   />
                 ))}
               </div>
@@ -215,6 +214,6 @@ export default function OptionsExplorer() {
           onClose={() => setRejectTarget(null)}
         />
       )}
-    </div>
+    </>
   )
 }
