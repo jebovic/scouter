@@ -122,7 +122,7 @@ func (s *Service) GetDealScore(ctx context.Context, itemID uuid.UUID) (*dealinte
 
 	snapshots, err := s.repo.ListPriceHistory(ctx, itemID)
 	if err != nil {
-		return nil, true, err
+		return nil, false, fmt.Errorf("list price history: %w", err)
 	}
 
 	points := make([]dealintel.PricePoint, len(snapshots))
