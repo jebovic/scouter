@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jibei/scouter/internal/embedding"
 	"github.com/jibei/scouter/internal/option"
 )
 
@@ -41,7 +42,7 @@ func (r *pgRepository) Search(ctx context.Context, vec []float64, limit int) ([]
 		ORDER BY o.embedding <=> $1::vector
 		LIMIT $2`
 
-	rows, err := r.pool.Query(ctx, q, formatVector(vec), limit)
+	rows, err := r.pool.Query(ctx, q, embedding.FormatVector(vec), limit)
 	if err != nil {
 		return nil, fmt.Errorf("search: query: %w", err)
 	}
@@ -95,7 +96,9 @@ func scanResults(rows scannable) ([]Result, error) {
 		}
 		if len(priceJSON) > 0 {
 			var pr option.PriceRange
-			if err := json.Unmarshal(priceJSON, &pr); err == nil {
+			if err := json.Unmarshal(priceJSON, &pr); err != nil {
+				log.Printf("search: unmarshal price_range for option %s: %v", res.ID, err)
+			} else {
 				res.PriceRange = &pr
 			}
 		}
@@ -104,14 +107,3 @@ func scanResults(rows scannable) ([]Result, error) {
 	return out, rows.Err()
 }
 
-// formatVector renders a float64 slice as the Postgres vector literal "[a,b,c]".
-func formatVector(vec []float64) string {
-	if len(vec) == 0 {
-		return "[]"
-	}
-	parts := make([]string, len(vec))
-	for i, v := range vec {
-		parts[i] = fmt.Sprintf("%g", v)
-	}
-	return "[" + strings.Join(parts, ",") + "]"
-}

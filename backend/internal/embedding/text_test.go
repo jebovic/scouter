@@ -61,9 +61,9 @@ func TestFormatVector(t *testing.T) {
 		{[]float64{}, "[]"},
 	}
 	for _, tc := range tests {
-		got := formatVector(tc.vec)
+		got := FormatVector(tc.vec)
 		if got != tc.want {
-			t.Errorf("formatVector(%v) = %q, want %q", tc.vec, got, tc.want)
+			t.Errorf("FormatVector(%v) = %q, want %q", tc.vec, got, tc.want)
 		}
 	}
 }

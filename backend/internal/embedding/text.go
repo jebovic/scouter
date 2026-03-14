@@ -25,9 +25,12 @@ func BuildEmbedText(opt option.Option) string {
 	return strings.TrimSpace(sb.String())
 }
 
-// formatVector serialises a float64 slice into the Postgres vector literal syntax
+// FormatVector serialises a float64 slice into the Postgres vector literal syntax
 // "[a,b,c]" so it can be cast with ::vector in SQL without the pgvector-go library.
-func formatVector(vec []float64) string {
+func FormatVector(vec []float64) string {
+	if len(vec) == 0 {
+		return "[]"
+	}
 	parts := make([]string, len(vec))
 	for i, v := range vec {
 		parts[i] = fmt.Sprintf("%g", v)

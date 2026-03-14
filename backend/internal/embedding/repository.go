@@ -28,7 +28,7 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 // SetEmbedding updates the options.embedding column with the provided vector.
 func (r *pgRepository) SetEmbedding(ctx context.Context, id uuid.UUID, vec []float64) error {
 	const q = `UPDATE options SET embedding = $1::vector WHERE id = $2`
-	tag, err := r.pool.Exec(ctx, q, formatVector(vec), id)
+	tag, err := r.pool.Exec(ctx, q, FormatVector(vec), id)
 	if err != nil {
 		return fmt.Errorf("embedding: set: %w", err)
 	}

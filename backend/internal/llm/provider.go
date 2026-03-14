@@ -69,7 +69,12 @@ type Provider interface {
 }
 
 // EmbedProvider is the interface for embedding providers (Phase 11 — pgvector).
-// Do not implement yet; this stub prevents provider.go changes in Phase 11.
+// Ping is intentionally excluded: the embed model liveness is not wired into
+// GET /api/health/llm because embed failures are non-blocking (the worker
+// retries on the next option update). Add Ping here if embed health monitoring
+// becomes a requirement.
+// EmbedBatch is reserved for a future batch-embed optimisation; production code
+// currently embeds one option at a time via Embed.
 type EmbedProvider interface {
 	Embed(ctx context.Context, text string) ([]float64, error)
 	EmbedBatch(ctx context.Context, texts []string) ([][]float64, error)

@@ -196,7 +196,12 @@ func main() {
 	// Semantic search (Phase 11)
 	r.Get("/api/search", searchHandler.Search)
 	r.Get("/api/options/{optionID}/similar", searchHandler.Similar)
-	r.Post("/api/search/reindex", searchHandler.Reindex)
+	// Reindex is a heavy admin operation (up to 500 embed jobs). It is only
+	// exposed in development; in production it should be triggered via CLI or a
+	// protected admin route. No general auth layer exists yet.
+	if cfg.Env == "development" {
+		r.Post("/api/search/reindex", searchHandler.Reindex)
+	}
 
 	// Notifications
 	r.Mount("/api/notifications", notifHandler.Routes())
@@ -239,6 +244,10 @@ func main() {
 		}()
 	}
 	// Wait for embedding worker to drain in-flight jobs.
+	// The 65 s deadline is shared across HTTP drain, scheduler drain, and embed
+	// drain. HTTP in-flight LLM calls (≤60 s) and embed calls run concurrently
+	// so they don't compound. pool.Close is called only after wg.Wait() ensures
+	// all worker goroutines have exited and released pool connections.
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
