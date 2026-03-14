@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–6 + 8 complete. Phase 7 in progress (detailed spec in ROADMAP.md).
+- Phases 1–8 complete. Phase 9 next: Ollama Smart Routing (detailed spec in ROADMAP.md).
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -86,15 +86,21 @@ frontend/
 ```
 
 ## Environment Variables
-See `.env.example` — required: `DATABASE_URL`, `ANTHROPIC_API_KEY`
+See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 
 | Variable | Default | Notes |
 |---|---|---|
 | `DATABASE_URL` | — | required |
 | `ANTHROPIC_API_KEY` | — | required when `LLM_PROVIDER=anthropic` |
-| `LLM_PROVIDER` | `anthropic` | `anthropic` or `ollama` |
-| `OLLAMA_BASE_URL` | — | required when `LLM_PROVIDER=ollama` |
-| `OLLAMA_MODEL` | — | required when `LLM_PROVIDER=ollama` |
+| `LLM_PROVIDER` | `ollama` | `anthropic` or `ollama` |
+| `OLLAMA_BASE_URL` | `http://host.docker.internal:11434` | local Ollama |
+| `OLLAMA_MODEL` | `qwen2.5:7b` | legacy alias → heavy model |
+| `OLLAMA_HEAVY_MODEL` | `qwen3:14b` | Phase 9: primary tool-use model |
+| `OLLAMA_FAST_MODEL` | `qwen3:4b` | Phase 9: lighter fallback |
+| `OLLAMA_EMBED_MODEL` | `mxbai-embed-large` | Phase 11: 1024-dim embeddings |
+| `OLLAMA_CLOUD_URL` | (empty) | Phase 9: `https://ollama.com` when enabled |
+| `OLLAMA_CLOUD_MODEL` | (empty) | e.g. `deepseek-v3.2:cloud` |
+| `OLLAMA_CLOUD_API_KEY` | (empty) | Bearer token from ollama.com |
 | `PORT` | `8080` | backend listen port |
 | `ENV` | `production` | `development` enables permissive CORS |
 

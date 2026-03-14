@@ -259,18 +259,33 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 - Research + Pricing agents — `WithRequestOpts(ctx, CapToolUse)` + `RetryAsJSON` fallback
 - Decision agent — `WithRequestOpts(ctx, label)` + wire existing text fallback through helper
 
+### Model Selection (research-backed, 2025)
+
+| Role | Model | Pull tag | Size | Notes |
+|------|-------|----------|------|-------|
+| Heavy (tool use) | Qwen3 14B | `qwen3:14b` | 8.8 GB | Best tool-call fidelity at 14B; beats qwen2.5:14b; add `/no_think` in system prompt for agent loops |
+| Fast (text only) | Qwen3 4B | `qwen3:4b` | 2.4 GB | Near-14B quality at 4B; also supports tool use if needed |
+| Embeddings | mxbai-embed-large | `mxbai-embed-large` | 638 MB | Exactly 1024 dims — zero schema change; SOTA on MTEB English |
+| Cloud fallback | DeepSeek V3.2 | `deepseek-v3.2:cloud` | cloud | 671B via Ollama cloud API; same `/api/chat` endpoint, `Authorization: Bearer` header |
+
+**Gotchas confirmed by research:**
+- `deepseek-r1` in Ollama registry has no tool-calling template (GitHub #8517, #12719) — do NOT use for agents
+- `nomic-embed-text` (default/latest) = 768 dims — wrong for our `vector(1024)` schema; use `mxbai-embed-large` instead
+- `phi4` and `gemma3` tool-call templates are broken in Ollama; fine for chat, not for agent loops
+- Ollama cloud: endpoint `https://ollama.com/api/chat`, same request format as local, add `Authorization: Bearer $OLLAMA_CLOUD_API_KEY`
+
 ### New Environment Variables
 | Variable | Default | Notes |
 |---|---|---|
-| `OLLAMA_HEAVY_MODEL` | `qwen2.5:14b` | Primary, tool-use capable |
-| `OLLAMA_FAST_MODEL` | `qwen2.5:3b` | Lighter fallback |
+| `OLLAMA_HEAVY_MODEL` | `qwen3:14b` | Primary, tool-use capable (was `qwen2.5:7b`) |
+| `OLLAMA_FAST_MODEL` | `qwen3:4b` | Lighter fallback for text tasks |
 | `OLLAMA_HEAVY_TIMEOUT` | `180` | Seconds |
 | `OLLAMA_FAST_TIMEOUT` | `60` | Seconds |
-| `OLLAMA_CLOUD_URL` | (empty) | Disabled when empty |
-| `OLLAMA_CLOUD_MODEL` | (empty) | Required if cloud URL set |
-| `OLLAMA_CLOUD_API_KEY` | (empty) | Bearer token |
+| `OLLAMA_CLOUD_URL` | (empty) | `https://ollama.com` when enabled |
+| `OLLAMA_CLOUD_MODEL` | (empty) | e.g. `deepseek-v3.2:cloud` |
+| `OLLAMA_CLOUD_API_KEY` | (empty) | Bearer token from ollama.com/settings/tokens |
 | `OLLAMA_CLOUD_RPM` | `10` | Rate limit for cloud |
-| `OLLAMA_EMBED_MODEL` | (empty) | Phase 11 prep |
+| `OLLAMA_EMBED_MODEL` | `mxbai-embed-large` | Phase 11 prep — 1024 dims, no schema change |
 | `OLLAMA_MODEL` | `qwen2.5:7b` | Legacy alias → heavy model |
 
 ### Frontend
@@ -385,7 +400,7 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ## End of First Journey
 
-After Phase 12, SCOUTER covers the complete lifecycle:
+After Phase 13, SCOUTER covers the complete lifecycle:
 **Discover** → **Compare** → **Score & Decide** → **Track Prices** → **Get Alerts** → **Buy** → **Record Outcome** → **Search Past Research**
 
 Next journey: multi-user auth, cloud deployment, collaborative household/team missions.
