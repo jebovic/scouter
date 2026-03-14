@@ -193,7 +193,10 @@ func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-	return o, err
+	if err != nil {
+		return nil, fmt.Errorf("pin option: %w", err)
+	}
+	return o, nil
 }
 
 func (r *pgRepository) Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error) {
@@ -204,7 +207,10 @@ func (r *pgRepository) Reject(ctx context.Context, id uuid.UUID, req RejectReque
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-	return o, err
+	if err != nil {
+		return nil, fmt.Errorf("reject option: %w", err)
+	}
+	return o, nil
 }
 
 // Unreject clears the rejected flag on an option.
@@ -216,7 +222,10 @@ func (r *pgRepository) Unreject(ctx context.Context, id uuid.UUID) (*Option, err
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-	return o, err
+	if err != nil {
+		return nil, fmt.Errorf("unreject option: %w", err)
+	}
+	return o, nil
 }
 
 // DeletePinned removes only pinned options for a mission (e.g. user clears their pin list).

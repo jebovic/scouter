@@ -108,7 +108,11 @@ func (m *mockRepo) Pin(_ context.Context, id uuid.UUID) (*Option, error) {
 	if !ok {
 		return nil, nil
 	}
-	o.Pinned = true
+	o.Pinned = !o.Pinned
+	if o.Pinned {
+		o.Rejected = false
+		o.RejectReason = ""
+	}
 	return o, nil
 }
 
