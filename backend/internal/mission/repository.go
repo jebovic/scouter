@@ -68,7 +68,7 @@ func (r *pgRepository) ListActive(ctx context.Context) ([]Mission, error) {
 	for rows.Next() {
 		m, err := scanMission(rows)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("list active missions: scan: %w", err)
 		}
 		missions = append(missions, *m)
 	}

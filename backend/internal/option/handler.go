@@ -32,6 +32,7 @@ func (h *Handler) Routes() chi.Router {
 	r.Delete("/{optionID}", h.delete)
 	r.Patch("/{optionID}/pin", h.pin)
 	r.Patch("/{optionID}/reject", h.reject)
+	r.Patch("/{optionID}/unreject", h.unreject)
 	return r
 }
 
@@ -179,6 +180,25 @@ func (h *Handler) reject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	o, err := h.svc.Reject(r.Context(), id, req)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if o == nil {
+		httputil.WriteError(w, http.StatusNotFound, "option not found")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, o)
+}
+
+func (h *Handler) unreject(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "optionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid option id")
+		return
+	}
+
+	o, err := h.svc.Unreject(r.Context(), id)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return

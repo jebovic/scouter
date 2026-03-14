@@ -23,6 +23,7 @@ type Repository interface {
 	DeleteByMission(ctx context.Context, missionID uuid.UUID) error
 	Pin(ctx context.Context, id uuid.UUID) (*Option, error)
 	Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error)
+	Unreject(ctx context.Context, id uuid.UUID) (*Option, error)
 	DeletePinned(ctx context.Context, missionID uuid.UUID) error
 }
 
@@ -179,9 +180,14 @@ func (r *pgRepository) DeleteByMission(ctx context.Context, missionID uuid.UUID)
 	return nil
 }
 
+// Pin toggles the pinned flag. When pinning (false→true) it also clears the rejected flag.
 func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
 	row := r.pool.QueryRow(ctx, `
-		UPDATE options SET pinned = true, rejected = false, reject_reason = NULL WHERE id = $1
+		UPDATE options SET
+		  pinned        = NOT pinned,
+		  rejected      = CASE WHEN NOT pinned THEN false      ELSE rejected      END,
+		  reject_reason = CASE WHEN NOT pinned THEN NULL       ELSE reject_reason END
+		WHERE id = $1
 		RETURNING `+selectCols, id)
 	o, err := scanOption(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -194,6 +200,18 @@ func (r *pgRepository) Reject(ctx context.Context, id uuid.UUID, req RejectReque
 	row := r.pool.QueryRow(ctx, `
 		UPDATE options SET rejected = true, reject_reason = $2, pinned = false WHERE id = $1
 		RETURNING `+selectCols, id, req.Reason)
+	o, err := scanOption(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return o, err
+}
+
+// Unreject clears the rejected flag on an option.
+func (r *pgRepository) Unreject(ctx context.Context, id uuid.UUID) (*Option, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE options SET rejected = false, reject_reason = NULL WHERE id = $1
+		RETURNING `+selectCols, id)
 	o, err := scanOption(row)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil

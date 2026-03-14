@@ -4,6 +4,7 @@ import type { ShoppingItem, ItemStatus } from '../../types'
 import styles from './ShoppingList.module.css'
 
 interface ShoppingListProps {
+  missionId: string
   items: ShoppingItem[]
   isLoading?: boolean
   currency?: string
@@ -12,7 +13,7 @@ interface ShoppingListProps {
   onPin?: (itemId: string) => void
 }
 
-export function ShoppingList({ items, isLoading, currency, onStatusChange, onPriceClick, onPin }: ShoppingListProps) {
+export function ShoppingList({ missionId, items, isLoading, currency, onStatusChange, onPriceClick, onPin }: ShoppingListProps) {
   if (isLoading) return <LoadingPulse label="Loading items..." />
   if (items.length === 0) {
     return (
@@ -32,6 +33,7 @@ export function ShoppingList({ items, isLoading, currency, onStatusChange, onPri
       {Object.entries(byMerchant).map(([merchant, merchantItems]) => (
         <MerchantGroup
           key={merchant}
+          missionId={missionId}
           merchant={merchant}
           items={merchantItems}
           currency={currency}

@@ -3,6 +3,7 @@ import type { ShoppingItem, ItemStatus } from '../../types'
 import styles from './MerchantGroup.module.css'
 
 interface MerchantGroupProps {
+  missionId: string
   merchant: string
   items: ShoppingItem[]
   currency?: string
@@ -11,7 +12,7 @@ interface MerchantGroupProps {
   onPin?: (itemId: string) => void
 }
 
-export function MerchantGroup({ merchant, items, currency, onStatusChange, onPriceClick, onPin }: MerchantGroupProps) {
+export function MerchantGroup({ missionId, merchant, items, currency = 'USD', onStatusChange, onPriceClick, onPin }: MerchantGroupProps) {
   const total = items.reduce((sum, i) => sum + i.price, 0)
   const fmt = (n: number) =>
     new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
@@ -26,6 +27,7 @@ export function MerchantGroup({ merchant, items, currency, onStatusChange, onPri
         <ShoppingItemRow
           key={item.id}
           item={item}
+          missionId={missionId}
           currency={currency}
           onStatusChange={onStatusChange ? (s) => onStatusChange(item.id, s) : undefined}
           onPriceClick={onPriceClick ? () => onPriceClick(item) : undefined}

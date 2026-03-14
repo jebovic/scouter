@@ -94,6 +94,13 @@ export async function rejectOption(
   return OptionSchema.parse(data) as Option
 }
 
+export async function unrejectOption(missionId: string, optionId: string): Promise<Option> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/options/${optionId}/unreject`, {
+    method: 'PATCH',
+  })
+  return OptionSchema.parse(data) as Option
+}
+
 export async function deletePinnedOptions(missionId: string): Promise<void> {
   await apiFetch<void>(`/api/missions/${missionId}/options/pinned`, { method: 'DELETE' })
 }

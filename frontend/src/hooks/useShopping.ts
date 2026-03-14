@@ -8,6 +8,7 @@ import {
   deletePinnedShoppingItems,
   addPriceSnapshot,
   listPriceSnapshots,
+  getDealScore,
 } from '../api'
 import { useToast } from '../components/scouter'
 import type { ShoppingItemCreateRequest, ShoppingItemUpdateRequest, PriceSnapshotRequest } from '../types'
@@ -106,6 +107,16 @@ export function usePriceSnapshots(missionId: string, itemId: string) {
     enabled: Boolean(missionId) && Boolean(itemId),
   })
   return { snapshots, isLoading }
+}
+
+export function useDealScore(missionId: string, itemId: string) {
+  const { data: score = null, isLoading } = useQuery({
+    queryKey: ['dealScore', missionId, itemId],
+    queryFn: () => getDealScore(missionId, itemId),
+    enabled: Boolean(missionId) && Boolean(itemId),
+    staleTime: 5 * 60_000,
+  })
+  return { score, isLoading }
 }
 
 export function useAddPriceSnapshot(missionId: string, itemId: string) {

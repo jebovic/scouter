@@ -1,0 +1,149 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+/* ── Name + merchant ─────────────────────────────────────────────────────── */
+.info {
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ── Price column ────────────────────────────────────────────────────────── */
+.priceCell {
+  text-align: right;
+  min-width: 80px;
+}
+
+.priceBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.priceBtn:disabled {
+  cursor: default;
+  color: var(--text-mid);
+}
+
+.priceDelta {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+}
+
+.priceDeltaUp {
+  color: var(--coral);
+}
+
+.priceDeltaDown {
+  color: var(--green);
+}
+
+/* ── Target price ────────────────────────────────────────────────────────── */
+.targetBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+  display: block;
+}
+
+.targetSet {
+  color: var(--gold);
+}
+
+.targetUnset {
+  color: var(--text-dim);
+}
+
+.targetInput {
+  width: 72px;
+  background: var(--raised);
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 2px 4px;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+/* ── Deal intel column ───────────────────────────────────────────────────── */
+.dealIntel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+/* ── Pin button ──────────────────────────────────────────────────────────── */
+.pinBtn {
+  background: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  transition: all 0.15s;
+}
+
+.pinned {
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+}
+
+.unpinned {
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+/* ── Status select ───────────────────────────────────────────────────────── */
+.statusSelect {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-mid);
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+  }
+
+  .dealIntel,
+  .statusSelect {
+    display: none;
+  }
+}

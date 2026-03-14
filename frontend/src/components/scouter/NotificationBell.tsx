@@ -11,13 +11,22 @@ export function NotificationBell() {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    function handler(e: MouseEvent) {
+    function mouseHandler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false)
       }
     }
-    if (open) document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
+    function keyHandler(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    if (open) {
+      document.addEventListener('mousedown', mouseHandler)
+      document.addEventListener('keydown', keyHandler)
+    }
+    return () => {
+      document.removeEventListener('mousedown', mouseHandler)
+      document.removeEventListener('keydown', keyHandler)
+    }
   }, [open])
 
   return (
@@ -34,7 +43,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className={styles.panel}>
+        <div className={styles.panel} role="region" aria-label="Notifications">
           <div className={styles.header}>
             <span className={styles.title}>ALERTS</span>
             {unread > 0 && (
@@ -52,7 +61,10 @@ export function NotificationBell() {
                 <li
                   key={n.id}
                   className={`${styles.item} ${n.read ? styles.read : styles.unread}`}
+                  role={!n.read ? 'button' : undefined}
+                  tabIndex={!n.read ? 0 : undefined}
                   onClick={() => !n.read && markRead(n.id)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && !n.read && markRead(n.id)}
                 >
                   <span className={styles.type}>{n.type.replace('_', ' ')}</span>
                   <span className={styles.itemTitle}>{n.title}</span>

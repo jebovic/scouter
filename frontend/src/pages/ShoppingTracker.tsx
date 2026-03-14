@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
+import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
 import { ShoppingList, CostBreakdown, PriceHistoryModal } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
@@ -57,26 +57,22 @@ export default function ShoppingTracker() {
 
   if (isLoading) {
     return (
-      <div className="page grid-bg scanlines">
-        <Topnav missionSlug={slug} />
-        <main className={styles.main}>
-          <div className="container">
-            <div className={styles.skeletonList}>
-              <Skeleton variant="row" />
-              <Skeleton variant="row" />
-              <Skeleton variant="row" />
-              <Skeleton variant="row" />
-            </div>
+      <main className={styles.main}>
+        <div className="container">
+          <div className={styles.skeletonList}>
+            <Skeleton variant="row" />
+            <Skeleton variant="row" />
+            <Skeleton variant="row" />
+            <Skeleton variant="row" />
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     )
   }
 
   return (
-    <div className="page grid-bg scanlines">
-      <Topnav missionSlug={slug} missionName={mission?.name} />
-      <main className={styles.main}>
+    <>
+    <main className={styles.main}>
         <div className="container">
           {/* Header */}
           <div className={styles.header}>
@@ -193,7 +189,7 @@ export default function ShoppingTracker() {
           ) : (
             <div className={styles.content}>
               {/* Shopping list */}
-              <ShoppingList items={items} onPriceClick={setHistoryItem} onPin={(id) => pinItem(id)} />
+              <ShoppingList items={items} missionId={mission?.id ?? ''} onPriceClick={setHistoryItem} onPin={(id) => pinItem(id)} />
 
               {/* Cost breakdown */}
               {items.length >= 2 && (
@@ -227,7 +223,7 @@ export default function ShoppingTracker() {
           isPending={pricingPending}
         />
       )}
-    </div>
+    </>
   )
 }
 

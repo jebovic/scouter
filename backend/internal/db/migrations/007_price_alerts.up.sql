@@ -18,3 +18,8 @@ CREATE TABLE notifications (
 CREATE INDEX notifications_unread_idx ON notifications (read, created_at DESC) WHERE read = false;
 CREATE INDEX notifications_mission_idx ON notifications (mission_id);
 CREATE INDEX notifications_created_at_idx ON notifications (created_at DESC);
+
+-- Dedup guard: one notification per item+type per day (item_id NOT NULL only).
+CREATE UNIQUE INDEX notifications_dedup_idx
+  ON notifications (item_id, type, (created_at::date))
+  WHERE item_id IS NOT NULL;

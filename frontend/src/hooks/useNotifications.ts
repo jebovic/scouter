@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   listNotifications,
-  getUnreadCount,
   markNotificationRead,
   markAllNotificationsRead,
 } from '../api'
@@ -10,21 +9,18 @@ import type { Notification } from '../types'
 const POLL_INTERVAL_MS = 60_000
 
 export function useNotifications() {
-  const { data: notifications = [], isLoading } = useQuery<Notification[]>({
+  const { data: notifications = [], isLoading, error } = useQuery<Notification[]>({
     queryKey: ['notifications'],
     queryFn: () => listNotifications(),
     refetchInterval: POLL_INTERVAL_MS,
   })
-  return { notifications, isLoading }
+  return { notifications, isLoading, error }
 }
 
+// Derived from the notifications list — no separate network request.
 export function useUnreadCount() {
-  const { data: count = 0 } = useQuery<number>({
-    queryKey: ['notifications', 'unread-count'],
-    queryFn: getUnreadCount,
-    refetchInterval: POLL_INTERVAL_MS,
-  })
-  return count
+  const { notifications } = useNotifications()
+  return notifications.filter((n) => !n.read).length
 }
 
 export function useMarkNotificationRead() {

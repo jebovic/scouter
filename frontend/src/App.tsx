@@ -1,50 +1,29 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import HQDashboard from './pages/HQDashboard'
-import MissionOverview from './pages/MissionOverview'
-import { ErrorBoundary, LoadingPulse, OnboardingOverlay, Sidebar } from './components/scouter'
-import { useOnboarding, useMissions } from './hooks'
-import { SidebarContext } from './contexts/sidebar'
+import { ErrorBoundary, LoadingPulse } from './components/scouter'
+import { Layout } from './layouts/Layout'
+import { MissionLayout } from './layouts/MissionLayout'
 
+const MissionOverview = lazy(() => import('./pages/MissionOverview'))
 const OptionsExplorer = lazy(() => import('./pages/OptionsExplorer'))
 const ShoppingTracker = lazy(() => import('./pages/ShoppingTracker'))
-
-function AppInner() {
-  const { show, step, totalSteps, nextStep, prevStep, dismiss } = useOnboarding()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { missions } = useMissions()
-
-  return (
-    <SidebarContext.Provider value={{ openSidebar: () => setSidebarOpen(true) }}>
-      <OnboardingOverlay
-        show={show}
-        step={step}
-        totalSteps={totalSteps}
-        onNext={nextStep}
-        onPrev={prevStep}
-        onDismiss={dismiss}
-      />
-      <Sidebar
-        open={sidebarOpen}
-        missions={missions}
-        onClose={() => setSidebarOpen(false)}
-      />
-      <Suspense fallback={<LoadingPulse label="Loading..." />}>
-        <Routes>
-          <Route path="/" element={<HQDashboard />} />
-          <Route path="/missions/:slug" element={<MissionOverview />} />
-          <Route path="/missions/:slug/options" element={<OptionsExplorer />} />
-          <Route path="/missions/:slug/shopping" element={<ShoppingTracker />} />
-        </Routes>
-      </Suspense>
-    </SidebarContext.Provider>
-  )
-}
 
 function App() {
   return (
     <ErrorBoundary>
-      <AppInner />
+      <Suspense fallback={<LoadingPulse label="Loading..." />}>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HQDashboard />} />
+            <Route path="/missions/:slug" element={<MissionLayout />}>
+              <Route index element={<MissionOverview />} />
+              <Route path="options" element={<OptionsExplorer />} />
+              <Route path="shopping" element={<ShoppingTracker />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Suspense>
     </ErrorBoundary>
   )
 }

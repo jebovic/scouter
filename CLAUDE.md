@@ -54,12 +54,16 @@ backend/
     db/                     -- pgx pool init, golang-migrate runner (embeds migrations/)
     mission/                -- model, repository (pgx), service, handler
     option/                 -- model, repository, service, handler
-    shopping/               -- model, repository, service, handler (items + price_history)
+    shopping/               -- model, repository, service, handler (items + price_history + deal-score endpoint)
     httputil/               -- WriteJSON / WriteError helpers (buffer-first, no header split)
     llm/                    -- Provider interface + CompletionRequest/Response + AnthropicProvider + OllamaProvider stub
     research/               -- ResearchAgent: tool schema, prompt builder, LLM call, option parser, DB persist
     pricing/                -- PricingAgent: tool schema, prompt builder, LLM call, price parser, DB persist
-  migrations/               -- 001_init.sql / 001_init.down.sql (golang-migrate format)
+    dealintel/              -- Trend + DealScore calculation (pure Go, no DB deps)
+    notification/           -- model, repository, handler (CRUD + mark-read + unread-count)
+    scheduler/              -- robfig/cron background job (price-check alerts on active missions)
+    template/               -- built-in template registry (15 templates, compiled in binary)
+  migrations/               -- 001–006 up/down SQL files (golang-migrate format)
   Dockerfile
 
 frontend/
@@ -94,18 +98,16 @@ See `.env.example` — required: `DATABASE_URL`, `ANTHROPIC_API_KEY`
 | `PORT` | `8080` | backend listen port |
 | `ENV` | `production` | `development` enables permissive CORS |
 
-## Backend Status
-Backend is **fully implemented** (Phases 1–4 complete, all go-reviewer issues resolved):
+## Backend Status (Phases 1–8 complete)
 - All handlers use `httputil.WriteJSON`/`WriteError` — no raw error leaks
 - `errors.Is(err, pgx.ErrNoRows)` throughout all repositories
-- JSON marshal/unmarshal errors propagated everywhere
-- `param.NewOpt(v)` used in Anthropic SDK (not struct literal)
-- CORS gated on `ENV=development`; 1 MiB request body cap in chi middleware
-- Cursor-based pagination on all list endpoints (`httputil.ParsePageParams` + `BuildPagedResponse[T]`, probe-row pattern)
-- Service-layer input validation in `mission.Service.Create` (defense-in-depth)
+- `param.NewOpt(v)` used in Anthropic SDK; CORS gated on `ENV=development`; 1 MiB body cap
+- Cursor-based pagination: `httputil.ParsePageParams` + `BuildPagedResponse[T]`, probe-row pattern
 - Graceful shutdown timeout: 65s (exceeds 60s LLM call timeout)
+- **Phase 7**: `internal/dealintel/` (trend+score, pure Go, TDD); `internal/notification/` (CRUD + mark-read); `internal/scheduler/` (robfig/cron, price-check alerts); `shopping_items.target_price`; `notifications` table (migration 006)
+- **Phase 8**: `internal/template/` (registry, 15 built-in templates, compiled in binary); `GET /api/templates`, `GET /api/templates/:id`
 
-## Frontend Status (Phases 6 + 8 complete)
+## Frontend Status (Phases 1–8 complete)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
 - **Responsive**: breakpoints at 640px and 1024px across all pages and components
 - **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
@@ -114,9 +116,10 @@ Backend is **fully implemented** (Phases 1–4 complete, all go-reviewer issues 
 - **Keyboard shortcuts**: `useKeyboardShortcuts` hook (ref-stable, preventDefault); `N` new mission, `R` research, `P` pricing
 - **Sidebar**: collapsible mission list drawer, wired in App via `SidebarContext` (`src/contexts/sidebar.tsx`)
 - **Breadcrumb**: `Breadcrumb` component with `missionSlug` + `missionName` + `subPage` props
-- **Templates (Phase 8)**: `TemplateCard` (card-as-button), `TemplateGallery` (skeleton + empty state), `TemplatePreview` (accessible modal: `role="dialog"`, Escape key, backdrop click, `autoFocus`); `useTemplates` hook with 24h stale time; `MissionForm` accepts `initialValues` prop; `HQDashboard` wired end-to-end
+- **Templates (Phase 8)**: `TemplateCard`, `TemplateGallery`, `TemplatePreview` (accessible modal); `useTemplates` (24h stale); `MissionForm` `initialValues` prop; `HQDashboard` wired end-to-end
+- **Layout migration (Phase 7)**: React Router v7 Outlet pattern — `Layout.tsx` (root shell: sidebar+onboarding), `MissionLayout.tsx` (page wrapper+Topnav); mission pages now return just `<main>` content
+- **Deal intel (Phase 7)**: `TrendBadge`, `DealScoreBadge`, `PriceSparkline` in `ShoppingItemRow`; `NotificationBell` in `Topnav`; `useNotifications` (60s poll); `getDealScore` API; `target_price` inline edit
 - **Test suite**: Vitest + jsdom + Testing Library; 71 tests across 10 files
-- **Phase 7 note**: migrate to React Router v7 Layout pattern (`Layout.tsx` with `<Outlet />`) to remove per-page `<Topnav />` duplication
 
 ## CSS Conventions
 - Import `frontend/src/styles/theme.css` for all SCOUTER tokens

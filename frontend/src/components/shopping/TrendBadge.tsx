@@ -15,7 +15,7 @@ export function TrendBadge({ trend }: TrendBadgeProps) {
   const { label, icon } = TREND_CONFIG[trend]
   return (
     <span className={`${styles.badge} ${styles[trend]}`}>
-      <span className={styles.icon}>{icon}</span>
+      <span className={styles.icon} aria-hidden="true">{icon}</span>
       {label}
     </span>
   )

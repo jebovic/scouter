@@ -127,7 +127,10 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 			Title:     fmt.Sprintf("Target price hit: %s", item.Name),
 			Body:      fmt.Sprintf("Current price %.2f has reached your target of %.2f.", item.Price, *item.TargetPrice),
 		})
-		return err
+		if err != nil {
+			return fmt.Errorf("create target_hit notification: %w", err)
+		}
+		return nil
 	}
 
 	// PctBelowAvg > 0 and dropping trend means a meaningful price drop.
@@ -139,7 +142,9 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 			Title:     fmt.Sprintf("Price drop: %s", item.Name),
 			Body:      fmt.Sprintf("Price dropped to %.2f (%.1f%% below average).", item.Price, score.PctBelowAvg),
 		})
-		return err
+		if err != nil {
+			return fmt.Errorf("create price_drop notification: %w", err)
+		}
 	}
 
 	return nil

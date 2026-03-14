@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/robfig/cron/v3"
 )
 
 // Config holds all environment-derived configuration for the server.
@@ -60,6 +62,11 @@ func Load() (*Config, error) {
 	cfg.PriceCheckCron = os.Getenv("PRICE_CHECK_CRON")
 	if cfg.PriceCheckCron == "" {
 		cfg.PriceCheckCron = "0 */6 * * *"
+	}
+	if cfg.PriceCheckEnabled {
+		if _, err := cron.ParseStandard(cfg.PriceCheckCron); err != nil {
+			return nil, fmt.Errorf("PRICE_CHECK_CRON %q is not a valid cron expression: %w", cfg.PriceCheckCron, err)
+		}
 	}
 	if v := os.Getenv("PRICE_CHECK_MAX_MISSIONS"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil && n > 0 {

@@ -2,6 +2,7 @@ package notification
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -61,12 +62,24 @@ func (r *pgRepository) UnreadCount(ctx context.Context) (int, error) {
 }
 
 func (r *pgRepository) Create(ctx context.Context, req CreateRequest) (*Notification, error) {
+	// ON CONFLICT DO NOTHING implements the dedup guard enforced by
+	// notifications_dedup_idx (one item+type per day). Returns nil when
+	// the notification was a duplicate (not an error).
 	row := r.pool.QueryRow(ctx, `
 		INSERT INTO notifications (mission_id, item_id, type, title, body)
 		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (item_id, type, (created_at::date)) WHERE item_id IS NOT NULL
+		DO NOTHING
 		RETURNING `+notifCols,
 		req.MissionID, req.ItemID, req.Type, req.Title, req.Body)
-	return scanNotification(row)
+	n, err := scanNotification(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil // duplicate — silently ignored
+		}
+		return nil, fmt.Errorf("create notification: %w", err)
+	}
+	return n, nil
 }
 
 func (r *pgRepository) MarkRead(ctx context.Context, id uuid.UUID) error {

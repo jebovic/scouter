@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
+import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
 import { CategoryTemplate, DecisionPanel } from '../components/mission'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts } from '../hooks'
 import type { MissionPhase } from '../types'
@@ -43,30 +43,22 @@ export default function MissionOverview() {
 
   if (isLoading) {
     return (
-      <div className="page grid-bg scanlines">
-        <Topnav missionSlug={slug} />
-        <main style={{ flex: 1, padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <LoadingPulse label="Loading mission..." />
-        </main>
-      </div>
+      <main style={{ flex: 1, padding: '2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <LoadingPulse label="Loading mission..." />
+      </main>
     )
   }
 
   if (!mission) {
     return (
-      <div className="page grid-bg scanlines">
-        <Topnav missionSlug={slug} />
-        <main style={{ flex: 1, padding: '2rem' }}>
-          <p style={{ color: 'var(--coral)', fontFamily: 'var(--font-display)' }}>Mission not found.</p>
-        </main>
-      </div>
+      <main style={{ flex: 1, padding: '2rem' }}>
+        <p style={{ color: 'var(--coral)', fontFamily: 'var(--font-display)' }}>Mission not found.</p>
+      </main>
     )
   }
 
   return (
-    <div className="page grid-bg scanlines">
-      <Topnav missionSlug={slug} missionName={mission.name} />
-      <main style={{ flex: 1, padding: '2rem' }}>
+    <main style={{ flex: 1, padding: '2rem' }}>
         <div className="container">
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
@@ -291,6 +283,5 @@ export default function MissionOverview() {
           </div>
         </div>
       </main>
-    </div>
   )
 }

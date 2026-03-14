@@ -170,13 +170,14 @@ func main() {
 	<-ctx.Done()
 	log.Info("shutting down")
 
-	// Drain scheduler first so any running price check can finish.
-	if sched != nil {
-		sched.Stop()
-	}
-
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// Drain scheduler and HTTP server concurrently so in-flight LLM calls (up to
+	// 60 s) are not cut short by a sequential scheduler drain (also up to 60 s).
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 65*time.Second)
 	defer cancel()
+
+	if sched != nil {
+		go sched.Stop()
+	}
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)
 	}

@@ -3,7 +3,6 @@ export type ItemStatus = 'buy' | 'flash-sale' | 'preorder' | 'defer' | 'watch' |
 export type PriceTrend = 'dropping' | 'stable' | 'rising'
 
 export interface DealScore {
-  score: number
   pctBelowAvg: number
   pctBelowTarget: number
   historicalAvg: number
@@ -51,6 +50,7 @@ export interface ShoppingItemUpdateRequest {
   status?: ItemStatus
   note?: string
   merchant?: string
+  targetPrice?: number
 }
 
 export interface PriceSnapshotRequest {

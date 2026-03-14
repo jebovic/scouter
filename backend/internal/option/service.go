@@ -91,6 +91,10 @@ func (s *Service) Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (
 	return s.repo.Reject(ctx, id, req)
 }
 
+func (s *Service) Unreject(ctx context.Context, id uuid.UUID) (*Option, error) {
+	return s.repo.Unreject(ctx, id)
+}
+
 func (s *Service) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
 	return s.repo.DeletePinned(ctx, missionID)
 }

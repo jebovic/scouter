@@ -28,7 +28,6 @@ export const ShoppingItemSchema = z.object({
 })
 
 export const DealScoreSchema = z.object({
-  score: z.number(),
   pctBelowAvg: z.number(),
   pctBelowTarget: z.number(),
   historicalAvg: z.number(),

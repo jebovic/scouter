@@ -169,9 +169,10 @@ func (r *pgRepository) ListPriceHistory(ctx context.Context, itemID uuid.UUID) (
 	return snapshots, rows.Err()
 }
 
+// Pin toggles the pinned flag on a shopping item.
 func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Item, error) {
 	row := r.pool.QueryRow(ctx, `
-		UPDATE shopping_items SET pinned = true WHERE id = $1
+		UPDATE shopping_items SET pinned = NOT pinned WHERE id = $1
 		RETURNING `+selectCols, id)
 	item, err := scanItem(row)
 	if errors.Is(err, pgx.ErrNoRows) {
