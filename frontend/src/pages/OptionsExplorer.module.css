@@ -61,7 +61,7 @@
   padding: 8px 18px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--gold);
-  background: rgba(255, 198, 0, 0.08);
+  background: var(--gold-dim);
   color: var(--gold);
   cursor: pointer;
   font-family: var(--font-display);

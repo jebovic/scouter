@@ -22,17 +22,14 @@
 .added {
   color: var(--green);
   background: var(--green-dim);
-  border-color: var(--green-dim);
 }
 
 .removed {
   color: var(--coral);
   background: var(--coral-dim);
-  border-color: var(--coral-dim);
 }
 
 .changed {
   color: var(--gold);
   background: var(--gold-dim);
-  border-color: var(--gold-dim);
 }

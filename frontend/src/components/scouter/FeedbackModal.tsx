@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './FeedbackModal.module.css'
 
 interface FeedbackModalProps {
@@ -13,6 +13,10 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
   const [feedback, setFeedback] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
+  useEffect(() => {
+    if (!isPending) setSubmitted(false)
+  }, [isPending])
+
   return (
     <div
       className={styles.overlay}
@@ -23,7 +27,6 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-modal-title"
-        onKeyDown={(e) => e.key === 'Escape' && onClose()}
       >
         <h3 id="feedback-modal-title" className={styles.title}>{title}</h3>
         <label className={styles.label}>Feedback for the agent (optional)</label>
@@ -32,6 +35,7 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
           placeholder={placeholder ?? 'Add optional guidance for the agent...'}
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
+          onKeyDown={(e) => e.key === 'Escape' && onClose()}
           rows={4}
           autoFocus
         />

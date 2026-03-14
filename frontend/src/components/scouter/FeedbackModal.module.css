@@ -8,12 +8,13 @@
   align-items: center;
   justify-content: center;
   z-index: 300;
+  padding: 1rem;
 }
 
 .modal {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 24px;
   width: 100%;
   max-width: 460px;
