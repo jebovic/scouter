@@ -108,10 +108,18 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
-## Phase 5: Agent Feedback Loop & Refinement
+## Phase 5: Agent Feedback Loop & Refinement ✅ COMPLETE
 
 **Type**: Agent + Functional | **Priority**: High | **Complexity**: High
 **Depends on**: Phase 3
+
+**Completed**: 2026-03-14. Commits: `08e947a` (frontend fixes), `1b67ba1` (architect review fixes H1/H2/H3/M4).
+
+**Deferred to Phase 7** (noted for context):
+- M1: `recordRun` duplicated in research/pricing — consolidate into shared helper
+- M2: price diff tracking (numeric delta) — belongs with Phase 7 Deal Intelligence
+- M3: aggressive LLM name normalization in `normalize.go` — Phase 7 when real data available
+- L1/L2/L3: FeedbackInput dedup, shopping diff items, normalize_test coverage — minor cleanup
 
 **User Value**: Iterative refinement — "I liked A and C, find more like A" instead of one-shot LLM calls.
 
