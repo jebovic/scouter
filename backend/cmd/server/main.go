@@ -24,6 +24,7 @@ import (
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/shopping"
+	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
 )
 
@@ -88,7 +89,12 @@ func main() {
 	pricingHandler := pricing.NewHandler(pricingAgent, missionSvc, optionRepo)
 	usageHandler := usage.NewHandler(usageSvc)
 	decisionHandler := decision.NewHandler(decisionSvc)
-	agentRunHandler := agentrun.NewHandler(agentRunRepo)
+	agentRunSvc := agentrun.NewService(agentRunRepo)
+	agentRunHandler := agentrun.NewHandler(agentRunSvc)
+
+	// Templates (no DB dependency — compiled into binary)
+	templateReg := template.NewRegistry()
+	templateHandler := template.NewHandler(templateReg)
 
 	// Router
 	r := chi.NewRouter()
@@ -122,6 +128,10 @@ func main() {
 	r.Mount("/api/missions/{missionID}/pricing", pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
+
+	// Templates
+	r.Get("/api/templates", templateHandler.List)
+	r.Get("/api/templates/{slug}", templateHandler.Get)
 
 	addr := ":" + cfg.Port
 	srv := &http.Server{Addr: addr, Handler: r}

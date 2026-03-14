@@ -47,13 +47,13 @@ func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID, a
 			SELECT id, mission_id, agent_type, input_snapshot, result_snapshot, diff, feedback, created_at
 			FROM agent_runs
 			WHERE mission_id = $1 AND agent_type = $2
-			ORDER BY created_at DESC`, missionID, string(*agentType))
+			ORDER BY created_at DESC LIMIT 20`, missionID, string(*agentType))
 	} else {
 		rows, err = r.pool.Query(ctx, `
 			SELECT id, mission_id, agent_type, input_snapshot, result_snapshot, diff, feedback, created_at
 			FROM agent_runs
 			WHERE mission_id = $1
-			ORDER BY created_at DESC`, missionID)
+			ORDER BY created_at DESC LIMIT 20`, missionID)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("list agent runs: %w", err)

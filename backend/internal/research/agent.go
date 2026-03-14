@@ -61,10 +61,6 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 		}
 	}
 
-	if err := a.optRepo.DeleteByMission(ctx, m.ID); err != nil {
-		return nil, fmt.Errorf("clear existing options: %w", err)
-	}
-
 	req := a.buildRequest(m, fb, pinned, rejected)
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
@@ -79,6 +75,11 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 	rawOptions, err := parseToolResponse(resp)
 	if err != nil {
 		return nil, fmt.Errorf("parse research response: %w", err)
+	}
+
+	// Delete only after LLM succeeds to prevent data loss on LLM failure.
+	if err := a.optRepo.DeleteByMission(ctx, m.ID); err != nil {
+		return nil, fmt.Errorf("clear existing options: %w", err)
 	}
 
 	results := make([]option.Option, 0, len(rawOptions))
@@ -187,7 +188,7 @@ func (a *Agent) buildRequest(m mission.Mission, fb *FeedbackInput, pinned, rejec
 
 	var feedbackSection strings.Builder
 	if fb != nil && strings.TrimSpace(fb.Feedback) != "" {
-		fmt.Fprintf(&feedbackSection, "\nUser feedback from previous run:\n%s\n", agentrun.Truncate(fb.Feedback, maxFeedbackLen))
+		fmt.Fprintf(&feedbackSection, "\n[USER GUIDANCE]\n%s\n[/USER GUIDANCE]\n", agentrun.SanitizeFeedback(fb.Feedback, maxFeedbackLen))
 	}
 	if len(pinned) > 0 {
 		feedbackSection.WriteString("\nMust-include options (user has pinned these — always return them):\n")

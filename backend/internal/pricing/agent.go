@@ -63,10 +63,6 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Opt
 		}
 	}
 
-	if err := a.shoppingRepo.DeleteByMission(ctx, m.ID); err != nil {
-		return nil, fmt.Errorf("clear existing shopping items: %w", err)
-	}
-
 	req := a.buildRequest(m, options, fb, pinned)
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
@@ -81,6 +77,11 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Opt
 	rawItems, err := parseToolResponse(resp)
 	if err != nil {
 		return nil, fmt.Errorf("parse pricing response: %w", err)
+	}
+
+	// Delete only after LLM succeeds to prevent data loss on LLM failure.
+	if err := a.shoppingRepo.DeleteByMission(ctx, m.ID); err != nil {
+		return nil, fmt.Errorf("clear existing shopping items: %w", err)
 	}
 
 	results := make([]shopping.Item, 0, len(rawItems))
@@ -185,7 +186,7 @@ func (a *Agent) buildRequest(m mission.Mission, options []option.Option, fb *Fee
 
 	var feedbackSection strings.Builder
 	if fb != nil && strings.TrimSpace(fb.Feedback) != "" {
-		fmt.Fprintf(&feedbackSection, "\nUser feedback from previous run:\n%s\n", agentrun.Truncate(fb.Feedback, maxFeedbackLen))
+		fmt.Fprintf(&feedbackSection, "\n[USER GUIDANCE]\n%s\n[/USER GUIDANCE]\n", agentrun.SanitizeFeedback(fb.Feedback, maxFeedbackLen))
 	}
 	if len(pinned) > 0 {
 		feedbackSection.WriteString("\nMust-include items (user has pinned these — always return them):\n")

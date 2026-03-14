@@ -10,12 +10,12 @@ import (
 
 // Handler exposes agent run history as HTTP endpoints.
 type Handler struct {
-	repo Repository
+	svc *Service
 }
 
 // NewHandler creates a new agent run handler.
-func NewHandler(repo Repository) *Handler {
-	return &Handler{repo: repo}
+func NewHandler(svc *Service) *Handler {
+	return &Handler{svc: svc}
 }
 
 // Routes mounts agent run routes under a parent router.
@@ -46,7 +46,7 @@ func (h *Handler) listRuns(w http.ResponseWriter, r *http.Request) {
 		agentType = &at
 	}
 
-	runs, err := h.repo.ListByMission(r.Context(), missionID, agentType)
+	runs, err := h.svc.ListByMission(r.Context(), missionID, agentType)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
