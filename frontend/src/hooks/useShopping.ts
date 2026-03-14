@@ -43,7 +43,7 @@ export function useCreateShoppingItem(missionId: string) {
 export function useUpdateShoppingItem(missionId: string) {
   const qc = useQueryClient()
   const { toast } = useToast()
-  const { mutateAsync, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({ itemId, req }: { itemId: string; req: ShoppingItemUpdateRequest }) =>
       updateShoppingItem(missionId, itemId, req),
     onSuccess: () => {
@@ -52,7 +52,7 @@ export function useUpdateShoppingItem(missionId: string) {
     },
     onError: (err: unknown) => toast(`Failed to update item: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
-  return { updateItem: mutateAsync, isPending }
+  return { updateItem: mutate, isPending }
 }
 
 export function useDeleteShoppingItem(missionId: string) {

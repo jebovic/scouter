@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Badge } from '../scouter'
 import { TrendBadge } from './TrendBadge'
 import { DealScoreBadge } from './DealScoreBadge'
 import { PriceSparkline } from './PriceSparkline'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
+import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
+import styles from './ShoppingItemRow.module.css'
 
 interface ShoppingItemRowProps {
   item: ShoppingItem
@@ -20,6 +22,7 @@ const STATUSES: ItemStatus[] = ['buy', 'watch', 'flash-sale', 'preorder', 'defer
 export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusChange, onPriceClick, onPin }: ShoppingItemRowProps) {
   const [editingTarget, setEditingTarget] = useState(false)
   const [targetInput, setTargetInput] = useState('')
+  const cancelledRef = useRef(false)
 
   const { score } = useDealScore(missionId, item.id)
   const { updateItem } = useUpdateShoppingItem(missionId)
@@ -28,10 +31,13 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
     ? item.price - item.originalEstimate
     : null
 
-  const fmt = (n: number) =>
-    new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
+  const fmt = (n: number) => formatCurrency(n, currency)
 
   function handleTargetSubmit() {
+    if (cancelledRef.current) {
+      cancelledRef.current = false
+      return
+    }
     const val = parseFloat(targetInput)
     if (!isNaN(val) && val > 0) {
       updateItem({ itemId: item.id, req: { targetPrice: val } })
@@ -41,55 +47,34 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
 
   function handleTargetKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter') handleTargetSubmit()
-    if (e.key === 'Escape') setEditingTarget(false)
+    if (e.key === 'Escape') {
+      cancelledRef.current = true
+      setEditingTarget(false)
+    }
   }
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr auto auto auto auto auto',
-        alignItems: 'center',
-        gap: 12,
-        padding: '10px 16px',
-        borderBottom: '1px solid var(--border)',
-        transition: 'background 0.15s',
-        opacity: item.pinned ? 1 : undefined,
-      }}
-    >
+    <div className={styles.row}>
       {/* Name + merchant */}
-      <div>
-        <div style={{ fontSize: '0.875rem', color: 'var(--text)' }}>{item.name}</div>
-        <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: 2 }}>
+      <div className={styles.info}>
+        <div className={styles.name}>{item.name}</div>
+        <div className={styles.meta}>
           {item.merchant} · {item.costCategory}
         </div>
       </div>
 
       {/* Price + delta + target */}
-      <div style={{ textAlign: 'right', minWidth: 80 }}>
+      <div className={styles.priceCell}>
         <button
           onClick={onPriceClick}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: onPriceClick ? 'pointer' : 'default',
-            padding: 0,
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.9rem',
-            color: 'var(--cyan)',
-            fontWeight: 600,
-          }}
+          className={styles.priceBtn}
+          aria-label={`View price history for ${item.name}: ${fmt(item.price)}`}
+          disabled={!onPriceClick}
         >
           {fmt(item.price)}
         </button>
         {priceDelta !== null && (
-          <div
-            style={{
-              fontSize: '0.65rem',
-              color: priceDelta > 0 ? 'var(--coral)' : 'var(--green)',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
+          <div className={`${styles.priceDelta} ${priceDelta > 0 ? styles.priceDeltaUp : styles.priceDeltaDown}`}>
             {priceDelta > 0 ? '+' : ''}{fmt(priceDelta)}
           </div>
         )}
@@ -103,33 +88,13 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
             onBlur={handleTargetSubmit}
             onKeyDown={handleTargetKeyDown}
             placeholder="target"
-            style={{
-              width: 72,
-              background: 'var(--raised)',
-              border: '1px solid var(--cyan)',
-              borderRadius: 4,
-              color: 'var(--text)',
-              padding: '2px 4px',
-              fontSize: '0.65rem',
-              fontFamily: 'var(--font-mono)',
-              marginTop: 2,
-            }}
+            className={styles.targetInput}
           />
         ) : (
           <button
             onClick={() => { setTargetInput(item.targetPrice != null ? String(item.targetPrice) : ''); setEditingTarget(true) }}
             title="Set target price"
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              fontSize: '0.65rem',
-              fontFamily: 'var(--font-mono)',
-              color: item.targetPrice != null ? 'var(--gold)' : 'var(--text-dim)',
-              marginTop: 2,
-              display: 'block',
-            }}
+            className={`${styles.targetBtn} ${item.targetPrice != null ? styles.targetSet : styles.targetUnset}`}
           >
             {item.targetPrice != null ? `↯ ${fmt(item.targetPrice)}` : '+ target'}
           </button>
@@ -137,10 +102,14 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       </div>
 
       {/* Deal intelligence badges */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
+      <div className={styles.dealIntel}>
         <PriceSparkline missionId={missionId} itemId={item.id} />
-        {score?.trend && <TrendBadge trend={score.trend} />}
-        {score && <DealScoreBadge score={score} />}
+        {score && (
+          <>
+            <TrendBadge trend={score.trend} />
+            <DealScoreBadge score={score} />
+          </>
+        )}
       </div>
 
       <Badge variant={item.status} />
@@ -149,17 +118,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <button
           onClick={() => onPin(item.id)}
           title={item.pinned ? 'Pinned — will survive re-run' : 'Pin this item'}
-          style={{
-            background: 'none',
-            border: `1px solid ${item.pinned ? 'var(--cyan)' : 'var(--border)'}`,
-            borderRadius: 4,
-            color: item.pinned ? 'var(--cyan)' : 'var(--text-dim)',
-            cursor: 'pointer',
-            padding: '2px 6px',
-            fontSize: '0.7rem',
-            fontFamily: 'var(--font-mono)',
-            transition: 'all 0.15s',
-          }}
+          className={`${styles.pinBtn} ${item.pinned ? styles.pinned : styles.unpinned}`}
         >
           📌
         </button>
@@ -169,16 +128,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <select
           value={item.status}
           onChange={(e) => onStatusChange(e.target.value as ItemStatus)}
-          style={{
-            background: 'var(--raised)',
-            border: '1px solid var(--border)',
-            borderRadius: 4,
-            color: 'var(--text-mid)',
-            padding: '4px 6px',
-            fontSize: '0.7rem',
-            fontFamily: 'var(--font-mono)',
-            cursor: 'pointer',
-          }}
+          className={styles.statusSelect}
         >
           {STATUSES.map((s) => (
             <option key={s} value={s}>{s}</option>
