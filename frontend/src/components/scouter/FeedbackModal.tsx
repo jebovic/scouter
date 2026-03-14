@@ -11,6 +11,7 @@ interface FeedbackModalProps {
 
 export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPending }: FeedbackModalProps) {
   const [feedback, setFeedback] = useState('')
+  const [submitted, setSubmitted] = useState(false)
 
   return (
     <div
@@ -40,8 +41,8 @@ export function FeedbackModal({ title, placeholder, onConfirm, onClose, isPendin
           </button>
           <button
             className={styles.confirmBtn}
-            onClick={() => onConfirm(feedback)}
-            disabled={isPending}
+            onClick={() => { if (!submitted && !isPending) { setSubmitted(true); onConfirm(feedback) } }}
+            disabled={isPending || submitted}
           >
             {isPending ? 'Running...' : 'Confirm'}
           </button>

@@ -2,6 +2,11 @@ import { DiffBadge } from './DiffBadge'
 import type { AgentRunDTO } from '../../api'
 import styles from './AgentRunHistory.module.css'
 
+const AGENT_TYPE_CLASS: Record<string, string | undefined> = {
+  research: styles.research,
+  pricing: styles.pricing,
+}
+
 interface AgentRunHistoryProps {
   runs: AgentRunDTO[]
   isLoading?: boolean
@@ -43,8 +48,8 @@ export function AgentRunHistory({ runs, isLoading }: AgentRunHistoryProps) {
         {runs.map((run) => (
           <div key={run.id} className={styles.row}>
             <div className={styles.rowLeft}>
-              <span className={`${styles.agentType} ${styles[run.agentType]}`}>
-                {run.agentType === 'research' ? '🔍' : '💰'} {run.agentType}
+              <span className={`${styles.agentType} ${AGENT_TYPE_CLASS[run.agentType] ?? ''}`}>
+                <span aria-hidden="true">{run.agentType === 'research' ? '🔍' : '💰'}</span>{' '}{run.agentType}
               </span>
               {run.feedback && (
                 <span className={styles.feedback} title={run.feedback}>

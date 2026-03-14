@@ -132,6 +132,8 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
           {BADGES.map((b) => (
             <button
               key={b}
+              aria-label={b}
+              aria-pressed={option.badge === b}
               onClick={() => onBadgeChange(b)}
               style={{
                 flex: 1,

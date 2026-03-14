@@ -190,9 +190,12 @@ export default function OptionsExplorer() {
         <FeedbackModal
           title="RE-RUN RESEARCH"
           placeholder='Optional: guide the agent (e.g. "focus on options under $800 with good warranty")'
-          onConfirm={(feedback) => {
-            triggerResearch(feedback || undefined)
-            setShowFeedback(false)
+          onConfirm={async (feedback) => {
+            try {
+              await triggerResearch(feedback || undefined)
+            } finally {
+              setShowFeedback(false)
+            }
           }}
           onClose={() => setShowFeedback(false)}
           isPending={researchPending}

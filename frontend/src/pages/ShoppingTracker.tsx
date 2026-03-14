@@ -41,17 +41,21 @@ export default function ShoppingTracker() {
 
   async function handleAddItem() {
     if (!addForm.name || !addForm.merchant || !addForm.price) return
-    await createItem({
-      name: addForm.name,
-      merchant: addForm.merchant,
-      costCategory: addForm.costCategory ?? 'other',
-      price: addForm.price,
-      status: 'watch',
-      note: addForm.note,
-      url: addForm.url,
-    })
-    setAddForm({})
-    setShowAddForm(false)
+    try {
+      await createItem({
+        name: addForm.name,
+        merchant: addForm.merchant,
+        costCategory: addForm.costCategory ?? 'other',
+        price: addForm.price,
+        status: 'watch',
+        note: addForm.note,
+        url: addForm.url,
+      })
+      setAddForm({})
+      setShowAddForm(false)
+    } catch {
+      // error handled by mutation's onError toast
+    }
   }
 
   if (isLoading) {
@@ -208,9 +212,12 @@ export default function ShoppingTracker() {
         <FeedbackModal
           title="RUN PRICE INTEL"
           placeholder='Optional: guide the agent (e.g. "check for Black Friday deals on electronics")'
-          onConfirm={(feedback) => {
-            triggerPricing(feedback || undefined)
-            setShowFeedback(false)
+          onConfirm={async (feedback) => {
+            try {
+              await triggerPricing(feedback || undefined)
+            } finally {
+              setShowFeedback(false)
+            }
           }}
           onClose={() => setShowFeedback(false)}
           isPending={pricingPending}

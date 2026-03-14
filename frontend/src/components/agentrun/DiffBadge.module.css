@@ -1,0 +1,38 @@
+@import '../../styles/theme.css';
+
+.wrapper {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.noChanges {
+  color: var(--text-dim);
+  border-color: var(--border);
+}
+
+.added {
+  color: var(--green);
+  background: var(--green-dim);
+  border-color: var(--green-dim);
+}
+
+.removed {
+  color: var(--coral);
+  background: var(--coral-dim);
+  border-color: var(--coral-dim);
+}
+
+.changed {
+  color: var(--gold);
+  background: var(--gold-dim);
+  border-color: var(--gold-dim);
+}

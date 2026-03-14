@@ -37,8 +37,9 @@ export async function listAgentRuns(
   missionId: string,
   agentType?: 'research' | 'pricing',
 ): Promise<AgentRunDTO[]> {
-  const params = agentType ? `?type=${agentType}` : ''
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/agent-runs${params}`)
+  const url = new URL(`/api/missions/${missionId}/agent-runs`, window.location.origin)
+  if (agentType) url.searchParams.set('type', agentType)
+  const data = await apiFetch<unknown>(url.pathname + url.search)
   const { runs } = z.object({ runs: z.array(AgentRunSchema) }).parse(data)
   return runs
 }
