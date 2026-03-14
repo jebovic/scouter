@@ -103,6 +103,23 @@
   align-items: flex-end;
 }
 
+.intelToggleBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.intelToggleBtn:hover,
+.intelToggleBtn[aria-expanded='true'] {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
 /* ── Pin button ──────────────────────────────────────────────────────────── */
 .pinBtn {
   background: none;

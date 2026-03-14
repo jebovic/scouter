@@ -189,7 +189,7 @@ export default function ShoppingTracker() {
           ) : (
             <div className={styles.content}>
               {/* Shopping list */}
-              <ShoppingList items={items} missionId={mission?.id ?? ''} onPriceClick={setHistoryItem} onPin={(id) => pinItem(id)} />
+              <ShoppingList items={items} missionId={mission?.id ?? ''} currency={mission?.currency ?? 'USD'} onPriceClick={setHistoryItem} onPin={(id) => pinItem(id)} />
 
               {/* Cost breakdown */}
               {items.length >= 2 && (

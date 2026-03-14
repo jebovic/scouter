@@ -2,10 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
-import { OptionCard } from '../components/options'
-import { ComparisonTable } from '../components/options'
-import { RadarChart } from '../components/options'
-import { ConstraintChecker } from '../components/options'
+import { OptionCard, ComparisonTable, RadarChart, ConstraintChecker } from '../components/options'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,

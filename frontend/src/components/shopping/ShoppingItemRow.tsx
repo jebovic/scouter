@@ -8,6 +8,23 @@ import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
 import styles from './ShoppingItemRow.module.css'
 
+// Separate component so hooks only fire when the panel is actually rendered,
+// avoiding N+1 requests when many rows are displayed simultaneously.
+function DealIntelPanel({ missionId, itemId }: { missionId: string; itemId: string }) {
+  const { score } = useDealScore(missionId, itemId)
+  return (
+    <>
+      <PriceSparkline missionId={missionId} itemId={itemId} />
+      {score && (
+        <>
+          <TrendBadge trend={score.trend} />
+          <DealScoreBadge score={score} />
+        </>
+      )}
+    </>
+  )
+}
+
 interface ShoppingItemRowProps {
   item: ShoppingItem
   missionId: string
@@ -22,9 +39,9 @@ const STATUSES: ItemStatus[] = ['buy', 'watch', 'flash-sale', 'preorder', 'defer
 export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusChange, onPriceClick, onPin }: ShoppingItemRowProps) {
   const [editingTarget, setEditingTarget] = useState(false)
   const [targetInput, setTargetInput] = useState('')
+  const [showIntel, setShowIntel] = useState(false)
   const cancelledRef = useRef(false)
 
-  const { score } = useDealScore(missionId, item.id)
   const { updateItem } = useUpdateShoppingItem(missionId)
 
   const priceDelta = item.originalEstimate != null
@@ -101,15 +118,18 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         )}
       </div>
 
-      {/* Deal intelligence badges */}
+      {/* Deal intelligence — loaded on demand to avoid N+1 requests per row */}
       <div className={styles.dealIntel}>
-        <PriceSparkline missionId={missionId} itemId={item.id} />
-        {score && (
-          <>
-            <TrendBadge trend={score.trend} />
-            <DealScoreBadge score={score} />
-          </>
-        )}
+        <button
+          onClick={() => setShowIntel((v) => !v)}
+          className={styles.intelToggleBtn}
+          title={showIntel ? 'Hide deal intelligence' : 'Show deal intelligence'}
+          aria-label={showIntel ? 'Hide deal intelligence' : 'Show deal intelligence'}
+          aria-expanded={showIntel}
+        >
+          📊
+        </button>
+        {showIntel && <DealIntelPanel missionId={missionId} itemId={item.id} />}
       </div>
 
       <Badge variant={item.status} />
