@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -175,12 +176,18 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 65*time.Second)
 	defer cancel()
 
+	var wg sync.WaitGroup
 	if sched != nil {
-		go sched.Stop()
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sched.Stop()
+		}()
 	}
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)
 	}
+	wg.Wait()
 	pool.Close()
 	log.Info("shutdown complete")
 }
