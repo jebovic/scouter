@@ -181,7 +181,7 @@ func (r *pgRepository) DeleteByMission(ctx context.Context, missionID uuid.UUID)
 
 func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
 	row := r.pool.QueryRow(ctx, `
-		UPDATE options SET pinned = true WHERE id = $1
+		UPDATE options SET pinned = true, rejected = false, reject_reason = NULL WHERE id = $1
 		RETURNING `+selectCols, id)
 	o, err := scanOption(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -192,7 +192,7 @@ func (r *pgRepository) Pin(ctx context.Context, id uuid.UUID) (*Option, error) {
 
 func (r *pgRepository) Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error) {
 	row := r.pool.QueryRow(ctx, `
-		UPDATE options SET rejected = true, reject_reason = $2 WHERE id = $1
+		UPDATE options SET rejected = true, reject_reason = $2, pinned = false WHERE id = $1
 		RETURNING `+selectCols, id, req.Reason)
 	o, err := scanOption(row)
 	if errors.Is(err, pgx.ErrNoRows) {
