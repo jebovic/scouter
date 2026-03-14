@@ -1,0 +1,44 @@
+{
+  "nav": {
+    "hq": "SCOUTER QG",
+    "missionControl": "Contrôle Mission",
+    "overview": "Vue d'ensemble",
+    "options": "Options",
+    "shopping": "Achats",
+    "budget": "Budget"
+  },
+  "mission": {
+    "create": "Nouvelle Mission",
+    "categories": {
+      "travel": "Voyage",
+      "electronics": "Électronique",
+      "computing": "Informatique",
+      "renovation": "Rénovation",
+      "custom": "Personnalisé"
+    },
+    "phases": {
+      "researching": "Recherche",
+      "comparing": "Comparaison",
+      "buying": "Achat",
+      "done": "Terminé"
+    }
+  },
+  "badges": {
+    "buy": "Acheter",
+    "flash-sale": "Vente Flash",
+    "preorder": "Précommande",
+    "defer": "Reporter",
+    "watch": "Surveiller",
+    "crisis": "Urgence",
+    "recommended": "Recommandé",
+    "rejected": "Rejeté"
+  },
+  "research": {
+    "trigger": "Rechercher avec Goku",
+    "loading": "Goku est sur le coup..."
+  },
+  "pricing": {
+    "trigger": "Prix Intel avec Vegeta",
+    "loading": "Vegeta chasse les prix..."
+  }
+}

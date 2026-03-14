@@ -1,0 +1,103 @@
+/* SCOUTER Universal Design System — CSS Custom Properties */
+/* Import this file in every component that needs SCOUTER tokens */
+
+:root {
+  /* ── Backgrounds ──────────────────────────────────────── */
+  --void:          #050810;
+  --abyss:         #0a0e1a;
+  --deep:          #0f1424;
+  --surface:       #151b30;
+  --raised:        #1c2440;
+  --surface-raised: #1c2440;
+  --border:        #2a3558;
+  --border-glow:   #3a4a70;
+
+  /* ── Accents ──────────────────────────────────────────── */
+  --cyan:         #00e5ff;
+  --cyan-dim:     #00e5ff30;
+  --cyan-glow:    #00e5ff15;
+  --coral:        #ff3d71;
+  --coral-dim:    #ff3d7130;
+  --gold:         #ffd93d;
+  --gold-dim:     #ffd93d30;
+  --green:        #00d68f;
+  --green-dim:    #00d68f25;
+  --purple:       #a855f7;
+  --purple-dim:   #a855f720;
+  --orange:       #f7974f;
+  --orange-dim:   #f7974f25;
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --text:         #e8edf5;
+  --text-mid:     #8a95b0;
+  --text-dim:     #4a5570;
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font-display: 'Oxanium', 'Chakra Petch', sans-serif;
+  --font-body:    'Chakra Petch', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* ── Spacing & Layout ─────────────────────────────────── */
+  --radius:       16px;
+  --radius-sm:    8px;
+  --radius-lg:    24px;
+  --gap:          16px;
+  --gap-sm:       8px;
+  --gap-lg:       24px;
+
+  /* ── Status badge colors ──────────────────────────────── */
+  --badge-buy:         var(--green);
+  --badge-buy-bg:      var(--green-dim);
+  --badge-flash-sale:  var(--orange);
+  --badge-flash-bg:    var(--orange-dim);
+  --badge-preorder:    var(--gold);
+  --badge-preorder-bg: var(--gold-dim);
+  --badge-defer:       var(--text-dim);
+  --badge-defer-bg:    transparent;
+  --badge-watch:       var(--purple);
+  --badge-watch-bg:    var(--purple-dim);
+  --badge-crisis:      var(--coral);
+  --badge-crisis-bg:   var(--coral-dim);
+  --badge-recommended: var(--cyan);
+  --badge-recommended-bg: var(--cyan-dim);
+  --badge-rejected:    var(--coral);
+  --badge-rejected-bg: var(--coral-dim);
+
+  /* ── Budget bar thresholds ────────────────────────────── */
+  --budget-ok:   var(--green);
+  --budget-warn: var(--gold);
+  --budget-over: var(--coral);
+}
+
+/* ── Animations ─────────────────────────────────────────── */
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--cyan-dim); }
+  50%       { box-shadow: 0 0 16px var(--cyan-glow), 0 0 32px var(--cyan-dim); }
+}
+
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bar-fill {
+  from { width: 0; opacity: 0.4; }
+}
+
+@keyframes scan-line {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(400%); opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

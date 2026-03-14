@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: scouter
+      POSTGRES_PASSWORD: scouter
+      POSTGRES_DB: scouter
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scouter -d scouter"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://scouter:scouter@postgres:5432/scouter?sslmode=disable
+      ENV: development
+      LLM_PROVIDER: routing
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      OLLAMA_MODEL: qwen2.5:7b
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  seed:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://scouter:scouter@postgres:5432/scouter?sslmode=disable
+    entrypoint: ["/app/scouter-seed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ["seed"]
+
+volumes:
+  postgres_data:

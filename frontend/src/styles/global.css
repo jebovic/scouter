@@ -1,0 +1,157 @@
+@import './theme.css';
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Chakra+Petch:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: var(--void);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--abyss); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-glow); }
+
+/* Selection */
+::selection { background: var(--cyan-dim); color: var(--cyan); }
+
+/* Links */
+a { color: var(--cyan); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Scanline overlay — subtle CRT texture */
+.scanlines::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.07) 2px,
+    rgba(0, 0, 0, 0.07) 4px
+  );
+  z-index: 9999;
+}
+
+/* Grid background — dimmed so content reads clearly */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(42, 53, 88, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 53, 88, 0.5) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-color: var(--void);
+}
+
+/* Layout helpers */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--gap-lg);
+}
+
+/* Typography */
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+
+code, pre, .mono { font-family: var(--font-mono); }
+
+/* Utility */
+.text-cyan  { color: var(--cyan); }
+.text-coral { color: var(--coral); }
+.text-gold  { color: var(--gold); }
+.text-green { color: var(--green); }
+.text-dim   { color: var(--text-dim); }
+.text-mid   { color: var(--text-mid); }
+
+/* ── Card system ──────────────────────────────────────────── */
+
+/* Entrance animation — apply to grid children via nth-child delay */
+.card-enter {
+  animation: card-enter 0.35s ease both;
+}
+
+/* Stagger helpers for grids */
+.card-enter:nth-child(1)  { animation-delay: 0.00s; }
+.card-enter:nth-child(2)  { animation-delay: 0.05s; }
+.card-enter:nth-child(3)  { animation-delay: 0.10s; }
+.card-enter:nth-child(4)  { animation-delay: 0.15s; }
+.card-enter:nth-child(5)  { animation-delay: 0.20s; }
+.card-enter:nth-child(6)  { animation-delay: 0.25s; }
+.card-enter:nth-child(7)  { animation-delay: 0.30s; }
+.card-enter:nth-child(8)  { animation-delay: 0.35s; }
+.card-enter:nth-child(n+9) { animation-delay: 0.40s; }
+
+/* Interactive card hover lift */
+.card-interactive {
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.card-interactive:hover {
+  border-color: var(--border-glow) !important;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.5), 0 0 0 1px var(--border-glow);
+  transform: translateY(-3px);
+}
+.card-interactive:active {
+  transform: translateY(-1px);
+  transition-duration: 0.08s;
+}
+
+/* Glow card interactive (recommended option cards) */
+.card-glow.card-interactive:hover {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.5), 0 0 20px var(--cyan-dim);
+}
+
+/* ── Budget bar fill animation ─────────────────────────────── */
+.budget-bar-fill {
+  animation: bar-fill 0.6s ease both;
+}
+
+/* ── Nav link active underline ────────────────────────────── */
+.nav-link-active {
+  position: relative;
+}
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--cyan);
+  border-radius: 1px;
+  box-shadow: 0 0 6px var(--cyan);
+}
+
+/* ── Page section fade-in ─────────────────────────────────── */
+.fade-in {
+  animation: fade-in 0.4s ease both;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 0 var(--gap); }
+  h1 { font-size: 1.5rem; }
+}

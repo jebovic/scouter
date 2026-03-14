@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS price_history;
+DROP TABLE IF EXISTS shopping_items;
+DROP TABLE IF EXISTS options;
+DROP TABLE IF EXISTS missions;
+DROP EXTENSION IF EXISTS vector;

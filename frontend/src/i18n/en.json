@@ -1,0 +1,44 @@
+{
+  "nav": {
+    "hq": "SCOUTER HQ",
+    "missionControl": "Mission Control",
+    "overview": "Overview",
+    "options": "Options",
+    "shopping": "Shopping",
+    "budget": "Budget"
+  },
+  "mission": {
+    "create": "New Mission",
+    "categories": {
+      "travel": "Travel",
+      "electronics": "Electronics",
+      "computing": "Computing",
+      "renovation": "Renovation",
+      "custom": "Custom"
+    },
+    "phases": {
+      "researching": "Researching",
+      "comparing": "Comparing",
+      "buying": "Buying",
+      "done": "Done"
+    }
+  },
+  "badges": {
+    "buy": "Buy",
+    "flash-sale": "Flash Sale",
+    "preorder": "Preorder",
+    "defer": "Defer",
+    "watch": "Watch",
+    "crisis": "Crisis",
+    "recommended": "Recommended",
+    "rejected": "Rejected"
+  },
+  "research": {
+    "trigger": "Research with Goku",
+    "loading": "Goku is on the case..."
+  },
+  "pricing": {
+    "trigger": "Price Intel with Vegeta",
+    "loading": "Vegeta is hunting prices..."
+  }
+}

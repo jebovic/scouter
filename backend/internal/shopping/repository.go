@@ -1,0 +1,182 @@
+package shopping
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+// Repository defines the data access interface for shopping items and price history.
+type Repository interface {
+	ListByMission(ctx context.Context, missionID uuid.UUID) ([]Item, error)
+	ListByMissionPaged(ctx context.Context, missionID uuid.UUID, cursor *time.Time, limit int) ([]Item, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Item, error)
+	Create(ctx context.Context, item Item) (*Item, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Item, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	DeleteByMission(ctx context.Context, missionID uuid.UUID) error
+	AddPriceSnapshot(ctx context.Context, itemID uuid.UUID, req PriceSnapshotRequest) (*PriceSnapshot, error)
+	ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]PriceSnapshot, error)
+}
+
+type pgRepository struct {
+	pool *pgxpool.Pool
+}
+
+// NewRepository creates a PostgreSQL-backed shopping repository.
+func NewRepository(pool *pgxpool.Pool) Repository {
+	return &pgRepository{pool: pool}
+}
+
+func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID) ([]Item, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, created_at
+		FROM shopping_items WHERE mission_id = $1 ORDER BY cost_category, created_at ASC`, missionID)
+	if err != nil {
+		return nil, fmt.Errorf("list shopping items: %w", err)
+	}
+	defer rows.Close()
+
+	var items []Item
+	for rows.Next() {
+		item, err := scanItem(rows)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, *item)
+	}
+	return items, rows.Err()
+}
+
+func (r *pgRepository) ListByMissionPaged(ctx context.Context, missionID uuid.UUID, cursor *time.Time, limit int) ([]Item, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, created_at
+		FROM shopping_items
+		WHERE mission_id = $1 AND ($2::timestamptz IS NULL OR created_at > $2)
+		ORDER BY created_at ASC
+		LIMIT $3`, missionID, cursor, limit+1)
+	if err != nil {
+		return nil, fmt.Errorf("list shopping items paged: %w", err)
+	}
+	defer rows.Close()
+
+	var items []Item
+	for rows.Next() {
+		item, err := scanItem(rows)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, *item)
+	}
+	return items, rows.Err()
+}
+
+func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*Item, error) {
+	row := r.pool.QueryRow(ctx, `
+		SELECT id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, created_at
+		FROM shopping_items WHERE id = $1`, id)
+	item, err := scanItem(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return item, err
+}
+
+func (r *pgRepository) Create(ctx context.Context, item Item) (*Item, error) {
+	row := r.pool.QueryRow(ctx, `
+		INSERT INTO shopping_items (mission_id, name, merchant, cost_category, price, original_estimate, status, note, url)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, created_at`,
+		item.MissionID, item.Name, item.Merchant, item.CostCategory,
+		item.Price, item.OriginalEstimate, item.Status, item.Note, item.URL)
+
+	return scanItem(row)
+}
+
+func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Item, error) {
+	row := r.pool.QueryRow(ctx, `
+		UPDATE shopping_items SET
+		  price    = COALESCE($2, price),
+		  status   = COALESCE($3, status),
+		  note     = COALESCE($4, note),
+		  merchant = COALESCE($5, merchant)
+		WHERE id = $1
+		RETURNING id, mission_id, name, merchant, cost_category, price, original_estimate, status, note, url, created_at`,
+		id, req.Price, req.Status, req.Note, req.Merchant)
+
+	item, err := scanItem(row)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	return item, err
+}
+
+func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM shopping_items WHERE id = $1`, id)
+	return err
+}
+
+func (r *pgRepository) DeleteByMission(ctx context.Context, missionID uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM shopping_items WHERE mission_id = $1`, missionID)
+	return err
+}
+
+func (r *pgRepository) AddPriceSnapshot(ctx context.Context, itemID uuid.UUID, req PriceSnapshotRequest) (*PriceSnapshot, error) {
+	row := r.pool.QueryRow(ctx, `
+		INSERT INTO price_history (item_id, price, note)
+		VALUES ($1, $2, $3)
+		RETURNING id, item_id, price, recorded_at, note`,
+		itemID, req.Price, req.Note)
+
+	return scanSnapshot(row)
+}
+
+func (r *pgRepository) ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]PriceSnapshot, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT id, item_id, price, recorded_at, note
+		FROM price_history WHERE item_id = $1 ORDER BY recorded_at ASC`, itemID)
+	if err != nil {
+		return nil, fmt.Errorf("list price history: %w", err)
+	}
+	defer rows.Close()
+
+	var snapshots []PriceSnapshot
+	for rows.Next() {
+		s, err := scanSnapshot(rows)
+		if err != nil {
+			return nil, err
+		}
+		snapshots = append(snapshots, *s)
+	}
+	return snapshots, rows.Err()
+}
+
+type scanner interface {
+	Scan(dest ...any) error
+}
+
+func scanItem(s scanner) (*Item, error) {
+	var item Item
+	err := s.Scan(
+		&item.ID, &item.MissionID, &item.Name, &item.Merchant, &item.CostCategory,
+		&item.Price, &item.OriginalEstimate, &item.Status, &item.Note, &item.URL, &item.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("scan shopping item: %w", err)
+	}
+	return &item, nil
+}
+
+func scanSnapshot(s scanner) (*PriceSnapshot, error) {
+	var snap PriceSnapshot
+	err := s.Scan(&snap.ID, &snap.ItemID, &snap.Price, &snap.RecordedAt, &snap.Note)
+	if err != nil {
+		return nil, fmt.Errorf("scan price snapshot: %w", err)
+	}
+	return &snap, nil
+}
