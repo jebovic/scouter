@@ -48,6 +48,9 @@ type CompletionResponse struct {
 	ToolCalls   []ToolCall `json:"tool_calls,omitempty"`
 	Usage       Usage      `json:"usage"`
 	WasFallback bool       `json:"was_fallback,omitempty"` // set by RoutingProvider when secondary was used
+	ModelName   string     `json:"model_name,omitempty"`   // which model actually ran
+	Degraded    bool       `json:"degraded,omitempty"`     // true if a non-first-choice model was used
+	Attempts    int        `json:"attempts,omitempty"`     // how many models were tried
 }
 
 // StatusError is returned when the upstream API responds with a non-2xx HTTP status.
@@ -63,4 +66,11 @@ func (e *StatusError) Error() string { return fmt.Sprintf("upstream HTTP %d", e.
 // Implementations must not contain domain logic.
 type Provider interface {
 	Complete(ctx context.Context, req CompletionRequest) (CompletionResponse, error)
+}
+
+// EmbedProvider is the interface for embedding providers (Phase 11 — pgvector).
+// Do not implement yet; this stub prevents provider.go changes in Phase 11.
+type EmbedProvider interface {
+	Embed(ctx context.Context, text string) ([]float64, error)
+	EmbedBatch(ctx context.Context, texts []string) ([][]float64, error)
 }

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSidebar } from '../../contexts/sidebar'
+import { LLMStatus } from './LLMStatus'
 import { NotificationBell } from './NotificationBell'
 import styles from './Topnav.module.css'
 
@@ -74,6 +75,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       )}
 
       <div className={styles.actions}>
+        <LLMStatus />
         <NotificationBell />
       </div>
     </nav>

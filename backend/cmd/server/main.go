@@ -60,7 +60,7 @@ func main() {
 	log.Info("database connected")
 
 	// Build LLM provider
-	provider := buildProvider(cfg, log)
+	provider, smartRouter := buildSmartRouter(cfg, log)
 
 	// Repositories
 	missionRepo := mission.NewRepository(pool)
@@ -157,6 +157,12 @@ func main() {
 	r.Get("/api/templates", templateHandler.List)
 	r.Get("/api/templates/{slug}", templateHandler.Get)
 
+	// LLM pool health (nil when provider is Anthropic-only)
+	if smartRouter != nil {
+		checker := llm.NewHealthChecker(smartRouter.Pool(), smartRouter.Breakers())
+		r.Get("/api/health/llm", llm.HealthHandler(checker))
+	}
+
 	addr := ":" + cfg.Port
 	srv := &http.Server{Addr: addr, Handler: r}
 
@@ -192,30 +198,89 @@ func main() {
 	log.Info("shutdown complete")
 }
 
-// buildProvider constructs the LLM provider based on config.
-// "routing" (default when both keys are available) uses Ollama as primary
-// with Anthropic fallback. "ollama" uses Ollama only. "anthropic" uses Anthropic only.
-func buildProvider(cfg *config.Config, log *slog.Logger) llm.Provider {
-	ollamaProvider := llm.NewOllamaProvider(cfg.OllamaBaseURL, cfg.OllamaModel)
+// buildSmartRouter constructs the LLM provider based on config.
+//
+// Modes:
+//   - "anthropic"  → single AnthropicProvider (no SmartRouter)
+//   - "ollama"     → SmartRouter with heavy + fast Ollama models
+//   - "routing"    → SmartRouter: heavy Ollama → fast Ollama → Anthropic fallback
+//   - default      → same as "routing" when ANTHROPIC_API_KEY is set, else "ollama"
+func buildSmartRouter(cfg *config.Config, log *slog.Logger) (llm.Provider, *llm.SmartRouter) {
 	mode := strings.ToLower(cfg.LLMProvider)
 
-	switch mode {
-	case "anthropic":
+	if mode == "anthropic" {
 		log.Info("llm provider: anthropic", "model", "claude-sonnet-4-6")
-		return llm.NewAnthropicProvider(cfg.AnthropicAPIKey)
-	case "ollama":
-		log.Info("llm provider: ollama", "base_url", cfg.OllamaBaseURL, "model", cfg.OllamaModel)
-		return ollamaProvider
-	default: // "routing" or anything else → routing mode
-		if cfg.AnthropicAPIKey == "" {
-			log.Warn("ANTHROPIC_API_KEY not set — RoutingProvider fallback disabled, using Ollama only")
-			return ollamaProvider
-		}
-		anthropicProvider := llm.NewAnthropicProvider(cfg.AnthropicAPIKey)
-		log.Info("llm provider: routing (ollama primary → anthropic fallback)",
-			"base_url", cfg.OllamaBaseURL, "model", cfg.OllamaModel)
-		return llm.NewRoutingProvider(ollamaProvider, anthropicProvider)
+		return llm.NewAnthropicProvider(cfg.AnthropicAPIKey), nil
 	}
+
+	// Build Ollama entries.
+	heavyOpts := []llm.OllamaOption{llm.WithTimeout(cfg.OllamaHeavyTimeout)}
+	fastOpts := []llm.OllamaOption{llm.WithTimeout(cfg.OllamaFastTimeout)}
+
+	heavyProvider := llm.NewOllamaProvider(cfg.OllamaBaseURL, cfg.OllamaHeavyModel, heavyOpts...)
+	fastProvider := llm.NewOllamaProvider(cfg.OllamaBaseURL, cfg.OllamaFastModel, fastOpts...)
+
+	entries := []llm.ModelEntry{
+		{
+			Name:               cfg.OllamaHeavyModel,
+			Provider:           heavyProvider,
+			Capabilities:       llm.CapText | llm.CapToolUse | llm.CapLongCtx,
+			Priority:           1,
+			Timeout:            cfg.OllamaHeavyTimeout,
+			SystemPromptPrefix: "/no_think",
+		},
+		{
+			Name:               cfg.OllamaFastModel,
+			Provider:           fastProvider,
+			Capabilities:       llm.CapText | llm.CapToolUse,
+			Priority:           2,
+			Timeout:            cfg.OllamaFastTimeout,
+			SystemPromptPrefix: "/no_think",
+		},
+	}
+
+	// Optional cloud Ollama model.
+	var routerOpts []llm.SmartRouterOption
+	if cfg.OllamaCloudURL != "" && cfg.OllamaCloudModel != "" {
+		cloudOpts := []llm.OllamaOption{
+			llm.WithAPIKey(cfg.OllamaCloudAPIKey),
+			llm.WithTimeout(cfg.OllamaHeavyTimeout),
+		}
+		cloudProvider := llm.NewOllamaProvider(cfg.OllamaCloudURL, cfg.OllamaCloudModel, cloudOpts...)
+		entries = append(entries, llm.ModelEntry{
+			Name:         cfg.OllamaCloudModel,
+			Provider:     cloudProvider,
+			Capabilities: llm.CapText | llm.CapToolUse | llm.CapLongCtx,
+			Priority:     3,
+			Timeout:      cfg.OllamaHeavyTimeout,
+		})
+		routerOpts = append(routerOpts, llm.WithModelRateLimit(cfg.OllamaCloudModel, cfg.OllamaCloudRPM))
+		log.Info("llm cloud model enabled", "url", cfg.OllamaCloudURL, "model", cfg.OllamaCloudModel, "rpm", cfg.OllamaCloudRPM)
+	}
+
+	// Optional Anthropic fallback (routing mode).
+	if mode != "ollama" && cfg.AnthropicAPIKey != "" {
+		anthropic := llm.NewAnthropicProvider(cfg.AnthropicAPIKey)
+		entries = append(entries, llm.ModelEntry{
+			Name:         "claude-sonnet-4-6",
+			Provider:     anthropic,
+			Capabilities: llm.CapText | llm.CapToolUse | llm.CapLongCtx,
+			Priority:     10,
+			Timeout:      60 * time.Second,
+		})
+		log.Info("llm anthropic fallback enabled")
+	} else if mode != "ollama" && cfg.AnthropicAPIKey == "" {
+		log.Warn("ANTHROPIC_API_KEY not set — Anthropic fallback disabled, using Ollama only")
+	}
+
+	pool := llm.NewModelPool(entries...)
+	sr := llm.NewSmartRouter(pool, log, routerOpts...)
+
+	log.Info("llm provider: smart-router",
+		"heavy", cfg.OllamaHeavyModel,
+		"fast", cfg.OllamaFastModel,
+		"models", len(entries))
+	return sr, sr
 }
 
 // corsMiddleware adds permissive CORS headers for local development only.

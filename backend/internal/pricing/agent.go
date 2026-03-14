@@ -67,6 +67,10 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Opt
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
+	llmCtx = llm.WithRequestOpts(llmCtx, llm.RequestOpts{
+		Capabilities: llm.CapToolUse,
+		Label:        "pricing",
+	})
 
 	resp, err := a.provider.Complete(llmCtx, req)
 	if err != nil {
@@ -76,7 +80,20 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Opt
 
 	rawItems, err := parseToolResponse(resp)
 	if err != nil {
-		return nil, fmt.Errorf("parse pricing response: %w", err)
+		// Tool call missing — retry in JSON-only mode with a fresh timeout.
+		retryCtx := llm.WithRequestOpts(ctx, llm.RequestOpts{
+			Capabilities: llm.CapToolUse,
+			Label:        "pricing_fallback",
+		})
+		resp, err = llm.RetryAsJSON(retryCtx, a.provider, req, "submit_pricing_items")
+		if err != nil {
+			return nil, fmt.Errorf("pricing json fallback: %w", err)
+		}
+		a.usageSvc.Log(ctx, resp.Usage, "pricing_fallback", m.ID, resp.WasFallback)
+		rawItems, err = parseToolResponse(resp)
+		if err != nil {
+			return nil, fmt.Errorf("parse pricing response: %w", err)
+		}
 	}
 
 	// Delete only after LLM succeeds to prevent data loss on LLM failure.

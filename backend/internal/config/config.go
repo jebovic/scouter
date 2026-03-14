@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/robfig/cron/v3"
 )
@@ -14,12 +15,23 @@ type Config struct {
 	AnthropicAPIKey      string
 	LLMProvider          string // "anthropic" | "ollama"
 	OllamaBaseURL        string
-	OllamaModel          string
+	OllamaModel          string // legacy alias; use OllamaHeavyModel for routing
 	Port                 string
 	Env                  string // "development" | "production"
 	PriceCheckEnabled    bool
 	PriceCheckCron       string // cron expression, e.g. "0 */6 * * *"
 	PriceCheckMaxMissions int
+
+	// Phase 9: Ollama Smart Routing
+	OllamaHeavyModel   string
+	OllamaFastModel    string
+	OllamaHeavyTimeout time.Duration
+	OllamaFastTimeout  time.Duration
+	OllamaCloudURL     string
+	OllamaCloudModel   string
+	OllamaCloudAPIKey  string
+	OllamaCloudRPM     int
+	OllamaEmbedModel   string
 }
 
 // Load reads required environment variables, returning an error if any are missing.
@@ -43,6 +55,7 @@ func Load() (*Config, error) {
 	if cfg.OllamaBaseURL == "" {
 		cfg.OllamaBaseURL = "http://host.docker.internal:11434"
 	}
+	// Backward compat: keep OllamaModel default as "qwen2.5:7b".
 	if cfg.OllamaModel == "" {
 		cfg.OllamaModel = "qwen2.5:7b"
 	}
@@ -77,5 +90,59 @@ func Load() (*Config, error) {
 		cfg.PriceCheckMaxMissions = 10
 	}
 
+	// ── Phase 9: Ollama Smart Routing ─────────────────────────────────────────
+
+	// OllamaHeavyModel: OLLAMA_HEAVY_MODEL > OLLAMA_MODEL > default.
+	cfg.OllamaHeavyModel = os.Getenv("OLLAMA_HEAVY_MODEL")
+	if cfg.OllamaHeavyModel == "" {
+		if legacyModel := os.Getenv("OLLAMA_MODEL"); legacyModel != "" {
+			cfg.OllamaHeavyModel = legacyModel
+		} else {
+			cfg.OllamaHeavyModel = "qwen3:14b"
+		}
+	}
+
+	// OllamaFastModel: OLLAMA_FAST_MODEL > default.
+	cfg.OllamaFastModel = os.Getenv("OLLAMA_FAST_MODEL")
+	if cfg.OllamaFastModel == "" {
+		cfg.OllamaFastModel = "qwen3:4b"
+	}
+
+	// OllamaHeavyTimeout: parse OLLAMA_HEAVY_TIMEOUT seconds, default 180s.
+	cfg.OllamaHeavyTimeout = parseDurationSeconds("OLLAMA_HEAVY_TIMEOUT", 180)
+
+	// OllamaFastTimeout: parse OLLAMA_FAST_TIMEOUT seconds, default 60s.
+	cfg.OllamaFastTimeout = parseDurationSeconds("OLLAMA_FAST_TIMEOUT", 60)
+
+	// Cloud fields — empty string disables cloud routing.
+	cfg.OllamaCloudURL = os.Getenv("OLLAMA_CLOUD_URL")
+	cfg.OllamaCloudModel = os.Getenv("OLLAMA_CLOUD_MODEL")
+	cfg.OllamaCloudAPIKey = os.Getenv("OLLAMA_CLOUD_API_KEY")
+
+	// OllamaCloudRPM: default 10.
+	cfg.OllamaCloudRPM = 10
+	if v := os.Getenv("OLLAMA_CLOUD_RPM"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			cfg.OllamaCloudRPM = n
+		}
+	}
+
+	// OllamaEmbedModel: default "mxbai-embed-large".
+	cfg.OllamaEmbedModel = os.Getenv("OLLAMA_EMBED_MODEL")
+	if cfg.OllamaEmbedModel == "" {
+		cfg.OllamaEmbedModel = "mxbai-embed-large"
+	}
+
 	return cfg, nil
+}
+
+// parseDurationSeconds reads an env var as integer seconds and returns a
+// time.Duration. Falls back to defaultSec when the variable is absent or invalid.
+func parseDurationSeconds(envKey string, defaultSec int) time.Duration {
+	if v := os.Getenv(envKey); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			return time.Duration(n) * time.Second
+		}
+	}
+	return time.Duration(defaultSec) * time.Second
 }

@@ -65,6 +65,10 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
+	llmCtx = llm.WithRequestOpts(llmCtx, llm.RequestOpts{
+		Capabilities: llm.CapToolUse,
+		Label:        "research",
+	})
 
 	resp, err := a.provider.Complete(llmCtx, req)
 	if err != nil {
@@ -74,7 +78,22 @@ func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 
 	rawOptions, err := parseToolResponse(resp)
 	if err != nil {
-		return nil, fmt.Errorf("parse research response: %w", err)
+		// Tool call missing — retry in JSON-only mode with a fresh timeout so
+		// the parent llmCtx deadline (which may be nearly exhausted) doesn't
+		// kill the fallback before it can complete.
+		retryCtx := llm.WithRequestOpts(ctx, llm.RequestOpts{
+			Capabilities: llm.CapToolUse,
+			Label:        "research_fallback",
+		})
+		resp, err = llm.RetryAsJSON(retryCtx, a.provider, req, "submit_research_options")
+		if err != nil {
+			return nil, fmt.Errorf("research json fallback: %w", err)
+		}
+		a.usageSvc.Log(ctx, resp.Usage, "research_fallback", m.ID, resp.WasFallback)
+		rawOptions, err = parseToolResponse(resp)
+		if err != nil {
+			return nil, fmt.Errorf("parse research response: %w", err)
+		}
 	}
 
 	// Delete only after LLM succeeds to prevent data loss on LLM failure.

@@ -29,6 +29,10 @@ func (a *Agent) Summarize(ctx context.Context, m mission.Mission, scores []Score
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
+	llmCtx = llm.WithRequestOpts(llmCtx, llm.RequestOpts{
+		Capabilities: llm.CapToolUse,
+		Label:        "decision",
+	})
 
 	resp, err := a.provider.Complete(llmCtx, req)
 	if err != nil {
@@ -38,7 +42,20 @@ func (a *Agent) Summarize(ctx context.Context, m mission.Mission, scores []Score
 
 	summary, err := parseToolResponse(resp)
 	if err != nil {
-		return "", fmt.Errorf("parse decision response: %w", err)
+		// Tool call missing — retry in JSON-only mode with a fresh timeout.
+		retryCtx := llm.WithRequestOpts(ctx, llm.RequestOpts{
+			Capabilities: llm.CapToolUse,
+			Label:        "decision_fallback",
+		})
+		resp, err = llm.RetryAsJSON(retryCtx, a.provider, req, "submit_decision_summary")
+		if err != nil {
+			return "", fmt.Errorf("decision json fallback: %w", err)
+		}
+		a.usageSvc.Log(ctx, resp.Usage, "decision_fallback", m.ID, resp.WasFallback)
+		summary, err = parseToolResponse(resp)
+		if err != nil {
+			return "", fmt.Errorf("parse decision response: %w", err)
+		}
 	}
 	return summary, nil
 }

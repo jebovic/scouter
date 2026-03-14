@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -14,24 +15,49 @@ import (
 type OllamaProvider struct {
 	baseURL string
 	model   string
+	apiKey  string
+	timeout time.Duration
 	client  *http.Client
 }
 
+// OllamaOption is a functional option for configuring an OllamaProvider.
+type OllamaOption func(*OllamaProvider)
+
+// WithAPIKey sets the Bearer token used in the Authorization header.
+// Use this when connecting to a remote Ollama endpoint that requires authentication.
+func WithAPIKey(key string) OllamaOption {
+	return func(p *OllamaProvider) { p.apiKey = key }
+}
+
+// WithTimeout overrides the per-request HTTP client timeout (default 180s).
+func WithTimeout(d time.Duration) OllamaOption {
+	return func(p *OllamaProvider) {
+		p.timeout = d
+		p.client = &http.Client{Timeout: d}
+	}
+}
+
 // NewOllamaProvider creates a new OllamaProvider.
-func NewOllamaProvider(baseURL, model string) *OllamaProvider {
-	return &OllamaProvider{
+// Default timeout: 180s. Pass OllamaOption values to override.
+func NewOllamaProvider(baseURL, model string, opts ...OllamaOption) *OllamaProvider {
+	p := &OllamaProvider{
 		baseURL: baseURL,
 		model:   model,
+		timeout: 180 * time.Second,
 		client:  &http.Client{Timeout: 180 * time.Second},
 	}
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
 }
 
 // ── Ollama native /api/chat request/response types ───────────────────────────
 
 type ollamaMessage struct {
-	Role      string             `json:"role"`
-	Content   string             `json:"content,omitempty"`
-	ToolCalls []ollamaToolCall   `json:"tool_calls,omitempty"`
+	Role      string           `json:"role"`
+	Content   string           `json:"content,omitempty"`
+	ToolCalls []ollamaToolCall `json:"tool_calls,omitempty"`
 }
 
 type ollamaToolCall struct {
@@ -62,9 +88,9 @@ type ollamaChatRequest struct {
 }
 
 type ollamaChatResponse struct {
-	Message           ollamaMessage `json:"message"`
-	PromptEvalCount   int           `json:"prompt_eval_count"`
-	EvalCount         int           `json:"eval_count"`
+	Message         ollamaMessage `json:"message"`
+	PromptEvalCount int           `json:"prompt_eval_count"`
+	EvalCount       int           `json:"eval_count"`
 }
 
 // Complete sends a chat completion request to the Ollama /api/chat endpoint.
@@ -85,8 +111,8 @@ func (p *OllamaProvider) Complete(ctx context.Context, req CompletionRequest) (C
 		if props, ok := t.InputSchema["properties"]; ok {
 			params["properties"] = props
 		}
-		if req, ok := t.InputSchema["required"]; ok {
-			params["required"] = req
+		if reqField, ok := t.InputSchema["required"]; ok {
+			params["required"] = reqField
 		}
 
 		tools = append(tools, ollamaTool{
@@ -114,6 +140,9 @@ func (p *OllamaProvider) Complete(ctx context.Context, req CompletionRequest) (C
 		return CompletionResponse{}, fmt.Errorf("create ollama request: %w", err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
+	if p.apiKey != "" {
+		httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
+	}
 
 	httpResp, err := p.client.Do(httpReq)
 	if err != nil {
@@ -131,7 +160,8 @@ func (p *OllamaProvider) Complete(ctx context.Context, req CompletionRequest) (C
 	}
 
 	resp := CompletionResponse{
-		Content: ollamaResp.Message.Content,
+		Content:   ollamaResp.Message.Content,
+		ModelName: p.model,
 		Usage: Usage{
 			InputTokens:  ollamaResp.PromptEvalCount,
 			OutputTokens: ollamaResp.EvalCount,
@@ -148,4 +178,35 @@ func (p *OllamaProvider) Complete(ctx context.Context, req CompletionRequest) (C
 	}
 
 	return resp, nil
+}
+
+// Ping checks liveness by calling POST <baseURL>/api/show with the model name.
+// Returns nil on HTTP 200, an error otherwise or on network failure.
+func (p *OllamaProvider) Ping(ctx context.Context) error {
+	body, err := json.Marshal(map[string]string{"name": p.model})
+	if err != nil {
+		return fmt.Errorf("ping marshal: %w", err)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost,
+		strings.TrimRight(p.baseURL, "/")+"/api/show",
+		bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("ping create request: %w", err)
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	if p.apiKey != "" {
+		httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
+	}
+
+	httpResp, err := p.client.Do(httpReq)
+	if err != nil {
+		return fmt.Errorf("ping request: %w", err)
+	}
+	defer httpResp.Body.Close()
+
+	if httpResp.StatusCode != http.StatusOK {
+		return fmt.Errorf("ping: unexpected status %d", httpResp.StatusCode)
+	}
+	return nil
 }

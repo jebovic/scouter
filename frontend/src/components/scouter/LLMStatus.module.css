@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  cursor: default;
+}
+
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--text-dim, #6b7280);
+  transition: background-color 0.3s ease;
+}
+
+.dot.healthy {
+  background-color: #22c55e;
+}
+
+.dot.degraded {
+  background-color: #f59e0b;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.dot.down {
+  background-color: #ef4444;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.dot.loading,
+.dot.error {
+  background-color: var(--text-dim, #6b7280);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

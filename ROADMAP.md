@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–8 complete. Phase 9 next (Ollama Smart Routing).
+> Current status: Phases 1–9 complete. Phase 10 next (see below).
 
 ## Phase Implementation Workflow (repeat for every phase)
 

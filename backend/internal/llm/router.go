@@ -47,6 +47,20 @@ func (cb *circuitBreaker) recordFailure() {
 	}
 }
 
+// state returns the human-readable circuit state: "open", "half_open", or "closed".
+// "half_open" means the open window has expired and the next request may probe.
+func (cb *circuitBreaker) state() string {
+	cb.mu.Lock()
+	defer cb.mu.Unlock()
+	if cb.openUntil.IsZero() {
+		return "closed"
+	}
+	if time.Now().After(cb.openUntil) {
+		return "half_open"
+	}
+	return "open"
+}
+
 // isInfraError returns true only for infrastructure-level failures that justify
 // falling back to the secondary provider. Model-quality failures (4xx, bad JSON,
 // tool parse errors) are NOT infrastructure errors and should be returned to the

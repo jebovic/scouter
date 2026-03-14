@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–8 complete. Phase 9 next: Ollama Smart Routing (detailed spec in ROADMAP.md).
+- Phases 1–9 complete. Phase 10 next (see ROADMAP.md).
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -112,6 +112,7 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - Graceful shutdown timeout: 65s (exceeds 60s LLM call timeout)
 - **Phase 7**: `internal/dealintel/` (trend+score, pure Go, TDD); `internal/notification/` (CRUD + mark-read); `internal/scheduler/` (robfig/cron, price-check alerts); `shopping_items.target_price`; `notifications` table (migration 006)
 - **Phase 8**: `internal/template/` (registry, 15 built-in templates, compiled in binary); `GET /api/templates`, `GET /api/templates/:id`
+- **Phase 9**: `internal/llm/` — `SmartRouter` (capability-matched pool, per-model circuit breakers, rate limiters, cascade on infra errors), `RequestOpts`/`WithRequestOpts` context routing hints, `RetryAsJSON` fallback, `HasRequestOpts`, `ModelPool.ForCapabilities`; all agents updated with `WithRequestOpts` + `RetryAsJSON`; `GET /api/health/llm`; `buildSmartRouter` in main.go (heavy→fast→cloud→Anthropic priority pool); `LLMStatus` dot in Topnav (60s poll)
 
 ## Frontend Status (Phases 1–8 complete)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
