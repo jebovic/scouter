@@ -153,7 +153,7 @@ LLM_PROVIDER=routing
 ### 2. Start All Services
 
 ```bash
-make dev
+make up
 # or: docker compose up --build
 ```
 
@@ -161,12 +161,14 @@ On first start:
 - PostgreSQL initializes and becomes healthy
 - Backend applies all 22+ migrations automatically
 - Frontend builds and starts on Nginx
+- Traefik starts and routes HTTPS traffic
 
 ### 3. Open & Load Sample Data
 
 ```
-Frontend:  http://localhost:5173
-API:       http://localhost:8080/api/health
+Frontend:  https://scouter.dev.local
+API:       https://scouter.dev.local/api/health
+Traefik:   http://localhost:8082
 ```
 
 Load sample data (optional):
@@ -178,14 +180,28 @@ make seed
 
 ## Make Targets
 
+See `make help` for full list. Common targets:
+
 ```bash
-make dev          # Start full stack (docker compose up --build)
-make dev-build    # Rebuild from scratch (no cache)
-make test         # Run all backend tests
-make lint         # Run Go vet
+make up           # Start core stack (postgres + backend + frontend + traefik)
+make up-seed      # Start core stack + load sample data
+make up-monitoring # Start core + Prometheus + Grafana
+make up-full      # Start everything (core + seed + monitoring)
+
+make test         # Run backend Go tests
+make test-frontend # Run frontend Vitest tests
+make test-e2e     # Run Playwright E2E tests
+make test-all     # Run all tests
+
+make lint         # Lint Go code (go vet)
+make lint-frontend # Lint frontend (eslint)
+make typecheck    # TypeScript type check
+
+make certs        # Generate local HTTPS certificates
 make seed         # Load sample mission data
-make migrate-down # Rollback one migration
-make clean        # Stop containers and delete volumes
+make migrate-down # Rollback one database migration
+make down         # Stop all containers (keep volumes)
+make clean-volumes # Stop and remove all volumes (DESTROYS DATA)
 ```
 
 ---

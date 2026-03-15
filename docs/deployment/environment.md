@@ -139,12 +139,12 @@ Frontend uses relative URLs in development; `VITE_API_BASE_URL` is only used whe
 - PostgreSQL: `5432` (host machine)
 - Backend: `8080` (inside container, not exposed to host)
 - Frontend: `80` (inside container, not exposed to host)
-- Traefik: `80`, `443`, `8082` (host machine)
+- Traefik: `80` (HTTP, redirects to 443), `443` (HTTPS), `8082` (Dashboard)
 
-**Local development:**
+**Local development (hot reload, without Docker):**
 - Backend: `8080` (http://localhost:8080)
-- Frontend: `5173` (http://localhost:5173, Vite dev server)
-- PostgreSQL: `5432` (if running in Docker)
+- Frontend: `5173` (http://localhost:5173, Vite dev server with hot reload)
+- PostgreSQL: `5432` (Docker or local)
 
 ---
 

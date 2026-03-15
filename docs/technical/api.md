@@ -1,6 +1,8 @@
 # API Reference
 
-Base URL: `http://localhost:8080/api`
+**Base URLs:**
+- **Docker (Traefik):** `https://scouter.dev.local/api`
+- **Local development:** `http://localhost:8080/api` (when running Go backend directly)
 
 All responses use `Content-Type: application/json`. Errors return `{ "error": "message" }`.
 

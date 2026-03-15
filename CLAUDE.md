@@ -34,9 +34,9 @@ Go backend + React frontend + PostgreSQL. ResearchAgent and PricingAgent call th
 ## Tech Stack
 - Backend: Go 1.23+, chi router, pgx/v5, golang-migrate, Anthropic SDK
 - Frontend: React 19 + TypeScript, Vite, Tanstack Query v5, React Router v7, Zod
-- Database: PostgreSQL 16 + pgvector (`vector(1024)` — Voyage AI v3 compatible, nullable until used)
-- LLM: AnthropicProvider (claude-sonnet-4-6, tool-use for structured output) | OllamaProvider (phase 2)
-- Deployment: Docker Compose (postgres, backend, frontend); Traefik v3.4 (reverse proxy, HTTPS, routing); Prometheus + Grafana (monitoring)
+- Database: PostgreSQL 16 + pgvector (1024-dim embeddings via pgvector extension)
+- LLM: Anthropic claude-sonnet-4-6 (tool-use) | Ollama (local) | SmartRouter (capability-matched pool)
+- Deployment: Docker Compose (postgres, backend, frontend, traefik); Traefik v3.4 (reverse proxy, HTTPS on *.dev.local, routing); Prometheus + Grafana (monitoring)
 
 ## Key Architecture Rules
 - LLM Provider interface is **transport-only**: `Complete(ctx, CompletionRequest) (CompletionResponse, error)`
