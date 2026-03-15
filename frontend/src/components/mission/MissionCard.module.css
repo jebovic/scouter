@@ -45,6 +45,10 @@
   text-transform: uppercase;
 }
 
+.autotagBadge {
+  margin-top: 4px;
+}
+
 .headerActions {
   display: flex;
   align-items: center;

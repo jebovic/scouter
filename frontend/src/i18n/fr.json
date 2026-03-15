@@ -209,7 +209,11 @@
     "noData": "Aucun achat enregistré",
     "noDataDesc": "Enregistrez des achats sur les missions terminées pour voir vos statistiques.",
     "spendTrend": "Tendance des dépenses",
-    "budgetVsActual": "Budget vs Réel"
+    "budgetVsActual": "Budget vs Réel",
+    "budgetVariance": "Heatmap Budgétaire",
+    "underBudget": "En dessous du budget",
+    "attention": "Attention",
+    "overBudget": "Dépassé"
   },
   "search": {
     "title": "Recherche Sémantique",

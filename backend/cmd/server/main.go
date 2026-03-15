@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/dealexplain"
 	"github.com/jibei/scouter/internal/digest"
 	"github.com/jibei/scouter/internal/agentrun"
@@ -388,6 +389,11 @@ func main() {
 	// Smart Price Prediction (Phase 52)
 	predictionHandler := prediction.NewHandler(shoppingRepo)
 	r.Get("/api/shopping-items/{id}/prediction", predictionHandler.GetPrediction)
+
+	// Smart Category Auto-Tagging (Phase 65)
+	autotagAgent := autotag.NewAgent(provider)
+	autotagHandler := autotag.NewHandler(missionRepo, autotagAgent)
+	r.Post("/api/missions/{slug}/suggest-category", autotagHandler.Suggest)
 
 	// AI Deal Explainer (Phase 60)
 	dealExplainCache := dealexplain.NewCache(1 * time.Hour)

@@ -84,10 +84,14 @@
 | 58 | Price Drop Email Digest (weekly summary) | Functional | Medium | 📋 Planned |
 | 59 | Smart Retailer Radar (live stock + price aggregator) | Functional | High | ✅ Done |
 | 60 | AI Deal Explainer (why is this a good deal?) | Agent | Medium | ✅ Done |
-| 61 | Mission Collaboration Threads (inline comments) | Functional | Medium | 📋 Planned |
-| 62 | French Public Holidays & Closing Days Widget | Interface | Low | 📋 Planned |
-| 63 | Option Price Alert (per-option threshold) | Functional | High | 📋 Planned |
-| 64 | Loyalty Points Tracker (Fnac, Cdiscount) | Functional | Medium | 📋 Planned |
+| 61 | Mission Collaboration Threads (inline comments) | Functional | Medium | ✅ Done |
+| 62 | Option Price Alert (per-option threshold) | Functional | High | ✅ Done |
+| 63 | French Public Holidays & Closing Days Widget | Interface | Low | ✅ Done |
+| 64 | Loyalty Points Tracker (Fnac, Cdiscount) | Functional | Medium | ✅ Done |
+| 65 | Smart Category Auto-Tagging (AI) | Agent | Medium | 📋 Planned |
+| 66 | Budget Variance Heatmap (month over month) | Interface | Medium | 📋 Planned |
+| 67 | Mission Cloning with Deep Copy | Functional | Low | 📋 Planned |
+| 68 | AI Shopping List Optimizer (best order to buy) | Agent | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 

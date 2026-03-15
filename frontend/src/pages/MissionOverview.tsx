@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, CommentThread } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, CommentThread, CategoryBadge } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord } from '../hooks'
+import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
 import type { MissionPhase } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import styles from './MissionOverview.module.css'
@@ -24,6 +24,7 @@ export default function MissionOverview() {
   const [showScanner, setShowScanner] = useState(false)
   const [scanPrefill, setScanPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
   const [scanKey, setScanKey] = useState(0)
+  const { mutate: suggestCategory, isPending: isSuggesting, data: categorySuggestion } = useSuggestCategory(slug ?? '')
 
   const spent = items.reduce((sum, i) => sum + i.price, 0)
 
@@ -79,6 +80,18 @@ export default function MissionOverview() {
             <div className={styles.headerMeta}>
               <StatusBadge phase={mission.phase} />
               <span className={styles.categoryLabel}>{mission.category}</span>
+              {(mission.autotagCategory || categorySuggestion) && (
+                <CategoryBadge category={categorySuggestion?.category ?? mission.autotagCategory ?? undefined} />
+              )}
+              <button
+                className={styles.autotagBtn}
+                onClick={() => suggestCategory()}
+                disabled={isSuggesting}
+                title="Suggérer une catégorie"
+                aria-label="Suggérer une catégorie avec l'IA"
+              >
+                {isSuggesting ? '⏳' : '🏷️'}
+              </button>
             </div>
           </div>
         </div>

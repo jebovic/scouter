@@ -33,6 +33,7 @@ export const MissionSchema = z.object({
   name: z.string(),
   icon: z.string(),
   category: z.enum(['travel', 'electronics', 'computing', 'renovation', 'custom']),
+  autotagCategory: z.string().nullish(),
   budget: z.number(),
   currency: z.string(),
   locale: z.string(),

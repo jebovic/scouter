@@ -1,0 +1,151 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heatmapWrapper {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+  grid-auto-columns: minmax(100px, 1fr);
+  grid-auto-rows: 48px;
+  min-width: max-content;
+}
+
+.headerCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+}
+
+.categoryLabel {
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  background: transparent;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 120px;
+  max-width: 150px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text);
+  background-color: var(--cell-color);
+  opacity: var(--cell-opacity);
+  border-radius: 4px;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.cell:hover {
+  opacity: calc(var(--cell-opacity) + 0.15);
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+}
+
+.legendRow {
+  display: flex;
+  gap: 24px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .heatmapWrapper {
+    padding: 12px;
+  }
+
+  .grid {
+    gap: 4px;
+    grid-auto-columns: minmax(70px, 1fr);
+    grid-auto-rows: 40px;
+  }
+
+  .headerCell {
+    font-size: 0.75rem;
+    padding: 8px 4px;
+  }
+
+  .categoryLabel {
+    min-width: 100px;
+    max-width: 120px;
+    font-size: 0.75rem;
+    padding: 8px 4px;
+  }
+
+  .cell {
+    font-size: 0.7rem;
+    padding: 4px;
+  }
+
+  .legendRow {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .legendItem {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-auto-columns: minmax(50px, 1fr);
+    grid-auto-rows: 36px;
+  }
+
+  .categoryLabel {
+    min-width: 80px;
+    font-size: 0.7rem;
+  }
+
+  .cell {
+    font-size: 0.65rem;
+  }
+
+  .headerCell {
+    font-size: 0.65rem;
+  }
+}

@@ -52,6 +52,28 @@
   font-family: var(--font-mono);
 }
 
+.autotagBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.autotagBtn:hover:not(:disabled) {
+  background: var(--raised);
+  color: var(--text);
+}
+
+.autotagBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ── Cards grid ─────────────────────────────────────────────── */
 .cardGrid {
   display: grid;

@@ -209,7 +209,11 @@
     "noData": "No purchases recorded yet",
     "noDataDesc": "Record purchases on completed missions to see your spending stats.",
     "spendTrend": "Spend Trend",
-    "budgetVsActual": "Budget vs Actual"
+    "budgetVsActual": "Budget vs Actual",
+    "budgetVariance": "Budget Variance Heatmap",
+    "underBudget": "Under Budget",
+    "attention": "Attention",
+    "overBudget": "Over Budget"
   },
   "search": {
     "title": "Semantic Search",

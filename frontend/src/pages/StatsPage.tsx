@@ -4,7 +4,7 @@ import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
 import { useMissions } from '../hooks/useMission'
 import { useBadges } from '../hooks/useBadges'
-import { BadgeRow, BadgeToast } from '../components/scouter'
+import { BadgeRow, BadgeToast, BudgetHeatmap } from '../components/scouter'
 import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
@@ -170,6 +170,13 @@ export default function StatsPage() {
           </div>
         </section>
       )}
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>{t('stats.budgetVariance')}</h2>
+        <div className={styles.card}>
+          <BudgetHeatmap monthsBack={3} />
+        </div>
+      </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Vos badges</h2>

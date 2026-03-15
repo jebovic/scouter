@@ -26,6 +26,7 @@ export interface Mission {
   name: string
   icon: string
   category: MissionCategory
+  autotagCategory?: string | null
   budget: number
   currency: string
   locale: string

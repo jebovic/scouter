@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Card, StatusBadge, BudgetBar } from '../scouter'
+import { CategoryBadge } from './CategoryBadge'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
 import { useDuplicateMission } from '../../hooks/useMission'
 import type { Mission, ShoppingItem } from '../../types'
@@ -62,6 +63,11 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
               <div>
                 <div className={styles.name}>{mission.name}</div>
                 <div className={styles.category}>{mission.category}</div>
+                {mission.autotagCategory && (
+                  <div className={styles.autotagBadge}>
+                    <CategoryBadge category={mission.autotagCategory} size="sm" />
+                  </div>
+                )}
               </div>
             </div>
             <div className={styles.headerActions}>
