@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–11 complete. Phase 12 next (see below).
+> Current status: Phases 1–14 complete. All planned phases delivered. Auto-improvement loop active.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -35,9 +35,9 @@
 | 9 | Ollama Smart Routing & Model Optimization | Infrastructure | High | ✅ Done |
 | 10 | Export, Share & Archive | Functional | Medium | ✅ Done |
 | **11** | **Semantic Search (pgvector)** | **Agent + Infra** | **Medium** | ✅ Done |
-| 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |
-| 13 | Settings, Data Management & Deployment | Infrastructure | Low | ⬜ |
-| **14** | **Observability & Monitoring Stack** | **Infrastructure** | **Medium** | ⬜ |
+| 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ✅ Done |
+| 13 | Settings, Data Management & Deployment | Infrastructure | Low | ✅ Done |
+| **14** | **Observability & Monitoring Stack** | **Infrastructure** | **Medium** | ✅ Done |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14**
 
@@ -544,3 +544,48 @@ After Phase 13, SCOUTER covers the complete lifecycle:
 Phase 14 adds full operational observability across the entire stack.
 
 Next journey: multi-user auth, cloud deployment, collaborative household/team missions.
+
+---
+
+## Auto-Improvement Loop — Phase 15+
+
+> All planned phases complete. Entering continuous improvement. Tracked here for the user.
+
+### Phase 15: Real-Time Price Intelligence via Public APIs (Planned)
+**Goal**: Integrate public price APIs to enrich research with live market data, focusing on the French market.
+- **Aviationstack API**: Real-time flight prices for travel missions (flights, holidays)
+- **Open Food Facts**: Food & grocery product comparisons
+- **Kelkoo / Idealo affiliate feed**: French e-commerce price aggregation
+- **Backmarket API**: Refurbished device prices (eco-friendly option)
+- New backend `internal/priceapi/` package with pluggable adapter pattern
+- Frontend: live price injection into option cards during research
+- New "Live Prices" tab in OptionsExplorer
+
+### Phase 16: Collaborative Missions (Planned)
+**Goal**: Allow household/team to share and collaborate on missions.
+- Mission invite system with share links (extend existing share tokens)
+- Real-time collaborative annotation on options
+- Voting/thumbs on options, aggregate score visible to all participants
+- "Household" context for budget pooling
+
+### Phase 17: AI-Powered Negotiation Coach (Planned)
+**Goal**: After identifying the best product/price, coach the user on how to negotiate.
+- New `NegotiationAgent` analyzing option attributes + market prices
+- Produces structured negotiation script: opening offer, walk-away price, counter-offer script
+- Frontend: "Coach Me" CTA on PurchaseForm after option selected
+- Tracks negotiation outcomes in purchase_records (actual vs suggested)
+
+### Phase 18: Progressive Web App + Mobile UX (Planned)
+**Goal**: Make Scouter usable offline and installable on mobile.
+- PWA manifest + service worker with Workbox (offline shell + cached API responses)
+- Push notifications for price alerts via Web Push API (replaces polling)
+- Bottom navigation bar on mobile
+- Swipe gestures on mission cards (archive left, research right)
+
+### Phase 19: Multi-Currency & i18n Completion (Planned)
+**Goal**: Full French/English UX with proper localization.
+- All strings moved to i18n JSON keys (eliminate hardcoded English in components)
+- Number/currency/date formatting respects locale setting from Settings
+- French market: EUR default, date format DD/MM/YYYY
+- RTL-ready CSS (for future language support)
+

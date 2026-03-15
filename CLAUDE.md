@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–9 complete. Phase 10 next (see ROADMAP.md).
+- Phases 1–14 complete. All planned phases delivered. Auto-improvement loop active (see ROADMAP.md Phase 15+).
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -104,7 +104,7 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 | `PORT` | `8080` | backend listen port |
 | `ENV` | `production` | `development` enables permissive CORS |
 
-## Backend Status (Phases 1–11 complete)
+## Backend Status (Phases 1–14 complete)
 - All handlers use `httputil.WriteJSON`/`WriteError` — no raw error leaks
 - `errors.Is(err, pgx.ErrNoRows)` throughout all repositories
 - `param.NewOpt(v)` used in Anthropic SDK; CORS gated on `ENV=development`; 1 MiB body cap
@@ -115,8 +115,11 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Phase 9**: `internal/llm/` — `SmartRouter` (capability-matched pool, per-model circuit breakers, rate limiters, cascade on infra errors), `RequestOpts`/`WithRequestOpts` context routing hints, `RetryAsJSON` fallback, `HasRequestOpts`, `ModelPool.ForCapabilities`; all agents updated with `WithRequestOpts` + `RetryAsJSON`; `GET /api/health/llm`; `buildSmartRouter` in main.go (heavy→fast→cloud→Anthropic priority pool); `LLMStatus` dot in Topnav (60s poll)
 - **Phase 10**: `internal/export/` (Gatherer + Handler, JSON export); `GET /api/missions/:id/export`; share token (SetShareToken/ClearShareToken), archive/unarchive; `GET /api/shared/:token` (CORS-open); migration 008 (share_token, archived_at on missions)
 - **Phase 11**: `internal/llm/embed_ollama.go` (`OllamaEmbedder` — `/api/embed` endpoint); `internal/embedding/` (text builder, async worker 2 goroutines, repo); `internal/search/` (cosine ANN via `<=>`, CTE similar query, handler); `GET /api/search`, `GET /api/options/:id/similar`, `POST /api/search/reindex`; migration 009 (IVFFlat index `lists=10`); option + research agents wire embed channel
+- **Phase 12**: `internal/purchase/` (PurchaseRecord CRUD, service auto-advances mission to "done"); `internal/purchase/stats.go` (StatsHandler, total/category breakdown); `missions.lessons` column; migration 010 (`purchase_records` table); `GET/POST/PATCH /api/missions/:id/purchase`, `GET /api/stats`
+- **Phase 13**: `internal/settings/` (JSONB key-value store, currency/locale/llm_provider allowlist); `internal/admin/` (DELETE /api/data with X-Confirm header); enhanced `GET /api/health` (DB ping, degraded status); migration 011 (`settings` table with defaults)
+- **Phase 14**: `internal/metrics/` (Recorder interface, NoopRecorder, PrometheusRecorder + middleware); SmartRouter/agents/scheduler instrumented; `/metrics` Prometheus endpoint (METRICS_ENABLED env); docker-compose monitoring profile (Prometheus + Grafana + cAdvisor); pre-provisioned Grafana dashboards
 
-## Frontend Status (Phases 1–11 complete)
+## Frontend Status (Phases 1–14 complete)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
 - **Responsive**: breakpoints at 640px and 1024px across all pages and components
 - **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
@@ -129,6 +132,8 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Layout migration (Phase 7)**: React Router v7 Outlet pattern — `Layout.tsx` (root shell: sidebar+onboarding), `MissionLayout.tsx` (page wrapper+Topnav); mission pages now return just `<main>` content
 - **Deal intel (Phase 7)**: `TrendBadge`, `DealScoreBadge`, `PriceSparkline` in `ShoppingItemRow`; `NotificationBell` in `Topnav`; `useNotifications` (60s poll); `getDealScore` API; `target_price` inline edit
 - **Semantic Search (Phase 11)**: `src/api/search.ts` (Zod schemas + fetch for search/similar/reindex); `useSearch` (300ms debounce, 2-char min), `useSimilarOptions`; `SearchDropdown` in Topnav (5-result instant dropdown, Enter → `/search`); `SearchPage` (`/search` route, full results, URL-synced query); `SimilarOptions` component (link to mission options page)
+- **Purchase Lifecycle (Phase 12)**: `src/api/purchase.ts` (PurchaseRecord + Stats Zod schemas); `usePurchase` hooks; `StarRating` component (5-star, keyboard-accessible); `MissionTimeline` (4-step vertical); `PurchaseForm` (create/edit); `LessonsField` (inline edit); `HistoryPage` (/history); `StatsPage` (/stats)
+- **Settings & Data (Phase 13)**: `src/api/settings.ts`; `SettingsPage` (/settings) with currency/locale/LLM provider + two-step delete-all danger zone
 - **Test suite**: Vitest + jsdom + Testing Library; 71 tests across 10 files
 
 ## CSS Conventions
