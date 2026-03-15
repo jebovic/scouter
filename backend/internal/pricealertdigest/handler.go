@@ -1,6 +1,7 @@
 package pricealertdigest
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -119,7 +120,7 @@ func (h *Handler) GetDigest(w http.ResponseWriter, r *http.Request) {
 	for i := range items {
 		err := h.pool.QueryRow(r.Context(), priceHistoryQuery, items[i].itemID).
 			Scan(&items[i].minPrice, &items[i].avgPrice, &items[i].histCount)
-		if err != nil && err != pgx.ErrNoRows {
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 			return
 		}

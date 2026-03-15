@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jibei/scouter/internal/httputil"
 )
@@ -44,7 +45,7 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetWatchlist returns the price drop watchlist for a mission
 func (h *Handler) GetWatchlist(w http.ResponseWriter, r *http.Request) {
-	missionID := r.PathValue("missionId")
+	missionID := chi.URLParam(r, "missionId")
 
 	// Check cache
 	if cached, ok := h.cache.Load(missionID); ok {
@@ -59,7 +60,7 @@ func (h *Handler) GetWatchlist(w http.ResponseWriter, r *http.Request) {
 	// Compute watchlist
 	response, err := h.compute(r.Context(), missionID)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to compute watchlist: %v", err))
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 

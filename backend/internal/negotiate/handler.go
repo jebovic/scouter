@@ -2,7 +2,6 @@ package negotiate
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -59,7 +58,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	advice, err := h.agent.Negotiate(r.Context(), rawID, item.Name, item.Merchant, item.Price)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, fmt.Sprintf("negotiate agent error: %v", err))
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 

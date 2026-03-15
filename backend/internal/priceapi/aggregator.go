@@ -68,8 +68,13 @@ func (a *Aggregator) Search(ctx context.Context, productName, category, locale s
 				return
 			}
 
-			// Acquire concurrency slot.
-			a.sem <- struct{}{}
+			// Acquire concurrency slot (respect context cancellation to avoid goroutine leak).
+			select {
+			case a.sem <- struct{}{}:
+			case <-ctx.Done():
+				results <- providerResult{name: p.Name(), listings: nil}
+				return
+			}
 			defer func() { <-a.sem }()
 
 			listings, err := p.Search(ctx, ProviderQuery{

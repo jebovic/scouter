@@ -2,6 +2,7 @@ package scorecard
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -279,7 +280,7 @@ func buildSummary(name, grade string, score int) string {
 
 // ignorePgxNoRows swallows pgx.ErrNoRows so optional queries don't abort.
 func ignorePgxNoRows(err error) error {
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil
 	}
 	return err

@@ -96,6 +96,9 @@ func (r *stubMissionRepo) Archive(_ context.Context, _ uuid.UUID) (*mission.Miss
 func (r *stubMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
 	return nil, nil
 }
+func (r *stubMissionRepo) CloneMission(_ context.Context, _ string) (mission.Mission, error) {
+	return mission.Mission{}, nil
+}
 
 type stubShoppingRepo struct {
 	items []shopping.Item

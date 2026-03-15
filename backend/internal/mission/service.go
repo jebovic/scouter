@@ -2,6 +2,7 @@ package mission
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -11,6 +12,9 @@ import (
 )
 
 var nonAlphanumeric = regexp.MustCompile(`[^a-z0-9]+`)
+
+// ErrNotFound is returned when a mission cannot be located by slug or ID.
+var ErrNotFound = errors.New("not found")
 
 // Service handles mission business logic.
 type Service struct {
@@ -157,7 +161,7 @@ func (s *Service) Duplicate(ctx context.Context, slug string) (*Mission, error) 
 		return nil, fmt.Errorf("duplicate mission: get original: %w", err)
 	}
 	if orig == nil {
-		return nil, fmt.Errorf("mission %q not found", slug)
+		return nil, fmt.Errorf("mission %q: %w", slug, ErrNotFound)
 	}
 
 	newName := orig.Name + " (copie)"

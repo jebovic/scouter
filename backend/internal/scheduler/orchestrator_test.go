@@ -58,6 +58,9 @@ func (m *mockMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mi
 }
 
 func (m *mockMissionRepo) SetPhase(_ context.Context, _ uuid.UUID, _ string) error { return nil }
+func (m *mockMissionRepo) CloneMission(_ context.Context, _ string) (mission.Mission, error) {
+	return mission.Mission{}, nil
+}
 
 // ---- mock option repository ----
 

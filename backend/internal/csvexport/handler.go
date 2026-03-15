@@ -3,6 +3,7 @@ package csvexport
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -107,10 +108,12 @@ func (h *Handler) ExportMissionCSV(w http.ResponseWriter, r *http.Request) {
 	cw := csv.NewWriter(w)
 
 	// Header row.
-	_ = cw.Write([]string{
+	if err := cw.Write([]string{
 		"Nom", "Prix", "Statut", "Marchand", "Catégorie",
 		"Prix Cible", "Estimation Initiale", "Épinglé", "Date Ajout",
-	})
+	}); err != nil {
+		log.Printf("csvexport: write header: %v", err)
+	}
 
 	for _, item := range items {
 		record := []string{
@@ -124,7 +127,9 @@ func (h *Handler) ExportMissionCSV(w http.ResponseWriter, r *http.Request) {
 			formatBool(item.pinned),
 			item.createdAt.UTC().Format(time.RFC3339),
 		}
-		_ = cw.Write(record)
+		if err := cw.Write(record); err != nil {
+			log.Printf("csvexport: write record: %v", err)
+		}
 	}
 
 	cw.Flush()

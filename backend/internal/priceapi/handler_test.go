@@ -86,6 +86,9 @@ func (m *mockMissionRepo) Archive(_ context.Context, _ uuid.UUID) (*mission.Miss
 func (m *mockMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
 	return nil, nil
 }
+func (m *mockMissionRepo) CloneMission(_ context.Context, _ string) (mission.Mission, error) {
+	return mission.Mission{}, nil
+}
 
 // --- Helpers ---
 

@@ -122,7 +122,7 @@ func (h *Handler) negotiate(w http.ResponseWriter, r *http.Request) {
 
 	script, err := h.agent.Run(r.Context(), input)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, fmt.Sprintf("negotiation agent error: %v", err))
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 

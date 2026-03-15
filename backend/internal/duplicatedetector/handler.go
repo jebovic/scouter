@@ -1,7 +1,6 @@
 package duplicatedetector
 
 import (
-	"context"
 	"net/http"
 	"sync"
 	"time"
@@ -54,7 +53,7 @@ func (h *Handler) GetDuplicates(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	items, err := h.repo.ListByMission(context.Background(), missionID)
+	items, err := h.repo.ListByMission(r.Context(), missionID)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return

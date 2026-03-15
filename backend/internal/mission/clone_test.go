@@ -134,7 +134,7 @@ func (r *cloneMockRepo) CloneMission(ctx context.Context, slug string) (Mission,
 
 // errNotFound returns a sentinel error matching isNotFound().
 func errNotFound(slug string) error {
-	return fmt.Errorf("mission %q not found", slug)
+	return fmt.Errorf("mission %q: %w", slug, ErrNotFound)
 }
 
 // routerWithClone wires POST /api/missions/{slug}/clone on a fresh chi router.

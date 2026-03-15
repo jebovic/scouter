@@ -62,6 +62,9 @@ func (s *stubMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mi
 }
 
 func (s *stubMissionRepo) SetPhase(_ context.Context, _ uuid.UUID, _ string) error { return nil }
+func (s *stubMissionRepo) CloneMission(_ context.Context, _ string) (mission.Mission, error) {
+	return mission.Mission{}, nil
+}
 
 type stubOptionRepo struct {
 	opts []option.Option

@@ -2,8 +2,8 @@ package mission
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -153,9 +153,9 @@ func (h *Handler) Clone(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSON(w, http.StatusCreated, cloned)
 }
 
-// isNotFound reports whether err is the "not found" sentinel from the service.
+// isNotFound reports whether err wraps the ErrNotFound sentinel from the service.
 func isNotFound(err error) bool {
-	return err != nil && strings.Contains(err.Error(), "not found")
+	return errors.Is(err, ErrNotFound)
 }
 
 // Archive sets archived_at on a mission, hiding it from the default dashboard list.
