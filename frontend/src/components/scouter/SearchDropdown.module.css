@@ -52,6 +52,98 @@
   overflow: hidden;
 }
 
+/* ── Section header ─────────────────────────────────────────────────────────── */
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.9rem 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+}
+
+.sectionHeader:first-child {
+  border-top: none;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.68rem;
+  color: var(--cyan-dim, var(--cyan));
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+
+.clearBtn:hover {
+  color: var(--cyan);
+}
+
+/* ── Suggestion row ─────────────────────────────────────────────────────────── */
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.1s;
+  color: var(--text);
+}
+
+.suggestion:hover {
+  background: rgba(0, 229, 255, 0.06);
+}
+
+.suggestionIcon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  opacity: 0.7;
+  width: 1rem;
+  text-align: center;
+}
+
+.suggestionText {
+  flex: 1;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  padding: 0 0.1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.suggestion:hover .removeBtn {
+  opacity: 1;
+}
+
+.removeBtn:hover {
+  color: var(--coral-dim, #ff6b6b);
+}
+
+/* ── Search result row ──────────────────────────────────────────────────────── */
+
 .result {
   display: flex;
   align-items: center;
@@ -94,6 +186,8 @@
   flex-shrink: 0;
 }
 
+/* ── Footer & empty ─────────────────────────────────────────────────────────── */
+
 .empty {
   padding: 1rem;
   text-align: center;
@@ -114,6 +208,8 @@
 .footer:hover {
   color: var(--cyan);
 }
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
 
 @media (max-width: 640px) {
   .input {

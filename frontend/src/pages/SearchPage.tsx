@@ -1,14 +1,33 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSearch } from '../hooks/useSearch'
+import { addToHistory } from '../utils/searchHistory'
 import styles from './SearchPage.module.css'
+
+const POPULAR_TERMS: string[] = [
+  'iPhone',
+  'MacBook',
+  'PS5',
+  'TV 4K',
+  'aspirateur robot',
+  'vélo électrique',
+  'AirPods',
+  'iPad',
+  'Nintendo Switch',
+  'casque audio',
+  'drone',
+  'trottinette électrique',
+]
 
 export function SearchPage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const initialQ = searchParams.get('q') ?? ''
   const [inputValue, setInputValue] = useState(initialQ)
+  // Track whether we've saved the current query to history
+  const [lastSaved, setLastSaved] = useState('')
 
   const { data: results = [], isFetching } = useSearch(inputValue, 20)
 
@@ -21,6 +40,21 @@ export function SearchPage() {
     }
   }, [inputValue, setSearchParams])
 
+  // Save to history when results arrive for a query
+  useEffect(() => {
+    const trimmed = inputValue.trim()
+    if (trimmed.length >= 2 && !isFetching && results.length > 0 && trimmed !== lastSaved) {
+      addToHistory(trimmed)
+      setLastSaved(trimmed)
+    }
+  }, [inputValue, isFetching, results.length, lastSaved])
+
+  function handlePopularClick(term: string) {
+    addToHistory(term)
+    navigate(`/search?q=${encodeURIComponent(term)}`)
+    setInputValue(term)
+  }
+
   function badgeLabel(badge: string): string {
     const prefixes: Record<string, string> = {
       recommended: '★',
@@ -32,6 +66,8 @@ export function SearchPage() {
     const label = t(`search.${badge}`, { defaultValue: badge })
     return prefix ? `${prefix} ${label}` : label
   }
+
+  const showEmpty = inputValue.trim().length < 2
 
   return (
     <main className={styles.page}>
@@ -51,20 +87,37 @@ export function SearchPage() {
         />
       </div>
 
-      {inputValue.trim().length < 2 && (
-        <div className={styles.empty}>
-          <div className={styles.emptyTitle}>{t('search.startTyping')}</div>
-          <div className={styles.emptyHint}>{t('search.minChars')}</div>
-        </div>
+      {showEmpty && (
+        <>
+          <div className={styles.empty}>
+            <div className={styles.emptyTitle}>{t('search.startTyping')}</div>
+            <div className={styles.emptyHint}>{t('search.minChars')}</div>
+          </div>
+
+          <div className={styles.popularSection}>
+            <div className={styles.popularLabel}>Recherches populaires</div>
+            <div className={styles.chipList}>
+              {POPULAR_TERMS.map((term) => (
+                <button
+                  key={term}
+                  className={styles.chip}
+                  onClick={() => handlePopularClick(term)}
+                >
+                  🔍 {term}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
-      {inputValue.trim().length >= 2 && isFetching && results.length === 0 && (
+      {!showEmpty && isFetching && results.length === 0 && (
         <div className={styles.empty}>
           <div className={styles.emptyTitle}>{t('search.searching')}</div>
         </div>
       )}
 
-      {inputValue.trim().length >= 2 && !isFetching && results.length === 0 && (
+      {!showEmpty && !isFetching && results.length === 0 && (
         <div className={styles.empty}>
           <div className={styles.emptyTitle}>{t('search.noResults', { query: inputValue })}</div>
           <div className={styles.emptyHint}>{t('search.noResultsHint')}</div>

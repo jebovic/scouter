@@ -117,6 +117,49 @@
   font-size: 0.82rem;
 }
 
+/* ── Popular terms chips ────────────────────────────────────────────────────── */
+
+.popularSection {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.popularLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-mid, var(--text));
+  font-size: 0.78rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.06);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+
 @media (max-width: 640px) {
   .page {
     padding: 1rem;

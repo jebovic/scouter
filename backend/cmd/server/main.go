@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/pricedigest"
 	"github.com/jibei/scouter/internal/purchaseadvisor"
 	"github.com/jibei/scouter/internal/budgetalert"
 	"github.com/jibei/scouter/internal/ecoscore"
@@ -608,6 +609,10 @@ func main() {
 	// AI Purchase Advisor (Phase 110) — LLM tool-use, 2h in-memory cache
 	purchaseAdvisorHandler := purchaseadvisor.NewHandler(shoppingRepo, provider)
 	r.Post("/api/items/{itemID}/purchase-advice", purchaseAdvisorHandler.GetAdvice)
+
+	// Price Drop Alert Digest (Phase 113) — 24h price change summary, direct pool query
+	priceDigestHandler := pricedigest.NewHandler(pool)
+	r.Get("/api/price-digest", priceDigestHandler.GetDigest)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

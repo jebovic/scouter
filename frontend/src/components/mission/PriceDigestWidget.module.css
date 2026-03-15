@@ -1,0 +1,193 @@
+@import '../../styles/theme.css';
+
+.widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  margin-bottom: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mid);
+}
+
+.counters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.counter[data-type='drops'] {
+  color: var(--green);
+}
+
+.counter[data-type='rises'] {
+  color: var(--coral);
+}
+
+.arrow {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.toggleBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-mid);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.toggleBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.stable {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.timestamp {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  text-align: right;
+  margin-top: 10px;
+}
+
+/* Expanded drop list */
+.dropList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.dropRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+
+.dropRow:hover {
+  border-color: var(--green);
+}
+
+.dropRow[data-rising='true']:hover {
+  border-color: var(--coral);
+}
+
+.itemLink {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemLink:hover {
+  color: var(--cyan);
+}
+
+.merchant {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.prices {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.oldPrice {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.arrow2 {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+}
+
+.newPrice[data-dropping='true'] {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.newPrice[data-dropping='false'] {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.changePct {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.changePct[data-dropping='true'] {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.changePct[data-dropping='false'] {
+  background: var(--coral-dim);
+  color: var(--coral);
+}
