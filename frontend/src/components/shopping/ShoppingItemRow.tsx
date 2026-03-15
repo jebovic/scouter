@@ -37,6 +37,8 @@ import { DropPredictionCard } from './DropPredictionCard'
 import { PriceAnnotationList } from './PriceAnnotationList'
 import { VolatilityCalendar } from './VolatilityCalendar'
 import { ElasticityCard } from './ElasticityCard'
+import { NegotiationScriptCard } from './NegotiationScriptCard'
+import { StockStatusBadge } from './StockStatusBadge'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -149,6 +151,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
           </>
         )}
         <ItemTagsDisplay missionId={missionId} itemId={item.id} />
+        <StockStatusBadge missionId={missionId} itemId={item.id} />
       </div>
 
       {/* Price + delta + target */}
@@ -309,6 +312,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <ElasticityCard missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <NegotiationScriptCard missionId={missionId} itemId={item.id} />
       )}
     </>
   )

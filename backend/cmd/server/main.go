@@ -94,6 +94,7 @@ import (
 	"github.com/jibei/scouter/internal/wishlist"
 	"github.com/jibei/scouter/internal/competitorprice"
 	"github.com/jibei/scouter/internal/couponfinder"
+	"github.com/jibei/scouter/internal/negotiationscript"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 	"github.com/jibei/scouter/internal/giftfinder"
@@ -120,6 +121,7 @@ import (
 	"github.com/jibei/scouter/internal/missionreport"
 	"github.com/jibei/scouter/internal/crossmission"
 	"github.com/jibei/scouter/internal/reordersuggestion"
+	"github.com/jibei/scouter/internal/stockalert"
 )
 
 func main() {
@@ -669,7 +671,11 @@ func main() {
 
 	// Price Negotiation Simulator (Phase 116) — deterministic scripts, 1h in-memory cache
 	negotiationSimHandler := negotiationsim.NewHandler(shoppingRepo)
-	r.Get("/api/missions/{missionId}/items/{itemId}/negotiation-script", negotiationSimHandler.GetScript)
+	r.Get("/api/missions/{missionId}/items/{itemId}/negotiation-sim", negotiationSimHandler.GetScript)
+
+	// Contextual Negotiation Script Generator (Phase 150) — context-aware French scripts, 1h cache
+	negotiationScriptHandler := negotiationscript.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/negotiation-script", negotiationScriptHandler.GetScript)
 
 	// Mission Progress Dashboard Widget (Phase 117) — 5min in-memory cache
 	missionProgressHandler := missionprogress.NewHandler(pool)
@@ -787,6 +793,10 @@ func main() {
 	// Smart Reorder & Repurchase Suggestions (Phase 148) — deterministic, 10min in-memory cache
 	reorderHandler := reordersuggestion.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/reorder-suggestions", reorderHandler.GetSuggestions)
+
+	// Real-Time Stock Availability Alert Simulator (Phase 149) — deterministic FNV hash, 30min in-memory cache
+	stockAlertHandler := stockalert.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/stock-status", stockAlertHandler.GetStockStatus)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

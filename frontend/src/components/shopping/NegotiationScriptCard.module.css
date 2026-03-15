@@ -1,0 +1,183 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.savings {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--green);
+  background: var(--green-dim);
+  padding: 2px 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
+}
+
+/* Accordion sections */
+.section {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--raised);
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  transition: background 0.15s;
+}
+
+.sectionHeader:hover {
+  background: color-mix(in srgb, var(--raised) 80%, var(--cyan) 20%);
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chevron {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  transition: transform 0.2s;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.sectionBody {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+}
+
+.sectionText {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.copyBtn {
+  align-self: flex-end;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.copyBtn:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+/* Tips list */
+.tipsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tipsTitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.tipsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tipItem {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  line-height: 1.4;
+}
+
+.tipIcon {
+  flex-shrink: 0;
+  font-style: normal;
+}
+
+/* Copy all button */
+.copyAllBtn {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  align-self: flex-end;
+}
+
+.copyAllBtn:hover {
+  background: color-mix(in srgb, var(--cyan) 20%, transparent);
+  border-color: var(--cyan);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 10px 12px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
