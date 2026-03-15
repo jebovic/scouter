@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styles from './LessonsField.module.css'
 
 interface LessonsFieldProps {
@@ -8,6 +9,7 @@ interface LessonsFieldProps {
 }
 
 export function LessonsField({ value, onSave }: LessonsFieldProps) {
+  const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
   const [text, setText] = useState(value ?? '')
   const [saving, setSaving] = useState(false)
@@ -28,7 +30,7 @@ export function LessonsField({ value, onSave }: LessonsFieldProps) {
 
   return (
     <div className={styles.wrap}>
-      <h4 className={styles.title}>Lessons Learned</h4>
+      <h4 className={styles.title}>{t('lessons.title')}</h4>
       {editing ? (
         <textarea
           className={styles.textarea}
@@ -38,7 +40,7 @@ export function LessonsField({ value, onSave }: LessonsFieldProps) {
           autoFocus
           maxLength={2000}
           rows={4}
-          placeholder="What did you learn from this mission? What would you do differently next time?"
+          placeholder={t('lessons.placeholder')}
         />
       ) : (
         <div
@@ -48,10 +50,10 @@ export function LessonsField({ value, onSave }: LessonsFieldProps) {
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && setEditing(true)}
         >
-          {text || <span className={styles.placeholder}>Click to add lessons learned...</span>}
+          {text || <span className={styles.placeholder}>{t('lessons.addPlaceholder')}</span>}
         </div>
       )}
-      {saving && <span className={styles.saving}>Saving...</span>}
+      {saving && <span className={styles.saving}>{t('lessons.saving')}</span>}
     </div>
   )
 }

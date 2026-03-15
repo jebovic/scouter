@@ -47,7 +47,7 @@ export default function MissionOverview() {
   if (isLoading) {
     return (
       <main className={styles.loading}>
-        <LoadingPulse label="Loading mission..." />
+        <LoadingPulse label={t('mission.loadingMission')} />
       </main>
     )
   }
@@ -55,7 +55,7 @@ export default function MissionOverview() {
   if (!mission) {
     return (
       <main className={styles.notFound}>
-        <p>Mission not found.</p>
+        <p>{t('mission.notFound')}</p>
       </main>
     )
   }
@@ -86,14 +86,14 @@ export default function MissionOverview() {
             <h3 className={styles.cardLabel}>{t('mission.budget')}</h3>
             <BudgetBar spent={spent} budget={mission.budget} currency={currency} />
             <div className={styles.budgetMeta}>
-              <span>{fmt(spent)} spent</span>
-              <span>{fmt(Math.max(0, mission.budget - spent))} remaining</span>
+              <span>{fmt(spent)} {t('mission.spent')}</span>
+              <span>{fmt(Math.max(0, mission.budget - spent))} {t('mission.remaining')}</span>
             </div>
           </div>
 
           {/* Phase switcher */}
           <div className={styles.card}>
-            <h3 className={styles.cardLabel}>PHASE</h3>
+            <h3 className={styles.cardLabel}>{t('mission.phase').toUpperCase()}</h3>
             <div className={styles.phaseButtons}>
               {PHASES.map((p) => (
                 <button
@@ -102,7 +102,7 @@ export default function MissionOverview() {
                   disabled={updatePending}
                   className={`${styles.phaseBtn} ${mission.phase === p ? styles.phaseBtnActive : ''}`}
                 >
-                  {p}
+                  {t(`mission.phases.${p}`)}
                 </button>
               ))}
             </div>
@@ -116,14 +116,14 @@ export default function MissionOverview() {
             disabled={researchPending}
             className={`${styles.agentBtn} ${styles.researchBtn}`}
           >
-            {researchPending ? '⚡ Researching...' : '⚡ Run Research Agent'}
+            {researchPending ? `⚡ ${t('mission.researching')}` : `⚡ ${t('mission.runResearchAgent')}`}
           </button>
           <button
             onClick={handlePricing}
             disabled={pricingPending}
             className={`${styles.agentBtn} ${styles.pricingBtn}`}
           >
-            {pricingPending ? '💰 Scouting prices...' : '💰 Run Price Intel'}
+            {pricingPending ? `💰 ${t('mission.scoutingPrices')}` : `💰 ${t('mission.runPriceIntel')}`}
           </button>
         </div>
 
@@ -140,7 +140,7 @@ export default function MissionOverview() {
         {/* Constraints */}
         {mission.constraints.length > 0 && (
           <div className={`${styles.card} ${styles.section}`}>
-            <h3 className={styles.cardLabel}>CONSTRAINTS</h3>
+            <h3 className={styles.cardLabel}>{t('mission.constraints').toUpperCase()}</h3>
             <div className={styles.constraintList}>
               {mission.constraints.map((c) => (
                 <div
@@ -162,7 +162,7 @@ export default function MissionOverview() {
 
         {/* Mission Timeline */}
         <div className={`${styles.card} ${styles.section}`}>
-          <h3 className={styles.cardLabel}>MISSION PROGRESS</h3>
+          <h3 className={styles.cardLabel}>{t('mission.missionProgress').toUpperCase()}</h3>
           <MissionTimeline
             createdAt={mission.createdAt}
             hasDecision={!!decision}
@@ -198,16 +198,16 @@ export default function MissionOverview() {
             className={styles.quickNavBtn}
           >
             <div className={styles.quickNavIcon}>🔍</div>
-            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleOptions}`}>Options Explorer</div>
-            <div className={styles.quickNavDesc}>Compare research results</div>
+            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleOptions}`}>{t('quickNav.optionsExplorer')}</div>
+            <div className={styles.quickNavDesc}>{t('quickNav.optionsDesc')}</div>
           </button>
           <button
             onClick={() => navigate(`/missions/${slug}/shopping`)}
             className={styles.quickNavBtn}
           >
             <div className={styles.quickNavIcon}>🛒</div>
-            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleShopping}`}>Shopping Tracker</div>
-            <div className={styles.quickNavDesc}>Track prices and merchants</div>
+            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleShopping}`}>{t('quickNav.shoppingTracker')}</div>
+            <div className={styles.quickNavDesc}>{t('quickNav.shoppingDesc')}</div>
           </button>
         </div>
       </div>

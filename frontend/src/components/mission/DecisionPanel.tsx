@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDecision, useRunDecision, useUpdateMission } from '../../hooks'
 import type { Mission, WeightProfile } from '../../types'
 import styles from './DecisionPanel.module.css'
@@ -88,6 +89,7 @@ function WeightSlider({
 }
 
 export function DecisionPanel({ mission }: DecisionPanelProps) {
+  const { t } = useTranslation()
   const { decision, isLoading } = useDecision(mission.id)
   const { runDecision, isPending } = useRunDecision(mission.id)
   const { updateMission } = useUpdateMission(mission.slug)
@@ -119,33 +121,33 @@ export function DecisionPanel({ mission }: DecisionPanelProps) {
   return (
     <div className={`${styles.panel} ${winner ? styles.panelWinner : styles.panelDefault}`}>
       <div className={styles.panelHeader}>
-        <h3 className={styles.panelTitle}>🏆 DECISION ENGINE</h3>
+        <h3 className={styles.panelTitle}>🏆 {t('decision.engine').toUpperCase()}</h3>
         <button
           onClick={handleRun}
           disabled={isPending}
           className={`${styles.runBtn} ${isPending ? styles.runBtnPending : styles.runBtnActive}`}
         >
-          {isPending ? '⚙ Analyzing...' : '⚙ Run Decision'}
+          {isPending ? `⚙ ${t('decision.analyzing')}` : `⚙ ${t('decision.run')}`}
         </button>
       </div>
 
       {/* Weight sliders */}
       <div className={styles.weightsBox}>
-        <div className={styles.weightsLabel}>WEIGHT PROFILE</div>
+        <div className={styles.weightsLabel}>{t('decision.weightProfile').toUpperCase()}</div>
         <WeightSlider
-          label="Price"
+          label={t('decision.price')}
           value={weights.price}
           onChange={(v) => setWeights((w) => ({ ...w, price: v }))}
           color="var(--green)"
         />
         <WeightSlider
-          label="Quality"
+          label={t('decision.quality')}
           value={weights.quality}
           onChange={(v) => setWeights((w) => ({ ...w, quality: v }))}
           color="var(--cyan)"
         />
         <WeightSlider
-          label="Features"
+          label={t('decision.features')}
           value={weights.feature}
           onChange={(v) => setWeights((w) => ({ ...w, feature: v }))}
           color="var(--gold)"
@@ -154,12 +156,12 @@ export function DecisionPanel({ mission }: DecisionPanelProps) {
 
       {/* Loading / empty states */}
       {isLoading && (
-        <div className={styles.emptyState}>Loading...</div>
+        <div className={styles.emptyState}>{t('common.loading')}</div>
       )}
 
       {!isLoading && !decision && (
         <div className={styles.emptyState}>
-          No decision yet — configure weights and click Run Decision.
+          {t('decision.noDecision')}
         </div>
       )}
 
@@ -167,14 +169,14 @@ export function DecisionPanel({ mission }: DecisionPanelProps) {
       {winner && (
         <div className={styles.winnerCard}>
           <div className={styles.winnerCorner} />
-          <div className={styles.topPickLabel}>◆ TOP PICK</div>
+          <div className={styles.topPickLabel}>◆ {t('decision.topPick').toUpperCase()}</div>
           <div className={styles.winnerName}>{winner.optionName}</div>
           <ScoreBar score={winner.score} delay={100} />
           <div className={styles.scoreGrid}>
             {[
-              { label: 'PRICE', val: winner.priceScore, color: 'var(--green)' },
-              { label: 'QUAL', val: winner.qualScore, color: 'var(--cyan)' },
-              { label: 'FEAT', val: winner.featScore, color: 'var(--gold)' },
+              { label: t('decision.priceScore').toUpperCase(), val: winner.priceScore, color: 'var(--green)' },
+              { label: t('decision.qualScore').toUpperCase(), val: winner.qualScore, color: 'var(--cyan)' },
+              { label: t('decision.featScore').toUpperCase(), val: winner.featScore, color: 'var(--gold)' },
             ].map(({ label, val, color }) => (
               <div key={label} className={styles.scoreCell}>
                 <div className={styles.scoreCellLabel}>{label}</div>
@@ -209,7 +211,7 @@ export function DecisionPanel({ mission }: DecisionPanelProps) {
       {/* Eliminated */}
       {eliminated.length > 0 && (
         <div className={styles.eliminatedSection}>
-          <div className={styles.eliminatedLabel}>ELIMINATED</div>
+          <div className={styles.eliminatedLabel}>{t('decision.eliminated').toUpperCase()}</div>
           {eliminated.map((s) => (
             <div key={s.optionId} className={styles.eliminatedRow}>
               <span className={styles.eliminatedName}>{s.optionName}</span>
@@ -223,7 +225,7 @@ export function DecisionPanel({ mission }: DecisionPanelProps) {
       {decision?.summary && (
         <div className={styles.summary}>
           <div className={styles.summaryHeader}>
-            <span className={styles.summaryArrow}>▸</span> ADVISOR
+            <span className={styles.summaryArrow}>▸</span> {t('decision.advisor').toUpperCase()}
           </div>
           {decision.summary}
         </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSettings, useUpdateSettings, useDeleteAllData } from '../hooks'
 import styles from './SettingsPage.module.css'
 
@@ -15,6 +16,7 @@ const LLM_PROVIDERS = [
 ]
 
 export default function SettingsPage() {
+  const { t } = useTranslation()
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
   const deleteData = useDeleteAllData()
@@ -41,21 +43,21 @@ export default function SettingsPage() {
   if (isLoading) {
     return (
       <main className={styles.page}>
-        <h1 className={styles.heading}>Settings</h1>
-        <div className={styles.loading}>Loading...</div>
+        <h1 className={styles.heading}>{t('settings.title')}</h1>
+        <div className={styles.loading}>{t('common.loading')}</div>
       </main>
     )
   }
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.heading}>Settings</h1>
+      <h1 className={styles.heading}>{t('settings.title')}</h1>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Preferences</h2>
+        <h2 className={styles.sectionTitle}>{t('settings.preferences')}</h2>
         <div className={styles.card}>
           <div className={styles.field}>
-            <label className={styles.label}>Default Currency</label>
+            <label className={styles.label}>{t('settings.defaultCurrency')}</label>
             <select
               className={styles.select}
               value={settings?.currency ?? 'EUR'}
@@ -69,7 +71,7 @@ export default function SettingsPage() {
             </select>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>Locale</label>
+            <label className={styles.label}>{t('settings.locale')}</label>
             <select
               className={styles.select}
               value={settings?.locale ?? 'fr-FR'}
@@ -83,7 +85,7 @@ export default function SettingsPage() {
             </select>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>LLM Provider</label>
+            <label className={styles.label}>{t('settings.llmProvider')}</label>
             <select
               className={styles.select}
               value={settings?.llm_provider ?? 'ollama'}
@@ -97,20 +99,19 @@ export default function SettingsPage() {
             </select>
           </div>
           {updateSettings.isSuccess && (
-            <p className={styles.success}>Settings saved.</p>
+            <p className={styles.success}>{t('settings.saved')}</p>
           )}
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.dangerTitle}>Danger Zone</h2>
+        <h2 className={styles.dangerTitle}>{t('settings.dangerZone')}</h2>
         <div className={`${styles.card} ${styles.dangerCard}`}>
           <div className={styles.dangerRow}>
             <div>
-              <p className={styles.dangerLabel}>Delete All Data</p>
+              <p className={styles.dangerLabel}>{t('settings.deleteAllData')}</p>
               <p className={styles.dangerDesc}>
-                Permanently delete all missions, options, shopping items, and
-                purchase records. This cannot be undone.
+                {t('settings.deleteAllDesc')}
               </p>
             </div>
             <button
@@ -121,18 +122,18 @@ export default function SettingsPage() {
               disabled={deleteData.isPending}
             >
               {deleteData.isPending
-                ? 'Deleting...'
+                ? t('settings.deleting')
                 : deleteConfirm
-                  ? 'Confirm Delete All'
-                  : 'Delete All Data'}
+                  ? t('settings.confirmDelete')
+                  : t('settings.deleteAll')}
             </button>
           </div>
           {deleteSuccess && (
-            <p className={styles.success}>All data deleted.</p>
+            <p className={styles.success}>{t('settings.allDeleted')}</p>
           )}
           {deleteConfirm && !deleteData.isPending && (
             <p className={styles.dangerWarning}>
-              ⚠️ Click again to confirm. This will permanently delete everything.
+              ⚠️ {t('settings.confirmWarning')}
             </p>
           )}
         </div>

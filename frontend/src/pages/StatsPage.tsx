@@ -1,19 +1,25 @@
+import { useTranslation } from 'react-i18next'
 import { useStats } from '../hooks/usePurchase'
+import { useSettings } from '../hooks/useSettings'
 import { StarRating } from '../components/scouter/StarRating'
+import { formatCurrencyLocale } from '../utils/format'
 import styles from './StatsPage.module.css'
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
-}
-
 export default function StatsPage() {
+  const { t } = useTranslation()
+  const { data: settings } = useSettings()
+  const locale = settings?.locale ?? 'fr-FR'
+  const currency = settings?.currency ?? 'EUR'
+
   const { data: stats, isLoading } = useStats()
+
+  const fmt = (amount: number) => formatCurrencyLocale(amount, locale, currency)
 
   if (isLoading) {
     return (
       <main className={styles.page}>
-        <h1 className={styles.heading}>Spending Stats</h1>
-        <div className={styles.loading}>Loading stats...</div>
+        <h1 className={styles.heading}>{t('stats.title')}</h1>
+        <div className={styles.loading}>{t('stats.loading')}</div>
       </main>
     )
   }
@@ -21,11 +27,11 @@ export default function StatsPage() {
   if (!stats || stats.purchaseCount === 0) {
     return (
       <main className={styles.page}>
-        <h1 className={styles.heading}>Spending Stats</h1>
+        <h1 className={styles.heading}>{t('stats.title')}</h1>
         <div className={styles.empty}>
           <p className={styles.emptyIcon}>📊</p>
-          <p className={styles.emptyTitle}>No purchases recorded yet</p>
-          <p className={styles.emptyDesc}>Record purchases on completed missions to see your spending stats.</p>
+          <p className={styles.emptyTitle}>{t('stats.noData')}</p>
+          <p className={styles.emptyDesc}>{t('stats.noDataDesc')}</p>
         </div>
       </main>
     )
@@ -35,37 +41,39 @@ export default function StatsPage() {
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.heading}>Spending Stats</h1>
+      <h1 className={styles.heading}>{t('stats.title')}</h1>
 
       <div className={styles.summaryGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Total Spent</span>
-          <span className={styles.statValue}>{formatCurrency(stats.totalSpent)}</span>
+          <span className={styles.statLabel}>{t('stats.totalSpent')}</span>
+          <span className={styles.statValue}>{fmt(stats.totalSpent)}</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Total Budget</span>
-          <span className={styles.statValue}>{formatCurrency(stats.totalBudget)}</span>
+          <span className={styles.statLabel}>{t('stats.totalBudget')}</span>
+          <span className={styles.statValue}>{fmt(stats.totalBudget)}</span>
         </div>
         <div className={`${styles.statCard} ${stats.savings >= 0 ? styles.positive : styles.negative}`}>
-          <span className={styles.statLabel}>{stats.savings >= 0 ? 'Saved' : 'Over Budget'}</span>
-          <span className={styles.statValue}>{formatCurrency(Math.abs(stats.savings))}</span>
+          <span className={styles.statLabel}>{stats.savings >= 0 ? t('stats.saved') : t('stats.overBudget')}</span>
+          <span className={styles.statValue}>{fmt(Math.abs(stats.savings))}</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Purchases</span>
+          <span className={styles.statLabel}>{t('stats.purchases')}</span>
           <span className={styles.statValue}>{stats.purchaseCount}</span>
         </div>
       </div>
 
       {stats.categoryBreakdown.length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>By Category</h2>
+          <h2 className={styles.sectionTitle}>{t('stats.byCategory')}</h2>
           <div className={styles.categories}>
             {stats.categoryBreakdown.map((cat) => (
               <div key={cat.category} className={styles.categoryRow}>
                 <div className={styles.categoryMeta}>
                   <span className={styles.categoryName}>{cat.category}</span>
-                  <span className={styles.categoryCount}>{cat.count} purchase{cat.count !== 1 ? 's' : ''}</span>
-                  <span className={styles.categorySpend}>{formatCurrency(cat.totalSpent)}</span>
+                  <span className={styles.categoryCount}>
+                    {t('stats.purchaseCount', { count: cat.count })}
+                  </span>
+                  <span className={styles.categorySpend}>{fmt(cat.totalSpent)}</span>
                   {cat.avgSatisfaction && (
                     <StarRating value={Math.round(cat.avgSatisfaction)} readOnly size={14} />
                   )}

@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useSearch } from '../hooks/useSearch'
 import styles from './SearchPage.module.css'
 
-function badgeLabel(badge: string): string {
-  const map: Record<string, string> = {
-    recommended: '★ Recommended',
-    alternative: '◆ Alternative',
-    watch: '◎ Watch',
-    rejected: '✕ Rejected',
-  }
-  return map[badge] ?? badge
-}
-
 export function SearchPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const initialQ = searchParams.get('q') ?? ''
   const [inputValue, setInputValue] = useState(initialQ)
@@ -29,20 +21,30 @@ export function SearchPage() {
     }
   }, [inputValue, setSearchParams])
 
+  function badgeLabel(badge: string): string {
+    const prefixes: Record<string, string> = {
+      recommended: '★',
+      alternative: '◆',
+      watch: '◎',
+      rejected: '✕',
+    }
+    const prefix = prefixes[badge] ?? ''
+    const label = t(`search.${badge}`, { defaultValue: badge })
+    return prefix ? `${prefix} ${label}` : label
+  }
+
   return (
     <main className={styles.page}>
       <div className={styles.header}>
-        <div className={styles.title}>SEMANTIC SEARCH</div>
-        <div className={styles.subtitle}>
-          Find options across all missions by meaning, not just keywords.
-        </div>
+        <div className={styles.title}>{t('search.title').toUpperCase()}</div>
+        <div className={styles.subtitle}>{t('search.subtitle')}</div>
       </div>
 
       <div className={styles.searchBar}>
         <input
           className={styles.input}
           type="search"
-          placeholder="e.g. quiet mechanical keyboard with RGB"
+          placeholder={t('search.placeholder')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           autoFocus
@@ -51,23 +53,21 @@ export function SearchPage() {
 
       {inputValue.trim().length < 2 && (
         <div className={styles.empty}>
-          <div className={styles.emptyTitle}>Start typing to search</div>
-          <div className={styles.emptyHint}>Minimum 2 characters</div>
+          <div className={styles.emptyTitle}>{t('search.startTyping')}</div>
+          <div className={styles.emptyHint}>{t('search.minChars')}</div>
         </div>
       )}
 
       {inputValue.trim().length >= 2 && isFetching && results.length === 0 && (
         <div className={styles.empty}>
-          <div className={styles.emptyTitle}>Searching…</div>
+          <div className={styles.emptyTitle}>{t('search.searching')}</div>
         </div>
       )}
 
       {inputValue.trim().length >= 2 && !isFetching && results.length === 0 && (
         <div className={styles.empty}>
-          <div className={styles.emptyTitle}>No results for "{inputValue}"</div>
-          <div className={styles.emptyHint}>
-            Try different keywords, or run research on your missions first.
-          </div>
+          <div className={styles.emptyTitle}>{t('search.noResults', { query: inputValue })}</div>
+          <div className={styles.emptyHint}>{t('search.noResultsHint')}</div>
         </div>
       )}
 
@@ -89,7 +89,7 @@ export function SearchPage() {
               </div>
               <div className={styles.cardScore}>
                 <div>{Math.round(r.similarity * 100)}%</div>
-                <div className={styles.scoreLabel}>match</div>
+                <div className={styles.scoreLabel}>{t('search.match')}</div>
               </div>
             </Link>
           ))}

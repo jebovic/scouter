@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { StarRating } from '../scouter/StarRating'
 import { useRecordPurchase, useUpdatePurchase } from '../../hooks/usePurchase'
 import { useNegotiation } from '../../hooks/useNegotiation'
@@ -13,6 +14,7 @@ interface PurchaseFormProps {
 }
 
 export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: PurchaseFormProps) {
+  const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
   const [purchasedAt, setPurchasedAt] = useState(existingRecord?.purchasedAt?.split('T')[0] ?? today)
   const [finalPrice, setFinalPrice] = useState(String(existingRecord?.finalPrice ?? ''))
@@ -62,11 +64,11 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
 
   return (
     <div className={styles.wrap}>
-      <h3 className={styles.title}>{isEditing ? 'Edit Purchase' : 'Record Purchase'}</h3>
+      <h3 className={styles.title}>{isEditing ? t('purchase.edit') : t('purchase.record')}</h3>
       <form className={styles.form} onSubmit={handleSubmit}>
         {!isEditing && (
           <div className={styles.field}>
-            <label className={styles.label}>Purchase Date</label>
+            <label className={styles.label}>{t('purchase.purchaseDate')}</label>
             <input
               type="date"
               className={styles.input}
@@ -77,7 +79,7 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
           </div>
         )}
         <div className={styles.field}>
-          <label className={styles.label}>Merchant</label>
+          <label className={styles.label}>{t('purchase.merchant')}</label>
           <input
             type="text"
             className={styles.input}
@@ -88,7 +90,7 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Final Price (€)</label>
+          <label className={styles.label}>{t('purchase.finalPrice')}</label>
           <input
             type="number"
             className={styles.input}
@@ -100,11 +102,11 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Satisfaction</label>
+          <label className={styles.label}>{t('purchase.satisfaction')}</label>
           <StarRating value={satisfaction} onChange={setSatisfaction} />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Review (optional)</label>
+          <label className={styles.label}>{t('purchase.review')}</label>
           <textarea
             className={styles.textarea}
             value={review}
@@ -113,13 +115,13 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
             rows={3}
           />
         </div>
-        {success && <p className={styles.success}>Purchase recorded successfully!</p>}
+        {success && <p className={styles.success}>{t('purchase.success')}</p>}
         {(record.isError || update.isError) && (
-          <p className={styles.error}>Failed to save. Please try again.</p>
+          <p className={styles.error}>{t('purchase.error')}</p>
         )}
         <div className={styles.actions}>
           <button type="submit" className={styles.submit} disabled={isPending}>
-            {isPending ? 'Saving...' : isEditing ? 'Update Purchase' : 'Record Purchase'}
+            {isPending ? t('purchase.saving') : isEditing ? t('purchase.update') : t('purchase.record')}
           </button>
           {selectedOptionId && (
             <button
@@ -134,12 +136,12 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: Pu
                 })
               }}
             >
-              {negotiation.isPending ? 'Analyzing...' : 'Coach Me'}
+              {negotiation.isPending ? t('negotiation.analyzing') : t('negotiation.coachMe')}
             </button>
           )}
         </div>
         {negotiation.error && (
-          <p className={styles.error}>Failed to load negotiation script. Please try again.</p>
+          <p className={styles.error}>{t('negotiation.error')}</p>
         )}
       </form>
       {showCoach && negotiation.script && (

@@ -20,13 +20,7 @@ import styles from './OptionsExplorer.module.css'
 
 type ViewMode = 'grid' | 'compare'
 
-const BADGE_FILTERS: { label: string; value: OptionBadge | 'all' }[] = [
-  { label: 'All', value: 'all' },
-  { label: 'Recommended', value: 'recommended' },
-  { label: 'Alternative', value: 'alternative' },
-  { label: 'Watch', value: 'watch' },
-  { label: 'Rejected', value: 'rejected' },
-]
+const BADGE_FILTER_VALUES: (OptionBadge | 'all')[] = ['all', 'recommended', 'alternative', 'watch', 'rejected']
 
 export default function OptionsExplorer() {
   const { slug } = useParams<{ slug: string }>()
@@ -71,8 +65,8 @@ export default function OptionsExplorer() {
             <div>
               <h1 className={styles.title}>{t('nav.options')}</h1>
               <p className={styles.subtitle}>
-                {filtered.length} option{filtered.length !== 1 ? 's' : ''}
-                {badgeFilter !== 'all' ? ` (${badgeFilter})` : ''}
+                {t('options.optionCount', { count: filtered.length })}
+                {badgeFilter !== 'all' ? ` (${t(`badges.${badgeFilter}`, { defaultValue: badgeFilter })})` : ''}
               </p>
             </div>
 
@@ -86,8 +80,8 @@ export default function OptionsExplorer() {
                     className={`${styles.viewToggleBtn}${viewMode === mode ? ` ${styles.active}` : ''}`}
                   >
                     {mode === 'grid'
-                      ? <><span aria-hidden="true">⊞</span> Grid</>
-                      : <><span aria-hidden="true">⊟</span> Compare</>}
+                      ? <><span aria-hidden="true">⊞</span> {t('options.grid')}</>
+                      : <><span aria-hidden="true">⊟</span> {t('options.compare')}</>}
                   </button>
                 ))}
               </div>
@@ -98,7 +92,7 @@ export default function OptionsExplorer() {
                   onClick={() => deletePinnedOptions()}
                   className={styles.clearPinnedBtn}
                 >
-                  Clear Pinned ({pinnedCount})
+                  {t('options.clearPinned', { count: pinnedCount })}
                 </button>
               )}
 
@@ -108,20 +102,20 @@ export default function OptionsExplorer() {
                 disabled={researchPending}
                 className={styles.researchBtn}
               >
-                <span aria-hidden="true">⚡</span>{researchPending ? ' Running...' : ' Re-run Research'}
+                <span aria-hidden="true">⚡</span>{researchPending ? ` ${t('options.running')}` : ` ${t('options.rerunResearch')}`}
               </button>
             </div>
           </div>
 
           {/* Badge filters */}
           <div className={styles.filterBar}>
-            {BADGE_FILTERS.map((f) => (
+            {BADGE_FILTER_VALUES.map((value) => (
               <button
-                key={f.value}
-                onClick={() => setBadgeFilter(f.value)}
-                className={`${styles.filterBtn}${badgeFilter === f.value ? ` ${styles.active}` : ''}`}
+                key={value}
+                onClick={() => setBadgeFilter(value)}
+                className={`${styles.filterBtn}${badgeFilter === value ? ` ${styles.active}` : ''}`}
               >
-                {f.label}
+                {value === 'all' ? t('options.all') : t(`badges.${value}`, { defaultValue: value })}
               </button>
             ))}
           </div>
@@ -137,9 +131,9 @@ export default function OptionsExplorer() {
           {options.length === 0 ? (
             <EmptyState
               icon="🔍"
-              title="NO OPTIONS FOUND"
-              description="Run the Research Agent to discover options for this mission"
-              actionLabel="RUN RESEARCH"
+              title={t('research.noOptions').toUpperCase()}
+              description={t('research.noOptionsDesc')}
+              actionLabel={t('research.runResearch').toUpperCase()}
               onAction={() => setShowFeedback(true)}
             />
           ) : viewMode === 'compare' ? (
@@ -194,8 +188,8 @@ export default function OptionsExplorer() {
 
       {showFeedback && (
         <FeedbackModal
-          title="RE-RUN RESEARCH"
-          placeholder='Optional: guide the agent (e.g. "focus on options under $800 with good warranty")'
+          title={t('feedbackModal.rerunResearch')}
+          placeholder={t('feedbackModal.rerunResearchPlaceholder')}
           onConfirm={async (feedback) => {
             try {
               await triggerResearch(feedback || undefined)
@@ -210,8 +204,8 @@ export default function OptionsExplorer() {
 
       {rejectTarget && (
         <FeedbackModal
-          title="REJECT OPTION"
-          placeholder="Reason for rejection (e.g. 'too expensive', 'not available in my region')"
+          title={t('feedbackModal.rejectOption')}
+          placeholder={t('feedbackModal.rejectPlaceholder')}
           onConfirm={(reason) => {
             rejectOption({ optionId: rejectTarget, reason: reason || 'Rejected by user' })
             setRejectTarget(null)

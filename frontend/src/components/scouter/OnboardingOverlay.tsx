@@ -1,28 +1,5 @@
+import { useTranslation } from 'react-i18next'
 import styles from './OnboardingOverlay.module.css'
-
-interface Step {
-  icon: string
-  title: string
-  description: string
-}
-
-const STEPS: Step[] = [
-  {
-    icon: '🎯',
-    title: 'Welcome to SCOUTER',
-    description: 'SCOUTER helps you research, compare, and make smarter purchase decisions. Start by creating a mission for anything you want to buy.',
-  },
-  {
-    icon: '🔍',
-    title: 'Research & Compare',
-    description: 'Run the Research Agent to discover options, then use Price Intel to track costs across merchants. Compare everything in one place.',
-  },
-  {
-    icon: '✅',
-    title: 'Track & Decide',
-    description: 'Score your options, set price alerts, and let the Decision Engine recommend the best choice based on your priorities.',
-  },
-]
 
 interface OnboardingOverlayProps {
   show: boolean
@@ -34,6 +11,26 @@ interface OnboardingOverlayProps {
 }
 
 export function OnboardingOverlay({ show, step, totalSteps, onNext, onPrev, onDismiss }: OnboardingOverlayProps) {
+  const { t } = useTranslation()
+
+  const STEPS = [
+    {
+      icon: '🎯',
+      title: t('onboarding.step0Title'),
+      description: t('onboarding.step0Desc'),
+    },
+    {
+      icon: '🔍',
+      title: t('onboarding.step1Title'),
+      description: t('onboarding.step1Desc'),
+    },
+    {
+      icon: '✅',
+      title: t('onboarding.step2Title'),
+      description: t('onboarding.step2Desc'),
+    },
+  ]
+
   if (!show) return null
 
   const current = STEPS[step]
@@ -64,21 +61,21 @@ export function OnboardingOverlay({ show, step, totalSteps, onNext, onPrev, onDi
 
         <div className={styles.actions}>
           <button className={styles.btnSkip} onClick={onDismiss}>
-            Skip
+            {t('common.skip')}
           </button>
           <div className={styles.btnNav}>
             {step > 0 && (
               <button className={styles.btnBack} onClick={onPrev}>
-                Back
+                {t('common.back')}
               </button>
             )}
             {isLast ? (
               <button className={styles.btnDone} onClick={onDismiss}>
-                Done
+                {t('common.done')}
               </button>
             ) : (
               <button className={styles.btnNext} onClick={onNext}>
-                Next
+                {t('common.next')}
               </button>
             )}
           </div>

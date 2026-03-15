@@ -179,6 +179,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* RTL support — future languages */
+[dir="rtl"] {
+  --text-align-start: right;
+  --text-align-end: left;
+}
+[dir="ltr"] {
+  --text-align-start: left;
+  --text-align-end: right;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .container { padding: 0 var(--gap); }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { MerchantGroup } from './MerchantGroup'
 import { LoadingPulse } from '../scouter'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -14,11 +15,12 @@ interface ShoppingListProps {
 }
 
 export function ShoppingList({ missionId, items, isLoading, currency, onStatusChange, onPriceClick, onPin }: ShoppingListProps) {
-  if (isLoading) return <LoadingPulse label="Loading items..." />
+  const { t } = useTranslation()
+  if (isLoading) return <LoadingPulse label={t('common.loading')} />
   if (items.length === 0) {
     return (
       <div className={styles.empty}>
-        No items yet. Run Price Intel to populate this list.
+        {t('shopping.noItems')}
       </div>
     )
   }

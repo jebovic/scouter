@@ -57,7 +57,7 @@ export default function HQDashboard() {
             <div>
               <h1 className={styles.title}>{t('nav.missionControl')}</h1>
               <p className={styles.subtitle}>
-                {missions.length} active mission{missions.length !== 1 ? 's' : ''}
+                {t('mission.activeCount', { count: missions.length })}
               </p>
             </div>
             <button className={styles.createBtn} onClick={() => setShowForm(true)}>
@@ -100,9 +100,9 @@ export default function HQDashboard() {
           ) : missions.length === 0 ? (
             <EmptyState
               icon="🎯"
-              title="NO ACTIVE MISSIONS"
-              description="Create your first mission to start researching a purchase"
-              actionLabel="+ NEW MISSION"
+              title={t('hq.noMissions').toUpperCase()}
+              description={t('hq.noMissionsDesc')}
+              actionLabel={`+ ${t('hq.newMission').toUpperCase()}`}
               onAction={() => setShowForm(true)}
             />
           ) : (

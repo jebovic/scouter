@@ -79,20 +79,20 @@ export default function ShoppingTracker() {
             <div>
               <h1 className={styles.title}>{t('nav.shopping')}</h1>
               <p className={styles.subtitle}>
-                {items.length} item{items.length !== 1 ? 's' : ''} tracked
+                {t('shopping.itemCount', { count: items.length })}
               </p>
             </div>
 
             <div className={styles.actions}>
               <button className={styles.addBtn} onClick={() => setShowAddForm(true)}>
-                + Add Item
+                + {t('shopping.addItem')}
               </button>
               {pinnedCount > 0 && (
                 <button
                   className={styles.clearPinnedBtn}
                   onClick={() => deletePinnedItems()}
                 >
-                  Clear Pinned ({pinnedCount})
+                  {t('shopping.clearPinned', { count: pinnedCount })}
                 </button>
               )}
               <button
@@ -100,7 +100,7 @@ export default function ShoppingTracker() {
                 onClick={() => setShowFeedback(true)}
                 disabled={pricingPending}
               >
-                <span aria-hidden="true">💰</span>{pricingPending ? ' Scouting...' : ' Price Intel'}
+                <span aria-hidden="true">💰</span>{pricingPending ? ` ${t('pricing.scouting')}` : ` ${t('pricing.priceIntel')}`}
               </button>
             </div>
           </div>
@@ -124,15 +124,15 @@ export default function ShoppingTracker() {
                 aria-modal="true"
                 aria-labelledby="add-item-modal-title"
               >
-                <h3 id="add-item-modal-title" className={styles.modalTitle}>ADD ITEM</h3>
+                <h3 id="add-item-modal-title" className={styles.modalTitle}>{t('shopping.addItemTitle').toUpperCase()}</h3>
                 <div className={styles.formFields}>
                   {[
-                    { key: 'name', label: 'Item Name', type: 'text', required: true },
-                    { key: 'merchant', label: 'Merchant', type: 'text', required: true },
-                    { key: 'costCategory', label: 'Category', type: 'text', required: false },
-                    { key: 'price', label: 'Price', type: 'number', required: true },
-                    { key: 'url', label: 'URL', type: 'url', required: false },
-                    { key: 'note', label: 'Note', type: 'text', required: false },
+                    { key: 'name', label: t('shopping.itemName'), type: 'text', required: true },
+                    { key: 'merchant', label: t('shopping.merchant'), type: 'text', required: true },
+                    { key: 'costCategory', label: t('shopping.costCategory'), type: 'text', required: false },
+                    { key: 'price', label: t('shopping.price'), type: 'number', required: true },
+                    { key: 'url', label: t('shopping.url'), type: 'url', required: false },
+                    { key: 'note', label: t('shopping.note'), type: 'text', required: false },
                   ].map(({ key, label, type, required }) => (
                     <div key={key}>
                       <label className={styles.fieldLabel}>
@@ -156,14 +156,14 @@ export default function ShoppingTracker() {
                 </div>
                 <div className={styles.modalActions}>
                   <button className={styles.cancelBtn} onClick={() => setShowAddForm(false)}>
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     className={styles.confirmBtn}
                     onClick={handleAddItem}
                     disabled={createPending || !addForm.name || !addForm.merchant || !addForm.price}
                   >
-                    {createPending ? 'Adding...' : 'Add Item'}
+                    {createPending ? t('common.adding') : t('shopping.addItem')}
                   </button>
                 </div>
               </div>
@@ -181,9 +181,9 @@ export default function ShoppingTracker() {
           {items.length === 0 ? (
             <EmptyState
               icon="🛒"
-              title="NO PRICE DATA"
-              description="Run Price Intel to track prices for this mission"
-              actionLabel="RUN PRICE INTEL"
+              title={t('pricing.noPriceData').toUpperCase()}
+              description={t('pricing.noPriceDataDesc')}
+              actionLabel={t('pricing.runPriceIntel').toUpperCase()}
               onAction={() => setShowFeedback(true)}
             />
           ) : (
@@ -194,7 +194,7 @@ export default function ShoppingTracker() {
               {/* Cost breakdown */}
               {items.length >= 2 && (
                 <div className={styles.breakdownCard}>
-                  <h3 className={styles.breakdownTitle}>COST BREAKDOWN</h3>
+                  <h3 className={styles.breakdownTitle}>{t('shopping.costBreakdown').toUpperCase()}</h3>
                   <CostBreakdown items={items} currency={mission?.currency ?? 'USD'} />
                 </div>
               )}
@@ -210,8 +210,8 @@ export default function ShoppingTracker() {
 
       {showFeedback && (
         <FeedbackModal
-          title="RUN PRICE INTEL"
-          placeholder='Optional: guide the agent (e.g. "check for Black Friday deals on electronics")'
+          title={t('feedbackModal.runPriceIntel')}
+          placeholder={t('feedbackModal.runPriceIntelPlaceholder')}
           onConfirm={async (feedback) => {
             try {
               await triggerPricing(feedback || undefined)

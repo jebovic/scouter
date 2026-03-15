@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import type { NegotiationScript } from '../../api/negotiation'
+import { useSettings } from '../../hooks/useSettings'
+import { formatCurrencyLocale } from '../../utils/format'
 import styles from './NegotiationCoach.module.css'
 
 interface NegotiationCoachProps {
@@ -6,11 +9,12 @@ interface NegotiationCoachProps {
   onClose: () => void
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
-}
-
 export function NegotiationCoach({ script, onClose }: NegotiationCoachProps) {
+  const { t } = useTranslation()
+  const { data: settings } = useSettings()
+  const locale = settings?.locale ?? 'fr-FR'
+  const currency = settings?.currency ?? 'EUR'
+
   const {
     openingOffer,
     walkAwayPrice,
@@ -21,12 +25,13 @@ export function NegotiationCoach({ script, onClose }: NegotiationCoachProps) {
   } = script
 
   const confPct = Math.min(100, Math.max(0, Math.round(confidenceScore)))
+  const fmt = (v: number) => formatCurrencyLocale(v, locale, currency)
 
   return (
-    <div className={styles.panel} role="region" aria-label="Negotiation Coach">
+    <div className={styles.panel} role="region" aria-label={t('negotiation.title')}>
       <div className={styles.header}>
-        <h4 className={styles.title}>NEGOTIATION COACH</h4>
-        <button className={styles.closeBtn} onClick={onClose} aria-label="Close negotiation coach">
+        <h4 className={styles.title}>{t('negotiation.title').toUpperCase()}</h4>
+        <button className={styles.closeBtn} onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
       </div>
@@ -34,27 +39,27 @@ export function NegotiationCoach({ script, onClose }: NegotiationCoachProps) {
       {/* Price grid */}
       <div className={styles.priceGrid}>
         <div className={styles.priceCell}>
-          <span className={styles.priceCellLabel}>Opening Offer</span>
+          <span className={styles.priceCellLabel}>{t('negotiation.openingOffer')}</span>
           <span className={`${styles.priceCellValue} ${styles.opening}`}>
-            {formatCurrency(openingOffer)}
+            {fmt(openingOffer)}
           </span>
         </div>
         <div className={styles.priceCell}>
-          <span className={styles.priceCellLabel}>Walk-Away</span>
+          <span className={styles.priceCellLabel}>{t('negotiation.walkAwayPrice')}</span>
           <span className={`${styles.priceCellValue} ${styles.walkaway}`}>
-            {formatCurrency(walkAwayPrice)}
+            {fmt(walkAwayPrice)}
           </span>
         </div>
         <div className={styles.priceCell}>
-          <span className={styles.priceCellLabel}>Target Discount</span>
-          <span className={styles.discountBadge}>{suggestedDiscount}% OFF</span>
+          <span className={styles.priceCellLabel}>{t('negotiation.targetDiscount')}</span>
+          <span className={styles.discountBadge}>{suggestedDiscount}% {t('negotiation.off')}</span>
         </div>
       </div>
 
       {/* Confidence bar */}
       <div className={styles.confidenceRow}>
         <div className={styles.confidenceLabel}>
-          <span>Confidence</span>
+          <span>{t('negotiation.confidence')}</span>
           <span className={styles.confidenceValue}>{confPct}%</span>
         </div>
         <div className={styles.confidenceTrack}>
@@ -68,7 +73,7 @@ export function NegotiationCoach({ script, onClose }: NegotiationCoachProps) {
       {/* Talking points */}
       {talkingPoints.length > 0 && (
         <div className={styles.section}>
-          <div className={styles.sectionLabel}>Talking Points</div>
+          <div className={styles.sectionLabel}>{t('negotiation.talkingPoints')}</div>
           <ol className={styles.talkingList}>
             {talkingPoints.map((point, i) => (
               <li key={i} className={styles.talkingItem}>
@@ -83,7 +88,7 @@ export function NegotiationCoach({ script, onClose }: NegotiationCoachProps) {
       {/* Counter-offer script */}
       {counterOfferScript.length > 0 && (
         <div className={styles.section}>
-          <div className={styles.sectionLabel}>Counter-Offer Script</div>
+          <div className={styles.sectionLabel}>{t('negotiation.counterScript')}</div>
           <div className={styles.scriptList}>
             {counterOfferScript.map((line, i) => (
               <div key={i} className={styles.scriptBubble}>

@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–14 complete. All planned phases delivered. Auto-improvement loop active.
+> Current status: Phases 1–19 complete. Auto-improvement loop active — architecting Phase 20+.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -551,7 +551,7 @@ Next journey: multi-user auth, cloud deployment, collaborative household/team mi
 
 > All planned phases complete. Entering continuous improvement. Tracked here for the user.
 
-### Phase 15: Real-Time Price Intelligence via Public APIs (Planned)
+### Phase 15: Real-Time Price Intelligence via Public APIs ✅ COMPLETE
 **Goal**: Integrate public price APIs to enrich research with live market data, focusing on the French market.
 - **Aviationstack API**: Real-time flight prices for travel missions (flights, holidays)
 - **Open Food Facts**: Food & grocery product comparisons
@@ -561,21 +561,21 @@ Next journey: multi-user auth, cloud deployment, collaborative household/team mi
 - Frontend: live price injection into option cards during research
 - New "Live Prices" tab in OptionsExplorer
 
-### Phase 16: Collaborative Missions (Planned)
+### Phase 16: Collaborative Missions ✅ COMPLETE
 **Goal**: Allow household/team to share and collaborate on missions.
 - Mission invite system with share links (extend existing share tokens)
 - Real-time collaborative annotation on options
 - Voting/thumbs on options, aggregate score visible to all participants
 - "Household" context for budget pooling
 
-### Phase 17: AI-Powered Negotiation Coach (Planned)
+### Phase 17: AI-Powered Negotiation Coach ✅ COMPLETE
 **Goal**: After identifying the best product/price, coach the user on how to negotiate.
 - New `NegotiationAgent` analyzing option attributes + market prices
 - Produces structured negotiation script: opening offer, walk-away price, counter-offer script
 - Frontend: "Coach Me" CTA on PurchaseForm after option selected
 - Tracks negotiation outcomes in purchase_records (actual vs suggested)
 
-### Phase 18: Progressive Web App + Mobile UX (Planned)
+### Phase 18: Progressive Web App + Mobile UX ✅ COMPLETE
 **Goal**: Make Scouter usable offline and installable on mobile.
 - PWA manifest + service worker with Workbox (offline shell + cached API responses)
 - Push notifications for price alerts via Web Push API (replaces polling)

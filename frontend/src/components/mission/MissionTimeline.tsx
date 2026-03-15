@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next'
+import { useSettings } from '../../hooks/useSettings'
+import { formatDate } from '../../utils/format'
 import styles from './MissionTimeline.module.css'
 
 interface TimelineEvent {
@@ -15,10 +18,6 @@ interface MissionTimelineProps {
   hasReview: boolean
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
 export function MissionTimeline({
   createdAt,
   hasDecision,
@@ -27,11 +26,15 @@ export function MissionTimeline({
   purchasedAt,
   hasReview,
 }: MissionTimelineProps) {
+  const { t } = useTranslation()
+  const { data: settings } = useSettings()
+  const locale = settings?.locale ?? 'fr-FR'
+
   const events: TimelineEvent[] = [
-    { label: 'Research started', date: createdAt, done: true },
-    { label: 'Decision run', date: decisionAt, done: hasDecision },
-    { label: 'Purchase recorded', date: purchasedAt, done: hasPurchase },
-    { label: 'Reviewed', done: hasReview },
+    { label: t('timeline.researchStarted'), date: createdAt, done: true },
+    { label: t('timeline.decisionRun'), date: decisionAt, done: hasDecision },
+    { label: t('timeline.purchaseRecorded'), date: purchasedAt, done: hasPurchase },
+    { label: t('timeline.reviewed'), done: hasReview },
   ]
 
   return (
@@ -44,7 +47,7 @@ export function MissionTimeline({
           </div>
           <div className={styles.content}>
             <span className={styles.label}>{ev.label}</span>
-            {ev.date && <span className={styles.date}>{formatDate(ev.date)}</span>}
+            {ev.date && <span className={styles.date}>{formatDate(ev.date, locale)}</span>}
           </div>
         </div>
       ))}

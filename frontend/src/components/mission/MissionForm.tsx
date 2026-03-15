@@ -50,7 +50,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
       <h3 className={styles.title}>{t('mission.create')}</h3>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label className={styles.label}>MISSION NAME</label>
+          <label className={styles.label}>{t('mission.missionName').toUpperCase()}</label>
           <input
             className={styles.input}
             value={name}
@@ -62,7 +62,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
         </div>
 
         <div>
-          <label className={styles.label}>CATEGORY</label>
+          <label className={styles.label}>{t('mission.category').toUpperCase()}</label>
           <div className={styles.categoryRow}>
             {CATEGORIES.map((c) => (
               <button
@@ -85,7 +85,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
 
         <div className={styles.budgetRow}>
           <div>
-            <label className={styles.label}>BUDGET</label>
+            <label className={styles.label}>{t('mission.budget').toUpperCase()}</label>
             <input
               className={styles.input}
               type="number"
@@ -98,7 +98,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
             />
           </div>
           <div>
-            <label className={styles.label}>CURRENCY</label>
+            <label className={styles.label}>{t('mission.currency').toUpperCase()}</label>
             <select
               className={styles.selectNarrow}
               value={currency}
@@ -119,14 +119,14 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
             disabled={loading}
             className={`${styles.submitBtn} ${loading ? styles.submitBtnDisabled : styles.submitBtnActive}`}
           >
-            {loading ? 'LAUNCHING...' : 'LAUNCH MISSION'}
+            {loading ? t('mission.launching').toUpperCase() : t('mission.launchMission').toUpperCase()}
           </button>
           <button
             type="button"
             onClick={onCancel}
             className={styles.cancelBtn}
           >
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       </form>
