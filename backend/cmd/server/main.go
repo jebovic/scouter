@@ -68,6 +68,7 @@ import (
 	"github.com/jibei/scouter/internal/usage"
 	"github.com/jibei/scouter/internal/rebalancer"
 	"github.com/jibei/scouter/internal/receipt"
+	"github.com/jibei/scouter/internal/seasonal"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/wishlist"
 )
@@ -478,6 +479,12 @@ func main() {
 	carbonAgent := carbon.NewAgent(provider)
 	carbonHandler := carbon.NewHandler(carbonAgent, carbonCache)
 	r.Get("/api/carbon", carbonHandler.GetEstimate)
+
+	// AI Seasonal Discount Predictor (Phase 90)
+	seasonalCache := seasonal.NewCache(24 * time.Hour)
+	seasonalAgent := seasonal.NewAgent(provider)
+	seasonalHandler := seasonal.NewHandler(seasonalAgent, seasonalCache)
+	r.Get("/api/seasonal", seasonalHandler.GetPrediction)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)

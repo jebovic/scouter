@@ -1,311 +1,510 @@
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Topnav } from '../components/scouter/Topnav'
-import { BudgetRebalancer } from '../components/scouter/BudgetRebalancer'
-import { useEnvelopes, useCreateEnvelope, useUpdateEnvelope, useDeleteEnvelope, useEnvelopeSummary } from '../hooks'
-import type { EnvelopeDTO } from '../api/envelope'
+import { useLocalEnvelopes } from '../hooks/useLocalEnvelopes'
+import { PRESET_COLORS, DEFAULT_EMOJIS, type Transaction } from '../utils/envelopes'
 import styles from './EnvelopesPage.module.css'
 
-const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'CAD']
+// ── Formatting helper ─────────────────────────────────────────────────────────
 
-interface FormState {
-  name: string
-  monthlyAmount: string
-  currency: string
+const fmt = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+function fmtDate(iso: string): string {
+  try {
+    return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(
+      new Date(iso),
+    )
+  } catch {
+    return iso
+  }
 }
 
-const defaultForm = (): FormState => ({ name: '', monthlyAmount: '', currency: 'EUR' })
+// ── New Envelope Form ─────────────────────────────────────────────────────────
 
-function EnvelopeForm({
-  initial,
-  title,
-  isPending,
-  onSave,
-  onCancel,
-}: {
-  initial?: FormState
-  title: string
-  isPending: boolean
-  onSave: (f: FormState) => void
+interface NewEnvelopeFormProps {
+  onSave: (fields: {
+    name: string
+    emoji: string
+    budgetEur: number
+    color: string
+  }) => void
   onCancel: () => void
-}) {
-  const [form, setForm] = useState<FormState>(initial ?? defaultForm())
+}
 
-  function set(k: keyof FormState, v: string) {
-    setForm((p) => ({ ...p, [k]: v }))
-  }
+function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
+  const [name, setName] = useState('')
+  const [emoji, setEmoji] = useState('💰')
+  const [budget, setBudget] = useState('')
+  const [color, setColor] = useState(PRESET_COLORS[0])
+  const [emojiOpen, setEmojiOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function submit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.name.trim() || !form.monthlyAmount) return
-    onSave(form)
+    const trimmed = name.trim()
+    if (!trimmed) { setError('Le nom est requis'); return }
+    const amount = parseFloat(budget)
+    if (isNaN(amount) || amount <= 0) { setError('Budget invalide'); return }
+    onSave({ name: trimmed, emoji, budgetEur: amount, color })
   }
 
   return (
-    <form className={styles.form} onSubmit={submit}>
-      <div className={styles.formTitle}>{title}</div>
+    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <div className={styles.formTitle}>Nouvelle enveloppe</div>
+
+      {/* Emoji picker */}
       <div className={styles.field}>
-        <label className={styles.label}>Name</label>
-        <input
-          className={styles.input}
-          value={form.name}
-          onChange={(e) => set('name', e.target.value)}
-          placeholder="e.g. Alimentation, Loisirs…"
-          required
-        />
+        <label className={styles.label}>Emoji</label>
+        <div className={styles.emojiPickerWrap}>
+          <button
+            type="button"
+            className={styles.emojiToggle}
+            onClick={() => setEmojiOpen((v) => !v)}
+            aria-label="Choisir un emoji"
+          >
+            {emoji}
+          </button>
+          {emojiOpen && (
+            <div className={styles.emojiGrid}>
+              {DEFAULT_EMOJIS.map((e) => (
+                <button
+                  key={e}
+                  type="button"
+                  className={styles.emojiOption}
+                  onClick={() => { setEmoji(e); setEmojiOpen(false) }}
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
       <div className={styles.fieldRow}>
         <div className={styles.field}>
-          <label className={styles.label}>Monthly budget</label>
+          <label className={styles.label}>Nom</label>
+          <input
+            className={styles.input}
+            value={name}
+            onChange={(e) => { setName(e.target.value); setError(null) }}
+            placeholder="ex: Alimentation, Loisirs…"
+            required
+          />
+        </div>
+        <div className={styles.field} style={{ maxWidth: 120 }}>
+          <label className={styles.label}>Budget (€)</label>
           <input
             className={styles.input}
             type="number"
-            min={0}
+            min={0.01}
             step={0.01}
-            value={form.monthlyAmount}
-            onChange={(e) => set('monthlyAmount', e.target.value)}
+            value={budget}
+            onChange={(e) => { setBudget(e.target.value); setError(null) }}
             placeholder="300"
             required
           />
         </div>
-        <div className={styles.field} style={{ maxWidth: 90 }}>
-          <label className={styles.label}>Currency</label>
-          <select
-            className={styles.input}
-            value={form.currency}
-            onChange={(e) => set('currency', e.target.value)}
-          >
-            {CURRENCIES.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
+      </div>
+
+      {/* Color picker */}
+      <div className={styles.field}>
+        <label className={styles.label}>Couleur</label>
+        <div className={styles.colorGrid}>
+          {PRESET_COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={styles.colorDot}
+              style={{ '--dot-color': c, outline: color === c ? `2px solid ${c}` : undefined } as React.CSSProperties}
+              onClick={() => setColor(c)}
+              aria-label={`Couleur ${c}`}
+            />
+          ))}
         </div>
       </div>
+
+      {error && <p className={styles.formError}>{error}</p>}
+
       <div className={styles.formActions}>
         <button type="button" className={styles.cancelBtn} onClick={onCancel}>
-          Cancel
+          Annuler
         </button>
-        <button type="submit" className={styles.saveBtn} disabled={isPending}>
-          {isPending ? 'Saving…' : 'Save'}
+        <button type="submit" className={styles.saveBtn}>
+          Créer
         </button>
       </div>
     </form>
   )
 }
 
-function EnvelopeSummaryBadge({ envelopeId, monthlyAmount, currency }: { envelopeId: string; monthlyAmount: number; currency: string }) {
-  const { summary, isLoading } = useEnvelopeSummary(envelopeId)
+// ── Transaction Form ──────────────────────────────────────────────────────────
 
-  const fmt = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  })
+interface TransactionFormProps {
+  envelopeId: string
+  onSave: (fields: Omit<Transaction, 'id'>) => void
+  onCancel: () => void
+}
 
-  if (isLoading) {
-    return <div className={styles.summaryLoading} aria-label="Loading summary" />
+function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps) {
+  const today = new Date().toISOString().slice(0, 10)
+  const [label, setLabel] = useState('')
+  const [amount, setAmount] = useState('')
+  const [date, setDate] = useState(today)
+  const [type, setType] = useState<'expense' | 'refill'>('expense')
+  const [error, setError] = useState<string | null>(null)
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmedLabel = label.trim()
+    if (!trimmedLabel) { setError('Libellé requis'); return }
+    const parsed = parseFloat(amount)
+    if (isNaN(parsed) || parsed <= 0) { setError('Montant invalide'); return }
+    const finalAmount = type === 'expense' ? -parsed : parsed
+    onSave({ envelopeId, label: trimmedLabel, amountEur: finalAmount, date })
   }
 
-  if (!summary) return null
+  return (
+    <form className={styles.txForm} onSubmit={handleSubmit} noValidate>
+      <div className={styles.formTitle}>Ajouter une opération</div>
 
-  const fillPct = monthlyAmount > 0 ? Math.min(100, (summary.totalSpent / monthlyAmount) * 100) : 0
-  const fillColor =
-    fillPct < 80 ? 'var(--green)' : fillPct <= 100 ? 'var(--gold)' : 'var(--coral)'
+      <div className={styles.typeToggle}>
+        <button
+          type="button"
+          className={type === 'expense' ? styles.typeActive : styles.typeInactive}
+          onClick={() => setType('expense')}
+        >
+          Dépense
+        </button>
+        <button
+          type="button"
+          className={type === 'refill' ? styles.typeActiveGreen : styles.typeInactive}
+          onClick={() => setType('refill')}
+        >
+          Rechargement
+        </button>
+      </div>
+
+      <div className={styles.fieldRow}>
+        <div className={styles.field}>
+          <label className={styles.label}>Libellé</label>
+          <input
+            className={styles.input}
+            value={label}
+            onChange={(e) => { setLabel(e.target.value); setError(null) }}
+            placeholder="ex: Supermarché, Netflix…"
+            required
+          />
+        </div>
+        <div className={styles.field} style={{ maxWidth: 110 }}>
+          <label className={styles.label}>Montant (€)</label>
+          <input
+            className={styles.input}
+            type="number"
+            min={0.01}
+            step={0.01}
+            value={amount}
+            onChange={(e) => { setAmount(e.target.value); setError(null) }}
+            placeholder="25"
+            required
+          />
+        </div>
+        <div className={styles.field} style={{ maxWidth: 140 }}>
+          <label className={styles.label}>Date</label>
+          <input
+            className={styles.input}
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {error && <p className={styles.formError}>{error}</p>}
+
+      <div className={styles.formActions}>
+        <button type="button" className={styles.cancelBtn} onClick={onCancel}>
+          Annuler
+        </button>
+        <button type="submit" className={styles.saveBtn}>
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  )
+}
+
+// ── Envelope Card ─────────────────────────────────────────────────────────────
+
+interface EnvelopeCardProps {
+  envelope: {
+    id: string
+    name: string
+    emoji: string
+    budgetEur: number
+    spentEur: number
+    color: string
+  }
+  onDelete: (id: string) => void
+  onAddTransaction: (id: string) => void
+}
+
+function EnvelopeCard({ envelope, onDelete, onAddTransaction }: EnvelopeCardProps) {
+  const remaining = envelope.budgetEur - envelope.spentEur
+  const pct = envelope.budgetEur > 0
+    ? Math.min(100, (envelope.spentEur / envelope.budgetEur) * 100)
+    : 0
+  const barColor =
+    pct < 75 ? 'var(--green)' : pct < 100 ? 'var(--orange)' : 'var(--coral)'
 
   return (
-    <div className={styles.summary}>
-      <div className={styles.summaryMeta}>
-        <span className={styles.summaryCount}>
-          {summary.missionCount} mission{summary.missionCount !== 1 ? 's' : ''} linked
-        </span>
+    <div
+      className={styles.card}
+      style={{ '--env-color': envelope.color } as React.CSSProperties}
+    >
+      {/* Card top accent */}
+      <div className={styles.cardAccent} />
+
+      <div className={styles.cardHeader}>
+        <span className={styles.cardEmoji}>{envelope.emoji}</span>
+        <span className={styles.cardName}>{envelope.name}</span>
+        <button
+          type="button"
+          className={`${styles.iconBtn} ${styles.danger}`}
+          onClick={() => onDelete(envelope.id)}
+          aria-label={`Supprimer ${envelope.name}`}
+          title="Supprimer"
+        >
+          ✕
+        </button>
       </div>
-      <div className={styles.summaryAmounts}>
-        <span>Budget: {fmt.format(summary.totalBudget)}</span>
-        <span className={styles.summaryDivider}>/</span>
-        <span>Spent: {fmt.format(summary.totalSpent)}</span>
+
+      <div className={styles.cardAmounts}>
+        <div>
+          <div className={styles.amountLabel}>Dépensé</div>
+          <div className={styles.amountValue} style={{ color: barColor }}>
+            {fmt.format(envelope.spentEur)}
+          </div>
+        </div>
+        <div className={styles.amountDivider}>/</div>
+        <div>
+          <div className={styles.amountLabel}>Budget</div>
+          <div className={styles.amountBudget}>{fmt.format(envelope.budgetEur)}</div>
+        </div>
+        <div className={styles.remainingBadge} style={{ color: remaining >= 0 ? 'var(--green)' : 'var(--coral)' }}>
+          {remaining >= 0 ? `${fmt.format(remaining)} restant` : `${fmt.format(-remaining)} dépassé`}
+        </div>
       </div>
-      <div className={styles.summaryBar}>
+
+      {/* Progress bar */}
+      <div className={styles.progressTrack}>
         <div
-          className={styles.summaryFill}
-          style={{ width: `${fillPct}%`, background: fillColor } as React.CSSProperties}
+          className={styles.progressFill}
+          style={{ width: `${pct}%`, background: barColor }}
         />
       </div>
+
+      <button
+        type="button"
+        className={styles.addTxBtn}
+        onClick={() => onAddTransaction(envelope.id)}
+      >
+        + Ajouter une dépense
+      </button>
     </div>
   )
 }
 
-function EnvelopeCard({ env }: { env: EnvelopeDTO }) {
-  const [editing, setEditing] = useState(false)
-  const { update, isPending: updating } = useUpdateEnvelope()
-  const { remove, isPending: deleting } = useDeleteEnvelope()
+// ── Recent Transactions ───────────────────────────────────────────────────────
 
-  const fmt = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: env.currency,
-    maximumFractionDigits: 0,
-  })
+interface RecentTxProps {
+  transactions: Transaction[]
+  envelopeMap: Record<string, { name: string; emoji: string; color: string }>
+  onDelete: (id: string) => void
+}
 
-  if (editing) {
-    return (
-      <EnvelopeForm
-        title="Edit envelope"
-        initial={{
-          name: env.name,
-          monthlyAmount: String(env.monthlyAmount),
-          currency: env.currency,
-        }}
-        isPending={updating}
-        onSave={async (f) => {
-          await update({
-            id: env.id,
-            payload: {
-              name: f.name,
-              monthlyAmount: parseFloat(f.monthlyAmount),
-              currency: f.currency,
-            },
-          })
-          setEditing(false)
-        }}
-        onCancel={() => setEditing(false)}
-      />
-    )
+function RecentTransactions({ transactions, envelopeMap, onDelete }: RecentTxProps) {
+  const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20)
+
+  if (sorted.length === 0) return null
+
+  return (
+    <section className={styles.txSection}>
+      <h2 className={styles.sectionTitle}>Transactions récentes</h2>
+      <div className={styles.txList}>
+        {sorted.map((tx) => {
+          const env = envelopeMap[tx.envelopeId]
+          const isExpense = tx.amountEur < 0
+          return (
+            <div key={tx.id} className={styles.txRow}>
+              <span className={styles.txEmoji}>{env?.emoji ?? '?'}</span>
+              <div className={styles.txInfo}>
+                <span className={styles.txLabel}>{tx.label}</span>
+                <span className={styles.txEnvName}>{env?.name ?? 'Inconnu'}</span>
+              </div>
+              <span className={styles.txDate}>{fmtDate(tx.date)}</span>
+              <span
+                className={styles.txAmount}
+                style={{ color: isExpense ? 'var(--coral)' : 'var(--green)' }}
+              >
+                {isExpense ? '-' : '+'}{fmt.format(Math.abs(tx.amountEur))}
+              </span>
+              <button
+                type="button"
+                className={styles.txDeleteBtn}
+                onClick={() => onDelete(tx.id)}
+                aria-label="Supprimer la transaction"
+              >
+                ✕
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
+export default function EnvelopesPage() {
+  const {
+    envelopes,
+    transactions,
+    addEnvelope,
+    deleteEnvelope,
+    addTransaction,
+    deleteTransaction,
+  } = useLocalEnvelopes()
+
+  const [showNewForm, setShowNewForm] = useState(false)
+  const [activeTxEnvId, setActiveTxEnvId] = useState<string | null>(null)
+
+  const totalBudget = envelopes.reduce((s, e) => s + e.budgetEur, 0)
+  const totalSpent = envelopes.reduce((s, e) => s + e.spentEur, 0)
+  const globalPct = totalBudget > 0 ? Math.min(100, (totalSpent / totalBudget) * 100) : 0
+  const globalColor =
+    globalPct < 75 ? 'var(--green)' : globalPct < 100 ? 'var(--orange)' : 'var(--coral)'
+
+  const envelopeMap: Record<string, { name: string; emoji: string; color: string }> = {}
+  for (const env of envelopes) {
+    envelopeMap[env.id] = { name: env.name, emoji: env.emoji, color: env.color }
+  }
+
+  function handleAddEnvelope(fields: {
+    name: string
+    emoji: string
+    budgetEur: number
+    color: string
+  }) {
+    addEnvelope(fields)
+    setShowNewForm(false)
+  }
+
+  function handleAddTransaction(fields: Omit<Transaction, 'id'>) {
+    addTransaction(fields)
+    setActiveTxEnvId(null)
   }
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <span className={styles.cardName}>{env.name}</span>
-        <div className={styles.cardActions}>
-          <button
-            className={styles.iconBtn}
-            onClick={() => setEditing(true)}
-            aria-label="Edit envelope"
-            title="Edit"
-          >
-            ✎
-          </button>
-          <button
-            className={`${styles.iconBtn} ${styles.danger}`}
-            onClick={() => remove(env.id)}
-            disabled={deleting}
-            aria-label="Delete envelope"
-            title="Delete"
-          >
-            ✕
-          </button>
+    <main className={styles.page}>
+      {/* Header */}
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Budget Enveloppes</h1>
+          <p className={styles.subtitle}>Gérez votre budget par catégorie</p>
         </div>
-      </div>
-      <div>
-        <span className={styles.amount}>{fmt.format(env.monthlyAmount)}</span>
-        <span className={styles.period}> / month</span>
-      </div>
-      <EnvelopeSummaryBadge
-        envelopeId={env.id}
-        monthlyAmount={env.monthlyAmount}
-        currency={env.currency}
-      />
-    </div>
-  )
-}
-
-export default function EnvelopesPage() {
-  const { t } = useTranslation()
-  const { envelopes, isLoading } = useEnvelopes()
-  const { create, isPending: creating } = useCreateEnvelope()
-  const [showForm, setShowForm] = useState(false)
-
-  const total = envelopes.reduce((s, e) => s + e.monthlyAmount, 0)
-  // Arbitrary cap to show a progress-style health bar: 5 000 € / month reference
-  const HEALTH_CAP = 5000
-  const healthPct = Math.min(100, (total / HEALTH_CAP) * 100)
-  const healthColor =
-    healthPct < 60 ? 'var(--green)' : healthPct < 85 ? 'var(--gold)' : 'var(--coral)'
-
-  const fmtEur = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  })
-
-  return (
-    <>
-      <Topnav />
-      <main className={styles.page}>
-        <div className={styles.header}>
-          <div>
-            <div className={styles.title}>Envelopes</div>
-            <div className={styles.subtitle}>
-              {t('envelopes.subtitle', 'Named monthly budget allocations')}
-            </div>
-          </div>
-          {!showForm && (
-            <button className={styles.addBtn} onClick={() => setShowForm(true)}>
-              + New envelope
-            </button>
-          )}
-        </div>
-
-        {/* Budget health summary */}
-        {envelopes.length > 0 && (
-          <div className={styles.health}>
-            <span className={styles.healthLabel}>MONTHLY BUDGET</span>
-            <div className={styles.healthBar}>
-              <div
-                className={styles.healthFill}
-                style={{ width: `${healthPct}%`, background: healthColor }}
-              />
-            </div>
-            <div>
-              <div className={styles.healthTotal}>{fmtEur.format(total)}</div>
-              <div className={styles.healthSub}>
-                {envelopes.length} envelope{envelopes.length !== 1 ? 's' : ''}
-              </div>
-            </div>
-          </div>
+        {!showNewForm && (
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowNewForm(true)}
+          >
+            + Nouvelle enveloppe
+          </button>
         )}
+      </div>
 
-        {showForm && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <EnvelopeForm
-              title="New envelope"
-              isPending={creating}
-              onSave={async (f) => {
-                await create({
-                  name: f.name,
-                  monthlyAmount: parseFloat(f.monthlyAmount),
-                  currency: f.currency,
-                })
-                setShowForm(false)
-              }}
-              onCancel={() => setShowForm(false)}
+      {/* Global summary bar */}
+      {envelopes.length > 0 && (
+        <div className={styles.health}>
+          <div className={styles.healthMeta}>
+            <span className={styles.healthLabel}>BUDGET GLOBAL</span>
+            <div className={styles.healthAmounts}>
+              <span style={{ color: globalColor }}>{fmt.format(totalSpent)}</span>
+              <span className={styles.healthSep}>/</span>
+              <span className={styles.healthBudget}>{fmt.format(totalBudget)}</span>
+              <span className={styles.healthPct}>{globalPct.toFixed(0)}%</span>
+            </div>
+          </div>
+          <div className={styles.healthBar}>
+            <div
+              className={styles.healthFill}
+              style={{ width: `${globalPct}%`, background: globalColor }}
             />
           </div>
-        )}
+        </div>
+      )}
 
-        {isLoading ? (
-          <div className={styles.grid}>
-            {[1, 2, 3].map((k) => (
-              <div key={k} className={styles.card} style={{ minHeight: 120, opacity: 0.4 }} />
-            ))}
+      {/* New envelope form */}
+      {showNewForm && (
+        <div className={styles.formWrap}>
+          <NewEnvelopeForm
+            onSave={handleAddEnvelope}
+            onCancel={() => setShowNewForm(false)}
+          />
+        </div>
+      )}
+
+      {/* Envelope grid */}
+      {envelopes.length === 0 && !showNewForm ? (
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>💸</div>
+          <div className={styles.emptyTitle}>Aucune enveloppe</div>
+          <div className={styles.emptyDesc}>
+            Créez des enveloppes pour organiser votre budget par catégorie.
           </div>
-        ) : (
-          <div className={styles.grid}>
-            {envelopes.length === 0 && !showForm ? (
-              <div className={styles.empty}>
-                <div className={styles.emptyIcon}>💰</div>
-                <div className={styles.emptyTitle}>No envelopes yet</div>
-                <div className={styles.emptyDesc}>
-                  Create budget envelopes to allocate your monthly spending.
+          <button
+            type="button"
+            className={styles.addBtn}
+            onClick={() => setShowNewForm(true)}
+            style={{ marginTop: '1rem' }}
+          >
+            Créer ma première enveloppe
+          </button>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {envelopes.map((env) => (
+            <div key={env.id}>
+              <EnvelopeCard
+                envelope={env}
+                onDelete={deleteEnvelope}
+                onAddTransaction={(id) => setActiveTxEnvId(activeTxEnvId === id ? null : id)}
+              />
+              {activeTxEnvId === env.id && (
+                <div className={styles.txFormWrap}>
+                  <TransactionForm
+                    envelopeId={env.id}
+                    onSave={handleAddTransaction}
+                    onCancel={() => setActiveTxEnvId(null)}
+                  />
                 </div>
-              </div>
-            ) : (
-              envelopes.map((env) => <EnvelopeCard key={env.id} env={env} />)
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
-        <BudgetRebalancer />
-      </main>
-    </>
+      {/* Recent transactions */}
+      <RecentTransactions
+        transactions={transactions}
+        envelopeMap={envelopeMap}
+        onDelete={deleteTransaction}
+      />
+    </main>
   )
 }

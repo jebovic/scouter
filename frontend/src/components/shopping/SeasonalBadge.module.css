@@ -1,0 +1,75 @@
+@import '../../styles/theme.css';
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loading {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pill:hover { opacity: 0.85; }
+
+/* Color by urgency: green = buy soon, yellow = within quarter, gray = later */
+.soon   { background: #d4edda; color: #155724; }
+.near   { background: #fff3cd; color: #856404; }
+.later  { background: #e9ecef; color: #495057; }
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.72rem;
+  color: var(--text-mid);
+  min-width: 200px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.value {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.rationale {
+  margin-top: 2px;
+  font-size: 0.70rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.events {
+  margin: 0;
+  padding: 0 0 0 14px;
+  line-height: 1.5;
+}
