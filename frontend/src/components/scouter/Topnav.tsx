@@ -41,6 +41,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
         <div className={styles.subNav}>
           {[
             { label: 'Wishlist', path: '/wishlist' },
+            { label: 'Envelopes', path: '/envelopes' },
             { label: 'History', path: '/history' },
             { label: 'Stats', path: '/stats' },
             { label: 'Settings', path: '/settings' },

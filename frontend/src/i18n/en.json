@@ -386,5 +386,13 @@
     "rejectPlaceholder": "Reason for rejection (e.g. 'too expensive', 'not available in my region')",
     "runPriceIntel": "Run Price Intel",
     "runPriceIntelPlaceholder": "Optional: guide the agent (e.g. \"check for Black Friday deals on electronics\")"
+  },
+  "envelopes": {
+    "subtitle": "Named monthly budget allocations",
+    "newBtn": "New envelope",
+    "monthly": "/ month",
+    "health": "Budget health",
+    "empty": "No envelopes yet",
+    "emptyDesc": "Create budget envelopes to allocate your monthly spending."
   }
 }

@@ -386,5 +386,13 @@
     "rejectPlaceholder": "Raison du rejet (ex. 'trop cher', 'non disponible dans ma région')",
     "runPriceIntel": "Lancer l'Intel Prix",
     "runPriceIntelPlaceholder": "Optionnel : guidez l'agent (ex. « vérifiez les offres du Black Friday sur l'électronique »)"
+  },
+  "envelopes": {
+    "subtitle": "Allocations mensuelles nommées",
+    "newBtn": "Nouvelle enveloppe",
+    "monthly": "/ mois",
+    "health": "Santé budgétaire",
+    "empty": "Aucune enveloppe",
+    "emptyDesc": "Créez des enveloppes budgétaires pour allouer vos dépenses mensuelles."
   }
 }
