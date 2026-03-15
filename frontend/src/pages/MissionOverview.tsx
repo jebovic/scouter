@@ -6,6 +6,7 @@ import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
+import { ExpenseCategoryPanel } from '../components/mission'
 import type { MissionPhase } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import styles from './MissionOverview.module.css'
@@ -143,6 +144,11 @@ export default function MissionOverview() {
         {/* Budget Burn Rate Tracker (Phase 156) */}
         <div className={styles.section}>
           <BurnRateCard missionId={mission.id} currency={mission.currency} />
+        </div>
+
+        {/* Smart Expense Categorizer (Phase 164) */}
+        <div className={styles.section}>
+          <ExpenseCategoryPanel missionId={mission.id} currency={mission.currency} locale={mission.locale} />
         </div>
 
         {/* Smart Shopping List Optimizer (Phase 159) */}

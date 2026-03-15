@@ -1,0 +1,230 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: background-color 0.2s;
+}
+
+.header:hover {
+  background-color: var(--surface-hover);
+}
+
+.icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.title {
+  flex: 1;
+  text-align: left;
+}
+
+.toggle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.content {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.insightBox {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 4px solid var(--primary);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.insightText {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.donutBar {
+  display: flex;
+  gap: 2px;
+  height: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.donutSegment {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  min-width: 40px;
+  background: var(--cat-color);
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categoryItem {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  transition: background-color 0.2s;
+}
+
+.categoryItem:hover {
+  background-color: var(--surface-hover);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.itemIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.itemName {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.itemTotal {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+.itemFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.percentBar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.percentFill {
+  height: 100%;
+  background: var(--cat-color);
+  transition: width 0.3s ease;
+}
+
+.percentText {
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 45px;
+  text-align: right;
+}
+
+.itemCount {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  background: var(--border);
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.emptyState {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Color map for expense categories */
+:root {
+  --cat-electronique: #3b82f6; /* Blue */
+  --cat-alimentaire: #10b981; /* Green */
+  --cat-mode: #f59e0b; /* Amber */
+  --cat-sport: #ec4899; /* Pink */
+  --cat-voyage: #06b6d4; /* Cyan */
+  --cat-maison: #8b5cf6; /* Violet */
+  --cat-beaute: #f97316; /* Orange */
+  --cat-loisirs: #a855f7; /* Purple */
+  --cat-autre: #6b7280; /* Gray */
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 640px) {
+  .itemHeader {
+    flex-wrap: wrap;
+  }
+
+  .itemTotal {
+    order: 3;
+    width: 100%;
+    text-align: left;
+    margin-top: 4px;
+  }
+
+  .itemFooter {
+    order: 4;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .donutBar {
+    height: 20px;
+  }
+
+  .donutSegment {
+    min-width: 30px;
+    font-size: 0.6rem;
+  }
+}

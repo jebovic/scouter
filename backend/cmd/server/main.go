@@ -45,6 +45,7 @@ import (
 	"github.com/jibei/scouter/internal/collaborator"
 	"github.com/jibei/scouter/internal/comment"
 	"github.com/jibei/scouter/internal/comparison"
+	"github.com/jibei/scouter/internal/comparisonscore"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/dealcalendar"
@@ -135,6 +136,7 @@ import (
 	"github.com/jibei/scouter/internal/pricedropwatch"
 	"github.com/jibei/scouter/internal/seasonalcalendar"
 	"github.com/jibei/scouter/internal/budgetadvisor"
+	"github.com/jibei/scouter/internal/expensecategorizer"
 )
 
 func main() {
@@ -374,6 +376,10 @@ func main() {
 	// Budget Allocation Advisor (Phase 163)
 	budgetAdvisorHandler := budgetadvisor.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/budget-advice", budgetAdvisorHandler.GetAdvice)
+
+	// Smart Expense Categorizer (Phase 164)
+	expenseCatHandler := expensecategorizer.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/expense-summary", expenseCatHandler.GetSummary)
 
 	// Public shared mission (accessible without auth, always CORS-open)
 	r.With(corsMiddleware).Get("/api/shared/{token}", func(w http.ResponseWriter, r *http.Request) {
@@ -862,6 +868,10 @@ func main() {
 	// Seasonal Buying Calendar (Phase 162)
 	seasonalCalHandler := seasonalcalendar.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/seasonal-calendar", seasonalCalHandler.GetCalendar)
+
+	// Smart Comparison Score (Phase 165)
+	compScoreHandler := comparisonscore.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/comparison-score", compScoreHandler.GetReport)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
