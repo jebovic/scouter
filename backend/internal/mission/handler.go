@@ -3,6 +3,7 @@ package mission
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -115,6 +116,30 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Duplicate creates a copy of the mission identified by slug.
+// The copy gets a " (copie)" name suffix, phase reset to "researching",
+// and lessons/shareToken/archivedAt cleared.
+func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	m, err := h.svc.Duplicate(r.Context(), slug)
+	if err != nil {
+		// Distinguish not-found from infrastructure errors using a simple string check.
+		// The service returns a sentinel message when the mission is not found.
+		if isNotFound(err) {
+			httputil.WriteError(w, http.StatusNotFound, "mission not found")
+			return
+		}
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusCreated, m)
+}
+
+// isNotFound reports whether err is the "not found" sentinel from the service.
+func isNotFound(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "not found")
 }
 
 // Archive sets archived_at on a mission, hiding it from the default dashboard list.

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Card, StatusBadge, BudgetBar } from '../scouter'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
+import { useDuplicateMission } from '../../hooks/useMission'
 import type { Mission, ShoppingItem } from '../../types'
 import styles from './MissionCard.module.css'
 
@@ -12,6 +13,7 @@ interface MissionCardProps {
 
 export function MissionCard({ mission, items = [], onArchive }: MissionCardProps) {
   const navigate = useNavigate()
+  const { duplicateMission, isPending: isDuplicating } = useDuplicateMission()
   const spent = items.reduce((sum, item) => sum + item.price, 0)
 
   const { swipeX, handlers } = useSwipeGesture({
@@ -62,7 +64,22 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
                 <div className={styles.category}>{mission.category}</div>
               </div>
             </div>
-            <StatusBadge phase={mission.phase} />
+            <div className={styles.headerActions}>
+              <StatusBadge phase={mission.phase} />
+              <button
+                className={styles.duplicateBtn}
+                title="Duplicate mission"
+                aria-label="Duplicate mission"
+                disabled={isDuplicating}
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  const copy = await duplicateMission(mission.slug)
+                  navigate(`/missions/${copy.slug}`)
+                }}
+              >
+                {isDuplicating ? '…' : '📋'}
+              </button>
+            </div>
           </div>
 
           <BudgetBar spent={spent} budget={mission.budget} currency={mission.currency} />

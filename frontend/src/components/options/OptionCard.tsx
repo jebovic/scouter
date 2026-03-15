@@ -3,6 +3,7 @@ import { AttributeRenderer } from './AttributeRenderer'
 import { VoteButtons } from './VoteButtons'
 import { ReviewSummaryCard } from './ReviewSummaryCard'
 import { PriceComparisonPanel } from './PriceComparisonPanel'
+import { RetailerLinks } from './RetailerLinks'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
@@ -104,6 +105,8 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
           <AttributeRenderer key={attr.key} attribute={attr} currency={currency} />
         ))}
       </div>
+
+      <RetailerLinks query={option.name} category={option.category} />
 
       {option.warnings.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

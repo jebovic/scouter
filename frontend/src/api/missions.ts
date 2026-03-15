@@ -82,6 +82,11 @@ export async function deleteMission(slug: string): Promise<void> {
   await apiFetch<void>(`/api/missions/${slug}`, { method: 'DELETE' })
 }
 
+export async function duplicateMission(slug: string): Promise<Mission> {
+  const data = await apiFetch<unknown>(`/api/missions/${slug}/duplicate`, { method: 'POST' })
+  return MissionSchema.parse(data) as Mission
+}
+
 // items are consumed via dedicated /api/options and /api/shopping endpoints
 const AgentResultSchema = z.object({
   count: z.number(),

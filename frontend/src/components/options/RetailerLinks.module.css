@@ -1,0 +1,50 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--raised);
+  color: var(--text-mid);
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.pill:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim, rgba(0, 212, 255, 0.08));
+}
+
+.logo {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* On mobile: horizontal scroll instead of wrapping */
+@media (max-width: 640px) {
+  .container {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    /* hide scrollbar on webkit */
+    scrollbar-width: none;
+  }
+
+  .container::-webkit-scrollbar {
+    display: none;
+  }
+}

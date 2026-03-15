@@ -45,6 +45,35 @@
   text-transform: uppercase;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.duplicateBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--text-dim);
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.duplicateBtn:hover:not(:disabled) {
+  background: var(--raised);
+  color: var(--text);
+}
+
+.duplicateBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .constraintList {
   display: flex;
   flex-wrap: wrap;

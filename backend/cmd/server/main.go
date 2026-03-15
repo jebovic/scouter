@@ -236,6 +236,7 @@ func main() {
 	r.Get("/api/missions/{slug}", missionHandler.Get)
 	r.Patch("/api/missions/{slug}", missionHandler.Update)
 	r.Delete("/api/missions/{slug}", missionHandler.Delete)
+	r.Post("/api/missions/{slug}/duplicate", missionHandler.Duplicate)
 
 	// Mission sub-resources
 	r.Mount("/api/missions/{missionID}/options", optionHandler.Routes())

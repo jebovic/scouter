@@ -148,6 +148,50 @@ func (s *Service) Unarchive(ctx context.Context, id uuid.UUID) (*Mission, error)
 	return s.repo.Unarchive(ctx, id)
 }
 
+// Duplicate creates a copy of the mission identified by slug. The copy gets a
+// " (copie)" name suffix, phase reset to "researching", and lessons/shareToken/
+// archivedAt cleared. All other fields are copied from the original.
+func (s *Service) Duplicate(ctx context.Context, slug string) (*Mission, error) {
+	orig, err := s.repo.GetBySlug(ctx, slug)
+	if err != nil {
+		return nil, fmt.Errorf("duplicate mission: get original: %w", err)
+	}
+	if orig == nil {
+		return nil, fmt.Errorf("mission %q not found", slug)
+	}
+
+	newName := orig.Name + " (copie)"
+	newSlug, err := s.uniqueSlug(ctx, newName)
+	if err != nil {
+		return nil, fmt.Errorf("duplicate mission: generate slug: %w", err)
+	}
+
+	copy := Mission{
+		Slug:           newSlug,
+		Name:           newName,
+		Icon:           orig.Icon,
+		Category:       orig.Category,
+		Budget:         orig.Budget,
+		Currency:       orig.Currency,
+		Locale:         orig.Locale,
+		Phase:          "researching",
+		Constraints:    orig.Constraints,
+		CostCategories: orig.CostCategories,
+		Timeline:       orig.Timeline,
+		WeightProfile:  orig.WeightProfile,
+		EnvelopeID:     orig.EnvelopeID,
+		// Lessons, ShareToken, ArchivedAt intentionally omitted (nil)
+	}
+	if copy.Constraints == nil {
+		copy.Constraints = []Constraint{}
+	}
+	if copy.CostCategories == nil {
+		copy.CostCategories = []string{}
+	}
+
+	return s.repo.Create(ctx, copy)
+}
+
 // uniqueSlug generates a URL-safe slug from the name, appending a counter if needed.
 // It caps retries at 100 to prevent unbounded loops.
 func (s *Service) uniqueSlug(ctx context.Context, name string) (string, error) {

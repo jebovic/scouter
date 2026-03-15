@@ -3,6 +3,7 @@ import { Badge } from '../scouter'
 import { TrendBadge } from './TrendBadge'
 import { DealScoreBadge } from './DealScoreBadge'
 import { PriceSparkline } from './PriceSparkline'
+import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -40,6 +41,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
   const [editingTarget, setEditingTarget] = useState(false)
   const [targetInput, setTargetInput] = useState('')
   const [showIntel, setShowIntel] = useState(false)
+  const [showRetailers, setShowRetailers] = useState(false)
   const cancelledRef = useRef(false)
 
   const { updateItem } = useUpdateShoppingItem(missionId)
@@ -77,7 +79,18 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <div className={styles.name}>{item.name}</div>
         <div className={styles.meta}>
           {item.merchant} · {item.costCategory}
+          <button
+            onClick={() => setShowRetailers((v) => !v)}
+            className={styles.retailerToggleBtn}
+            aria-expanded={showRetailers}
+            aria-label={showRetailers ? 'Masquer les liens marchands' : 'Rechercher en ligne'}
+          >
+            {showRetailers ? '▲ liens' : '🛒 liens'}
+          </button>
         </div>
+        {showRetailers && (
+          <RetailerLinks query={item.name} />
+        )}
       </div>
 
       {/* Price + delta + target */}

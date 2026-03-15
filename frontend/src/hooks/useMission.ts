@@ -5,6 +5,7 @@ import {
   createMission,
   updateMission,
   deleteMission,
+  duplicateMission,
 } from '../api'
 import { useToast } from '../components/scouter'
 import type { MissionCreateRequest, MissionUpdateRequest } from '../types'
@@ -75,4 +76,18 @@ export function useDeleteMission() {
     onError: (err: unknown) => toast(`Failed to delete mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { deleteMission: mutateAsync, isPending }
+}
+
+export function useDuplicateMission() {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (slug: string) => duplicateMission(slug),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['missions'] })
+      toast('Mission duplicated', 'success')
+    },
+    onError: (err: unknown) => toast(`Failed to duplicate mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+  })
+  return { duplicateMission: mutateAsync, isPending }
 }

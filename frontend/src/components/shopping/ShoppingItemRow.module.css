@@ -95,6 +95,24 @@
   margin-top: 2px;
 }
 
+/* ── Retailer toggle button ──────────────────────────────────────────────── */
+.retailerToggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 0 8px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  transition: color 0.15s;
+  vertical-align: middle;
+}
+
+.retailerToggleBtn:hover,
+.retailerToggleBtn[aria-expanded='true'] {
+  color: var(--cyan);
+}
+
 /* ── Deal intel column ───────────────────────────────────────────────────── */
 .dealIntel {
   display: flex;
