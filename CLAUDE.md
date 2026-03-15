@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- Phases 1–14 complete. All planned phases delivered. Auto-improvement loop active (see ROADMAP.md Phase 15+).
+- **v0.1.0 released** — Phases 1–172 complete. All planned phases delivered.
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -104,7 +104,7 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 | `PORT` | `8080` | backend listen port |
 | `ENV` | `production` | `development` enables permissive CORS |
 
-## Backend Status (Phases 1–14 complete)
+## Backend Status (Phases 1–172 complete — v0.1.0)
 - All handlers use `httputil.WriteJSON`/`WriteError` — no raw error leaks
 - `errors.Is(err, pgx.ErrNoRows)` throughout all repositories
 - `param.NewOpt(v)` used in Anthropic SDK; CORS gated on `ENV=development`; 1 MiB body cap
@@ -118,8 +118,15 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Phase 12**: `internal/purchase/` (PurchaseRecord CRUD, service auto-advances mission to "done"); `internal/purchase/stats.go` (StatsHandler, total/category breakdown); `missions.lessons` column; migration 010 (`purchase_records` table); `GET/POST/PATCH /api/missions/:id/purchase`, `GET /api/stats`
 - **Phase 13**: `internal/settings/` (JSONB key-value store, currency/locale/llm_provider allowlist); `internal/admin/` (DELETE /api/data with X-Confirm header); enhanced `GET /api/health` (DB ping, degraded status); migration 011 (`settings` table with defaults)
 - **Phase 14**: `internal/metrics/` (Recorder interface, NoopRecorder, PrometheusRecorder + middleware); SmartRouter/agents/scheduler instrumented; `/metrics` Prometheus endpoint (METRICS_ENABLED env); docker-compose monitoring profile (Prometheus + Grafana + cAdvisor); pre-provisioned Grafana dashboards
+- **Phases 15–167**: See ROADMAP.md for full detail (price intel, collaboration, coach, PWA, analytics, wishlist, barcode, export, etc.)
+- **Phase 168**: `internal/wishlistprioritizer/` — composite score (urgency/trend/budgetFit), FNV-32a determinism, 15min cache; `GET /api/wishlist/prioritized`
+- **Phase 169**: `internal/frenchbenchmark/` — market median via FNV-32a multiplier, verdict (bon_prix/prix_moyen/au_dessus_du_marché), 20min cache; `GET /api/missions/{id}/french-benchmark`
+- **Phase 170**: `internal/scorecard/` — efficiency grade A/B/C/D from 4 DB queries, 30min cache; `GET /api/missions/{id}/scorecard`
+- **Phase 171**: `internal/quantityoptimizer/` — tiers [1,2,3,5,10] with FNV-32a discount curve, 10min cache; `GET /api/missions/{id}/items/{itemId}/quantity-optimizer`
+- **Phase 172**: `internal/timelineplanner/` — 4-week status-based distribution, French promo hints, 20min cache; `GET /api/missions/{id}/purchase-timeline`
+- **main.go refactor**: Route registration extracted to `cmd/server/routes.go` (`routeDeps` struct + `registerRoutes`); main.go imports reduced from 142 to ~35
 
-## Frontend Status (Phases 1–14 complete)
+## Frontend Status (Phases 1–172 complete — v0.1.0)
 - **CSS Modules**: all components use co-located `.module.css` files; no raw `style={{}}` for layout/theming
 - **Responsive**: breakpoints at 640px and 1024px across all pages and components
 - **Skeleton loading**: `Skeleton` (card/row/chart variants) + `SkeletonGrid` via `ScouterGrid`
@@ -134,7 +141,13 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Semantic Search (Phase 11)**: `src/api/search.ts` (Zod schemas + fetch for search/similar/reindex); `useSearch` (300ms debounce, 2-char min), `useSimilarOptions`; `SearchDropdown` in Topnav (5-result instant dropdown, Enter → `/search`); `SearchPage` (`/search` route, full results, URL-synced query); `SimilarOptions` component (link to mission options page)
 - **Purchase Lifecycle (Phase 12)**: `src/api/purchase.ts` (PurchaseRecord + Stats Zod schemas); `usePurchase` hooks; `StarRating` component (5-star, keyboard-accessible); `MissionTimeline` (4-step vertical); `PurchaseForm` (create/edit); `LessonsField` (inline edit); `HistoryPage` (/history); `StatsPage` (/stats)
 - **Settings & Data (Phase 13)**: `src/api/settings.ts`; `SettingsPage` (/settings) with currency/locale/LLM provider + two-step delete-all danger zone
-- **Test suite**: Vitest + jsdom + Testing Library; 71 tests across 10 files
+- **Phases 15–167**: See ROADMAP.md for full detail (PWA, analytics, wishlist, barcode, collaboration, coach, etc.)
+- **Phase 168**: `WishlistPriorityCard` in WishListPage — ranked items, score badges, top-pick gold highlight
+- **Phase 169**: `FrenchBenchmarkPanel` (collapsible) in ShoppingTracker — market median table with verdict badges
+- **Phase 170**: `MissionScorecardSection` in MissionOverview — grade badge (A/B/C/D), 2×2 stats grid, achievements, lessons (shown on completed missions only)
+- **Phase 171**: `QuantityOptimizerPanel` in ShoppingTracker — tier cards with FNV-32a discount curve
+- **Phase 172**: `PurchaseTimelineCard` (4-week vertical timeline with budget bars) in ShoppingTracker
+- **Test suite**: Vitest + jsdom + Testing Library; 71+ tests across 10+ files
 
 ## CSS Conventions
 - Import `frontend/src/styles/theme.css` for all SCOUTER tokens

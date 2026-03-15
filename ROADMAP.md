@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–167 complete. Phase 168+ planned.
+> Current status: Phases 1–172 complete. **v0.1.0 released.**
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -1371,18 +1371,74 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 - Frontend: `SpendingVelocityCard` component with pace badge and progress bar
 - GET /api/missions/{missionId}/spending-velocity
 
-## Phase 168: Smart Wishlist Prioritizer 📋 PLANNED
+## Phase 168: Smart Wishlist Prioritizer 📋 ✅ Done
 **Goal:** AI-powered prioritization of wishlist items based on urgency, price trends, and budget fit
+- Backend: `internal/wishlistprioritizer/` — composite score (urgency 0.4 + trend 0.35 + budgetFit 0.25), FNV-32a deterministic trend, 15min cache
+- Frontend: `WishlistPriorityCard` in WishListPage — ranked list with score badges, top-pick gold highlight
+- GET /api/wishlist/prioritized
 
-## Phase 169: French Market Price Benchmark 📊 PLANNED
+## Phase 169: French Market Price Benchmark 📊 ✅ Done
 **Goal:** Benchmark item prices against French market medians using category-specific heuristics
+- Backend: `internal/frenchbenchmark/` — FNV-32a multiplier [0.85, 1.15] per name+category, verdicts: bon_prix / prix_moyen / au_dessus_du_marché, 20min cache
+- Frontend: `FrenchBenchmarkPanel` (collapsible) in ShoppingTracker
+- GET /api/missions/{missionId}/french-benchmark
 
-## Phase 170: Mission Completion Scorecard 🏆 PLANNED
+## Phase 170: Mission Completion Scorecard 🏆 ✅ Done
 **Goal:** End-of-mission scorecard with savings achieved, decisions made, lessons learned summary
+- Backend: `internal/scorecard/` — 4 DB queries, efficiency grade A/B/C/D, 30min cache
+- Frontend: `MissionScorecardSection` in MissionOverview — shown on completed missions; grade badge, 2×2 stats, achievements
+- GET /api/missions/{missionId}/scorecard
 
-## Phase 171: Smart Quantity Optimizer 📦 PLANNED
+## Phase 171: Smart Quantity Optimizer 📦 ✅ Done
 **Goal:** Recommend optimal purchase quantities for bulk items considering storage and budget
+- Backend: `internal/quantityoptimizer/` — tiers [1,2,3,5,10] with FNV-32a discount curve, 10min cache
+- Frontend: `QuantityOptimizerPanel` in ShoppingTracker
+- GET /api/missions/{missionId}/items/{itemId}/quantity-optimizer
 
-## Phase 172: Purchase Timeline Planner 📅 PLANNED
+## Phase 172: Purchase Timeline Planner 📅 ✅ Done
 **Goal:** Plan purchase timing across weeks to spread costs and catch promotional windows
+- Backend: `internal/timelineplanner/` — 4-week distribution by status (flash-sale/crisis→W1, buy→W2, watch→W3, rest→W4), French promo hints via FNV-32a, 20min cache
+- Frontend: `PurchaseTimelineCard` (4-week vertical timeline) in ShoppingTracker
+- GET /api/missions/{missionId}/purchase-timeline
+
+---
+
+## v0.1.0 — SCOUTER Universal (2026-03-15)
+
+**172 phases shipped. First public milestone.**
+
+### What's in v0.1.0
+
+**Core Intelligence**
+- ResearchAgent + PricingAgent (Anthropic claude-sonnet-4-6 / Ollama SmartRouter with circuit breakers)
+- Decision Engine with multi-criteria scoring and AI-generated rationale
+- AI Negotiation Coach, Spending Persona, Purchase Timing Advisor, Budget Forecaster
+
+**Price Intelligence**
+- Real-time price tracking with deal-score algorithm (trend + seasonality + market comparison)
+- French market benchmarking (Open Food Facts, LeLynx/idealo FR, retailer stock APIs)
+- Price alert digest with target/avg/floor thresholds
+- EAN barcode lookup, Smart Spending Velocity, Wishlist Prioritizer
+
+**Mission Lifecycle**
+- Full lifecycle: research → options → shopping → purchase → scorecard
+- Purchase Timeline Planner, Quantity Optimizer, Lessons Learned
+- Export (JSON/PDF/MD), share token, archive/unarchive, duplicate
+
+**Collaboration & Budget**
+- Collaborative missions (invite + voting), Wishlist sharing
+- Budget envelopes (actual spend linking), Multi-mission budget rollup
+- French seasonal deal calendar, VAT calculator
+
+**Infrastructure**
+- PostgreSQL 16 + pgvector semantic search (IVFFlat)
+- golang-migrate, cursor pagination, graceful shutdown (65s)
+- Prometheus + Grafana + cAdvisor observability stack
+- SmartRouter: heavy→fast→cloud→Anthropic priority pool, per-model rate limits
+- Docker Compose production deploy
+
+**Frontend**
+- React 19 + TypeScript + Vite, PWA (offline/installable), dark/light theme
+- i18n (EN/FR), keyboard shortcuts, onboarding overlay
+- Semantic search dropdown, analytics dashboard (recharts), gamification badges
 
