@@ -18,6 +18,7 @@ import { PriceHistoryExportButton } from './PriceHistoryExportButton'
 import { CarbonBadge } from './CarbonBadge'
 import { SeasonalBadge } from './SeasonalBadge'
 import { WatchlistButton } from './WatchlistButton'
+import { CurrencyConverter } from './CurrencyConverter'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -131,6 +132,10 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
           <div className={`${styles.priceDelta} ${priceDelta > 0 ? styles.priceDeltaUp : styles.priceDeltaDown}`}>
             {priceDelta > 0 ? '+' : ''}{fmt(priceDelta)}
           </div>
+        )}
+        {/* Currency Converter */}
+        {item.price > 0 && (
+          <CurrencyConverter basePrice={item.price} baseCurrency={currency} />
         )}
         {/* Price Alert Badge */}
         <PriceAlertBadge currentPrice={item.price} targetPrice={item.targetPrice} currency={currency} />

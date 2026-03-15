@@ -1,0 +1,210 @@
+@import '../../styles/theme.css';
+
+.root {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.flag {
+  font-size: 1.2rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  margin: 0;
+}
+
+/* Best-time-to-buy callout */
+.callout {
+  background: var(--raised);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.calloutLabel {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+}
+
+.calloutCategory {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+}
+
+.calloutCategory strong {
+  color: var(--text);
+}
+
+/* Event list */
+.eventList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--gap-sm);
+}
+
+/* Event card */
+.eventCard {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.eventCard:hover {
+  border-color: var(--border-glow);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.06);
+}
+
+.eventCard.highlight {
+  border-color: var(--cyan-dim);
+  background: var(--abyss);
+}
+
+.eventHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.eventName {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.eventDate {
+  font-size: 0.72rem;
+  color: var(--text-mid);
+  font-family: var(--font-mono);
+}
+
+.discountBadge {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* Type badge */
+.typeBadge {
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Color by type */
+.type_soldes .typeBadge {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.type_promo .typeBadge {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.type_flash .typeBadge {
+  background: var(--orange-dim);
+  color: var(--orange);
+}
+
+.type_tech .typeBadge {
+  background: var(--cyan-glow);
+  color: var(--cyan);
+}
+
+.type_seasonal .typeBadge {
+  background: var(--purple-dim);
+  color: var(--purple);
+}
+
+/* Left border accent by type */
+.type_soldes {
+  border-left: 3px solid var(--green);
+}
+
+.type_promo {
+  border-left: 3px solid var(--cyan);
+}
+
+.type_flash {
+  border-left: 3px solid var(--orange);
+}
+
+.type_tech {
+  border-left: 3px solid var(--cyan);
+}
+
+.type_seasonal {
+  border-left: 3px solid var(--purple);
+}
+
+/* Status chip */
+.chip {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.chipActive {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.chipSoon {
+  background: var(--orange-dim);
+  color: var(--orange);
+}
+
+.chipUpcoming {
+  background: var(--border);
+  color: var(--text-mid);
+}
+
+/* Empty state */
+.empty {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .eventList {
+    grid-template-columns: 1fr;
+  }
+}

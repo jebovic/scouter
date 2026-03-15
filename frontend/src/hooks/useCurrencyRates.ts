@@ -1,25 +1,31 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchExchangeRates, convertCurrency, type ExchangeRates } from '../utils/currencyRates'
+import { getCurrencyRates, type CurrencyRates } from '../api/currency'
 
 interface UseCurrencyRatesResult {
-  rates: ExchangeRates | null
+  rates: CurrencyRates | null
   isLoading: boolean
   error: string | null
   convert: (amount: number, from: string, to: string) => number
 }
 
 export function useCurrencyRates(): UseCurrencyRatesResult {
-  const query = useQuery<ExchangeRates, Error>({
-    queryKey: ['exchangeRates'],
-    queryFn: () => fetchExchangeRates(),
-    staleTime: 4 * 60 * 60 * 1000, // 4 hours
-    gcTime: 24 * 60 * 60 * 1000, // 24 hours
-    retry: 1,
+  const query = useQuery<CurrencyRates, Error>({
+    queryKey: ['currencyRates'],
+    queryFn: getCurrencyRates,
+    staleTime: 24 * 60 * 60 * 1000, // 24h — rates don't change often
+    gcTime: 24 * 60 * 60 * 1000,
+    retry: false,
   })
 
   const convert = (amount: number, from: string, to: string): number => {
-    if (!query.data) return amount
-    return convertCurrency(amount, from, to, query.data)
+    const rates = query.data
+    if (!rates) return amount
+    if (from === to) return amount
+    const fromRate = rates.rates[from] ?? 1
+    const toRate = rates.rates[to] ?? 1
+    // Convert through EUR base: from -> EUR -> to
+    const inEUR = amount / fromRate
+    return inEUR * toRate
   }
 
   return {

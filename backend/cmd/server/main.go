@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/currency"
 	"github.com/jibei/scouter/internal/priceanalytics"
 	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/budgetrec"
@@ -547,6 +548,12 @@ func main() {
 	digestRepo := digest.NewRepository(pool)
 	digestHandler := digest.NewHandler(digestRepo)
 	r.Get("/api/digest/weekly", digestHandler.Weekly)
+
+	// Real-time Currency Converter (Phase 98)
+	currencySvc := currency.NewService()
+	currencyHandler := currency.NewHandler(currencySvc)
+	r.Get("/api/currency/rates", currencyHandler.GetRates)
+	r.Get("/api/currency/convert", currencyHandler.Convert)
 
 	// Price History Analytics (Phase 97)
 	priceAnalyticsHandler := priceanalytics.NewHandler(pool)
