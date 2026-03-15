@@ -1,0 +1,95 @@
+.wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 3px;
+  min-width: max-content;
+}
+
+.headerCell {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: center;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.rowLabel {
+  padding: 4px 12px 4px 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cell {
+  width: 52px;
+  height: 36px;
+  border-radius: 6px;
+  position: relative;
+  cursor: default;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.cell:hover {
+  transform: scale(1.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 10;
+}
+
+.emptyCell {
+  background: var(--surface-raised, #1e1e2e);
+  opacity: 0.4;
+}
+
+/* tooltip via title attribute — enhanced with CSS tooltip */
+.cell[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface, #181825);
+  color: var(--text, #cdd6f4);
+  border: 1px solid var(--border, #313244);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.legendScale {
+  display: flex;
+  gap: 3px;
+}
+
+.legendSwatch {
+  width: 20px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  padding: 24px 0;
+  text-align: center;
+}

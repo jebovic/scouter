@@ -29,6 +29,7 @@ import (
 	"github.com/jibei/scouter/internal/currency"
 	"github.com/jibei/scouter/internal/priceanalytics"
 	"github.com/jibei/scouter/internal/spendinganalytics"
+	"github.com/jibei/scouter/internal/budgetheatmap"
 	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/budgetrec"
 	"github.com/jibei/scouter/internal/carbon"
@@ -591,6 +592,10 @@ func main() {
 	// Spending Analytics Dashboard (Phase 123)
 	spendingAnalyticsHandler := spendinganalytics.NewHandler(pool)
 	r.Get("/api/analytics/spending", spendingAnalyticsHandler.GetAnalytics)
+
+	// Budget Heatmap (Phase 132)
+	budgetHeatmapHandler := budgetheatmap.NewHandler(pool)
+	r.Get("/api/analytics/budget-heatmap", budgetHeatmapHandler.GetHeatmap)
 
 	// Smart Budget Recommendations (Phase 96)
 	budgetrecHandler := budgetrec.NewHandler(shoppingSvc)

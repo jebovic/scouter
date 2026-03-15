@@ -1,5 +1,7 @@
 import { useSpendingAnalytics } from '../hooks/useSpendingAnalytics'
+import { useBudgetHeatmap } from '../hooks/useBudgetHeatmap'
 import type { CategoryStats, MerchantStats, TopItem, MonthStats } from '../api/spendinganalytics'
+import BudgetHeatmap from '../components/mission/BudgetHeatmap'
 import styles from './AnalyticsPage.module.css'
 
 const fmt = (v: number) =>
@@ -146,6 +148,7 @@ function MonthlyChart({ months }: { months: MonthStats[] }) {
 
 export default function AnalyticsPage() {
   const { data, isLoading, error } = useSpendingAnalytics()
+  const { data: heatmapData } = useBudgetHeatmap()
 
   if (isLoading) {
     return (
@@ -225,6 +228,14 @@ export default function AnalyticsPage() {
           <h2 className={styles.cardTitle}>Tendance mensuelle (6 mois)</h2>
           <MonthlyChart months={data.monthlySummary} />
         </section>
+
+        {/* Budget heatmap */}
+        {heatmapData && (
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Heatmap des dépenses par catégorie</h2>
+            <BudgetHeatmap data={heatmapData} />
+          </section>
+        )}
 
         <div className={styles.generatedAt}>
           Données générées le{' '}
