@@ -1,7 +1,9 @@
 import { useSpendingAnalytics } from '../hooks/useSpendingAnalytics'
 import { useBudgetHeatmap } from '../hooks/useBudgetHeatmap'
+import { useCrossMission } from '../hooks/useCrossMission'
 import type { CategoryStats, MerchantStats, TopItem, MonthStats } from '../api/spendinganalytics'
 import BudgetHeatmap from '../components/mission/BudgetHeatmap'
+import CrossMissionPanel from '../components/mission/CrossMissionPanel'
 import styles from './AnalyticsPage.module.css'
 
 const fmt = (v: number) =>
@@ -149,6 +151,7 @@ function MonthlyChart({ months }: { months: MonthStats[] }) {
 export default function AnalyticsPage() {
   const { data, isLoading, error } = useSpendingAnalytics()
   const { data: heatmapData } = useBudgetHeatmap()
+  const { data: crossData } = useCrossMission()
 
   if (isLoading) {
     return (
@@ -234,6 +237,14 @@ export default function AnalyticsPage() {
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Heatmap des dépenses par catégorie</h2>
             <BudgetHeatmap data={heatmapData} />
+          </section>
+        )}
+
+        {/* Cross-mission comparison */}
+        {crossData && crossData.missions.length > 0 && (
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Comparaison inter-missions</h2>
+            <CrossMissionPanel data={crossData} />
           </section>
         )}
 

@@ -118,6 +118,8 @@ import (
 	"github.com/jibei/scouter/internal/volatilitycalendar"
 	"github.com/jibei/scouter/internal/wishlistvote"
 	"github.com/jibei/scouter/internal/missionreport"
+	"github.com/jibei/scouter/internal/crossmission"
+	"github.com/jibei/scouter/internal/reordersuggestion"
 )
 
 func main() {
@@ -777,6 +779,14 @@ func main() {
 	// Mission Summary Text Report (Phase 146)
 	missionReportHandler := missionreport.NewHandler(pool)
 	r.Get("/api/missions/{missionID}/report", missionReportHandler.GetReport)
+
+	// Multi-Mission Price Comparison Dashboard (Phase 147)
+	crossMissionHandler := crossmission.NewHandler(pool)
+	r.Get("/api/analytics/cross-mission", crossMissionHandler.GetComparison)
+
+	// Smart Reorder & Repurchase Suggestions (Phase 148) — deterministic, 10min in-memory cache
+	reorderHandler := reordersuggestion.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/reorder-suggestions", reorderHandler.GetSuggestions)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
