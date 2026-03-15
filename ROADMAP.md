@@ -1099,3 +1099,117 @@ recharts LineChart per shopping item showing price evolution over time.
 - Frontend: `api/priceanalytics.ts`, `hooks/usePriceAnalytics.ts`, `components/shopping/PriceAnalyticsPanel.tsx`
 - Table with trend indicators (↑↓→), color-coded volatility
 
+
+---
+
+## Phase 112: Smart Search Suggestions ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- localStorage search history (max 10, deduped)
+- useSearchSuggestions hook with 20 popular French terms
+- SearchDropdown enhanced with history/suggestions sections
+- SearchPage with popular searches chips
+
+## Phase 113: Price Drop Alert Digest ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/pricedigest: 24h price comparison SQL, French summary
+- GET /api/price-digest endpoint
+- PriceDigestWidget for dashboard integration
+
+## Phase 114: Wishlist Social Sharing ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/wishlistshare: GET /api/missions/{id}/wishlist-card
+- WishlistShareCard with Web Share API + clipboard fallback
+
+## Phase 115: Smart Budget Planner ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/budgetplanner: greedy sequencing, priority scoring, French reasons
+- BudgetPlannerPanel with status bar, sequence, deferred items
+
+## Phase 116: Negotiation Simulator ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/negotiationsim: French dialogue scripts (FNV hash)
+- NegotiationSimulator component (chat-like UI, phase colors)
+
+## Phase 117: Mission Progress Dashboard ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/missionprogress: status counts, budget usage, top saving
+- MissionProgressWidget (SVG circular ring, budget bar)
+
+## Phase 118: Price History Insights ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/priceinsights: day-of-week + time-of-month analysis
+- PriceInsightsCard with CSS bar chart, French buy recommendation
+
+## Phase 119: Competitor Price Monitor ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/competitorprice: 8 French platforms, FNV deterministic prices
+- CompetitorPriceTable with price diffs, best offer highlight
+
+## Phase 120: Smart Coupon Finder ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/couponfinder: French promo codes + cashback (iGraal, Poulpeo, Widilo)
+- CouponFinderCard with copyable codes
+
+## Phase 121: Activity Feed Dashboard ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/activityfeed: GET /api/activity-feed (recent missions + price changes, global stats)
+- ActivityFeedPanel with quick stats bar + timeline, wired into HQDashboard
+
+## Phase 122: Gift Finder Assistant ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/giftfinder: 30+ French gift catalog with occasion/recipient/budget filters
+- GiftFinderWidget with filter pills, gift grid
+
+## Phase 123: Spending Analytics Dashboard ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/spendinganalytics: category/merchant breakdown, top items, 6-month trend
+- AnalyticsPage at /analytics (conic-gradient donut, merchant bars, monthly trend)
+
+## Phase 124: Weekly Digest ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/weeklydigest: CTE-based 7-day price change analysis
+- WeeklyDigestPanel with 3 alert sections (big drops, new lows, target hits)
+
+## Phase 125: Smart Item Auto-tagger ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/itemtagger: brand detection (50+ brands), category mapping (20+ categories)
+- ItemTagsDisplay with tag pills, brand badge, luxury/tech/refurbished badges
+
+## Phase 126: Price Streak Detector ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/pricestreak: consecutive price change detection, urgency levels
+- PriceStreakBadge (pulsing red for urgent)
+
+## Phase 127: Mission CSV Export ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/csvexport: encoding/csv, French headers, Content-Disposition
+- MissionCSVExportButton (direct download link)
+
+---
+
+## Phase 128: Smart Duplicate Item Detector 📋 Planned
+
+## Phase 129: Price Floor Predictor 📋 Planned
+
+## Phase 130: Mission Collaboration Invites 📋 Planned
+
+## Phase 131: Item Condition Tracker 📋 Planned
+
+## Phase 132: Flash Sale Calendar 📋 Planned
+

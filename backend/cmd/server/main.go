@@ -99,6 +99,8 @@ import (
 	"github.com/jibei/scouter/internal/weeklydigest"
 	"github.com/jibei/scouter/internal/itemtagger"
 	"github.com/jibei/scouter/internal/pricestreak"
+	"github.com/jibei/scouter/internal/duplicatedetector"
+	"github.com/jibei/scouter/internal/pricefloor"
 )
 
 func main() {
@@ -681,6 +683,14 @@ func main() {
 	// Price Drop Streak Detector (Phase 126) — 1h in-memory cache
 	priceStreakHandler := pricestreak.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/price-streak", priceStreakHandler.GetStreak)
+
+	// Price Floor Predictor (Phase 129) — 2h in-memory cache
+	priceFloorHandler := pricefloor.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/price-floor", priceFloorHandler.GetFloor)
+
+	// Smart Duplicate Item Detector (Phase 128) — 30min in-memory cache
+	duplicateDetectorHandler := duplicatedetector.NewHandler(pool)
+	r.Get("/api/missions/{id}/duplicates", duplicateDetectorHandler.GetDuplicates)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

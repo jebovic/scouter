@@ -1,0 +1,192 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.confidenceBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised, var(--surface));
+}
+
+.confidenceBadge.low {
+  color: var(--text-dim);
+  border-color: var(--border);
+}
+
+.confidenceBadge.medium {
+  color: var(--warning, #f59e0b);
+  border-color: var(--warning, #f59e0b);
+}
+
+.confidenceBadge.high {
+  color: var(--success, #22c55e);
+  border-color: var(--success, #22c55e);
+}
+
+/* Main verdict */
+.verdict {
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.verdict.wait {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning, #f59e0b);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.verdict.buy {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success, #22c55e);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Price bar */
+.barSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barLabel {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.barTrack {
+  position: relative;
+  height: 12px;
+  background: var(--surface-raised, rgba(255, 255, 255, 0.05));
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--success, #22c55e), var(--warning, #f59e0b));
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.barMarker {
+  position: absolute;
+  top: -2px;
+  width: 4px;
+  height: 16px;
+  background: var(--accent, #6366f1);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: left 0.4s ease;
+}
+
+.barLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+
+/* Stats row */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.statValue.floor {
+  color: var(--success, #22c55e);
+}
+
+.statValue.distance {
+  color: var(--warning, #f59e0b);
+}
+
+/* Explanation */
+.explanation {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.4;
+  padding: 8px 10px;
+  background: var(--surface-raised, rgba(255, 255, 255, 0.03));
+  border-radius: 6px;
+  border-left: 3px solid var(--accent, #6366f1);
+}
+
+.explanation.wait {
+  border-left-color: var(--warning, #f59e0b);
+}
+
+.explanation.buy {
+  border-left-color: var(--success, #22c55e);
+}
+
+.noData {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .stats {
+    gap: 6px;
+  }
+
+  .stat {
+    min-width: 60px;
+  }
+}

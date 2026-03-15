@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
 import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard, WishlistShareCard, BudgetPlannerPanel, MissionCSVExportButton } from '../components/shopping'
+import { DuplicateAlert } from '../components/shopping/DuplicateAlert'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -230,6 +231,9 @@ export default function ShoppingTracker() {
               onClose={() => setShowBudgetPlanner(false)}
             />
           )}
+
+          {/* Duplicate item detector */}
+          {mission && <DuplicateAlert missionId={mission.id} />}
 
           {/* Smart Shopping List Optimizer */}
           {items.length > 0 && mission && (
