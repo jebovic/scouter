@@ -1,0 +1,308 @@
+@import '../../styles/theme.css';
+
+/* ── Card shell ─────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* ── Highlighted items (most approved / most controversial) ─────────────────── */
+
+.highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-sm);
+}
+
+@media (max-width: 640px) {
+  .highlights {
+    grid-template-columns: 1fr;
+  }
+}
+
+.highlight {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--gap-sm) var(--gap);
+}
+
+.highlightApproved {
+  border-color: var(--green);
+}
+
+.highlightControversial {
+  border-color: var(--orange);
+}
+
+.highlightLabel {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+}
+
+.highlightApproved .highlightLabel {
+  color: var(--green);
+}
+
+.highlightControversial .highlightLabel {
+  color: var(--orange);
+}
+
+.highlightName {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.highlightMeta {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  margin-top: 0.125rem;
+}
+
+/* ── Ranked list ─────────────────────────────────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto auto;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: 0.5rem var(--gap-sm);
+  border-radius: var(--radius-sm);
+  background: var(--raised);
+  border: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.row:hover {
+  border-color: var(--border-glow);
+}
+
+.rank {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.rankFirst {
+  color: var(--gold);
+}
+
+.itemInfo {
+  min-width: 0;
+}
+
+.itemName {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemPrice {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+/* ── Vote bar ────────────────────────────────────────────────────────────────── */
+
+.voteBarWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 80px;
+}
+
+.voteBar {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.voteBarUp {
+  background: var(--green);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.voteBarDown {
+  background: var(--coral);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.voteCounts {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.voteUp {
+  color: var(--green);
+}
+
+.voteDown {
+  color: var(--coral);
+}
+
+/* ── Net score badge ─────────────────────────────────────────────────────────── */
+
+.netScore {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  min-width: 2.5rem;
+  text-align: center;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.netPositive {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
+.netNegative {
+  color: var(--coral);
+  background: var(--coral-dim);
+}
+
+.netNeutral {
+  color: var(--text-dim);
+  background: transparent;
+}
+
+/* ── Sentiment pill ──────────────────────────────────────────────────────────── */
+
+.sentiment {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.sentimentStrong {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.sentimentApproved {
+  background: color-mix(in srgb, var(--cyan) 20%, transparent);
+  color: var(--cyan);
+}
+
+.sentimentMixed {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.sentimentDisapproved {
+  background: var(--coral-dim);
+  color: var(--coral);
+}
+
+.sentimentNone {
+  background: transparent;
+  color: var(--text-dim);
+}
+
+/* ── Empty / loading / error states ─────────────────────────────────────────── */
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.emptyText {
+  color: var(--text-mid);
+}
+
+.errorState {
+  color: var(--coral);
+  font-size: 0.875rem;
+}
+
+.skeleton {
+  height: 2.5rem;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--gap);
+  }
+
+  .row {
+    grid-template-columns: 1.5rem 1fr auto;
+  }
+
+  .sentiment {
+    display: none;
+  }
+
+  .voteBarWrap {
+    min-width: 60px;
+  }
+}

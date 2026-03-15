@@ -111,9 +111,11 @@ import (
 	"github.com/jibei/scouter/internal/priceannotation"
 	"github.com/jibei/scouter/internal/inflationtracker"
 	"github.com/jibei/scouter/internal/decisionmatrix"
+	"github.com/jibei/scouter/internal/notificationrules"
 	"github.com/jibei/scouter/internal/roicalculator"
 	"github.com/jibei/scouter/internal/targetsuggestion"
 	"github.com/jibei/scouter/internal/volatilitycalendar"
+	"github.com/jibei/scouter/internal/wishlistvote"
 )
 
 func main() {
@@ -757,6 +759,14 @@ func main() {
 	// Purchase Decision Matrix (Phase 142) — 15min in-memory cache
 	decisionMatrixHandler := decisionmatrix.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/decision-matrix", decisionMatrixHandler.GetMatrix)
+
+	// Smart Notification Rules Engine (Phase 143) — 5min in-memory cache
+	smartAlertsHandler := notificationrules.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/smart-alerts", smartAlertsHandler.GetAlerts)
+
+	// Collaborative Wishlist Voting Summary (Phase 144) — 10min in-memory cache
+	voteSummaryHandler := wishlistvote.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/vote-summary", voteSummaryHandler.GetVoteSummary)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
