@@ -1,3 +1,4 @@
+import { useToggleWishListAlert } from '../../hooks/useWishList'
 import type { WishListItem as WishListItemType } from '../../api/wishlist'
 import styles from './WishListItem.module.css'
 
@@ -20,7 +21,12 @@ function formatPrice(price: number, currency: string): string {
 }
 
 export function WishListItem({ item, onDelete }: WishListItemProps) {
-  const { id, name, url, targetPrice, currency, notes } = item
+  const { id, name, url, targetPrice, currency, notes, alertEnabled, lastCheckedPrice } = item
+  const toggleAlertMutation = useToggleWishListAlert(id)
+
+  function handleToggleAlert() {
+    toggleAlertMutation.mutate(!alertEnabled)
+  }
 
   return (
     <div className={styles.card}>
@@ -40,19 +46,37 @@ export function WishListItem({ item, onDelete }: WishListItemProps) {
           )}
         </div>
 
-        <button
-          className={styles.deleteBtn}
-          onClick={() => onDelete(id)}
-          aria-label={`Delete ${name}`}
-        >
-          ×
-        </button>
+        <div className={styles.actions}>
+          <button
+            className={`${styles.alertBtn} ${alertEnabled ? styles.alertActive : styles.alertInactive}`}
+            onClick={handleToggleAlert}
+            disabled={toggleAlertMutation.isPending}
+            aria-label={alertEnabled ? `Disable price alert for ${name}` : `Enable price alert for ${name}`}
+            title={alertEnabled ? 'Disable price alert' : 'Enable price alert'}
+          >
+            {alertEnabled ? '🔔' : '🔕'}
+          </button>
+
+          <button
+            className={styles.deleteBtn}
+            onClick={() => onDelete(id)}
+            aria-label={`Delete ${name}`}
+          >
+            ×
+          </button>
+        </div>
       </div>
 
       {targetPrice !== null && targetPrice !== undefined && (
         <div className={styles.price}>
           {formatPrice(targetPrice, currency)}
         </div>
+      )}
+
+      {lastCheckedPrice !== null && lastCheckedPrice !== undefined && (
+        <p className={styles.lastChecked}>
+          Last checked: {formatPrice(lastCheckedPrice, currency)}
+        </p>
       )}
 
       {notes && (

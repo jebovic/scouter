@@ -259,6 +259,17 @@
     "delete": "Supprimer",
     "loading": "Chargement de la liste de souhaits..."
   },
+  "product": {
+    "barcodeTitle": "Recherche par code-barres",
+    "barcodeInput": "Entrez le code EAN",
+    "lookup": "Rechercher",
+    "looking": "Recherche en cours...",
+    "notFound": "Produit introuvable pour ce code-barres",
+    "addToWishList": "Ajouter à la liste de souhaits",
+    "stores": "Disponible chez",
+    "nutriScore": "Nutri-Score",
+    "ecoScore": "Éco-Score"
+  },
   "comparison": {
     "title": "Matrice de Comparaison Pondérée",
     "criteria": "Critères",

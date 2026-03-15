@@ -10,6 +10,9 @@ export const WishListItemSchema = z.object({
   targetPrice: z.number().nullable(),
   currency: z.string(),
   notes: z.string().nullable(),
+  alertEnabled: z.boolean(),
+  lastCheckedAt: z.string().nullable(),
+  lastCheckedPrice: z.number().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
@@ -41,4 +44,11 @@ export async function createWishListItem(payload: {
 
 export async function deleteWishListItem(id: string): Promise<void> {
   await apiFetch<void>(`/api/wishlist/${id}`, { method: 'DELETE' })
+}
+
+export async function toggleWishListAlert(id: string, enabled: boolean): Promise<void> {
+  await apiFetch<void>(`/api/wishlist/${id}/alert`, {
+    method: 'PATCH',
+    body: JSON.stringify({ alertEnabled: enabled }),
+  })
 }

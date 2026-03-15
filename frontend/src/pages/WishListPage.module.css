@@ -31,6 +31,128 @@
   font-family: var(--font-mono);
 }
 
+/* ── Barcode section ─────────────────────────────────────────────────────── */
+
+.barcodeSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.barcodeRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.barcodeRow .input {
+  flex: 1;
+}
+
+.lookupBtn {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 9px 16px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.lookupBtn:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.lookupBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.productCard {
+  display: flex;
+  gap: 16px;
+  background: var(--raised);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  align-items: flex-start;
+}
+
+.productImage {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.productInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.productName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.productMeta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+.prefillBtn {
+  background: var(--cyan);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--void);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  text-transform: uppercase;
+  transition: opacity 0.15s ease;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.prefillBtn:hover {
+  opacity: 0.85;
+}
+
 /* ── Add form ────────────────────────────────────────────────────────────── */
 
 .form {

@@ -259,6 +259,17 @@
     "delete": "Delete",
     "loading": "Loading wish list..."
   },
+  "product": {
+    "barcodeTitle": "Barcode Lookup",
+    "barcodeInput": "Enter EAN barcode",
+    "lookup": "Lookup",
+    "looking": "Looking up...",
+    "notFound": "Product not found for this barcode",
+    "addToWishList": "Add to Wish List",
+    "stores": "Available at",
+    "nutriScore": "Nutri-Score",
+    "ecoScore": "Eco-Score"
+  },
   "comparison": {
     "title": "Weighted Comparison Matrix",
     "criteria": "Criteria",

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { LoadingPulse } from '../components/scouter'
 import { WishListItem } from '../components/wishlist'
 import { useWishList, useCreateWishListItem, useDeleteWishListItem } from '../hooks/useWishList'
+import { lookupProduct } from '../api/product'
+import type { ProductInfo } from '../api/product'
 import styles from './WishListPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP'] as const
@@ -31,6 +33,12 @@ export default function WishListPage() {
 
   const [form, setForm] = useState<AddFormState>(emptyForm)
   const [formError, setFormError] = useState<string | null>(null)
+
+  // Barcode lookup state
+  const [barcode, setBarcode] = useState('')
+  const [barcodeLoading, setBarcodeLoading] = useState(false)
+  const [barcodeError, setBarcodeError] = useState<string | null>(null)
+  const [foundProduct, setFoundProduct] = useState<ProductInfo | null>(null)
 
   function handleFieldChange(field: keyof AddFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -69,12 +77,122 @@ export default function WishListPage() {
     deleteMutation.mutate(id)
   }
 
+  async function handleBarcodeLookup() {
+    const trimmed = barcode.trim()
+    if (!trimmed) return
+    setBarcodeLoading(true)
+    setBarcodeError(null)
+    setFoundProduct(null)
+    try {
+      const product = await lookupProduct(trimmed)
+      setFoundProduct(product)
+    } catch (err) {
+      if (err instanceof Error && err.message === 'NOT_FOUND') {
+        setBarcodeError(t('product.notFound'))
+      } else {
+        setBarcodeError(t('common.error'))
+      }
+    } finally {
+      setBarcodeLoading(false)
+    }
+  }
+
+  function handleBarcodeKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      void handleBarcodeLookup()
+    }
+  }
+
+  function handlePrefillForm(product: ProductInfo) {
+    setForm((prev) => ({ ...prev, name: product.name }))
+    setFoundProduct(null)
+    setBarcode('')
+  }
+
   return (
     <main className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>{t('wishlist.title')}</h1>
         <p className={styles.subtitle}>{t('wishlist.subtitle')}</p>
       </div>
+
+      {/* Barcode lookup */}
+      <section className={styles.barcodeSection}>
+        <h2 className={styles.sectionTitle}>{t('product.barcodeTitle')}</h2>
+        <div className={styles.barcodeRow}>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            className={styles.input}
+            placeholder={t('product.barcodeInput')}
+            value={barcode}
+            onChange={(e) => {
+              setBarcode(e.target.value)
+              setBarcodeError(null)
+              setFoundProduct(null)
+            }}
+            onKeyDown={handleBarcodeKeyDown}
+            aria-label={t('product.barcodeInput')}
+          />
+          <button
+            type="button"
+            className={styles.lookupBtn}
+            onClick={() => void handleBarcodeLookup()}
+            disabled={barcodeLoading || !barcode.trim()}
+          >
+            {barcodeLoading ? t('product.looking') : t('product.lookup')}
+          </button>
+        </div>
+
+        {barcodeError && (
+          <p className={styles.error}>{barcodeError}</p>
+        )}
+
+        {foundProduct && (
+          <div className={styles.productCard}>
+            {foundProduct.imageUrl && (
+              <img
+                src={foundProduct.imageUrl}
+                alt={foundProduct.name}
+                className={styles.productImage}
+              />
+            )}
+            <div className={styles.productInfo}>
+              <p className={styles.productName}>{foundProduct.name}</p>
+              {foundProduct.brand && (
+                <p className={styles.productMeta}>{foundProduct.brand}</p>
+              )}
+              {foundProduct.quantity && (
+                <p className={styles.productMeta}>{foundProduct.quantity}</p>
+              )}
+              {foundProduct.nutriScore && (
+                <p className={styles.productMeta}>
+                  {t('product.nutriScore')}: {foundProduct.nutriScore.toUpperCase()}
+                </p>
+              )}
+              {foundProduct.ecoScore && (
+                <p className={styles.productMeta}>
+                  {t('product.ecoScore')}: {foundProduct.ecoScore.toUpperCase()}
+                </p>
+              )}
+              {foundProduct.stores.length > 0 && (
+                <p className={styles.productMeta}>
+                  {t('product.stores')}: {foundProduct.stores.join(', ')}
+                </p>
+              )}
+              <button
+                type="button"
+                className={styles.prefillBtn}
+                onClick={() => handlePrefillForm(foundProduct)}
+              >
+                {t('product.addToWishList')}
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* Add form */}
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
