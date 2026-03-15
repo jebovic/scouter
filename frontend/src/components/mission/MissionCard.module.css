@@ -77,6 +77,62 @@
   font-family: var(--font-mono);
 }
 
+/* ── Swipe gesture wrapper ────────────────────────────── */
+.swipeWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.swipeCard {
+  transform: translateX(var(--swipe-x, 0px));
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+/* Action overlays */
+.swipeAction {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 80px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.swipeActionVisible {
+  opacity: 1;
+}
+
+.swipeActionLeft {
+  right: 0;
+  background: linear-gradient(270deg, rgba(255, 61, 113, 0.25) 0%, transparent 100%);
+}
+
+.swipeActionRight {
+  left: 0;
+  background: linear-gradient(90deg, rgba(255, 179, 0, 0.25) 0%, transparent 100%);
+}
+
+.swipeActionIcon {
+  font-size: 1.4rem;
+}
+
+.swipeActionLabel {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-mid);
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 640px) {
   .name {
@@ -86,5 +142,10 @@
 
   .icon {
     font-size: 1.5rem;
+  }
+
+  /* Slightly faster snap back on mobile */
+  .swipeCard {
+    transition: transform 0.08s linear;
   }
 }

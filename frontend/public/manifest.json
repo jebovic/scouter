@@ -1,0 +1,12 @@
+{
+  "name": "Scouter — Mission Intel",
+  "short_name": "Scouter",
+  "description": "Personal spending intelligence — research, compare, and budget any purchase",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#00d4ff",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

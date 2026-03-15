@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useParams } from 'react-router-dom'
-import { Topnav } from '../components/scouter'
+import { Topnav, BottomNav } from '../components/scouter'
 import { useMission } from '../hooks'
 
 export function MissionLayout() {
@@ -11,6 +11,7 @@ export function MissionLayout() {
     <div className="page grid-bg scanlines">
       <Topnav missionSlug={slug} missionName={mission?.name} />
       <Outlet />
+      <BottomNav missionSlug={slug} />
     </div>
   )
 }

@@ -1,6 +1,12 @@
 @import './theme.css';
 @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Chakra+Petch:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
+/* ── PWA safe areas ───────────────────────────────────── */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -163,8 +169,23 @@ code, pre, .mono { font-family: var(--font-mono); }
   border-width: 0;
 }
 
+/* Prevent iOS double-tap zoom on interactive elements */
+button, a {
+  touch-action: manipulation;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .container { padding: 0 var(--gap); }
   h1 { font-size: 1.5rem; }
+
+  /* Bottom padding so content isn't hidden behind BottomNav */
+  .page {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
 }

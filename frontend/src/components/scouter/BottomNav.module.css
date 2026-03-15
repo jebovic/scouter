@@ -1,0 +1,64 @@
+/* BottomNav — only visible on mobile (≤640px) */
+.bottomNav {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    z-index: 100;
+    /* iPhone safe area (home bar) */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px 8px;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    /* prevent double-tap zoom */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tab:hover,
+  .tab:focus-visible {
+    color: var(--text);
+    background: var(--raised);
+    outline: none;
+  }
+
+  .tabActive {
+    color: var(--cyan);
+  }
+
+  .tabIcon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .tabLabel {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+}
