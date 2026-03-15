@@ -7,6 +7,7 @@ import { PriceSparkline } from './PriceSparkline'
 import { PricePredictionBadge } from './PricePredictionBadge'
 import { PriceAlertBadge } from './PriceAlertBadge'
 import { PriceBenchmarkBadge } from './PriceBenchmarkBadge'
+import { NegotiationCoach } from './NegotiationCoach'
 import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
@@ -172,6 +173,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         {showIntel && <DealIntelPanel missionId={missionId} itemId={item.id} />}
         <PricePredictionBadge itemId={item.id} />
         <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
+        <NegotiationCoach itemId={item.id} />
       </div>
 
       <Badge variant={item.status} />

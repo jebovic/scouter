@@ -10,6 +10,7 @@ import {
   LivePricesPanel,
   CompareBar,
   ComparisonPanel,
+  ExportButton,
 } from '../components/options'
 import { ComparisonMatrix } from '../components/comparison'
 import { AgentRunHistory } from '../components/agentrun'
@@ -124,6 +125,9 @@ export default function OptionsExplorer() {
                   {t('options.clearPinned', { count: pinnedCount })}
                 </button>
               )}
+
+              {/* Export CSV */}
+              {mission && <ExportButton slug={mission.slug} />}
 
               {/* Research button */}
               <button

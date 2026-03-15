@@ -104,3 +104,7 @@ export async function unrejectOption(missionId: string, optionId: string): Promi
 export async function deletePinnedOptions(missionId: string): Promise<void> {
   await apiFetch<void>(`/api/missions/${missionId}/options/pinned`, { method: 'DELETE' })
 }
+
+export function getOptionsExportURL(slug: string): string {
+  return `/api/missions/${slug}/options/export.csv`
+}

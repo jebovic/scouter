@@ -1,7 +1,10 @@
 package option
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -27,6 +30,7 @@ func (h *Handler) Routes() chi.Router {
 	r.Get("/", h.list)
 	r.Post("/", h.create)
 	r.Delete("/pinned", h.deletePinned)
+	r.Get("/export.csv", h.ExportCSV)
 	r.Get("/{optionID}", h.get)
 	r.Put("/{optionID}", h.update)
 	r.Delete("/{optionID}", h.delete)
@@ -222,4 +226,104 @@ func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// ExportCSV exports all options for a mission as a CSV file.
+func (h *Handler) ExportCSV(w http.ResponseWriter, r *http.Request) {
+	missionID, err := uuid.Parse(chi.URLParam(r, "missionID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		return
+	}
+
+	opts, err := h.svc.ListByMission(r.Context(), missionID)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	// Collect all unique attribute keys
+	attrKeys := make(map[string]bool)
+	for _, opt := range opts {
+		for _, attr := range opt.Attributes {
+			attrKeys[attr.Label] = true
+		}
+	}
+
+	// Sort attribute keys for consistent CSV output
+	var sortedAttrKeys []string
+	for key := range attrKeys {
+		sortedAttrKeys = append(sortedAttrKeys, key)
+	}
+
+	// Build CSV
+	buf := new(bytes.Buffer)
+	// Write UTF-8 BOM for Excel compatibility
+	buf.Write([]byte{0xef, 0xbb, 0xbf})
+
+	writer := csv.NewWriter(buf)
+
+	// Write header
+	header := []string{"Nom", "Score", "Statut", "Prix Estimé", "Devise"}
+	header = append(header, sortedAttrKeys...)
+	writer.Write(header)
+
+	// Write rows
+	for _, opt := range opts {
+		row := []string{
+			opt.Name,
+			"", // Score placeholder (could be calculated from attributes)
+			badgeToFrench(opt.Badge),
+			formatPrice(opt.PriceRange),
+			"EUR", // Currency placeholder - should be from mission
+		}
+
+		// Add attribute values in order
+		attrMap := make(map[string]string)
+		for _, attr := range opt.Attributes {
+			attrMap[attr.Label] = fmt.Sprintf("%v", attr.Value)
+		}
+		for _, key := range sortedAttrKeys {
+			if val, ok := attrMap[key]; ok {
+				row = append(row, val)
+			} else {
+				row = append(row, "")
+			}
+		}
+
+		writer.Write(row)
+	}
+
+	// Flush the CSV writer to ensure all data is written to the buffer
+	writer.Flush()
+
+	// Set response headers
+	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"options-%s.csv\"", missionID.String()[:8]))
+	w.WriteHeader(http.StatusOK)
+	w.Write(buf.Bytes())
+}
+
+// badgeToFrench converts English badge names to French labels.
+func badgeToFrench(badge string) string {
+	switch badge {
+	case "recommended":
+		return "Recommandé"
+	case "alternative":
+		return "Alternative"
+	case "watch":
+		return "À surveiller"
+	case "rejected":
+		return "Rejeté"
+	default:
+		return badge
+	}
+}
+
+// formatPrice formats the price range for CSV output.
+func formatPrice(pr *PriceRange) string {
+	if pr == nil {
+		return ""
+	}
+	return fmt.Sprintf("%.2f - %.2f", pr.Min, pr.Max)
 }

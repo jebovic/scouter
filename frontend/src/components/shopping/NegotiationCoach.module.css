@@ -1,0 +1,203 @@
+.wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+/* ── Trigger button ──────────────────────────────────────────────────────── */
+.triggerBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.triggerBtn:hover,
+.triggerBtn[aria-expanded='true'] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+.panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 100;
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.15s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Target price ────────────────────────────────────────────────────────── */
+.targetPrice {
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-weight: 700;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+/* ── Tips list ───────────────────────────────────────────────────────────── */
+.tipsList {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tipItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tipHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tipTitle {
+  font-size: 0.75rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tipDescription {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* ── Difficulty badges ───────────────────────────────────────────────────── */
+.badge {
+  font-size: 0.6rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.badgeEasy {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.badgeMedium {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--gold);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badgeHard {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--coral);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+/* ── Script section ──────────────────────────────────────────────────────── */
+.scriptSection {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.scriptLabel {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px;
+}
+
+.scriptText {
+  font-size: 0.75rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0 0 6px;
+  font-style: italic;
+}
+
+.copyBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.copyBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ── Close button ────────────────────────────────────────────────────────── */
+.closeBtn {
+  display: block;
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.closeBtn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .panel {
+    width: 280px;
+    right: auto;
+    left: 0;
+  }
+}

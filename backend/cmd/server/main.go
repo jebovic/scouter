@@ -39,6 +39,7 @@ import (
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
+	"github.com/jibei/scouter/internal/negotiate"
 	"github.com/jibei/scouter/internal/negotiation"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
@@ -264,6 +265,25 @@ func main() {
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
 	r.Mount("/api/missions/{slug}/coach", coachHandler.Routes())
 
+	// Option export by slug (Phase 75)
+	r.Get("/api/missions/{slug}/options/export.csv", func(w http.ResponseWriter, r *http.Request) {
+		slug := chi.URLParam(r, "slug")
+		m, err := missionSvc.GetBySlug(r.Context(), slug)
+		if err != nil {
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+			return
+		}
+		if m == nil {
+			httputil.WriteError(w, http.StatusNotFound, "mission not found")
+			return
+		}
+		// Convert to missionID context for the option handler
+		rctx := chi.NewRouteContext()
+		rctx.URLParams.Add("missionID", m.ID.String())
+		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+		optionHandler.ExportCSV(w, r)
+	})
+
 	// Purchase lifecycle (Phase 12)
 	r.Mount("/api/missions/{missionID}/purchase", purchaseHandler.Routes())
 	r.Get("/api/stats", statsHandler.Stats)
@@ -416,6 +436,12 @@ func main() {
 	dealExplainAgent := dealexplain.NewAgent(provider)
 	dealExplainHandler := dealexplain.NewHandler(shoppingRepo, dealExplainAgent, dealExplainCache)
 	r.Get("/api/shopping-items/{id}/explain", dealExplainHandler.Explain)
+
+	// AI Negotiation Coach (Phase 76)
+	negotiateCache := negotiate.NewCache(24 * time.Hour)
+	negotiateAgent := negotiate.NewAgent(provider)
+	negotiateHandler := negotiate.NewHandler(shoppingRepo, negotiateAgent, negotiateCache)
+	r.Get("/api/shopping-items/{id}/negotiate", negotiateHandler.Get)
 
 	// Price Benchmark vs Market Average (Phase 70)
 	benchmarkCache := benchmark.NewCache(2 * time.Hour)
