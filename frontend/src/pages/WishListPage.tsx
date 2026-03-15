@@ -5,6 +5,7 @@ import { WishListItem } from '../components/wishlist'
 import { useWishList, useCreateWishListItem, useDeleteWishListItem } from '../hooks/useWishList'
 import { lookupProduct } from '../api/product'
 import type { ProductInfo } from '../api/product'
+import { copyShareLink } from '../utils/wishlistShare'
 import styles from './WishListPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP'] as const
@@ -33,6 +34,7 @@ export default function WishListPage() {
 
   const [form, setForm] = useState<AddFormState>(emptyForm)
   const [formError, setFormError] = useState<string | null>(null)
+  const [shareCopied, setShareCopied] = useState(false)
 
   // Barcode lookup state
   const [barcode, setBarcode] = useState('')
@@ -77,6 +79,16 @@ export default function WishListPage() {
     deleteMutation.mutate(id)
   }
 
+  async function handleShare() {
+    try {
+      await copyShareLink(items)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 2000)
+    } catch {
+      // clipboard not available — silently ignore
+    }
+  }
+
   async function handleBarcodeLookup() {
     const trimmed = barcode.trim()
     if (!trimmed) return
@@ -113,8 +125,21 @@ export default function WishListPage() {
   return (
     <main className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t('wishlist.title')}</h1>
-        <p className={styles.subtitle}>{t('wishlist.subtitle')}</p>
+        <div className={styles.headerRow}>
+          <div>
+            <h1 className={styles.title}>{t('wishlist.title')}</h1>
+            <p className={styles.subtitle}>{t('wishlist.subtitle')}</p>
+          </div>
+          {items.length > 0 && (
+            <button
+              type="button"
+              className={styles.shareBtn}
+              onClick={() => void handleShare()}
+            >
+              {shareCopied ? 'Lien copié ! ✓' : 'Partager ma liste'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Barcode lookup */}

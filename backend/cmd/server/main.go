@@ -49,6 +49,7 @@ import (
 	"github.com/jibei/scouter/internal/settings"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/stockcheck"
+	"github.com/jibei/scouter/internal/substitute"
 	"github.com/jibei/scouter/internal/summary"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/travel"
@@ -388,6 +389,13 @@ func main() {
 	stockCache := stockcheck.NewCache(5 * time.Minute)
 	stockHandler := stockcheck.NewHandler(stockCache)
 	r.Get("/api/stock-check", stockHandler.Check)
+
+	// AI Product Substitute Finder — French market (Phase 54)
+	substituteCache := substitute.NewCache(2 * time.Hour)
+	substituteAgent := substitute.NewAgent(provider)
+	substituteGetter := substitute.NewOptionRepoGetter(optionRepo)
+	substituteHandler := substitute.NewHandler(substituteGetter, substituteCache, substituteAgent)
+	r.Get("/api/options/{id}/substitutes", substituteHandler.GetSubstitutes)
 
 	// AI Shopping Summary Report (Phase 43)
 	summaryCache := summary.NewCache(24 * time.Hour)

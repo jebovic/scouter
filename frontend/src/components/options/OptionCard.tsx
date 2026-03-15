@@ -4,6 +4,7 @@ import { VoteButtons } from './VoteButtons'
 import { ReviewSummaryCard } from './ReviewSummaryCard'
 import { PriceComparisonPanel } from './PriceComparisonPanel'
 import { RetailerLinks } from './RetailerLinks'
+import { SubstitutePanel } from './SubstitutePanel'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
@@ -286,6 +287,7 @@ export function OptionCard({
 
       <ReviewSummaryCard optionId={option.id} />
       <PriceComparisonPanel optionId={option.id} />
+      <SubstitutePanel optionId={option.id} />
     </Card>
   )
 }

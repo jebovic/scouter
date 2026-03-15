@@ -14,6 +14,7 @@ const StatsPage = lazy(() => import('./pages/StatsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const JoinPage = lazy(() => import('./pages/JoinPage'))
 const WishListPage = lazy(() => import('./pages/WishListPage'))
+const SharedWishlistPage = lazy(() => import('./pages/SharedWishlistPage'))
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 const EnvelopesPage = lazy(() => import('./pages/EnvelopesPage'))
 const DealCalendarPage = lazy(() => import('./pages/DealCalendarPage'))
@@ -24,6 +25,7 @@ function App() {
     <ErrorBoundary>
       <Suspense fallback={<LoadingPulse label="Loading..." />}>
         <Routes>
+          <Route path="/wishlist/shared" element={<SharedWishlistPage />} />
           <Route element={<Layout />}>
             <Route path="/" element={<HQDashboard />} />
             <Route path="/search" element={<SearchPage />} />
