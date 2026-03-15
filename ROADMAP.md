@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–41 complete. Auto-improvement loop v3 active — architecting Phase 42+.
+> Current status: Phases 1–95 complete. Auto-improvement loop v4 active — phases 96+97 in progress (budget recommendations + price analytics).
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -1000,3 +1000,102 @@ recharts LineChart per shopping item showing price evolution over time.
 - Mission list within each envelope
 - Budget health score across all envelopes (overbudget = red, healthy = cyan)
 - Nav link in Layout sidebar
+
+---
+
+## Phase 90: AI Seasonal Discount Predictor ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Predicts best times to buy based on French seasonal patterns (soldes, Black Friday, etc.). Shows badge with expected discount % and timing advice.
+
+- Backend: `internal/seasonal/` (model, cache, agent, handler) — `GET /api/seasonal?itemName=&category=`
+- Frontend: `api/seasonal.ts`, `hooks/useSeasonal.ts`, `components/shopping/SeasonalBadge.tsx`
+- Wired into ShoppingItemRow
+
+---
+
+## Phase 91: Envelope Budgeting (localStorage) ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Zero-based budgeting with envelope system — allocate monthly budget across categories, track spending per envelope.
+
+- Frontend-only: `utils/envelopes.ts` (Envelope/Transaction types + localStorage helpers)
+- `hooks/useLocalEnvelopes.ts` — React state hook
+- `pages/EnvelopesPage.tsx` — full UI with fill gauges
+- Route `/envelopes` in App.tsx
+
+---
+
+## Phase 92: French Marketplace Comparator ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: One-click search across 8 French marketplaces (Amazon FR, Fnac, Cdiscount, Leboncoin, Vinted, Rakuten FR, Backmarket, Boulanger).
+
+- Backend: `internal/marketplace/` (model, sites, handler) — `GET /api/marketplace?q=`
+- Frontend: `api/marketplace.ts`, `hooks/useMarketplace.ts`, `components/shopping/MarketplaceComparator.tsx`
+- Wired into ShoppingItemRow retailer panel
+
+---
+
+## Phase 93: Smart Budget Toast Alerts ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Real-time toast notifications when spending crosses budget thresholds (overspend, velocity, milestone).
+
+- Frontend: `utils/budgetAlerts.ts` (detectBudgetAlerts — overspend/velocity/milestone)
+- `hooks/useBudgetAlerts.ts` (deduplication via type+spend key)
+- `components/scouter/Toast.tsx` + `ToastContainer.tsx` (5s auto-dismiss)
+- Wired in ShoppingTracker
+
+---
+
+## Phase 94: Price Drop Watchlist ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Set a threshold price on any item; get notified when price drops below target.
+
+- Backend: `internal/watchlist/` (in-memory repo, model, handler) — GET/POST/DELETE /api/watchlist, POST /api/watchlist/check/{itemId}
+- Frontend: `api/watchlist.ts`, `hooks/useWatchlist.ts`, `components/shopping/WatchlistButton.tsx`
+- WatchlistButton with threshold form (default 10%), watching/triggered states
+
+---
+
+## Phase 95: AI Spending Insights Dashboard ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Cross-mission spending intelligence — category breakdown, savings potential, behavioral patterns.
+
+- Frontend: `utils/spendingInsights.ts` (analyzeSpending → SpendingReport)
+- `pages/InsightsPage.tsx` (KPI row, insight cards, category bars, mission table)
+- Route `/insights` + Topnav link
+
+---
+
+## Phase 96: Smart Budget Recommendations 🔄 In Progress
+
+**Status**: 🔄 In Progress (2026-03-15)
+
+**User Value**: AI-powered budget reallocation suggestions with health score — tells you where you can save money within a mission.
+
+- Backend: `internal/budgetrec/` — `GET /api/missions/:id/budget-analysis`
+- Frontend: `api/budgetrec.ts`, `hooks/useBudgetAnalysis.ts`, `components/mission/BudgetRecommendations.tsx`
+- Health score gauge (0–100), priority badges (high/medium/low), savings amount
+
+---
+
+## Phase 97: Price History Analytics Panel 🔄 In Progress
+
+**Status**: 🔄 In Progress (2026-03-15)
+
+**User Value**: Mission-wide price trend overview — min/max/avg/volatility per item, best deal and most volatile item highlights.
+
+- Backend: `internal/priceanalytics/` — `GET /api/missions/:id/price-analytics`
+- Frontend: `api/priceanalytics.ts`, `hooks/usePriceAnalytics.ts`, `components/shopping/PriceAnalyticsPanel.tsx`
+- Table with trend indicators (↑↓→), color-coded volatility
+
