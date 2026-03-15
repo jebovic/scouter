@@ -1,10 +1,14 @@
 package shopping
 
 import (
+	"bytes"
+	"encoding/csv"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -37,6 +41,7 @@ func (h *Handler) Routes() chi.Router {
 	r.Get("/{itemID}/snapshots", h.listSnapshots)
 	r.Get("/{itemID}/deal-score", h.getDealScore)
 	r.Get("/{itemID}/price-history", h.priceHistory)
+	r.Get("/{itemID}/price-history/export", h.ExportPriceHistoryCSV)
 	return r
 }
 
@@ -275,4 +280,77 @@ func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// ExportPriceHistoryCSV exports price history for a shopping item as a CSV file.
+func (h *Handler) ExportPriceHistoryCSV(w http.ResponseWriter, r *http.Request) {
+	itemID, err := uuid.Parse(chi.URLParam(r, "itemID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid item id")
+		return
+	}
+
+	item, err := h.svc.GetByID(r.Context(), itemID)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	if item == nil {
+		httputil.WriteError(w, http.StatusNotFound, "item not found")
+		return
+	}
+
+	snapshots, err := h.svc.ListPriceHistory(r.Context(), itemID)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+
+	// Build CSV
+	buf := new(bytes.Buffer)
+	// Write UTF-8 BOM for Excel compatibility
+	buf.Write([]byte{0xef, 0xbb, 0xbf})
+
+	writer := csv.NewWriter(buf)
+
+	// Write header in French
+	header := []string{"Date", "Prix", "Devise", "Source", "Détaillant"}
+	writer.Write(header)
+
+	// Write rows with French formatting (DD/MM/YYYY, comma decimal separator)
+	for _, snap := range snapshots {
+		row := []string{
+			snap.RecordedAt.Format("02/01/2006"), // DD/MM/YYYY
+			formatPriceFrench(snap.Price),        // 12,99 format
+			"EUR",                                 // Currency
+			snap.Note,                             // Source (note field)
+			item.Merchant,                         // Retailer
+		}
+		writer.Write(row)
+	}
+
+	// Flush the CSV writer
+	writer.Flush()
+
+	// Create filename slug from item name
+	itemNameSlug := strings.ToLower(strings.TrimSpace(item.Name))
+	itemNameSlug = strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			return r
+		}
+		return '-'
+	}, itemNameSlug)
+	itemNameSlug = strings.Trim(itemNameSlug, "-")
+
+	// Set response headers
+	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"prix-%s-%s.csv\"", itemNameSlug, time.Now().Format("2006-01-02")))
+	w.WriteHeader(http.StatusOK)
+	w.Write(buf.Bytes())
+}
+
+// formatPriceFrench formats a price with French conventions: comma as decimal separator.
+func formatPriceFrench(price float64) string {
+	s := fmt.Sprintf("%.2f", price)
+	return strings.ReplaceAll(s, ".", ",")
 }

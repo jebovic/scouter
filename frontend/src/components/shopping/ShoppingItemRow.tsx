@@ -10,6 +10,7 @@ import { PriceBenchmarkBadge } from './PriceBenchmarkBadge'
 import { NegotiationCoach } from './NegotiationCoach'
 import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
+import { PriceHistoryExportButton } from './PriceHistoryExportButton'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -174,6 +175,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <PricePredictionBadge itemId={item.id} />
         <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
         <NegotiationCoach itemId={item.id} />
+        <PriceHistoryExportButton missionId={missionId} itemId={item.id} itemName={item.name} />
       </div>
 
       <Badge variant={item.status} />

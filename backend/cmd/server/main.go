@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/autotag"
+	"github.com/jibei/scouter/internal/dealfeed"
 	"github.com/jibei/scouter/internal/benchmark"
 	"github.com/jibei/scouter/internal/dealexplain"
 	"github.com/jibei/scouter/internal/optimizer"
@@ -330,6 +331,10 @@ func main() {
 
 	// Deal Calendar
 	r.Get("/api/deal-calendar", dealCalHandler.List)
+
+	// French Promo Feed (Phase 83)
+	dealFeedHandler := dealfeed.NewHandler(smartRouter, log)
+	r.Get("/api/promo-feed", dealFeedHandler.Get)
 
 	// Settings (Phase 13)
 	r.Get("/api/settings", settingsHandler.GetAll)

@@ -128,3 +128,8 @@ export async function getDealScore(
   if (data === null || data === undefined) return null
   return DealScoreSchema.parse(data) as DealScore
 }
+
+// getPriceHistoryExportURL returns the URL for CSV export of price history.
+export function getPriceHistoryExportURL(missionId: string, itemId: string): string {
+  return `/api/missions/${missionId}/shopping/${itemId}/price-history/export`
+}
