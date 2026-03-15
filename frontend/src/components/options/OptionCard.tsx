@@ -2,6 +2,7 @@ import { Card, Badge } from '../scouter'
 import { AttributeRenderer } from './AttributeRenderer'
 import { VoteButtons } from './VoteButtons'
 import { ReviewSummaryCard } from './ReviewSummaryCard'
+import { PriceComparisonPanel } from './PriceComparisonPanel'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
@@ -229,6 +230,7 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
       )}
 
       <ReviewSummaryCard optionId={option.id} />
+      <PriceComparisonPanel optionId={option.id} />
     </Card>
   )
 }

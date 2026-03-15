@@ -350,6 +350,30 @@
     "searching": "Searching...",
     "noResults": "No results found for this route."
   },
+  "pricecomp": {
+    "title": "PRICE COMPARISON",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "best": "BEST",
+    "unavailable": "N/A",
+    "buy": "Buy",
+    "updated": "Updated"
+  },
+  "timing": {
+    "title": "PURCHASE TIMING",
+    "analyze": "Analyze",
+    "analyzing": "Analyzing...",
+    "reanalyze": "Re-analyze",
+    "prompt": "Click Analyze to get AI-powered purchase timing advice.",
+    "waitUntil": "Wait until",
+    "nextSale": "Next sale",
+    "confidence": "Confidence",
+    "rec": {
+      "BUY_NOW": "Buy Now",
+      "WAIT": "Wait",
+      "UNSURE": "Unsure"
+    }
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",

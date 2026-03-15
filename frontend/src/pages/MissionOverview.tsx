@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
 import type { MissionPhase } from '../types'
@@ -171,6 +171,11 @@ export default function MissionOverview() {
         {/* Smart Budget Forecast */}
         <div className={styles.section}>
           <ForecastPanel missionId={mission.id} />
+        </div>
+
+        {/* AI Purchase Timing */}
+        <div className={styles.section}>
+          <TimingAdvisorCard missionId={mission.id} />
         </div>
 
         {/* Mission Timeline */}

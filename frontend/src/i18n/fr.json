@@ -350,6 +350,30 @@
     "searching": "Recherche...",
     "noResults": "Aucun résultat pour cet itinéraire."
   },
+  "pricecomp": {
+    "title": "COMPARAISON PRIX",
+    "refresh": "Actualiser",
+    "refreshing": "Actualisation...",
+    "best": "MEILLEUR",
+    "unavailable": "N/D",
+    "buy": "Acheter",
+    "updated": "Mis à jour"
+  },
+  "timing": {
+    "title": "TIMING D'ACHAT",
+    "analyze": "Analyser",
+    "analyzing": "Analyse...",
+    "reanalyze": "Ré-analyser",
+    "prompt": "Cliquez sur Analyser pour obtenir des conseils IA sur le meilleur moment d'achat.",
+    "waitUntil": "Attendre jusqu'au",
+    "nextSale": "Prochaine vente",
+    "confidence": "Confiance",
+    "rec": {
+      "BUY_NOW": "Acheter maintenant",
+      "WAIT": "Attendre",
+      "UNSURE": "Incertain"
+    }
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

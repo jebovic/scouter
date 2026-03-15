@@ -1,0 +1,139 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+.refreshBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Retailer rows ──────────────────────────────────────────────────────────── */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.12s;
+}
+
+.rowBest {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.rowUnavailable {
+  opacity: 0.5;
+}
+
+.retailerName {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text);
+  min-width: 100px;
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--cyan);
+  flex: 1;
+}
+
+.priceBest {
+  color: var(--cyan);
+}
+
+.priceNormal {
+  color: var(--text);
+}
+
+.bestBadge {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  border-radius: 9999px;
+  padding: 0.1rem 0.4rem;
+}
+
+.unavailBadge {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.buyLink {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.45rem;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.buyLink:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* ── Meta ─────────────────────────────────────────────────────────────────── */
+
+.meta {
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}

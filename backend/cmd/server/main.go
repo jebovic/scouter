@@ -33,11 +33,13 @@ import (
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/persona"
+	"github.com/jibei/scouter/internal/pricecomp"
 	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/reviews"
+	"github.com/jibei/scouter/internal/timing"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/settings"
@@ -336,6 +338,21 @@ func main() {
 	// Social Proof & Review Aggregation (Phase 30)
 	r.Get("/api/options/{id}/reviews", reviewsHandler.GetReviews)
 	r.Post("/api/options/{id}/reviews/refresh", reviewsHandler.RefreshReviews)
+
+	// Product Price Comparison (Phase 31)
+	pricecompCache := pricecomp.NewCache(30 * time.Minute)
+	pricecompAgent := pricecomp.NewAgent(provider)
+	pricecompGetter := pricecomp.NewOptionRepoGetter(optionRepo)
+	pricecompHandler := pricecomp.NewHandler(pricecompGetter, pricecompCache, pricecompAgent)
+	r.Get("/api/options/{id}/price-comparison", pricecompHandler.GetComparison)
+	r.Post("/api/options/{id}/price-comparison/refresh", pricecompHandler.RefreshComparison)
+
+	// AI Purchase Timing Advisor (Phase 32)
+	timingCache := timing.NewCache(24 * time.Hour)
+	timingAgent := timing.NewAgent(provider)
+	timingGetter := timing.NewMissionRepoGetter(pool)
+	timingHandler := timing.NewHandler(timingGetter, timingCache, timingAgent)
+	r.Post("/api/missions/{id}/timing-advice", timingHandler.GetTimingAdvice)
 
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)
