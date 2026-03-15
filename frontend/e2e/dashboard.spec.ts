@@ -19,7 +19,7 @@ test.describe('HQ Dashboard', () => {
     await expect(page.locator('#root')).not.toBeEmpty()
     // Mission names must NOT appear when list is empty
     const content = await page.textContent('body')
-    expect(content).not.toContain('Test Laptop Mission')
+    expect(content).not.toContain('Home Server Build')
     await page.screenshot({ path: 'e2e/screenshots/dashboard-empty.png' })
   })
 
@@ -30,8 +30,8 @@ test.describe('HQ Dashboard', () => {
 
     // Mission names should appear on page
     const pageContent = await page.textContent('body')
-    expect(pageContent).toContain('Test Laptop Mission')
-    expect(pageContent).toContain('Test Phone Mission')
+    expect(pageContent).toContain('Home Server Build')
+    expect(pageContent).toContain('Summer Holiday 2026')
     await page.screenshot({ path: 'e2e/screenshots/dashboard-mission-cards.png' })
   })
 

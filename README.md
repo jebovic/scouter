@@ -358,7 +358,11 @@ docs/
 ├── development/          # Contributing, testing, conventions
 └── deployment/           # Setup, environment, monitoring
 
-monitoring/              # Prometheus + Grafana config
+deployment/
+├── docker-compose.yml    # All services (postgres, backend, frontend, traefik, monitoring)
+├── traefik/              # Traefik static config + TLS
+├── monitoring/           # Prometheus + Grafana config
+└── certs/                # Generated TLS certificates (gitignored)
 ```
 
 ---
@@ -453,19 +457,19 @@ make certs
 ```
 
 This generates:
-- `certs/ca.crt` — Local CA certificate
-- `certs/dev.local.crt` — Wildcard cert for `*.dev.local`
-- `certs/dev.local.key` — Private key
+- `deployment/certs/ca.crt` — Local CA certificate
+- `deployment/certs/dev.local.crt` — Wildcard cert for `*.dev.local`
+- `deployment/certs/dev.local.key` — Private key
 
 #### 2. Install CA Certificate (Windows)
 
 On Windows, install the CA in your trusted roots (one-time):
 
 ```cmd
-certutil -addstore -f "ROOT" certs\ca.crt
+certutil -addstore -f "ROOT" deployment\certs\ca.crt
 ```
 
-On macOS/Linux, double-click `certs/ca.crt` in your file explorer to add to the system keychain.
+On macOS/Linux, double-click `deployment/certs/ca.crt` in your file explorer to add to the system keychain.
 
 #### 3. Update Hosts File
 

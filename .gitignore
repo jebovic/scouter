@@ -35,5 +35,8 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 
+# TLS certificates (generated locally, never commit)
+deployment/certs/
+
 # Logs
 *.log

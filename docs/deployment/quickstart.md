@@ -21,7 +21,7 @@ SCOUTER uses Traefik with HTTPS on `*.dev.local`. Generate self-signed certifica
 make certs
 ```
 
-Output files in `certs/`:
+Output files in `deployment/certs/`:
 - `ca.crt` — root CA certificate
 - `dev.local.crt` — wildcard certificate
 - `dev.local.key` — private key
@@ -29,17 +29,17 @@ Output files in `certs/`:
 **Windows (WSL2)**: Install CA certificate in Windows:
 ```powershell
 # Run as Administrator
-certutil -addstore -f "ROOT" certs/ca.crt
+certutil -addstore -f "ROOT" deployment\certs\ca.crt
 ```
 
 **macOS**:
 ```bash
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain certs/ca.crt
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain deployment/certs/ca.crt
 ```
 
 **Linux**: Copy to system trust store:
 ```bash
-sudo cp certs/ca.crt /usr/local/share/ca-certificates/
+sudo cp deployment/certs/ca.crt /usr/local/share/ca-certificates/
 sudo update-ca-certificates
 ```
 
@@ -152,7 +152,7 @@ Inserts two sample missions (Home Server 2026, Summer Holiday 2026) so you can e
 - `https://scouter.dev.local/api/*` → Backend (Go)
 
 **Certificate Storage:**
-- `/certs/` directory (mounted into Traefik)
+- `deployment/certs/` directory (mounted into Traefik)
 
 ---
 
@@ -177,7 +177,7 @@ npm run dev
 
 **Terminal 3 — PostgreSQL (if not running Docker):**
 ```bash
-docker compose up postgres -d
+docker compose -f deployment/docker-compose.yml up postgres -d
 ```
 
 Set `ENV=development` in `.env` for permissive CORS.
@@ -299,13 +299,13 @@ Set `ENV=development` in `.env` for permissive CORS during development.
 
 Check PostgreSQL is healthy:
 ```bash
-docker compose ps postgres
-docker compose logs postgres
+make ps
+docker compose -f deployment/docker-compose.yml logs postgres
 ```
 
 ### Port conflicts
 
-Change Traefik ports in `docker-compose.yml`:
+Change Traefik ports in `deployment/docker-compose.yml`:
 ```yaml
 traefik:
   ports:

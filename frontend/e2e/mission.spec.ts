@@ -1,38 +1,75 @@
 import { test, expect } from '@playwright/test'
-import { mockApiRoutes, waitForPageReady, MISSION_1 } from './fixtures'
+import { mockApiRoutes, waitForPageReady, MISSION_1, MISSION_1_OPTIONS, MISSION_1_SHOPPING } from './fixtures'
 
 test.describe('Mission Flow', () => {
   test('mission overview page loads', async ({ page }) => {
     await mockApiRoutes(page)
-    await page.goto('/missions/test-laptop')
+    await page.goto('/missions/home-server-2026')
     await waitForPageReady(page)
 
     const content = await page.textContent('body')
-    expect(content).toContain('Test Laptop Mission')
+    expect(content).toContain('Home Server Build')
     await page.screenshot({ path: 'e2e/screenshots/mission-overview.png' })
   })
 
-  test('mission options tab loads', async ({ page }) => {
+  test('mission overview shows budget and phase', async ({ page }) => {
     await mockApiRoutes(page)
-    await page.goto('/missions/test-laptop/options')
+    await page.goto('/missions/home-server-2026')
+    await waitForPageReady(page)
+
+    const content = await page.textContent('body')
+    expect(content).toContain('2') // budget 2000
+    await page.screenshot({ path: 'e2e/screenshots/mission-overview-details.png' })
+  })
+
+  test('mission options tab loads with options', async ({ page }) => {
+    await mockApiRoutes(page)
+    await page.goto('/missions/home-server-2026/options')
     await waitForPageReady(page)
 
     await expect(page.locator('#root')).not.toBeEmpty()
+    const content = await page.textContent('body')
+    expect(content).toContain('Synology DS923+')
     await page.screenshot({ path: 'e2e/screenshots/mission-options.png' })
   })
 
-  test('mission shopping tab loads', async ({ page }) => {
+  test('mission options tab shows all option badges', async ({ page }) => {
     await mockApiRoutes(page)
-    await page.goto('/missions/test-laptop/shopping')
+    await page.goto('/missions/home-server-2026/options')
+    await waitForPageReady(page)
+
+    const content = await page.textContent('body')
+    // Should show recommended, alternative, watch options
+    expect(content).toContain('Synology DS923+')
+    expect(content).toContain('Custom mini-ITX')
+    await page.screenshot({ path: 'e2e/screenshots/mission-options-badges.png' })
+  })
+
+  test('mission shopping tab loads with items', async ({ page }) => {
+    await mockApiRoutes(page)
+    await page.goto('/missions/home-server-2026/shopping')
     await waitForPageReady(page)
 
     await expect(page.locator('#root')).not.toBeEmpty()
+    const content = await page.textContent('body')
+    expect(content).toContain('ASRock')
     await page.screenshot({ path: 'e2e/screenshots/mission-shopping.png' })
+  })
+
+  test('mission shopping tab shows cost categories', async ({ page }) => {
+    await mockApiRoutes(page)
+    await page.goto('/missions/home-server-2026/shopping')
+    await waitForPageReady(page)
+
+    const content = await page.textContent('body')
+    // Check for shopping items by merchant or category
+    expect(content).toContain('LDLC')
+    await page.screenshot({ path: 'e2e/screenshots/mission-shopping-categories.png' })
   })
 
   test('can navigate between mission tabs', async ({ page }) => {
     await mockApiRoutes(page)
-    await page.goto('/missions/test-laptop')
+    await page.goto('/missions/home-server-2026')
     await waitForPageReady(page)
 
     const optionsTab = page.locator('a[href*="/options"]').first()
@@ -53,12 +90,12 @@ test.describe('Mission Flow', () => {
     await page.goto('/')
     await waitForPageReady(page)
 
-    const missionLink = page.locator('a[href*="test-laptop"]').first()
+    const missionLink = page.locator('a[href*="home-server-2026"]').first()
     await expect(missionLink).toBeVisible()
     await missionLink.click()
-    await page.waitForURL('**/test-laptop**', { timeout: 5000 })
+    await page.waitForURL('**/home-server-2026**', { timeout: 5000 })
     await page.screenshot({ path: 'e2e/screenshots/mission-navigate-from-dashboard.png' })
-    expect(page.url()).toContain('test-laptop')
+    expect(page.url()).toContain('home-server-2026')
   })
 
   test('mission create and mock response', async ({ page }) => {

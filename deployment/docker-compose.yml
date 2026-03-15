@@ -16,8 +16,8 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
-    env_file: .env
+    build: ../backend
+    env_file: ../.env
     environment:
       DATABASE_URL: postgres://scouter:scouter@postgres:5432/scouter?sslmode=disable
       ENV: development
@@ -41,7 +41,7 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=8080"
 
   frontend:
-    build: ./frontend
+    build: ../frontend
     depends_on:
       backend:
         condition: service_healthy
@@ -68,8 +68,8 @@ services:
       - backend
 
   seed:
-    build: ./backend
-    env_file: .env
+    build: ../backend
+    env_file: ../.env
     environment:
       DATABASE_URL: postgres://scouter:scouter@postgres:5432/scouter?sslmode=disable
     entrypoint: ["/app/scouter-seed"]

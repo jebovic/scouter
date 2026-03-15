@@ -1,0 +1,4 @@
+tls:
+  certificates:
+    - certFile: /certs/dev.local.crt
+      keyFile: /certs/dev.local.key
