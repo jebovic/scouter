@@ -109,11 +109,13 @@
 | 83 | French Retailer Promo API Integration (PromoFeedPanel) | Integration | High | ✅ Done |
 | 84 | Collaborative Wishlist Voting (multi-user VoteBar) | Functional | High | ✅ Done |
 | 85 | AI Price Forecast (30-day trajectory + confidence band) | Agent | High | ✅ Done |
-| 86 | Mission Board Kanban View | Interface | Medium | 📋 Planned |
-| 87 | Smart Cashback Tracker | Functional | Medium | 📋 Planned |
-| 88 | AI Carbon Footprint Estimator | Agent | Medium | 📋 Planned |
-| 89 | Smart Wishlist Sharing (public link + QR) | Functional | Low | 📋 Planned |
+| 86 | Mission Board Kanban View | Interface | Medium | ✅ Done |
+| 87 | Smart Cashback Tracker | Functional | Medium | ✅ Done |
+| 88 | AI Carbon Footprint Estimator | Agent | Medium | 🚧 In Progress |
+| 89 | Smart Wishlist Sharing (public link + QR) | Functional | Low | 🚧 In Progress |
 | 90 | AI Seasonal Discount Predictor | Agent | High | 📋 Planned |
+| 91 | Smart Receipt OCR + Auto-categorization | Functional | High | 📋 Planned |
+| 92 | Live French Supermarket Price API Integration | Functional | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
