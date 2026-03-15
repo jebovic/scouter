@@ -165,16 +165,46 @@ On first start:
 
 ### 3. Open & Load Sample Data
 
-```
-Frontend:  https://scouter.dev.local
-API:       https://scouter.dev.local/api/health
-Traefik:   http://localhost:8082
-```
-
 Load sample data (optional):
 ```bash
 make seed
 ```
+
+---
+
+## Stack Entrypoints
+
+All URLs once the stack is running. Core stack runs with `make up`; monitoring requires `make up-monitoring`.
+
+### Core Stack (`make up`)
+
+| Service | URL | Notes |
+|---------|-----|-------|
+| **App** | https://scouter.dev.local | Main React frontend |
+| **API** | https://scouter.dev.local/api | Go backend (proxied by Traefik) |
+| **Health** | https://scouter.dev.local/api/health | DB ping + version |
+| **LLM Health** | https://scouter.dev.local/api/health/llm | SmartRouter + provider status |
+| **Traefik Dashboard** | http://localhost:8082 | Routers, services, middleware |
+| **PostgreSQL** | `localhost:5432` | Direct DB access (user: scouter / scouter) |
+
+### Monitoring Stack (`make up-monitoring`)
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Prometheus** | http://localhost:9090 | — |
+| **Grafana** | http://localhost:3000 | admin / scouter (or `GF_SECURITY_ADMIN_PASSWORD`) |
+
+### Traefik Routing Summary
+
+| Route | Backend | Protocol |
+|-------|---------|----------|
+| `scouter.dev.local/api/*` | backend:8080 | HTTPS (TLS termination) |
+| `scouter.dev.local` | frontend:80 | HTTPS (TLS termination) |
+| `:80` → `:443` | — | HTTP-to-HTTPS redirect |
+| `:8082` | Traefik dashboard | HTTP (no auth) |
+
+> **Hosts file required:** add `127.0.0.1 scouter.dev.local` to `/etc/hosts` (Windows: `C:\Windows\System32\drivers\etc\hosts`).
+> **TLS setup:** run `make certs` once and install `deployment/certs/ca.crt` as a trusted CA.
 
 ---
 
