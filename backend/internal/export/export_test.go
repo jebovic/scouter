@@ -129,6 +129,9 @@ func (s *stubShoppingRepo) Pin(_ context.Context, _ uuid.UUID) (*shopping.Item, 
 	return nil, nil
 }
 func (s *stubShoppingRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (s *stubShoppingRepo) GetPriceHistory(_ context.Context, _ uuid.UUID, _ int) ([]shopping.PriceHistoryPoint, error) {
+	return nil, nil
+}
 
 type stubDecisionRepo struct {
 	dec *decision.Decision

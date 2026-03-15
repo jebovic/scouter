@@ -139,6 +139,9 @@ func (m *mockShoppingRepo) Pin(_ context.Context, _ uuid.UUID) (*shopping.Item, 
 	return nil, nil
 }
 func (m *mockShoppingRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (m *mockShoppingRepo) GetPriceHistory(_ context.Context, _ uuid.UUID, _ int) ([]shopping.PriceHistoryPoint, error) {
+	return nil, nil
+}
 
 // ---- mock notification repository ----
 

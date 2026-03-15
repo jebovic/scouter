@@ -5,9 +5,20 @@ import (
 	"fmt"
 )
 
+// repository is the persistence interface used by Service.
+// Using an interface here decouples the service from the concrete Repository
+// and enables unit testing without a real database.
+type repository interface {
+	Create(ctx context.Context, missionID, email string, role Role) (*Collaborator, error)
+	GetByInviteToken(ctx context.Context, token string) (*Collaborator, error)
+	MarkJoined(ctx context.Context, token, displayName string) (*Collaborator, error)
+	ListByMission(ctx context.Context, missionID string) ([]Collaborator, error)
+	Delete(ctx context.Context, id string) error
+}
+
 // Service orchestrates collaborator business logic.
 type Service struct {
-	repo *Repository
+	repo repository
 }
 
 // NewService creates a new collaborator service.
@@ -29,10 +40,11 @@ func (s *Service) GetInviteInfo(ctx context.Context, token string) (*Collaborato
 }
 
 // JoinMission marks a collaborator as joined using the invite token.
-// displayName is required; returns an error if empty.
+// Returns ErrDisplayNameRequired when displayName is empty.
+// Returns ErrNotFound when the token does not match any invite.
 func (s *Service) JoinMission(ctx context.Context, token, displayName string) (*Collaborator, error) {
 	if displayName == "" {
-		return nil, fmt.Errorf("collaborator: display name is required")
+		return nil, ErrDisplayNameRequired
 	}
 	return s.repo.MarkJoined(ctx, token, displayName)
 }

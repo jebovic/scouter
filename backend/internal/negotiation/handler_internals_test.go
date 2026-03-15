@@ -129,6 +129,9 @@ func (r *stubShoppingRepo) Pin(_ context.Context, _ uuid.UUID) (*shopping.Item, 
 	return nil, nil
 }
 func (r *stubShoppingRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (r *stubShoppingRepo) GetPriceHistory(_ context.Context, _ uuid.UUID, _ int) ([]shopping.PriceHistoryPoint, error) {
+	return nil, nil
+}
 
 // newHandlerWithStubs builds a Handler with all dependencies stubbed.
 func newHandlerWithStubs(

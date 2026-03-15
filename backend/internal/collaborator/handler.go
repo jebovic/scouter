@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5"
 	"github.com/jibei/scouter/internal/httputil"
 )
 
@@ -40,7 +39,7 @@ func (h *Handler) GetInvite(w http.ResponseWriter, r *http.Request) {
 	token := chi.URLParam(r, "token")
 	c, err := h.svc.GetInviteInfo(r.Context(), token)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, ErrNotFound) {
 			httputil.WriteError(w, http.StatusNotFound, "invite not found")
 			return
 		}
@@ -62,12 +61,14 @@ func (h *Handler) JoinMission(w http.ResponseWriter, r *http.Request) {
 
 	c, err := h.svc.JoinMission(r.Context(), token, req.DisplayName)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		switch {
+		case errors.Is(err, ErrNotFound):
 			httputil.WriteError(w, http.StatusNotFound, "invite not found")
-			return
+		case errors.Is(err, ErrDisplayNameRequired):
+			httputil.WriteError(w, http.StatusBadRequest, "display name is required")
+		default:
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		}
-		// display name validation error
-		httputil.WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	httputil.WriteJSON(w, http.StatusOK, c)
@@ -117,7 +118,7 @@ func (h *Handler) removeCollaborator(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	if err := h.svc.RemoveCollaborator(r.Context(), id); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, ErrNotFound) {
 			httputil.WriteError(w, http.StatusNotFound, "collaborator not found")
 			return
 		}

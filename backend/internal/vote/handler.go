@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/httputil"
 )
 
@@ -37,6 +38,11 @@ func (h *Handler) recordVote(w http.ResponseWriter, r *http.Request) {
 
 	if req.CollaboratorID == "" {
 		httputil.WriteError(w, http.StatusBadRequest, "collaboratorId is required")
+		return
+	}
+	// TODO: migrate collaboratorID to auth context once sessions are introduced.
+	if _, err := uuid.Parse(req.CollaboratorID); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "collaboratorId must be a valid UUID")
 		return
 	}
 	if req.Vote < -1 || req.Vote > 1 {

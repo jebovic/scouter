@@ -36,7 +36,7 @@ func (r *Repository) Create(ctx context.Context, missionID, email string, role R
 }
 
 // GetByInviteToken fetches a collaborator by its invite token.
-// Returns pgx.ErrNoRows when no match is found.
+// Returns ErrNotFound when no match is found.
 func (r *Repository) GetByInviteToken(ctx context.Context, token string) (*Collaborator, error) {
 	row := r.pool.QueryRow(ctx, `
 		SELECT `+collabCols+`
@@ -45,7 +45,7 @@ func (r *Repository) GetByInviteToken(ctx context.Context, token string) (*Colla
 	c, err := scanCollaborator(row)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, pgx.ErrNoRows
+			return nil, ErrNotFound
 		}
 		return nil, fmt.Errorf("collaborator: get by token: %w", err)
 	}
@@ -54,6 +54,7 @@ func (r *Repository) GetByInviteToken(ctx context.Context, token string) (*Colla
 
 // MarkJoined sets joined_at and display_name for the collaborator identified by
 // token. The operation is idempotent — calling it multiple times is safe.
+// Returns ErrNotFound when no collaborator matches the token.
 func (r *Repository) MarkJoined(ctx context.Context, token, displayName string) (*Collaborator, error) {
 	row := r.pool.QueryRow(ctx, `
 		UPDATE collaborators
@@ -66,7 +67,7 @@ func (r *Repository) MarkJoined(ctx context.Context, token, displayName string) 
 	c, err := scanCollaborator(row)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, pgx.ErrNoRows
+			return nil, ErrNotFound
 		}
 		return nil, fmt.Errorf("collaborator: mark joined: %w", err)
 	}
@@ -89,7 +90,7 @@ func (r *Repository) ListByMission(ctx context.Context, missionID string) ([]Col
 	for rows.Next() {
 		c, err := scanCollaborator(rows)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("collaborator: list by mission: scan: %w", err)
 		}
 		out = append(out, *c)
 	}
@@ -97,6 +98,7 @@ func (r *Repository) ListByMission(ctx context.Context, missionID string) ([]Col
 }
 
 // GetByID fetches a single collaborator by its primary key.
+// Returns ErrNotFound when no match is found.
 func (r *Repository) GetByID(ctx context.Context, id string) (*Collaborator, error) {
 	row := r.pool.QueryRow(ctx, `
 		SELECT `+collabCols+`
@@ -105,7 +107,7 @@ func (r *Repository) GetByID(ctx context.Context, id string) (*Collaborator, err
 	c, err := scanCollaborator(row)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, pgx.ErrNoRows
+			return nil, ErrNotFound
 		}
 		return nil, fmt.Errorf("collaborator: get by id: %w", err)
 	}
@@ -113,13 +115,14 @@ func (r *Repository) GetByID(ctx context.Context, id string) (*Collaborator, err
 }
 
 // Delete removes a collaborator record by ID.
+// Returns ErrNotFound when no row is affected.
 func (r *Repository) Delete(ctx context.Context, id string) error {
 	tag, err := r.pool.Exec(ctx, `DELETE FROM collaborators WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("collaborator: delete: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
-		return pgx.ErrNoRows
+		return ErrNotFound
 	}
 	return nil
 }

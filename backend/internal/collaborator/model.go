@@ -1,6 +1,15 @@
 package collaborator
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+// ErrNotFound is returned when a collaborator record cannot be found.
+var ErrNotFound = errors.New("collaborator: not found")
+
+// ErrDisplayNameRequired is returned by JoinMission when no display name is provided.
+var ErrDisplayNameRequired = errors.New("collaborator: display name is required")
 
 // Role represents a collaborator's permission level on a mission.
 type Role string
