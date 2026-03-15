@@ -130,6 +130,8 @@ import (
 	"github.com/jibei/scouter/internal/burnrate"
 	"github.com/jibei/scouter/internal/merchantrecommender"
 	"github.com/jibei/scouter/internal/regretanalyzer"
+	"github.com/jibei/scouter/internal/cashbacktracker"
+	"github.com/jibei/scouter/internal/listoptimizer"
 )
 
 func main() {
@@ -837,6 +839,14 @@ func main() {
 	// Smart Merchant Recommender (Phase 157)
 	merchantRecHandler := merchantrecommender.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/merchant-recommendations", merchantRecHandler.GetRecommendations)
+
+	// Smart Shopping List Optimizer (Phase 159)
+	listOptimizerHandler := listoptimizer.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/optimized-list", listOptimizerHandler.GetOptimizedList)
+
+	// French Cashback & Reward Tracker (Phase 160)
+	cashbackTrackerHandler := cashbacktracker.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/cashback", cashbackTrackerHandler.GetCashbackSummary)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

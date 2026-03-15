@@ -1307,12 +1307,12 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 - Frontend: `BurnRateCard` component with status badge (on_track/at_risk/over_budget), daily rate, projected total
 - Wired into MissionOverview page
 
-## Phase 157: Smart Merchant Recommender 🏪 📋 Planned
+## Phase 157: Smart Merchant Recommender 🏪 ✅ COMPLETE
 **Goal:** Recommend the best French merchant for a given item based on price history patterns and merchant reputation
 - Backend: `internal/merchantrecommender/` — score-based ranking of merchants
 - Frontend: `MerchantRecommenderCard` component
 
-## Phase 158: Purchase Regret Analyzer 😅 📋 Planned
+## Phase 158: Purchase Regret Analyzer 😅 ✅ COMPLETE
 **Goal:** Analyze past purchases to detect potential regret signals (overpaid vs market, impulse buys)
 - Backend: `internal/regretanalyzer/` — compare purchase price vs market min/avg, flag high-risk purchases
 - Frontend: `RegretAnalyzerCard` component with risk badges
