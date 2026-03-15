@@ -1,0 +1,84 @@
+@import '../../styles/theme.css';
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: default;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Urgency colour variants */
+.urgencyLow {
+  background: var(--surface-raised, #2a2a3a);
+  color: var(--text-dim, #9090a0);
+  border: 1px solid var(--border, #3a3a4a);
+}
+
+.urgencyMedium {
+  background: rgba(255, 160, 50, 0.15);
+  color: #ffa032;
+  border: 1px solid rgba(255, 160, 50, 0.3);
+}
+
+.urgencyHigh {
+  background: rgba(230, 70, 70, 0.15);
+  color: #e64646;
+  border: 1px solid rgba(230, 70, 70, 0.3);
+}
+
+.urgencyUrgent {
+  background: rgba(230, 70, 70, 0.2);
+  color: #ff4f4f;
+  border: 1px solid rgba(230, 70, 70, 0.5);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+/* Tooltip */
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.wrapper:hover .tooltip {
+  display: block;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface-raised, #1e1e2e);
+  border: 1px solid var(--border, #3a3a4a);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 220px;
+  max-width: 300px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tooltipPct {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text, #e0e0f0);
+  margin-bottom: 4px;
+}
+
+.tooltipRec {
+  font-size: 0.75rem;
+  color: var(--text-dim, #9090a0);
+  line-height: 1.4;
+}

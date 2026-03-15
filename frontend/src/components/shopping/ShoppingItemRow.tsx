@@ -29,6 +29,7 @@ import { NegotiationSimulator } from './NegotiationSimulator'
 import { CompetitorPriceTable } from './CompetitorPriceTable'
 import { CouponFinderCard } from './CouponFinderCard'
 import { ItemTagsDisplay } from './ItemTagsDisplay'
+import { PriceStreakBadge } from './PriceStreakBadge'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -213,6 +214,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <CarbonBadge itemName={item.name} category={item.costCategory} />
         <SeasonalBadge itemName={item.name} category={item.costCategory} />
         <WatchlistButton itemId={item.id} itemName={item.name} currentPrice={item.price} />
+        <PriceStreakBadge missionId={missionId} itemId={item.id} />
       </div>
 
       <Badge variant={item.status} />

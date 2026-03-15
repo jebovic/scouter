@@ -50,6 +50,7 @@ import (
 	"github.com/jibei/scouter/internal/decision"
 	"github.com/jibei/scouter/internal/embedding"
 	"github.com/jibei/scouter/internal/envelope"
+	"github.com/jibei/scouter/internal/csvexport"
 	"github.com/jibei/scouter/internal/export"
 	"github.com/jibei/scouter/internal/forecast"
 	"github.com/jibei/scouter/internal/health"
@@ -97,6 +98,7 @@ import (
 	"github.com/jibei/scouter/internal/giftfinder"
 	"github.com/jibei/scouter/internal/weeklydigest"
 	"github.com/jibei/scouter/internal/itemtagger"
+	"github.com/jibei/scouter/internal/pricestreak"
 )
 
 func main() {
@@ -321,7 +323,9 @@ func main() {
 	r.Get("/api/stats/monthly", statsHandler.MonthlyStats)
 
 	// Export, share, archive
+	csvExportHandler := csvexport.NewHandler(pool)
 	r.Get("/api/missions/{missionID}/export", exportHandler.Export)
+	r.Get("/api/missions/{missionID}/export/csv", csvExportHandler.ExportMissionCSV)
 	r.Post("/api/missions/{missionID}/share", missionHandler.Share)
 	r.Delete("/api/missions/{missionID}/share", missionHandler.RevokeShare)
 	r.Post("/api/missions/{missionID}/archive", missionHandler.Archive)
@@ -673,6 +677,10 @@ func main() {
 	// Smart Category Auto-tagger & Item Enrichment (Phase 125) — pure Go, 24h in-memory cache
 	itemTaggerHandler := itemtagger.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/tags", itemTaggerHandler.GetTags)
+
+	// Price Drop Streak Detector (Phase 126) — 1h in-memory cache
+	priceStreakHandler := pricestreak.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/price-streak", priceStreakHandler.GetStreak)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
