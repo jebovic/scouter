@@ -65,9 +65,9 @@
 | 39 | Receipt Scanner (OCR upload) | Functional | Medium | ✅ Done |
 | 40 | Quick Mission Duplicate / Template from Mission | Interface | Low | ✅ Done |
 | 41 | Merchant Affiliate Deep Links (Fnac, Darty, Boulanger) | Functional | Medium | ✅ Done |
-| 42 | Real-time Stock Availability (French retailers) | Functional | High | 📋 Planned |
-| 43 | AI Shopping Summary Report (PDF/email) | Agent | Medium | 📋 Planned |
-| 44 | Voice Input for Mission Creation (Web Speech API) | Interface | Low | 📋 Planned |
+| 42 | Real-time Stock Availability (French retailers) | Functional | High | ✅ Done |
+| 43 | AI Shopping Summary Report (PDF/email) | Agent | Medium | ✅ Done |
+| 44 | Voice Input for Mission Creation (Web Speech API) | Interface | Low | ✅ Done |
 | 45 | Performance Dashboard (Lighthouse + bundle analysis) | Infrastructure | Low | 📋 Planned |
 | 46 | Smart Comparison Mode (side-by-side option viewer) | Interface | High | 📋 Planned |
 | 47 | Mission AI Coach (proactive tips during research) | Agent | Medium | 📋 Planned |
@@ -569,6 +569,53 @@ Panels using cAdvisor:
 - [ ] Alert rules visible in Prometheus alerts page
 - [ ] `make test` passes with no regressions (all new Recorder injections default to NoopRecorder)
 - [ ] `backend/internal/metrics/` achieves 80%+ test coverage
+
+---
+
+## Phase 44: Voice Input for Mission Creation
+
+**Type**: Interface | **Priority**: Low | **Complexity**: Low
+**Status**: ✅ Done (2026-03-15)
+
+**User Value**: Faster mission creation — speak the mission name instead of typing, perfect for quick hands-free entry.
+
+### Frontend — New Hook & Component
+
+`src/hooks/useSpeechRecognition.ts`:
+- Wraps Web Speech API (SpeechRecognition + webkitSpeechRecognition for Safari)
+- State: `{ isListening, transcript, error, isSupported }`
+- Methods: `startListening()`, `stopListening()`
+- Configured: continuous=false, interimResults=true, lang='fr-FR'
+- Returns partial transcripts while listening; normalizes on stop
+- Graceful degradation when API unavailable
+
+`src/components/mission/VoiceInputButton.tsx`:
+- Microphone button next to mission name field
+- Shows 🎤 (idle), ⏹ (recording)
+- Pulsing red border when listening
+- Appends transcript to name field (space-separated)
+- Error display for permission denied, network errors, etc.
+- Shows "browser not supported" message when unavailable
+- Exported in `VoiceInputButton.module.css` with pulsing animation
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `frontend/src/components/mission/MissionForm.tsx` | Import VoiceInputButton; wrap name input + button in flex row |
+| `frontend/src/components/mission/MissionForm.module.css` | Add .nameRow and .nameFlex for layout |
+
+### Test Coverage
+
+- `useSpeechRecognition.test.ts`: 16 tests covering support detection, lifecycle (start/stop/end), transcript accumulation, error handling, graceful degradation
+- `VoiceInputButton.test.tsx`: 13 tests covering render states (listening, idle, not supported), click handlers, transcript relay, error display
+
+### Results
+
+- All 29 new tests pass
+- TypeScript strict mode passes
+- Build succeeds (Vite + PWA)
+- No breaking changes to existing features
 
 ---
 

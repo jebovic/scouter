@@ -1,0 +1,89 @@
+/* Voice Input Button Container and Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Microphone Button */
+.button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  transition: all 0.15s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  color: var(--text-mid);
+}
+
+.button:hover {
+  background-color: var(--raised);
+  border: 1px solid var(--border);
+}
+
+/* Listening state - pulsing red dot animation */
+.button.listening {
+  border: 2px solid var(--coral);
+  background-color: var(--coral-dim);
+  color: var(--coral);
+  animation: pulse-listening 1.5s ease-in-out infinite;
+}
+
+/* Pulsing animation for listening state */
+@keyframes pulse-listening {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--coral);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 61, 113, 0.3);
+    opacity: 0.9;
+  }
+}
+
+/* Error message styling */
+.error {
+  font-size: 0.7rem;
+  color: var(--coral);
+  font-family: var(--font-mono);
+  padding: 4px 0;
+  max-width: 150px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Not supported message */
+.unsupported {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  padding: 0;
+  display: block;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .button {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 1rem;
+    padding: 0.2rem;
+  }
+
+  .error {
+    font-size: 0.65rem;
+    max-width: 120px;
+  }
+
+  .unsupported {
+    font-size: 0.7rem;
+  }
+}

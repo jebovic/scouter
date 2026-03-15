@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '../scouter'
 import type { MissionCreateRequest, MissionCategory } from '../../types'
 import { EnvelopeSelector } from './EnvelopeSelector'
+import { VoiceInputButton } from './VoiceInputButton'
 import styles from './MissionForm.module.css'
 
 const CATEGORIES: { value: MissionCategory; emoji: string }[] = [
@@ -53,15 +54,24 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
       <h3 className={styles.title}>{t('mission.create')}</h3>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label className={styles.label}>{t('mission.missionName').toUpperCase()}</label>
-          <input
-            className={styles.input}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. MacBook Pro upgrade"
-            required
-            autoFocus
-          />
+          <div className={styles.nameRow}>
+            <div className={styles.nameFlex}>
+              <label className={styles.label}>{t('mission.missionName').toUpperCase()}</label>
+              <input
+                className={styles.input}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. MacBook Pro upgrade"
+                required
+                autoFocus
+              />
+            </div>
+            <VoiceInputButton
+              onTranscript={(text) => {
+                setName((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text))
+              }}
+            />
+          </div>
         </div>
 
         <div>

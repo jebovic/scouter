@@ -16,6 +16,19 @@
   gap: 16px;
 }
 
+.nameRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.nameFlex {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .label {
   font-size: 0.75rem;
   color: var(--text-dim);
