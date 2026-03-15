@@ -110,7 +110,7 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 | **Database** | PostgreSQL 16 + pgvector (IVFFlat 1024-dim embeddings) |
 | **LLM** | Anthropic claude-sonnet-4-6 (tool use) · Ollama (local) · SmartRouter |
 | **Testing** | Go tests · Vitest + Testing Library · Playwright E2E (31 tests) |
-| **Deployment** | Docker Compose · Prometheus · Grafana |
+| **Deployment** | Docker Compose · Traefik v3.4 (reverse proxy + HTTPS) · Prometheus · Grafana |
 
 ---
 
@@ -425,6 +425,55 @@ ollama list
 ```
 
 Ollama must be running before starting SCOUTER. The `host.docker.internal` hostname automatically resolves from inside Docker.
+
+### Local HTTPS with Traefik
+
+SCOUTER uses Traefik v3.4 as a reverse proxy. To run with HTTPS locally:
+
+#### 1. Generate Local Certificates
+
+```bash
+make certs
+```
+
+This generates:
+- `certs/ca.crt` — Local CA certificate
+- `certs/dev.local.crt` — Wildcard cert for `*.dev.local`
+- `certs/dev.local.key` — Private key
+
+#### 2. Install CA Certificate (Windows)
+
+On Windows, install the CA in your trusted roots (one-time):
+
+```cmd
+certutil -addstore -f "ROOT" certs\ca.crt
+```
+
+On macOS/Linux, double-click `certs/ca.crt` in your file explorer to add to the system keychain.
+
+#### 3. Update Hosts File
+
+Add to your system hosts file:
+- **Windows:** `C:\Windows\System32\drivers\etc\hosts`
+- **macOS/Linux:** `/etc/hosts`
+
+```
+127.0.0.1 scouter.dev.local
+127.0.0.1 api.dev.local
+```
+
+#### 4. Start the Stack
+
+```bash
+make dev
+```
+
+SCOUTER is now accessible at:
+- **App:** https://scouter.dev.local (green padlock in Chrome)
+- **API:** https://scouter.dev.local/api/health
+- **Traefik Dashboard:** http://localhost:8082
+
+HTTP requests on port 80 redirect to HTTPS on port 443.
 
 ---
 
