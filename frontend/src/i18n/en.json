@@ -207,7 +207,9 @@
     "purchaseCount_one": "{{count}} purchase",
     "purchaseCount_other": "{{count}} purchases",
     "noData": "No purchases recorded yet",
-    "noDataDesc": "Record purchases on completed missions to see your spending stats."
+    "noDataDesc": "Record purchases on completed missions to see your spending stats.",
+    "spendTrend": "Spend Trend",
+    "budgetVsActual": "Budget vs Actual"
   },
   "search": {
     "title": "Semantic Search",

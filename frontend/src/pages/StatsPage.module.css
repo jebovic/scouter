@@ -66,6 +66,13 @@
   margin-top: 8px;
 }
 
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
 .sectionTitle {
   font-size: 16px;
   font-weight: 600;

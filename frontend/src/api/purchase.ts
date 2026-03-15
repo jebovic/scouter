@@ -83,3 +83,22 @@ export async function getStats(): Promise<Stats> {
   const data = await apiFetch<unknown>('/api/stats')
   return StatsSchema.parse(data)
 }
+
+// ── Monthly stats ─────────────────────────────────────────────────────────────
+
+export const MonthlyStatPointSchema = z.object({
+  month: z.string(),
+  totalSpent: z.number(),
+  totalBudget: z.number(),
+  purchaseCount: z.number(),
+})
+
+export type MonthlyStatPoint = z.infer<typeof MonthlyStatPointSchema>
+
+export const MonthlyStatsSchema = z.array(MonthlyStatPointSchema)
+
+export async function fetchMonthlyStats(): Promise<MonthlyStatPoint[]> {
+  const res = await fetch('/api/stats/monthly')
+  if (!res.ok) throw new Error('Failed to fetch monthly stats')
+  return MonthlyStatsSchema.parse(await res.json())
+}

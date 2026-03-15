@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { useStats } from '../hooks/usePurchase'
+import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
 import { StarRating } from '../components/scouter/StarRating'
+import { SpendTrendChart } from '../components/charts/SpendTrendChart'
+import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
+import { BudgetVsActualChart } from '../components/charts/BudgetVsActualChart'
 import { formatCurrencyLocale } from '../utils/format'
 import styles from './StatsPage.module.css'
 
@@ -12,6 +15,7 @@ export default function StatsPage() {
   const currency = settings?.currency ?? 'EUR'
 
   const { data: stats, isLoading } = useStats()
+  const { data: monthlyStats } = useMonthlyStats()
 
   const fmt = (amount: number) => formatCurrencyLocale(amount, locale, currency)
 
@@ -86,6 +90,37 @@ export default function StatsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {monthlyStats && monthlyStats.length >= 2 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('stats.spendTrend')}</h2>
+          <div className={styles.card}>
+            <SpendTrendChart data={monthlyStats} currency={currency} locale={locale} />
+          </div>
+        </section>
+      )}
+
+      {monthlyStats && monthlyStats.length >= 2 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('stats.budgetVsActual')}</h2>
+          <div className={styles.card}>
+            <BudgetVsActualChart data={monthlyStats} currency={currency} locale={locale} />
+          </div>
+        </section>
+      )}
+
+      {stats.categoryBreakdown.length >= 2 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t('stats.byCategory')}</h2>
+          <div className={styles.card}>
+            <CategoryDonutChart
+              data={stats.categoryBreakdown}
+              currency={currency}
+              locale={locale}
+            />
           </div>
         </section>
       )}

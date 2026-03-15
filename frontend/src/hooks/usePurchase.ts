@@ -4,6 +4,7 @@ import {
   createPurchaseRecord,
   updatePurchaseRecord,
   getStats,
+  fetchMonthlyStats,
   type CreatePurchaseRequest,
   type UpdatePurchaseRequest,
 } from '../api/purchase'
@@ -42,6 +43,14 @@ export function useStats() {
   return useQuery({
     queryKey: ['stats'],
     queryFn: getStats,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useMonthlyStats() {
+  return useQuery({
+    queryKey: ['stats', 'monthly'],
+    queryFn: fetchMonthlyStats,
     staleTime: 5 * 60 * 1000,
   })
 }

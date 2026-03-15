@@ -229,6 +229,7 @@ func main() {
 	// Purchase lifecycle (Phase 12)
 	r.Mount("/api/missions/{missionID}/purchase", purchaseHandler.Routes())
 	r.Get("/api/stats", statsHandler.Stats)
+	r.Get("/api/stats/monthly", statsHandler.MonthlyStats)
 
 	// Export, share, archive
 	r.Get("/api/missions/{missionID}/export", exportHandler.Export)

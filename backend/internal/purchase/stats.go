@@ -86,3 +86,51 @@ func (h *StatsHandler) Stats(w http.ResponseWriter, r *http.Request) {
 
 	httputil.WriteJSON(w, http.StatusOK, resp)
 }
+
+// MonthlyStatPoint holds aggregated spend data for a single calendar month.
+type MonthlyStatPoint struct {
+	Month         string  `json:"month"`         // "YYYY-MM"
+	TotalSpent    float64 `json:"totalSpent"`
+	TotalBudget   float64 `json:"totalBudget"`
+	PurchaseCount int     `json:"purchaseCount"`
+}
+
+// MonthlyStats handles GET /api/stats/monthly.
+// It returns the last 12 months of aggregated spending data, ordered oldest-first.
+func (h *StatsHandler) MonthlyStats(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	rows, err := h.pool.Query(ctx, `
+		SELECT
+		    TO_CHAR(DATE_TRUNC('month', pr.purchased_at), 'YYYY-MM') AS month,
+		    COALESCE(SUM(pr.final_price), 0)::float8,
+		    COALESCE(SUM(m.budget), 0)::float8,
+		    COUNT(pr.id)::int
+		FROM purchase_records pr
+		JOIN missions m ON m.id = pr.mission_id
+		WHERE pr.purchased_at >= NOW() - INTERVAL '12 months'
+		GROUP BY DATE_TRUNC('month', pr.purchased_at)
+		ORDER BY DATE_TRUNC('month', pr.purchased_at) ASC
+	`)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "failed to query monthly stats")
+		return
+	}
+	defer rows.Close()
+
+	points := []MonthlyStatPoint{}
+	for rows.Next() {
+		var p MonthlyStatPoint
+		if err := rows.Scan(&p.Month, &p.TotalSpent, &p.TotalBudget, &p.PurchaseCount); err != nil {
+			httputil.WriteError(w, http.StatusInternalServerError, "failed to scan monthly stat row")
+			return
+		}
+		points = append(points, p)
+	}
+	if err := rows.Err(); err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "failed to read monthly stats")
+		return
+	}
+
+	httputil.WriteJSON(w, http.StatusOK, points)
+}

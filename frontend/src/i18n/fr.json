@@ -207,7 +207,9 @@
     "purchaseCount_one": "{{count}} achat",
     "purchaseCount_other": "{{count}} achats",
     "noData": "Aucun achat enregistré",
-    "noDataDesc": "Enregistrez des achats sur les missions terminées pour voir vos statistiques."
+    "noDataDesc": "Enregistrez des achats sur les missions terminées pour voir vos statistiques.",
+    "spendTrend": "Tendance des dépenses",
+    "budgetVsActual": "Budget vs Réel"
   },
   "search": {
     "title": "Recherche Sémantique",

@@ -38,8 +38,17 @@
 | 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ✅ Done |
 | 13 | Settings, Data Management & Deployment | Infrastructure | Low | ✅ Done |
 | **14** | **Observability & Monitoring Stack** | **Infrastructure** | **Medium** | ✅ Done |
+| 15 | Real-Time Price Intelligence (Open Food Facts) | Functional | High | ✅ Done |
+| 16 | Collaborative Missions (invite + voting) | Functional | High | ✅ Done |
+| 17 | AI Negotiation Coach | Agent | Medium | ✅ Done |
+| 18 | PWA + Mobile UX (offline, swipe, BottomNav) | Interface | Medium | ✅ Done |
+| 19 | Multi-Currency & i18n Completion | Interface | Low | ✅ Done |
+| **20** | **Interactive Analytics Dashboard (recharts)** | **Interface** | **High** | 🔄 In Progress |
+| 21 | Wish List & Price Drop Alerts | Functional | High | 📋 Planned |
+| 22 | Weighted Comparison Matrix | Functional | Medium | 📋 Planned |
+| 23 | Smart Budget Forecaster (AI) | Agent | Medium | 📋 Planned |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14**
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–23** auto-improvement loop
 
 ---
 
@@ -589,3 +598,80 @@ Next journey: multi-user auth, cloud deployment, collaborative household/team mi
 - French market: EUR default, date format DD/MM/YYYY
 - RTL-ready CSS (for future language support)
 
+
+---
+
+## Phase 20: Interactive Analytics Dashboard
+
+**Type**: Interface | **Priority**: High | **Complexity**: Medium
+**Status**: 🔄 In Progress
+
+**User Value**: Transform the Stats page from text/CSS bars into a rich, interactive analytics dashboard with recharts — spend trends over time, category donut chart, budget vs actual bar chart. Data storytelling for smarter future purchases.
+
+### Backend
+- `GET /api/stats/monthly` — monthly aggregation: `{ month: "2026-01", totalSpent, totalBudget, purchaseCount }`
+- Query: `DATE_TRUNC('month', pr.purchased_at)` GROUP BY month ORDER BY month DESC LIMIT 12
+
+### Frontend
+- Install `recharts` package
+- `src/api/stats.ts`: add `monthlyStatsSchema`, `fetchMonthlyStats`
+- `src/hooks/useStats.ts`: add `useMonthlyStats`
+- `src/components/charts/SpendTrendChart.tsx` + `.module.css`: recharts AreaChart, locale-aware Y-axis
+- `src/components/charts/CategoryDonutChart.tsx` + `.module.css`: recharts PieChart with legend
+- `src/components/charts/BudgetVsActualChart.tsx` + `.module.css`: recharts BarChart, grouped
+- `src/pages/StatsPage.tsx`: integrate all 3 charts below existing summary cards
+
+---
+
+## Phase 21: Wish List & Price Drop Alerts
+
+**Type**: Functional | **Priority**: High | **Complexity**: Medium
+**Status**: 📋 Planned
+
+**User Value**: Track products of interest before committing to a mission. Get alerted when prices drop. Perfect for French deal-hunting culture (soldes, promotions).
+
+### Backend
+- Migration `014_wish_list.up.sql`: `wish_list_items(id, user_session, name, url, target_price, last_seen_price, currency, created_at, alerted_at)`
+- CRUD handler: `GET/POST/DELETE /api/wishlist`
+- Scheduler job: hourly price check via HTTP HEAD/GET + price extraction heuristic, creates notification on drop
+
+### Frontend
+- `WishListPage` (`/wishlist` route): add item form, list with current vs target price
+- `WishListItem` component: price delta badge, delete, edit target price
+- `TopNav`: add Wishlist link
+
+---
+
+## Phase 22: Weighted Comparison Matrix
+
+**Type**: Functional | **Priority**: Medium | **Complexity**: Medium
+**Status**: 📋 Planned
+
+**User Value**: Side-by-side structured comparison of shortlisted options with user-defined criteria weights. Export-ready matrix for confident final decisions.
+
+### Backend
+- `GET /api/missions/:id/comparison` — returns options with attributes, scores, constraints check
+- `POST /api/missions/:id/comparison/weights` — persist weight config per mission (jsonb column on missions)
+
+### Frontend
+- `ComparisonMatrix` component: sticky header with option names, rows per attribute, weight sliders
+- Visual winner highlighting (highest weighted score per row)
+- Integrated into `OptionsExplorer` as a new "Compare" tab
+
+---
+
+## Phase 23: Smart Budget Forecaster
+
+**Type**: Agent | **Priority**: Medium | **Complexity**: High
+**Status**: 📋 Planned
+
+**User Value**: AI-powered budget risk analysis — given mission category, budget, and historical spending patterns, predict overspend probability and suggest budget adjustments.
+
+### Backend
+- `internal/forecast/agent.go`: ForecastAgent using LLM tool-use; inputs: category stats, current budget, market price data
+- Output: `{ riskScore: 0-100, predictedSpend: float, confidence: float, suggestions: string[] }`
+- `POST /api/missions/:id/forecast`
+
+### Frontend
+- `ForecastPanel` component on MissionOverview: risk gauge, predicted spend range, AI suggestions
+- `useForecast` hook with mutation + caching
