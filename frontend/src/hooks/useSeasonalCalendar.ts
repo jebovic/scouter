@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { getSeasonalCalendar } from '../api/seasonalcalendar'
-import type { CategoryCalendar } from '../api/seasonalcalendar'
 
 export function useSeasonalCalendar(missionId: string) {
   const { data, isLoading, isError } = useQuery({

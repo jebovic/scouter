@@ -16,9 +16,10 @@ test.describe('HQ Dashboard', () => {
     await page.goto('/')
     await waitForPageReady(page)
 
-    // Should not crash and should render the page shell
-    const body = page.locator('body')
-    await expect(body).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
+    // Mission names must NOT appear when list is empty
+    const content = await page.textContent('body')
+    expect(content).not.toContain('Test Laptop Mission')
     await page.screenshot({ path: 'e2e/screenshots/dashboard-empty.png' })
   })
 
@@ -39,21 +40,14 @@ test.describe('HQ Dashboard', () => {
     await page.goto('/')
     await waitForPageReady(page)
 
-    // Look for a create/new mission button
-    const createBtn = page.locator('button, [role="button"]').filter({ hasText: /new mission|create|nouvelle/i }).first()
-    if (await createBtn.isVisible()) {
-      await createBtn.click()
-      await page.screenshot({ path: 'e2e/screenshots/dashboard-create-modal.png' })
-    } else {
-      // Try the + button or similar
-      const plusBtn = page.locator('[aria-label*="new"], [aria-label*="create"], [title*="new"]').first()
-      if (await plusBtn.isVisible()) {
-        await plusBtn.click()
-        await page.screenshot({ path: 'e2e/screenshots/dashboard-create-modal-plus.png' })
-      }
-    }
-
-    // Either way, page should not have crashed
-    await expect(page.locator('body')).toBeVisible()
+    const createBtn = page
+      .locator('button, [role="button"]')
+      .filter({ hasText: /new mission|create|nouvelle|nouveau/i })
+      .first()
+    await expect(createBtn).toBeVisible()
+    await createBtn.click()
+    await page.screenshot({ path: 'e2e/screenshots/dashboard-create-modal.png' })
+    // Modal or form should have appeared — page must not crash
+    await expect(page.locator('#root')).not.toBeEmpty()
   })
 })

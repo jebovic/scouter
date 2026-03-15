@@ -18,5 +18,5 @@ const VelocityReportSchema = z.object({
 export type VelocityReport = z.infer<typeof VelocityReportSchema>
 
 export async function getSpendingVelocity(missionId: string): Promise<VelocityReport> {
-  return apiFetch(`/api/missions/${missionId}/spending-velocity`, VelocityReportSchema)
+  return apiFetch<VelocityReport>(`/api/missions/${missionId}/spending-velocity`)
 }

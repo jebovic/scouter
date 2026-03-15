@@ -20,5 +20,5 @@ const BurnRateResponseSchema = z.object({
 export type BurnRateResponse = z.infer<typeof BurnRateResponseSchema>
 
 export async function getBurnRate(missionId: string): Promise<BurnRateResponse> {
-  return apiFetch(`/api/missions/${missionId}/burn-rate`, BurnRateResponseSchema)
+  return apiFetch<BurnRateResponse>(`/api/missions/${missionId}/burn-rate`)
 }

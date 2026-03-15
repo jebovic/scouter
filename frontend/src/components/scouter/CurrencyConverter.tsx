@@ -107,7 +107,7 @@ export function CurrencyConverter() {
 
         {rates && (
           <div className={styles.lastUpdated}>
-            Mis à jour: {formatDate(new Date(rates.fetchedAt), 'fr-FR')}
+            Mis à jour: {formatDate(new Date(rates.date), 'fr-FR')}
           </div>
         )}
       </div>

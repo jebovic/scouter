@@ -13,11 +13,6 @@ function getScoreColor(score: number): string {
   return styles.scoreLow
 }
 
-function getScoreLabel(score: number): string {
-  if (score >= 70) return 'Excellent'
-  if (score >= 50) return 'Bon'
-  return 'À éviter'
-}
 
 function MonthCell({ month }: { month: MonthRecommendation }) {
   return (

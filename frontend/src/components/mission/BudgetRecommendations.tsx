@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useBudgetAnalysis } from '../../hooks/useBudgetAnalysis'
 import type { BudgetRecommendation } from '../../api/budgetrec'
 import styles from './BudgetRecommendations.module.css'

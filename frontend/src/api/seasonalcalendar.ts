@@ -22,5 +22,5 @@ export type MonthRecommendation = z.infer<typeof MonthRecommendationSchema>
 export type CategoryCalendar = z.infer<typeof CategoryCalendarSchema>
 
 export async function getSeasonalCalendar(missionId: string): Promise<CategoryCalendar> {
-  return apiFetch(`/api/missions/${missionId}/seasonal-calendar`, CategoryCalendarSchema)
+  return apiFetch<CategoryCalendar>(`/api/missions/${missionId}/seasonal-calendar`)
 }

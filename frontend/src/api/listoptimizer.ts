@@ -30,5 +30,5 @@ export type MerchantGroup = z.infer<typeof MerchantGroupSchema>
 export type ItemRef = z.infer<typeof ItemRefSchema>
 
 export async function getOptimizedList(missionId: string): Promise<OptimizedList> {
-  return apiFetch(`/api/missions/${missionId}/optimized-list`, OptimizedListSchema)
+  return apiFetch<OptimizedList>(`/api/missions/${missionId}/optimized-list`)
 }

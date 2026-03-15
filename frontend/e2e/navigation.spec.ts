@@ -7,10 +7,10 @@ test.describe('Navigation', () => {
     await page.goto('/settings')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
+    // Settings page renders currency from mock (EUR)
     const content = await page.textContent('body')
-    // Settings page should have settings-related content
-    expect(content).toBeTruthy()
+    expect(content).toContain('EUR')
     await page.screenshot({ path: 'e2e/screenshots/settings-page.png' })
   })
 
@@ -19,7 +19,7 @@ test.describe('Navigation', () => {
     await page.goto('/notifications')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/notifications-page.png' })
   })
 
@@ -28,7 +28,7 @@ test.describe('Navigation', () => {
     await page.goto('/stats')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/stats-page.png' })
   })
 
@@ -37,7 +37,7 @@ test.describe('Navigation', () => {
     await page.goto('/wishlist')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/wishlist-page.png' })
   })
 
@@ -46,7 +46,7 @@ test.describe('Navigation', () => {
     await page.goto('/history')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/history-page.png' })
   })
 
@@ -55,7 +55,7 @@ test.describe('Navigation', () => {
     await page.goto('/deal-calendar')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/deal-calendar-page.png' })
   })
 
@@ -74,7 +74,7 @@ test.describe('Navigation', () => {
     await page.goto('/search')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/search-page.png' })
   })
 
@@ -83,17 +83,22 @@ test.describe('Navigation', () => {
     await page.goto('/')
     await waitForPageReady(page)
 
-    // Try to navigate via sidebar or nav links
-    const navLinks = page.locator('nav a, aside a').first()
-    if (await navLinks.isVisible()) {
-      const href = await navLinks.getAttribute('href')
+    // Nav/sidebar must be present
+    const nav = page.locator('nav, aside, [class*="sidebar"], [class*="topnav"]').first()
+    await expect(nav).toBeVisible()
+
+    // Click the first non-root nav link if available
+    const navLinks = page.locator('nav a, aside a')
+    const count = await navLinks.count()
+    if (count > 0) {
+      const href = await navLinks.first().getAttribute('href')
       if (href && href !== '/') {
-        await navLinks.click()
+        await navLinks.first().click()
         await page.waitForURL(`**${href}`, { timeout: 5000 }).catch(() => {})
       }
     }
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/sidebar-navigation.png' })
   })
 })

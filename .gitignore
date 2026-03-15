@@ -7,6 +7,11 @@
 backend/bin/
 backend/*.exe
 backend/*.out
+backend/server
+
+# Playwright
+frontend/playwright-report/
+frontend/test-results/
 
 # Node / frontend
 frontend/node_modules/

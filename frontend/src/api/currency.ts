@@ -4,7 +4,7 @@ import { apiFetch } from './client'
 export const CurrencyRatesSchema = z.object({
   base: z.string(),
   date: z.string(),
-  rates: z.record(z.number()),
+  rates: z.record(z.string(), z.number()),
 })
 export type CurrencyRates = z.infer<typeof CurrencyRatesSchema>
 

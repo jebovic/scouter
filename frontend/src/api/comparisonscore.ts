@@ -25,7 +25,5 @@ const ComparisonReportSchema = z.object({
 export type ComparisonReport = z.infer<typeof ComparisonReportSchema>
 
 export async function fetchComparisonScore(missionId: string): Promise<ComparisonReport> {
-  return apiFetch(`/api/missions/${missionId}/comparison-score`, {
-    schema: ComparisonReportSchema,
-  })
+  return apiFetch<ComparisonReport>(`/api/missions/${missionId}/comparison-score`)
 }

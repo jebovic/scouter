@@ -136,15 +136,6 @@ function PhaseChip({ phase }: { phase: Mission['phase'] }) {
   )
 }
 
-function SkeletonCol() {
-  return (
-    <td className={styles.skeletonCol}>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className={styles.skeletonLine} />
-      ))}
-    </td>
-  )
-}
 
 export function MissionComparison({ missionIds }: Props) {
   const { missions } = useMissions()

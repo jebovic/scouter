@@ -29,7 +29,6 @@ function fmt(value: number, currency = 'EUR') {
 
 function SequenceItem({ item, rank, currency }: { item: PlannedItem; rank: number; currency: string }) {
   const icon = STATUS_ICONS[item.status] ?? '•'
-  const badgeClass = styles[`statusBadge ${item.status}`.trim()] ?? styles.statusBadge
   return (
     <li className={styles.itemRow}>
       <span className={styles.rank}>{rank}</span>

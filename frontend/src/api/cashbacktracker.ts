@@ -21,5 +21,5 @@ export type MerchantCashback = z.infer<typeof MerchantCashbackSchema>
 export type CashbackSummary = z.infer<typeof CashbackSummarySchema>
 
 export async function getCashbackSummary(missionId: string): Promise<CashbackSummary> {
-  return apiFetch(`/api/missions/${missionId}/cashback`, CashbackSummarySchema)
+  return apiFetch<CashbackSummary>(`/api/missions/${missionId}/cashback`)
 }

@@ -7,9 +7,10 @@ test.describe('Settings Page', () => {
     await page.goto('/settings')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     const content = await page.textContent('body')
-    expect(content).toBeTruthy()
+    // Settings page always renders currency from mock
+    expect(content).toContain('EUR')
     await page.screenshot({ path: 'e2e/screenshots/settings-loaded.png' })
   })
 
@@ -21,7 +22,6 @@ test.describe('Settings Page', () => {
     await waitForPageReady(page)
 
     const content = await page.textContent('body')
-    // Should show EUR somewhere (in a select or display)
     expect(content).toContain('EUR')
     await page.screenshot({ path: 'e2e/screenshots/settings-currency.png' })
   })
@@ -31,8 +31,10 @@ test.describe('Settings Page', () => {
     await page.goto('/settings')
     await waitForPageReady(page)
 
-    // Page should show some settings content without crashing
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
+    const content = await page.textContent('body')
+    // LLM provider section present (ollama is the mock value)
+    expect(content?.toLowerCase()).toMatch(/llm|ollama|provider/i)
     await page.screenshot({ path: 'e2e/screenshots/settings-llm.png' })
   })
 
@@ -42,8 +44,8 @@ test.describe('Settings Page', () => {
     await waitForPageReady(page)
 
     const content = await page.textContent('body')
-    // Danger zone should be present (critical feature for data deletion)
-    expect(content).toBeTruthy()
+    // Danger zone must be present (critical feature for data deletion)
+    expect(content?.toLowerCase()).toMatch(/danger|delete|supprimer/i)
     await page.screenshot({ path: 'e2e/screenshots/settings-danger-zone.png' })
   })
 })

@@ -7,7 +7,6 @@ test.describe('Mission Flow', () => {
     await page.goto('/missions/test-laptop')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
     const content = await page.textContent('body')
     expect(content).toContain('Test Laptop Mission')
     await page.screenshot({ path: 'e2e/screenshots/mission-overview.png' })
@@ -18,7 +17,7 @@ test.describe('Mission Flow', () => {
     await page.goto('/missions/test-laptop/options')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/mission-options.png' })
   })
 
@@ -27,7 +26,7 @@ test.describe('Mission Flow', () => {
     await page.goto('/missions/test-laptop/shopping')
     await waitForPageReady(page)
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
     await page.screenshot({ path: 'e2e/screenshots/mission-shopping.png' })
   })
 
@@ -36,22 +35,17 @@ test.describe('Mission Flow', () => {
     await page.goto('/missions/test-laptop')
     await waitForPageReady(page)
 
-    // Look for tab links to options and shopping
     const optionsTab = page.locator('a[href*="/options"]').first()
-    if (await optionsTab.isVisible()) {
-      await optionsTab.click()
-      await page.waitForURL('**/options', { timeout: 5000 }).catch(() => {})
-      await page.screenshot({ path: 'e2e/screenshots/mission-tab-options.png' })
-    }
+    await expect(optionsTab).toBeVisible()
+    await optionsTab.click()
+    await page.waitForURL('**/options', { timeout: 5000 })
+    await page.screenshot({ path: 'e2e/screenshots/mission-tab-options.png' })
 
     const shoppingTab = page.locator('a[href*="/shopping"]').first()
-    if (await shoppingTab.isVisible()) {
-      await shoppingTab.click()
-      await page.waitForURL('**/shopping', { timeout: 5000 }).catch(() => {})
-      await page.screenshot({ path: 'e2e/screenshots/mission-tab-shopping.png' })
-    }
-
-    await expect(page.locator('body')).toBeVisible()
+    await expect(shoppingTab).toBeVisible()
+    await shoppingTab.click()
+    await page.waitForURL('**/shopping', { timeout: 5000 })
+    await page.screenshot({ path: 'e2e/screenshots/mission-tab-shopping.png' })
   })
 
   test('clicking a mission card navigates to mission', async ({ page }) => {
@@ -59,20 +53,12 @@ test.describe('Mission Flow', () => {
     await page.goto('/')
     await waitForPageReady(page)
 
-    // Find mission card link and click it
-    const missionLink = page.locator(`a[href*="test-laptop"]`).first()
-    if (await missionLink.isVisible()) {
-      await missionLink.click()
-      await page.waitForURL('**/test-laptop**', { timeout: 5000 })
-      await page.screenshot({ path: 'e2e/screenshots/mission-navigate-from-dashboard.png' })
-      expect(page.url()).toContain('test-laptop')
-    } else {
-      // Fallback: navigate directly
-      await page.goto('/missions/test-laptop')
-      await waitForPageReady(page)
-    }
-
-    await expect(page.locator('body')).toBeVisible()
+    const missionLink = page.locator('a[href*="test-laptop"]').first()
+    await expect(missionLink).toBeVisible()
+    await missionLink.click()
+    await page.waitForURL('**/test-laptop**', { timeout: 5000 })
+    await page.screenshot({ path: 'e2e/screenshots/mission-navigate-from-dashboard.png' })
+    expect(page.url()).toContain('test-laptop')
   })
 
   test('mission create and mock response', async ({ page }) => {
@@ -85,11 +71,11 @@ test.describe('Mission Flow', () => {
       updatedAt: new Date().toISOString(),
     }
 
+    // Handle both GET and POST for /api/missions to avoid route.continue() hitting real server
     await mockApiRoutes(page, {
       '**/api/missions': { items: [MISSION_1] },
     })
 
-    // Intercept POST /api/missions
     await page.route('**/api/missions', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
@@ -98,7 +84,11 @@ test.describe('Mission Flow', () => {
           body: JSON.stringify(newMission),
         })
       } else {
-        await route.continue()
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ items: [MISSION_1] }),
+        })
       }
     })
 
@@ -106,6 +96,6 @@ test.describe('Mission Flow', () => {
     await waitForPageReady(page)
     await page.screenshot({ path: 'e2e/screenshots/mission-create-ready.png' })
 
-    await expect(page.locator('body')).toBeVisible()
+    await expect(page.locator('#root')).not.toBeEmpty()
   })
 })

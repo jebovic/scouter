@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const isDocker = !!process.env.E2E_DOCKER
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -15,14 +17,26 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'chrome',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      testIgnore: ['**/smoke.spec.ts'],
     },
+    ...(isDocker
+      ? [
+          {
+            name: 'smoke',
+            use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+            testMatch: ['**/smoke.spec.ts'],
+          },
+        ]
+      : []),
   ],
-  webServer: {
-    command: 'VITE_API_BASE="" npm run dev -- --port 5173',
-    url: 'http://localhost:5173',
-    reuseExistingServer: true,
-    timeout: 30000,
-  },
+  webServer: isDocker
+    ? undefined
+    : {
+        command: 'VITE_API_BASE="" npm run dev -- --port 5173',
+        url: 'http://localhost:5173',
+        reuseExistingServer: true,
+        timeout: 30000,
+      },
 })

@@ -190,11 +190,12 @@ export async function mockApiRoutes(page: Page, overrides: MockRoutes = {}): Pro
       }
     }
 
-    // Fallback: return empty object
+    // Fallback: 500 so missing mock definitions surface immediately
+    const pathname2 = new URL(route.request().url()).pathname
     await route.fulfill({
-      status: 200,
+      status: 500,
       contentType: 'application/json',
-      body: '{}',
+      body: JSON.stringify({ error: `unmatched mock route: ${pathname2}` }),
     })
   })
 }
@@ -204,6 +205,6 @@ export async function waitForPageReady(page: Page): Promise<void> {
   await page.waitForLoadState('load')
   // Wait until React has mounted something into #root (state: 'attached' bypasses visibility check)
   await page.waitForSelector('#root > *', { state: 'attached', timeout: 15000 })
-  // Allow mocked API responses to settle into the UI (React Query flushes async fetch + state update)
-  await page.waitForTimeout(1500)
+  // Wait for all mocked API responses to settle (network idle = React Query flushed)
+  await page.waitForLoadState('networkidle')
 }

@@ -75,8 +75,8 @@ export function WishlistShareCard({ missionId, currency = 'EUR' }: Props) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${data.missionName} — Wishlist`,
-          text: `Check out my wishlist for ${data.missionName}`,
+          title: `${data!.missionName} — Wishlist`,
+          text: `Check out my wishlist for ${data!.missionName}`,
           url: shareUrl,
         })
       } catch {
