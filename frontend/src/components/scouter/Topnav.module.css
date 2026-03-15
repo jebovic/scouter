@@ -99,6 +99,23 @@
   flex-shrink: 0;
 }
 
+.themeBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.themeBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
 /* When subNav is present, it sets margin-left: auto — override actions */
 .subNav ~ .actions,
 .subNav + .actions {

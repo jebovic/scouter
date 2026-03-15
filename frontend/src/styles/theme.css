@@ -82,6 +82,34 @@
   /* --bp-desktop: 1024px */
 }
 
+/* ── Light mode overrides ─────────────────────────────────── */
+[data-theme="light"] {
+  --void:          #f0f4ff;
+  --abyss:         #e8edf8;
+  --deep:          #dce3f2;
+  --surface:       #ffffff;
+  --raised:        #f5f7ff;
+  --surface-raised: #f5f7ff;
+  --border:        #c8d0e8;
+  --border-glow:   #a0b0d0;
+
+  --text:          #1a2040;
+  --text-mid:      #5060a0;
+  --text-dim:      #9aabcc;
+
+  --skeleton-base:  #eaeff8;
+  --skeleton-shine: #c8d4eb;
+}
+
+/* ── Smooth theme transitions ─────────────────────────────── */
+:root {
+  transition: background-color 0.2s, color 0.2s;
+}
+
+body {
+  transition: background-color 0.2s;
+}
+
 /* ── Animations ─────────────────────────────────────────── */
 
 @keyframes pulse-badge {

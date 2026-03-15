@@ -350,6 +350,11 @@
     "searching": "Recherche...",
     "noResults": "Aucun résultat pour cet itinéraire."
   },
+  "export": {
+    "title": "EXPORTER LA MISSION",
+    "downloading": "Téléchargement...",
+    "error": "Échec de l'export. Veuillez réessayer."
+  },
   "pricecomp": {
     "title": "COMPARAISON PRIX",
     "refresh": "Actualiser",

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSidebar } from '../../contexts/sidebar'
+import { useTheme } from '../../hooks/useTheme'
 import { LLMStatus } from './LLMStatus'
 import { NotificationBell } from './NotificationBell'
 import { SearchDropdown } from './SearchDropdown'
@@ -15,6 +16,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
   const { t } = useTranslation()
   const location = useLocation()
   const { openSidebar } = useSidebar()
+  const { isDark, toggleTheme } = useTheme()
 
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + '/')
@@ -97,6 +99,14 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
 
       <div className={styles.actions}>
         <SearchDropdown />
+        <button
+          className={styles.themeBtn}
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {isDark ? '☀' : '🌙'}
+        </button>
         <LLMStatus />
         <NotificationBell />
       </div>

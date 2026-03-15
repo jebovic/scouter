@@ -350,6 +350,11 @@
     "searching": "Searching...",
     "noResults": "No results found for this route."
   },
+  "export": {
+    "title": "EXPORT MISSION",
+    "downloading": "Downloading...",
+    "error": "Export failed. Please try again."
+  },
   "pricecomp": {
     "title": "PRICE COMPARISON",
     "refresh": "Refresh",
