@@ -1,4 +1,6 @@
 export { OptionCard } from './OptionCard'
+export { CompareBar } from './CompareBar'
+export { ComparisonPanel } from './ComparisonPanel'
 export { AttributeRenderer } from './AttributeRenderer'
 export { ComparisonTable } from './ComparisonTable'
 export { ConstraintChecker } from './ConstraintChecker'

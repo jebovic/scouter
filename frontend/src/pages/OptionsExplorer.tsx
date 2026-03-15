@@ -2,7 +2,15 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
-import { OptionCard, ComparisonTable, RadarChart, ConstraintChecker, LivePricesPanel } from '../components/options'
+import {
+  OptionCard,
+  ComparisonTable,
+  RadarChart,
+  ConstraintChecker,
+  LivePricesPanel,
+  CompareBar,
+  ComparisonPanel,
+} from '../components/options'
 import { ComparisonMatrix } from '../components/comparison'
 import { AgentRunHistory } from '../components/agentrun'
 import {
@@ -15,6 +23,7 @@ import {
   useResearch,
   useDecision,
   useAgentRuns,
+  useComparisonMode,
 } from '../hooks'
 import type { OptionBadge } from '../types'
 import styles from './OptionsExplorer.module.css'
@@ -39,11 +48,15 @@ export default function OptionsExplorer() {
   const [badgeFilter, setBadgeFilter] = useState<OptionBadge | 'all'>('all')
   const [showFeedback, setShowFeedback] = useState(false)
   const [rejectTarget, setRejectTarget] = useState<string | null>(null)
+  const [showComparisonPanel, setShowComparisonPanel] = useState(false)
+  const { isCompareMode, setIsCompareMode, selectedIds, toggle, clearSelection } = useComparisonMode()
 
   const isLoading = missionLoading || optionsLoading
 
   const filtered = badgeFilter === 'all' ? options : options.filter((o) => o.badge === badgeFilter)
   const pinnedCount = options.filter((o) => o.pinned).length
+  const selectionFull = selectedIds.size >= 4
+  const selectedOptions = options.filter((o) => selectedIds.has(o.id))
 
   if (isLoading) {
     return (
@@ -72,6 +85,21 @@ export default function OptionsExplorer() {
             </div>
 
             <div className={styles.actions}>
+              {/* Compare mode toggle */}
+              <button
+                onClick={() => {
+                  setIsCompareMode(!isCompareMode)
+                  if (isCompareMode) {
+                    clearSelection()
+                    setShowComparisonPanel(false)
+                  }
+                }}
+                className={`${styles.viewToggleBtn}${isCompareMode ? ` ${styles.active}` : ''}`}
+                style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '6px 14px' }}
+              >
+                <span aria-hidden="true">⊞↔</span> {t('options.compareMode', { defaultValue: 'Mode Comparaison' })}
+              </button>
+
               {/* View mode toggle */}
               <div className={styles.viewToggle}>
                 {(['grid', 'compare'] as ViewMode[]).map((mode) => (
@@ -162,6 +190,14 @@ export default function OptionsExplorer() {
                   <RadarChart options={filtered} />
                 </div>
               )}
+              {/* Comparison panel (inline, above grid when open) */}
+              {isCompareMode && showComparisonPanel && selectedOptions.length >= 2 && (
+                <ComparisonPanel
+                  options={selectedOptions}
+                  onClose={() => setShowComparisonPanel(false)}
+                />
+              )}
+
               <div className={styles.optionsGrid}>
                 {filtered.map((option) => (
                   <div key={option.id}>
@@ -171,6 +207,10 @@ export default function OptionsExplorer() {
                       onPin={(id) => pinOption(id)}
                       onReject={(id) => setRejectTarget(id)}
                       onUnreject={(id) => unrejectOption(id)}
+                      compareMode={isCompareMode}
+                      selected={selectedIds.has(option.id)}
+                      onToggleSelect={toggle}
+                      selectionFull={selectionFull}
                     />
                     {mission && (
                       <LivePricesPanel
@@ -193,6 +233,17 @@ export default function OptionsExplorer() {
           )}
         </div>
       </main>
+
+      {/* Sticky compare bar */}
+      <CompareBar
+        isCompareMode={isCompareMode}
+        selectedCount={selectedIds.size}
+        onCompare={() => setShowComparisonPanel(true)}
+        onClear={() => {
+          clearSelection()
+          setShowComparisonPanel(false)
+        }}
+      />
 
       {showFeedback && (
         <FeedbackModal

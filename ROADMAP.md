@@ -71,7 +71,7 @@
 | 45 | Performance Dashboard (Lighthouse + bundle analysis) | Infrastructure | Low | 📋 Planned |
 | 46 | Smart Comparison Mode (side-by-side option viewer) | Interface | High | 📋 Planned |
 | 47 | Mission AI Coach (proactive tips during research) | Agent | Medium | 📋 Planned |
-| 48 | French VAT Calculator (TVA 20%/5.5% per category) | Functional | Medium | 📋 Planned |
+| 48 | French VAT Calculator (TVA 20%/5.5% per category) | Functional | Medium | ✅ Done |
 | 49 | Gamification: Scouter Badges & Saving Milestones | Interface | Low | 📋 Planned |
 | 50 | Multi-Mission Budget Rollup Dashboard | Interface | High | 📋 Planned |
 

@@ -14,6 +14,10 @@ interface OptionCardProps {
   onPin?: (optionId: string) => void
   onReject?: (optionId: string) => void
   onUnreject?: (optionId: string) => void
+  compareMode?: boolean
+  selected?: boolean
+  onToggleSelect?: (id: string) => void
+  selectionFull?: boolean
 }
 
 const BADGES: Option['badge'][] = ['recommended', 'alternative', 'watch', 'rejected']
@@ -25,9 +29,22 @@ function scoreColor(s: number): { text: string; bg: string } {
   return { text: 'var(--coral)', bg: 'var(--coral-dim)' }
 }
 
-export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onPin, onReject, onUnreject }: OptionCardProps) {
+export function OptionCard({
+  option,
+  currency = 'USD',
+  score,
+  onBadgeChange,
+  onPin,
+  onReject,
+  onUnreject,
+  compareMode = false,
+  selected = false,
+  onToggleSelect,
+  selectionFull = false,
+}: OptionCardProps) {
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
+  const isDimmed = (isRejected || (compareMode && selectionFull && !selected))
 
   return (
     <Card
@@ -36,10 +53,45 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
-        opacity: isRejected ? 0.6 : 1,
-        transition: 'opacity 0.2s',
+        opacity: isDimmed ? (compareMode && selectionFull && !selected ? 0.5 : 0.6) : 1,
+        transition: 'opacity 0.2s, border-color 0.2s, box-shadow 0.2s',
+        position: 'relative',
+        borderColor: selected ? 'var(--cyan)' : undefined,
+        boxShadow: selected ? '0 0 0 2px var(--cyan-dim)' : undefined,
       }}
     >
+      {/* Compare mode checkbox overlay */}
+      {compareMode && (
+        <button
+          onClick={() => onToggleSelect?.(option.id)}
+          aria-label={selected ? `Deselect ${option.name}` : `Select ${option.name}`}
+          aria-pressed={selected}
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            width: 22,
+            height: 22,
+            borderRadius: 4,
+            border: `2px solid ${selected ? 'var(--cyan)' : 'var(--border)'}`,
+            background: selected ? 'var(--cyan)' : 'var(--surface)',
+            cursor: selectionFull && !selected ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2,
+            transition: 'border-color 0.15s, background 0.15s',
+            padding: 0,
+          }}
+          disabled={selectionFull && !selected}
+        >
+          {selected && (
+            <span style={{ color: 'var(--bg)', fontSize: '0.75rem', fontWeight: 700, lineHeight: 1 }}>
+              ✓
+            </span>
+          )}
+        </button>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <div
