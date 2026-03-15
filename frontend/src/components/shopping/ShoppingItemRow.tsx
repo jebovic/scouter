@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Badge } from '../scouter'
 import { TrendBadge } from './TrendBadge'
 import { DealScoreBadge } from './DealScoreBadge'
+import { DealExplainerPopover } from './DealExplainerPopover'
 import { PriceSparkline } from './PriceSparkline'
 import { PricePredictionBadge } from './PricePredictionBadge'
 import { VATCalculator } from './VATCalculator'
@@ -22,6 +23,11 @@ function DealIntelPanel({ missionId, itemId }: { missionId: string; itemId: stri
         <>
           <TrendBadge trend={score.trend} />
           <DealScoreBadge score={score} />
+          <DealExplainerPopover
+            itemId={itemId}
+            dealScore={Math.round(Math.max(0, Math.min(100, score.pctBelowAvg)))}
+            trend={score.trend}
+          />
         </>
       )}
     </>

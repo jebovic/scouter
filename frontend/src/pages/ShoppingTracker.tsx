@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList, CostBreakdown, PriceHistoryModal } from '../components/shopping'
+import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -190,6 +190,9 @@ export default function ShoppingTracker() {
             <div className={styles.content}>
               {/* Shopping list */}
               <ShoppingList items={items} missionId={mission?.id ?? ''} currency={mission?.currency ?? 'USD'} onPriceClick={setHistoryItem} onPin={(id) => pinItem(id)} />
+
+              {/* Retailer Radar */}
+              {mission && <RetailerRadar missionSlug={mission.id} />}
 
               {/* Cost breakdown */}
               {items.length >= 2 && (

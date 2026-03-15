@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/dealexplain"
 	"github.com/jibei/scouter/internal/digest"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/coach"
@@ -386,6 +387,12 @@ func main() {
 	// Smart Price Prediction (Phase 52)
 	predictionHandler := prediction.NewHandler(shoppingRepo)
 	r.Get("/api/shopping-items/{id}/prediction", predictionHandler.GetPrediction)
+
+	// AI Deal Explainer (Phase 60)
+	dealExplainCache := dealexplain.NewCache(1 * time.Hour)
+	dealExplainAgent := dealexplain.NewAgent(provider)
+	dealExplainHandler := dealexplain.NewHandler(shoppingRepo, dealExplainAgent, dealExplainCache)
+	r.Get("/api/shopping-items/{id}/explain", dealExplainHandler.Explain)
 
 	// Stock availability heuristic (Phase 42)
 	stockCache := stockcheck.NewCache(5 * time.Minute)
