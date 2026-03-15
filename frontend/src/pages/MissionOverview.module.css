@@ -1,0 +1,264 @@
+@import '../styles/theme.css';
+
+.loading {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notFound {
+  flex: 1;
+  padding: 2rem;
+  color: var(--coral);
+  font-family: var(--font-display);
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.headerIcon {
+  font-size: 2.5rem;
+}
+
+.missionName {
+  font-family: var(--font-display);
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+}
+
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.categoryLabel {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+/* ── Cards grid ─────────────────────────────────────────────── */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+.cardLabel {
+  font-family: var(--font-display);
+  color: var(--text-mid);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+/* ── Budget card ────────────────────────────────────────────── */
+.budgetMeta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ── Phase switcher ─────────────────────────────────────────── */
+.phaseButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.phaseBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.phaseBtn:disabled {
+  cursor: not-allowed;
+}
+
+.phaseBtnActive {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+/* ── Agent action buttons ───────────────────────────────────── */
+.agentActions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.agentBtn {
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.06em;
+  transition: all 0.15s;
+}
+
+.agentBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.researchBtn {
+  border: 1px solid var(--gold);
+  background: rgba(255, 198, 0, 0.08);
+  color: var(--gold);
+}
+
+.researchBtn:disabled {
+  background: var(--surface);
+}
+
+.pricingBtn {
+  border: 1px solid var(--purple);
+  background: rgba(139, 92, 246, 0.08);
+  color: var(--purple);
+}
+
+.pricingBtn:disabled {
+  background: var(--surface);
+}
+
+/* ── Constraints ────────────────────────────────────────────── */
+.constraintList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.constraint {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.constraintHard {
+  background: rgba(255, 90, 90, 0.1);
+  border: 1px solid var(--coral);
+  color: var(--coral);
+}
+
+.constraintSoft {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-mid);
+}
+
+.constraintType {
+  margin-left: 6px;
+  opacity: 0.5;
+  font-size: 0.7rem;
+}
+
+/* ── Section spacers ────────────────────────────────────────── */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+/* ── Quick nav ──────────────────────────────────────────────── */
+.quickNav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.quickNavBtn {
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-mid);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.quickNavBtn:hover {
+  border-color: var(--border-mid);
+  background: var(--surface-raised);
+}
+
+.quickNavIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.quickNavTitle {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.quickNavDesc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.quickNavTitleOptions {
+  color: var(--cyan);
+}
+
+.quickNavTitleShopping {
+  color: var(--gold);
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .quickNav {
+    grid-template-columns: 1fr;
+  }
+
+  .missionName {
+    font-size: 1.4rem;
+  }
+}
