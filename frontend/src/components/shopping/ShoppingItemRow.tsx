@@ -14,6 +14,7 @@ import { VoteBar } from './VoteBar'
 import { PriceForecastCard } from './PriceForecastCard'
 import { PriceAnalyticsPanel } from './PriceAnalyticsPanel'
 import { ReviewSummaryCard } from './ReviewSummaryCard'
+import { PurchaseAdvisorCard } from './PurchaseAdvisorCard'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { MarketplaceComparator } from './MarketplaceComparator'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
@@ -239,6 +240,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <PriceAnalyticsPanel missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <PurchaseAdvisorCard itemId={item.id} itemName={item.name} />
       )}
       {showIntel && (
         <ReviewSummaryCard itemId={item.id} itemName={item.name} />

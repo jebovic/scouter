@@ -1,0 +1,249 @@
+@import '../../styles/theme.css';
+
+/* ── Board container ─────────────────────────────────────────────────────── */
+
+.board {
+  display: flex;
+  gap: var(--gap);
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: allow horizontal scroll */
+@media (max-width: 640px) {
+  .board {
+    gap: var(--gap-sm);
+  }
+}
+
+/* ── Column ──────────────────────────────────────────────────────────────── */
+
+.column {
+  flex: 0 0 280px;
+  min-width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--col-accent, var(--border));
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.columnOver {
+  border-color: var(--col-accent, var(--cyan));
+  box-shadow: 0 0 0 2px var(--col-accent, var(--cyan)), 0 0 20px color-mix(in srgb, var(--col-accent, var(--cyan)) 20%, transparent);
+}
+
+/* ── Column header ───────────────────────────────────────────────────────── */
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.columnLabel {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--col-accent, var(--text));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.columnCount {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 7px;
+  min-width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── Cards area ──────────────────────────────────────────────────────────── */
+
+.columnCards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  padding: 0.75rem;
+  min-height: 120px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.emptyColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 2rem 1rem;
+  color: var(--text-dim);
+  min-height: 80px;
+}
+
+.emptyIcon {
+  font-size: 1.4rem;
+  opacity: 0.4;
+}
+
+.emptyText {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+/* ── Item card ───────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: grab;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.15s, opacity 0.15s, transform 0.1s;
+  animation: card-enter 0.18s ease-out;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.cardDragging {
+  opacity: 0.45;
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+/* ── Drag handle ─────────────────────────────────────────────────────────── */
+
+.dragHandle {
+  color: var(--text-dim);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ── Card body ───────────────────────────────────────────────────────────── */
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cardName {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.cardMerchant {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.cardPrice {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ── Status dot ──────────────────────────────────────────────────────────── */
+
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotBuy         { background: var(--badge-buy); }
+.dotFlashSale   { background: var(--badge-flash-sale); animation: pulse-badge 1.4s infinite; }
+.dotPreorder    { background: var(--badge-preorder); }
+.dotDefer       { background: var(--text-dim); }
+.dotWatch       { background: var(--badge-watch); }
+.dotCrisis      { background: var(--badge-crisis); }
+.dotRecommended { background: var(--badge-recommended); }
+.dotRejected    { background: var(--badge-rejected); }
+
+/* ── Target price chip ───────────────────────────────────────────────────── */
+
+.targetChip {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border: 1px solid color-mix(in srgb, var(--cyan) 30%, transparent);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+/* ── Loading skeleton ────────────────────────────────────────────────────── */
+
+.loadingRow {
+  display: flex;
+  gap: var(--gap);
+  align-items: flex-start;
+}
+
+.skeletonColumn {
+  flex: 0 0 280px;
+  height: 320px;
+  border-radius: var(--radius);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s infinite;
+}

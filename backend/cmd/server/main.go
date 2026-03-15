@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/purchaseadvisor"
 	"github.com/jibei/scouter/internal/budgetalert"
 	"github.com/jibei/scouter/internal/ecoscore"
 	"github.com/jibei/scouter/internal/loyaltypoints"
@@ -603,6 +604,10 @@ func main() {
 	// Eco-Score & Sustainability Dashboard (Phase 109) — deterministic, no LLM
 	ecoScoreHandler := ecoscore.NewHandler(shoppingSvc)
 	r.Get("/api/missions/{missionID}/eco-score", ecoScoreHandler.GetEcoScore)
+
+	// AI Purchase Advisor (Phase 110) — LLM tool-use, 2h in-memory cache
+	purchaseAdvisorHandler := purchaseadvisor.NewHandler(shoppingRepo, provider)
+	r.Post("/api/items/{itemID}/purchase-advice", purchaseAdvisorHandler.GetAdvice)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

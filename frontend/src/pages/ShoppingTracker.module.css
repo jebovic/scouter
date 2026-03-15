@@ -231,6 +231,43 @@
   gap: var(--gap-sm);
 }
 
+/* ── View mode toggle ──────────────────────────────────────────────────────── */
+
+.viewToggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.viewToggleBtn {
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.viewToggleBtn:last-child {
+  border-right: none;
+}
+
+.viewToggleBtn:hover {
+  background: var(--raised);
+  color: var(--text);
+}
+
+.viewToggleActive {
+  background: var(--raised);
+  color: var(--gold);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .header {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel } from '../components/shopping'
+import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -30,6 +30,7 @@ export default function ShoppingTracker() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
   const [addForm, setAddForm] = useState<Partial<ShoppingItemCreateRequest>>({})
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
 
   const isLoading = missionLoading || itemsLoading
 
@@ -102,6 +103,25 @@ export default function ShoppingTracker() {
               >
                 <span aria-hidden="true">💰</span>{pricingPending ? ` ${t('pricing.scouting')}` : ` ${t('pricing.priceIntel')}`}
               </button>
+              {/* View mode toggle */}
+              <div className={styles.viewToggle} role="group" aria-label="View mode">
+                <button
+                  className={`${styles.viewToggleBtn} ${viewMode === 'list' ? styles.viewToggleActive : ''}`}
+                  onClick={() => setViewMode('list')}
+                  aria-pressed={viewMode === 'list'}
+                  title="Vue liste"
+                >
+                  ≡ Liste
+                </button>
+                <button
+                  className={`${styles.viewToggleBtn} ${viewMode === 'kanban' ? styles.viewToggleActive : ''}`}
+                  onClick={() => setViewMode('kanban')}
+                  aria-pressed={viewMode === 'kanban'}
+                  title="Vue Kanban"
+                >
+                  ⊞ Kanban
+                </button>
+              </div>
             </div>
           </div>
 
@@ -191,6 +211,8 @@ export default function ShoppingTracker() {
               actionLabel={t('pricing.runPriceIntel').toUpperCase()}
               onAction={() => setShowFeedback(true)}
             />
+          ) : viewMode === 'kanban' ? (
+            <KanbanBoard missionId={mission?.id ?? ''} currency={mission?.currency ?? 'USD'} />
           ) : (
             <div className={styles.content}>
               {/* Shopping list */}
