@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–19 complete. Auto-improvement loop active — architecting Phase 20+.
+> Current status: Phases 1–35 complete. Auto-improvement loop v3 active — architecting Phase 36+.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -53,14 +53,24 @@
 | 27 | Price History Chart (recharts LineChart) | Interface | Medium | ✅ Done |
 | **28** | **Smart Notifications Center** | **Interface** | **High** | ✅ Done |
 | 29 | French Market Integrations (travel APIs) | Functional | High | ✅ Done |
-| 30 | Social Proof & Review Aggregation | Functional | Medium | 🔄 In Progress |
-| 31 | Product Price Comparison (LeLynx / idealo FR) | Functional | High | 📋 Planned |
-| 32 | AI Purchase Timing Advisor | Agent | Medium | 📋 Planned |
-| 33 | Mission Export to PDF | Interface | Low | 📋 Planned |
-| 34 | Dark/Light Theme Toggle | Interface | Low | 📋 Planned |
-| 35 | Budget Envelope (envelope budgeting method) | Functional | Medium | 📋 Planned |
+| 30 | Social Proof & Review Aggregation | Functional | Medium | ✅ Done |
+| 31 | Product Price Comparison (LeLynx / idealo FR) | Functional | High | ✅ Done |
+| 32 | AI Purchase Timing Advisor | Agent | Medium | ✅ Done |
+| 33 | Mission Export to PDF/MD/JSON | Interface | Low | ✅ Done |
+| 34 | Dark/Light Theme Toggle | Interface | Low | ✅ Done |
+| 35 | Budget Envelope (envelope budgeting method) | Functional | Medium | ✅ Done |
+| 36 | Purchase-to-Envelope Linking (actual spend) | Functional | High | 📋 Planned |
+| 37 | French Seasonal Deal Calendar | Interface | Medium | 📋 Planned |
+| 38 | Smart Budget Alerts (envelope threshold push) | Functional | High | 📋 Planned |
+| 39 | Receipt Scanner (OCR upload) | Functional | Medium | 📋 Planned |
+| 40 | Quick Mission Duplicate / Template from Mission | Interface | Low | 📋 Planned |
+| 41 | Merchant Affiliate Deep Links (Fnac, Darty, Boulanger) | Functional | Medium | 📋 Planned |
+| 42 | Real-time Stock Availability (French retailers) | Functional | High | 📋 Planned |
+| 43 | AI Shopping Summary Report (PDF/email) | Agent | Medium | 📋 Planned |
+| 44 | Voice Input for Mission Creation (Web Speech API) | Interface | Low | 📋 Planned |
+| 45 | Performance Dashboard (Lighthouse + bundle analysis) | Infrastructure | Low | 📋 Planned |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
 ---
 

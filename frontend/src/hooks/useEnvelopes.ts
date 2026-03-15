@@ -4,6 +4,7 @@ import {
   createEnvelope,
   updateEnvelope,
   deleteEnvelope,
+  getEnvelopeSummary,
   type EnvelopeDTO,
 } from '../api/envelope'
 
@@ -48,4 +49,14 @@ export function useDeleteEnvelope() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ENVELOPES_KEY }),
   })
   return { remove: mutateAsync, isPending }
+}
+
+export function useEnvelopeSummary(envelopeId: string | null) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['envelope-summary', envelopeId],
+    queryFn: () => getEnvelopeSummary(envelopeId!),
+    staleTime: 60_000,
+    enabled: !!envelopeId,
+  })
+  return { summary: data ?? null, isLoading, error }
 }

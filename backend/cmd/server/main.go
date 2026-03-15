@@ -23,6 +23,7 @@ import (
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
 	"github.com/jibei/scouter/internal/embedding"
+	"github.com/jibei/scouter/internal/envelope"
 	"github.com/jibei/scouter/internal/export"
 	"github.com/jibei/scouter/internal/forecast"
 	"github.com/jibei/scouter/internal/httputil"
@@ -306,6 +307,12 @@ func main() {
 
 	// Wish List route (repo+checker declared above, before the scheduler block)
 	r.Route("/api/wishlist", wishlist.Routes(wishlistRepo))
+
+	// Envelope Budgeting (Phase 35)
+	envelopeRepo := envelope.NewRepository(pool)
+	envelopeSvc := envelope.NewService(envelopeRepo)
+	envelopeHandler := envelope.NewHandler(envelopeSvc)
+	r.Route("/api/envelopes", envelope.Routes(envelopeHandler))
 
 	// Spending Persona (Phase 26)
 	personaRepo := persona.NewRepository(pool)

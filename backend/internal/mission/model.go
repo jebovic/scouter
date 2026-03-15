@@ -30,6 +30,7 @@ type Mission struct {
 	CostCategories []string        `json:"costCategories"`
 	Timeline       []TimelineEvent `json:"timeline"`
 	WeightProfile  WeightProfile   `json:"weightProfile"`
+	EnvelopeID     *uuid.UUID      `json:"envelopeId,omitempty"`
 	Lessons        *string         `json:"lessons,omitempty"`
 	ShareToken     *string         `json:"shareToken,omitempty"`
 	ArchivedAt     *time.Time      `json:"archivedAt,omitempty"`
@@ -75,4 +76,5 @@ type UpdateRequest struct {
 	CostCategories []string         `json:"costCategories,omitempty"`
 	Timeline       []TimelineEvent  `json:"timeline,omitempty"`
 	WeightProfile  *WeightProfile   `json:"weightProfile,omitempty"`
+	EnvelopeID     *uuid.UUID       `json:"envelopeId,omitempty"`
 }

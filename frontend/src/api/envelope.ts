@@ -51,3 +51,19 @@ export async function updateEnvelope(
 export async function deleteEnvelope(id: string): Promise<void> {
   await apiFetch<unknown>(`/api/envelopes/${id}`, { method: 'DELETE' })
 }
+
+// ── Envelope summary ─────────────────────────────────────────────────────────
+
+export const EnvelopeSummarySchema = z.object({
+  envelope: EnvelopeSchema,
+  missionCount: z.number(),
+  totalBudget: z.number(),
+  totalSpent: z.number(),
+})
+
+export type EnvelopeSummaryDTO = z.infer<typeof EnvelopeSummarySchema>
+
+export async function getEnvelopeSummary(id: string): Promise<EnvelopeSummaryDTO> {
+  const data = await apiFetch<unknown>(`/api/envelopes/${id}/summary`)
+  return EnvelopeSummarySchema.parse(data)
+}

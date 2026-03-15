@@ -42,6 +42,7 @@ export const MissionSchema = z.object({
   timeline: z.array(TimelineEventSchema),
   weightProfile: WeightProfileSchema.default({ price: 0, quality: 0, feature: 0 }),
   lessons: z.string().nullish(),
+  envelopeId: z.string().uuid().nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })

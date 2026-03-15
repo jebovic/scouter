@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '../scouter'
 import type { MissionCreateRequest, MissionCategory } from '../../types'
+import { EnvelopeSelector } from './EnvelopeSelector'
 import styles from './MissionForm.module.css'
 
 const CATEGORIES: { value: MissionCategory; emoji: string }[] = [
@@ -15,11 +16,11 @@ const CATEGORIES: { value: MissionCategory; emoji: string }[] = [
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY']
 
 interface MissionFormProps {
-  onSubmit: (req: MissionCreateRequest) => void
+  onSubmit: (req: MissionCreateRequest & { envelopeId?: string | null }) => void
   onCancel: () => void
   loading?: boolean
   error?: string
-  initialValues?: Partial<MissionCreateRequest>
+  initialValues?: Partial<MissionCreateRequest & { envelopeId?: string | null }>
 }
 
 export function MissionForm({ onSubmit, onCancel, loading, error, initialValues }: MissionFormProps) {
@@ -29,6 +30,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
   const [category, setCategory] = useState<MissionCategory>(initialValues?.category ?? 'custom')
   const [budget, setBudget] = useState(initialValues?.budget != null ? String(initialValues.budget) : '')
   const [currency, setCurrency] = useState(initialValues?.currency ?? 'USD')
+  const [envelopeId, setEnvelopeId] = useState<string | null>(initialValues?.envelopeId ?? null)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -42,6 +44,7 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
       locale: navigator.language,
       constraints: initialValues?.constraints ?? [],
       costCategories: initialValues?.costCategories ?? [],
+      envelopeId,
     })
   }
 
@@ -109,6 +112,10 @@ export function MissionForm({ onSubmit, onCancel, loading, error, initialValues 
               ))}
             </select>
           </div>
+        </div>
+
+        <div>
+          <EnvelopeSelector value={envelopeId} onChange={setEnvelopeId} />
         </div>
 
         {error && <div className={styles.error}>{error}</div>}

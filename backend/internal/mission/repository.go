@@ -43,7 +43,7 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 
 const selectCols = `id, slug, name, icon, category, budget, currency, locale, phase,
 		       constraints, cost_categories, timeline, weight_profile,
-		       lessons, share_token, archived_at, created_at, updated_at`
+		       envelope_id, lessons, share_token, archived_at, created_at, updated_at`
 
 func (r *pgRepository) List(ctx context.Context) ([]Mission, error) {
 	rows, err := r.pool.Query(ctx, `
@@ -173,11 +173,11 @@ func (r *pgRepository) Create(ctx context.Context, m Mission) (*Mission, error) 
 	}
 
 	row := r.pool.QueryRow(ctx, `
-		INSERT INTO missions (slug, name, icon, category, budget, currency, locale, phase, constraints, cost_categories, timeline)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		INSERT INTO missions (slug, name, icon, category, budget, currency, locale, phase, constraints, cost_categories, timeline, envelope_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING `+selectCols,
 		m.Slug, m.Name, m.Icon, m.Category, m.Budget, m.Currency, m.Locale, m.Phase,
-		constraintsJSON, categoriesJSON, timelineJSON)
+		constraintsJSON, categoriesJSON, timelineJSON, m.EnvelopeID)
 
 	return scanMission(row)
 }
@@ -214,12 +214,14 @@ func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateReque
 		  cost_categories = CASE WHEN $8::jsonb IS NOT NULL THEN $8 ELSE cost_categories END,
 		  timeline        = CASE WHEN $9::jsonb IS NOT NULL THEN $9 ELSE timeline END,
 		  weight_profile  = CASE WHEN $10::jsonb IS NOT NULL THEN $10 ELSE weight_profile END,
+		  envelope_id     = CASE WHEN $11::boolean THEN $12::uuid ELSE envelope_id END,
 		  updated_at      = now()
 		WHERE id = $1
 		RETURNING `+selectCols,
 		id, req.Name, req.Icon, req.Budget, req.Phase, req.Lessons,
 		string(constraintsJSON), string(categoriesJSON), string(timelineJSON),
-		nullableJSON(weightProfileJSON))
+		nullableJSON(weightProfileJSON),
+		req.EnvelopeID != nil, req.EnvelopeID)
 
 	m, err := scanMission(row)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -314,7 +316,7 @@ func scanMission(s scanner) (*Mission, error) {
 		&m.ID, &m.Slug, &m.Name, &m.Icon, &m.Category,
 		&m.Budget, &m.Currency, &m.Locale, &m.Phase,
 		&constraintsRaw, &categoriesRaw, &timelineRaw, &weightProfileRaw,
-		&m.Lessons, &m.ShareToken, &m.ArchivedAt,
+		&m.EnvelopeID, &m.Lessons, &m.ShareToken, &m.ArchivedAt,
 		&m.CreatedAt, &m.UpdatedAt,
 	)
 	if err != nil {

@@ -1,0 +1,40 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+}
+
+.select {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.12s;
+  appearance: auto;
+}
+
+.select:focus {
+  border-color: var(--cyan);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.noEnvelope {
+  color: var(--text-dim);
+}

@@ -35,6 +35,7 @@ export interface Mission {
   timeline: TimelineEvent[]
   weightProfile: WeightProfile
   lessons?: string | null
+  envelopeId?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -60,4 +61,5 @@ export interface MissionUpdateRequest {
   timeline?: TimelineEvent[]
   weightProfile?: WeightProfile
   lessons?: string
+  envelopeId?: string | null
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Topnav } from '../components/scouter/Topnav'
-import { useEnvelopes, useCreateEnvelope, useUpdateEnvelope, useDeleteEnvelope } from '../hooks'
+import { useEnvelopes, useCreateEnvelope, useUpdateEnvelope, useDeleteEnvelope, useEnvelopeSummary } from '../hooks'
 import type { EnvelopeDTO } from '../api/envelope'
 import styles from './EnvelopesPage.module.css'
 
@@ -92,6 +92,47 @@ function EnvelopeForm({
   )
 }
 
+function EnvelopeSummaryBadge({ envelopeId, monthlyAmount, currency }: { envelopeId: string; monthlyAmount: number; currency: string }) {
+  const { summary, isLoading } = useEnvelopeSummary(envelopeId)
+
+  const fmt = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  })
+
+  if (isLoading) {
+    return <div className={styles.summaryLoading} aria-label="Loading summary" />
+  }
+
+  if (!summary) return null
+
+  const fillPct = monthlyAmount > 0 ? Math.min(100, (summary.totalSpent / monthlyAmount) * 100) : 0
+  const fillColor =
+    fillPct < 80 ? 'var(--green)' : fillPct <= 100 ? 'var(--gold)' : 'var(--coral)'
+
+  return (
+    <div className={styles.summary}>
+      <div className={styles.summaryMeta}>
+        <span className={styles.summaryCount}>
+          {summary.missionCount} mission{summary.missionCount !== 1 ? 's' : ''} linked
+        </span>
+      </div>
+      <div className={styles.summaryAmounts}>
+        <span>Budget: {fmt.format(summary.totalBudget)}</span>
+        <span className={styles.summaryDivider}>/</span>
+        <span>Spent: {fmt.format(summary.totalSpent)}</span>
+      </div>
+      <div className={styles.summaryBar}>
+        <div
+          className={styles.summaryFill}
+          style={{ width: `${fillPct}%`, background: fillColor } as React.CSSProperties}
+        />
+      </div>
+    </div>
+  )
+}
+
 function EnvelopeCard({ env }: { env: EnvelopeDTO }) {
   const [editing, setEditing] = useState(false)
   const { update, isPending: updating } = useUpdateEnvelope()
@@ -157,6 +198,11 @@ function EnvelopeCard({ env }: { env: EnvelopeDTO }) {
         <span className={styles.amount}>{fmt.format(env.monthlyAmount)}</span>
         <span className={styles.period}> / month</span>
       </div>
+      <EnvelopeSummaryBadge
+        envelopeId={env.id}
+        monthlyAmount={env.monthlyAmount}
+        currency={env.currency}
+      />
     </div>
   )
 }
