@@ -22,6 +22,7 @@ import { SeasonalBadge } from './SeasonalBadge'
 import { WatchlistButton } from './WatchlistButton'
 import { CurrencyConverter } from './CurrencyConverter'
 import { LoyaltyCalculator } from './LoyaltyCalculator'
+import { FrenchMarketInsight } from './FrenchMarketInsight'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -241,6 +242,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <ReviewSummaryCard itemId={item.id} itemName={item.name} />
+      )}
+      {showIntel && (
+        <FrenchMarketInsight itemName={item.name} category={item.costCategory} />
       )}
     </>
   )

@@ -76,6 +76,7 @@ import (
 	"github.com/jibei/scouter/internal/rebalancer"
 	"github.com/jibei/scouter/internal/receipt"
 	"github.com/jibei/scouter/internal/seasonal"
+	"github.com/jibei/scouter/internal/frenchmarket"
 	"github.com/jibei/scouter/internal/shoppingoptimizer"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/watchlist"
@@ -588,6 +589,10 @@ func main() {
 	// Smart Shopping List Optimizer (Phase 104) — deterministic, no LLM
 	shopOptimizerHandler := shoppingoptimizer.NewHandler(pool)
 	r.Post("/api/missions/{missionID}/shopping/optimize", shopOptimizerHandler.Optimize)
+
+	// French Market Price Intelligence (Phase 106) — hardcoded knowledge base, no LLM
+	frenchMarketHandler := frenchmarket.NewHandler()
+	r.Get("/api/market/insight", frenchMarketHandler.GetInsight)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
