@@ -30,8 +30,9 @@ func (h *Handler) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", h.list)
 	r.Get("/unread-count", h.unreadCount)
-	r.Patch("/{id}/read", h.markRead)
 	r.Post("/read-all", h.markAllRead)
+	r.Patch("/{id}/read", h.markRead)
+	r.Delete("/{id}", h.delete)
 	return r
 }
 
@@ -46,7 +47,23 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	notifs, err := h.repo.List(r.Context(), limit)
+	f := ListFilter{Limit: limit}
+
+	if raw := r.URL.Query().Get("missionId"); raw != "" {
+		id, err := uuid.Parse(raw)
+		if err != nil {
+			httputil.WriteError(w, http.StatusBadRequest, "invalid missionId")
+			return
+		}
+		f.MissionID = &id
+	}
+
+	if raw := r.URL.Query().Get("type"); raw != "" {
+		t := Type(raw)
+		f.Type = &t
+	}
+
+	notifs, err := h.repo.ListFiltered(r.Context(), f)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -86,6 +103,24 @@ func (h *Handler) markRead(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) markAllRead(w http.ResponseWriter, r *http.Request) {
 	if err := h.repo.MarkAllRead(r.Context()); err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid notification id")
+		return
+	}
+
+	if err := h.repo.Delete(r.Context(), id); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			httputil.WriteError(w, http.StatusNotFound, "notification not found")
+			return
+		}
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}

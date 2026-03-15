@@ -10,13 +10,22 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// ListFilter holds optional query filters for ListFiltered.
+type ListFilter struct {
+	MissionID *uuid.UUID
+	Type      *Type
+	Limit     int
+}
+
 // Repository defines the data access interface for notifications.
 type Repository interface {
 	List(ctx context.Context, limit int) ([]Notification, error)
+	ListFiltered(ctx context.Context, f ListFilter) ([]Notification, error)
 	UnreadCount(ctx context.Context) (int, error)
 	Create(ctx context.Context, req CreateRequest) (*Notification, error)
 	MarkRead(ctx context.Context, id uuid.UUID) error
 	MarkAllRead(ctx context.Context) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type pgRepository struct {
@@ -38,6 +47,42 @@ func (r *pgRepository) List(ctx context.Context, limit int) ([]Notification, err
 		LIMIT $1`, limit)
 	if err != nil {
 		return nil, fmt.Errorf("list notifications: %w", err)
+	}
+	defer rows.Close()
+
+	var notifs []Notification
+	for rows.Next() {
+		n, err := scanNotification(rows)
+		if err != nil {
+			return nil, err
+		}
+		notifs = append(notifs, *n)
+	}
+	return notifs, rows.Err()
+}
+
+func (r *pgRepository) ListFiltered(ctx context.Context, f ListFilter) ([]Notification, error) {
+	limit := f.Limit
+	if limit <= 0 {
+		limit = 50
+	}
+
+	// Build query dynamically based on filters.
+	args := []any{limit}
+	where := ""
+	if f.MissionID != nil {
+		args = append(args, *f.MissionID)
+		where += fmt.Sprintf(" AND mission_id = $%d", len(args))
+	}
+	if f.Type != nil {
+		args = append(args, string(*f.Type))
+		where += fmt.Sprintf(" AND type = $%d", len(args))
+	}
+
+	q := `SELECT ` + notifCols + ` FROM notifications WHERE true` + where + ` ORDER BY created_at DESC LIMIT $1`
+	rows, err := r.pool.Query(ctx, q, args...)
+	if err != nil {
+		return nil, fmt.Errorf("list filtered notifications: %w", err)
 	}
 	defer rows.Close()
 
@@ -97,6 +142,18 @@ func (r *pgRepository) MarkAllRead(ctx context.Context) error {
 	_, err := r.pool.Exec(ctx, `UPDATE notifications SET read = true WHERE read = false`)
 	if err != nil {
 		return fmt.Errorf("mark all notifications read: %w", err)
+	}
+	return nil
+}
+
+// Delete removes a notification by ID. Returns pgx.ErrNoRows if not found.
+func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	tag, err := r.pool.Exec(ctx, `DELETE FROM notifications WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("delete notification: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
 	}
 	return nil
 }

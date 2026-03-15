@@ -159,6 +159,10 @@ func (m *mockOrchestratorNotifRepo) List(_ context.Context, _ int) ([]notificati
 func (m *mockOrchestratorNotifRepo) UnreadCount(_ context.Context) (int, error)    { return 0, nil }
 func (m *mockOrchestratorNotifRepo) MarkRead(_ context.Context, _ uuid.UUID) error { return nil }
 func (m *mockOrchestratorNotifRepo) MarkAllRead(_ context.Context) error           { return nil }
+func (m *mockOrchestratorNotifRepo) Delete(_ context.Context, _ uuid.UUID) error   { return nil }
+func (m *mockOrchestratorNotifRepo) ListFiltered(_ context.Context, f notification.ListFilter) ([]notification.Notification, error) {
+	return nil, nil
+}
 
 // ---- mock pricing runners ----
 

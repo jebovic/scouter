@@ -37,8 +37,12 @@ func (s *stubNotifRepo) Create(_ context.Context, req notification.CreateRequest
 	s.created = append(s.created, req)
 	return nil, s.err
 }
-func (s *stubNotifRepo) MarkRead(_ context.Context, _ uuid.UUID) error { return nil }
-func (s *stubNotifRepo) MarkAllRead(_ context.Context) error { return nil }
+func (s *stubNotifRepo) MarkRead(_ context.Context, _ uuid.UUID) error    { return nil }
+func (s *stubNotifRepo) MarkAllRead(_ context.Context) error              { return nil }
+func (s *stubNotifRepo) Delete(_ context.Context, _ uuid.UUID) error      { return nil }
+func (s *stubNotifRepo) ListFiltered(_ context.Context, f notification.ListFilter) ([]notification.Notification, error) {
+	return nil, nil
+}
 
 // -- tests --
 

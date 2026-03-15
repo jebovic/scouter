@@ -86,6 +86,20 @@ func (m *mockNotifRepo) MarkAllRead(_ context.Context) error {
 	return nil
 }
 
+func (m *mockNotifRepo) ListFiltered(_ context.Context, f ListFilter) ([]Notification, error) {
+	return m.List(context.Background(), f.Limit)
+}
+
+func (m *mockNotifRepo) Delete(_ context.Context, id uuid.UUID) error {
+	for i, n := range m.notifs {
+		if n.ID == id {
+			m.notifs = append(m.notifs[:i], m.notifs[i+1:]...)
+			return nil
+		}
+	}
+	return pgx.ErrNoRows
+}
+
 func newHandler(repo Repository) http.Handler {
 	h := NewHandler(repo)
 	r := chi.NewRouter()
