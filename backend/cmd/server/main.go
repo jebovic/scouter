@@ -109,6 +109,8 @@ import (
 	"github.com/jibei/scouter/internal/holidayalert"
 	"github.com/jibei/scouter/internal/loyaltytracker"
 	"github.com/jibei/scouter/internal/priceannotation"
+	"github.com/jibei/scouter/internal/inflationtracker"
+	"github.com/jibei/scouter/internal/decisionmatrix"
 	"github.com/jibei/scouter/internal/roicalculator"
 	"github.com/jibei/scouter/internal/targetsuggestion"
 	"github.com/jibei/scouter/internal/volatilitycalendar"
@@ -747,6 +749,14 @@ func main() {
 	// Mission ROI Calculator (Phase 140) — 30min in-memory cache
 	roiHandler := roicalculator.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/roi", roiHandler.GetROI)
+
+	// French Inflation Impact Tracker (Phase 141) — 30min in-memory cache
+	inflationHandler := inflationtracker.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/inflation-impact", inflationHandler.GetInflationImpact)
+
+	// Purchase Decision Matrix (Phase 142) — 15min in-memory cache
+	decisionMatrixHandler := decisionmatrix.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/decision-matrix", decisionMatrixHandler.GetMatrix)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

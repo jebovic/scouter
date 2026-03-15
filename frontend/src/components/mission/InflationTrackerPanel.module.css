@@ -1,0 +1,194 @@
+@import '../../styles/theme.css';
+
+/* ── Card shell ────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* ── Summary banner ─────────────────────────────────────────────────────────── */
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gap-sm);
+  padding: var(--gap) var(--gap-lg);
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--coral);
+}
+
+.summaryLabel {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--text-mid);
+}
+
+.summaryValue {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--coral);
+  line-height: 1;
+}
+
+.summaryValue[data-positive='false'] {
+  color: var(--green);
+}
+
+.summaryAvg {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ── Table ──────────────────────────────────────────────────────────────────── */
+
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  font-family: var(--font-body);
+}
+
+.table th {
+  text-align: left;
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover td {
+  background: var(--raised);
+}
+
+/* ── Rate cell colour coding ────────────────────────────────────────────────── */
+
+.rateGreen {
+  color: var(--green);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.rateYellow {
+  color: var(--gold);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.rateRed {
+  color: var(--coral);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* ── Monetary cells ─────────────────────────────────────────────────────────── */
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+/* ── Recommendation cell ────────────────────────────────────────────────────── */
+
+.rec {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  font-style: italic;
+}
+
+/* ── Loading / error / empty ────────────────────────────────────────────────── */
+
+.errorState {
+  padding: var(--gap);
+  text-align: center;
+  color: var(--coral);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}
+
+.emptyState {
+  padding: var(--gap);
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}
+
+.skeleton {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.skeletonRow {
+  height: 20px;
+  margin-bottom: 8px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .summary {
+    flex-wrap: wrap;
+  }
+
+  .summaryAvg {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .table th:nth-child(4),
+  .table td:nth-child(4) {
+    display: none;
+  }
+}
