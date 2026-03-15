@@ -4,15 +4,16 @@
 
 ![System Architecture](../assets/system-architecture.svg)
 
-SCOUTER Universal is a full-stack application with three deployment units:
+SCOUTER Universal is a full-stack application with four core deployment units orchestrated via Docker Compose:
 
-| Unit | Technology | Port |
-|------|-----------|------|
-| **Frontend** | React 19 + Vite + Nginx | 5173 |
-| **Backend** | Go 1.23 + chi router | 8080 |
-| **Database** | PostgreSQL 16 + pgvector | 5432 |
+| Unit | Technology | Port (container) | Port (host) |
+|------|-----------|---------|-------|
+| **Frontend** | React 19 + Vite + Nginx | 80 | — |
+| **Backend** | Go 1.23 + chi router | 8080 | — |
+| **Database** | PostgreSQL 16 + pgvector | 5432 | 5432 |
+| **Reverse Proxy** | Traefik v3.4 | 80, 443, 8082 | 80, 443, 8082 |
 
-All three are orchestrated via Docker Compose with health-check-based dependency ordering.
+All services are orchestrated via Docker Compose with health-check-based dependency ordering. The reverse proxy (Traefik) exposes HTTPS on `*.dev.local` in development (via self-signed certificates) and handles routing to frontend/backend.
 
 ---
 
@@ -63,39 +64,51 @@ Every API response is validated by a Zod schema in `src/api/`. TypeScript types 
 ## Component Diagram
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Browser (PWA)                     │
-│  React 19 · React Router v7 · Tanstack Query v5     │
-│  22 pages · 11 component dirs · i18n EN/FR           │
-└──────────────────┬──────────────────────────────────┘
-                   │ HTTP / JSON
+┌────────────────────────────────────────────────────┐
+│         Browser (https://scouter.dev.local)        │
+│  React 19 · React Router v7 · Tanstack Query v5    │
+│  22 pages · 11 component dirs · i18n EN/FR          │
+└──────────────────┬─────────────────────────────────┘
+                   │ HTTPS / JSON
                    ▼
-┌─────────────────────────────────────────────────────┐
-│              chi Router (Go 1.23)                    │
-│  170+ routes · CORS · 1MiB body cap · Prometheus    │
-└───────────┬─────────────────────────────────────────┘
-            │
-   ┌────────┴─────────────────────────────────────┐
-   │          Core Services                        │
-   │  Mission · Options · Shopping · Notification  │
-   │  Purchase · Settings · Export · Search        │
-   └────────┬─────────────────────────────────────┘
-            │
-   ┌────────┴─────────────────────────────────────┐
-   │          AI Agent Layer                       │
-   │  ResearchAgent · PricingAgent · 140+ agents   │
-   │          ↓                                    │
-   │      SmartRouter (Phase 9)                    │
-   │  Circuit breakers · Rate limiting · Cascade   │
-   │          ↓                                    │
-   │  Ollama Heavy/Fast/Cloud → Anthropic          │
-   └────────┬─────────────────────────────────────┘
-            │
-   ┌────────┴─────────────────────────────────────┐
-   │          PostgreSQL 16 + pgvector             │
-   │  22+ migrations · UUID PKs · JSONB            │
-   │  IVFFlat index · 1024-dim embeddings          │
-   └──────────────────────────────────────────────┘
+      ┌────────────────────────────────┐
+      │   Traefik v3.4 Reverse Proxy   │
+      │  · HTTPS (*.dev.local)         │
+      │  · Docker provider + TLS file  │
+      │  · Routes to frontend + /api   │
+      └────────┬──────────┬────────────┘
+               │          │
+    ┌──────────▼┐  ┌──────▼─────────┐
+    │ Frontend  │  │ Backend chi    │
+    │ Nginx:80  │  │ Go:8080        │
+    └──────────┘  └────┬─────────────┘
+                       │
+          ┌────────────┴────────────────┐
+          │    Core Services             │
+          │  Mission · Options · Shopping│
+          │  Notification · Purchase     │
+          │  Settings · Export · Search  │
+          └────────┬────────────────────┘
+                   │
+          ┌────────┴────────────────────┐
+          │    AI Agent Layer            │
+          │  ResearchAgent · PricingAgent│
+          │  SmartRouter (Phase 9)       │
+          │  · Circuit breakers          │
+          │  · Rate limiting             │
+          │  · Cascade fallback          │
+          │         ↓                    │
+          │  Ollama Heavy/Fast/Cloud     │
+          │  → Anthropic                 │
+          └────────┬────────────────────┘
+                   │
+          ┌────────▼────────────────────┐
+          │  PostgreSQL 16 + pgvector    │
+          │  · 22+ migrations            │
+          │  · UUID PKs · JSONB          │
+          │  · IVFFlat index             │
+          │  · 1024-dim embeddings       │
+          └─────────────────────────────┘
 ```
 
 ---
@@ -172,17 +185,63 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 
 ---
 
+## Deployment & Reverse Proxy
+
+### Traefik (Development)
+
+Traefik v3.4 provides local HTTPS with self-signed certificates:
+
+```bash
+# Generate certificates (one-time)
+make certs
+
+# Start with HTTPS enabled
+make up
+# Access at https://scouter.dev.local (HTTP redirects to HTTPS)
+```
+
+**Certificate generation** uses OpenSSL to create:
+- Local CA certificate (`certs/ca.crt`)
+- Wildcard certificate for `*.dev.local` (`certs/dev.local.crt`, `certs/dev.local.key`)
+
+**Traefik configuration:**
+- Docker provider (auto-labels services)
+- File provider for TLS certificates
+- Dashboard at `http://localhost:8082`
+- Auto-redirect HTTP → HTTPS
+
+### Local Development (without Traefik)
+
+For hot reload without HTTPS:
+
+```bash
+# Terminal 1: PostgreSQL
+docker compose up postgres -d
+
+# Terminal 2: Backend (Go)
+cd backend && go run ./cmd/server  # :8080
+
+# Terminal 3: Frontend (Vite)
+cd frontend && npm run dev          # :5173
+```
+
+Set `ENV=development` in `.env` for CORS.
+
+---
+
 ## Monitoring Stack (Phase 14)
 
 Start with the monitoring profile:
 
 ```bash
-docker compose --profile monitoring up
+make up-monitoring
 ```
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| Prometheus | :9090 | Metrics scraping |
-| Grafana | :3000 | Pre-provisioned dashboards |
-| cAdvisor | :8080 | Container resource metrics |
-| Backend metrics | :8080/metrics | Prometheus endpoint |
+| Prometheus | http://localhost:9090 | Metrics scraping |
+| Grafana | http://localhost:3000 | Pre-provisioned dashboards |
+| cAdvisor | http://localhost:8081 | Container resource metrics |
+| Backend metrics | https://scouter.dev.local/api/metrics | Prometheus endpoint (Traefik HTTPS) |
+
+**Internal scraping:** Prometheus scrapes backend on `http://backend:8080/api/metrics` (Docker network).

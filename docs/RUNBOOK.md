@@ -19,77 +19,99 @@ Operational guide for running, monitoring, and troubleshooting SCOUTER in produc
 
 ## Startup & Shutdown
 
+### Prerequisites (First Time Only)
+
+Generate local HTTPS certificates:
+
+```bash
+make certs
+```
+
+On Windows (WSL2), install the CA certificate in Windows:
+```powershell
+# Run as Administrator
+certutil -addstore -f "ROOT" certs/ca.crt
+```
+
 ### Starting the Full Stack
 
 ```bash
-# Docker Compose (all services)
-make dev
-# or
-docker compose up --build
+# Docker Compose (core only: postgres + backend + frontend + traefik)
+make up
 
-# With monitoring (Prometheus + Grafana)
-docker compose --profile monitoring up --build
+# Or: with sample data
+make up-seed
+
+# Or: with monitoring (Prometheus + Grafana)
+make up-monitoring
+
+# Or: everything
+make up-full
 ```
 
 **Expected startup sequence:**
 1. PostgreSQL initializes and becomes healthy (~5s)
-2. Backend waits for DB → applies migrations → starts on `:8080` (~3s)
-3. Frontend builds and starts on `:5173` (~10s)
+2. Backend waits for DB → applies migrations → starts on `:8080` (internal) (~3s)
+3. Frontend builds and starts on `:80` (internal) (~10s)
+4. Traefik starts and begins routing HTTPS to services (~2s)
 
-**Services and ports:**
+**Services and URLs:**
 
-| Service | Port | Health Check |
-|---------|------|-----|
-| Frontend | 5173 | `http://localhost:5173` |
-| Backend API | 8080 | `http://localhost:8080/api/health` |
-| PostgreSQL | 5432 | `docker compose ps postgres` |
-| Prometheus | 9090 | `http://localhost:9090` (with `--profile monitoring`) |
-| Grafana | 3000 | `http://localhost:3000` (with `--profile monitoring`) |
+| Service | URL | Port (host) |
+|---------|-----|-----|
+| SCOUTER App | https://scouter.dev.local | 443 |
+| Backend API | https://scouter.dev.local/api | 443 |
+| Traefik Dashboard | http://localhost:8082 | 8082 |
+| PostgreSQL | localhost:5432 | 5432 |
+| Prometheus | http://localhost:9090 | 9090 (with `--profile monitoring`) |
+| Grafana | http://localhost:3000 | 3000 (with `--profile monitoring`) |
 
 ### Stopping Services
 
 ```bash
-# Stop containers (keep volumes)
-docker compose down
+# Stop all containers (keep database)
+make down
 
-# Stop and delete all volumes (WARNING: deletes database)
-make clean
+# Stop and delete all volumes (WARNING: destroys database)
+make clean-volumes
+
+# View status
+make ps
 ```
 
-### Starting Backend Only (Hot Reload)
+### Local Development (Hot Reload, Without Traefik)
 
-Useful for development:
+For development with live reload (no HTTPS):
 
 ```bash
-# Terminal 1: Start database
-docker compose up postgres
+# Terminal 1: Start PostgreSQL
+docker compose up postgres -d
 
-# Terminal 2: Run backend with hot reload
+# Terminal 2: Start backend
 cd backend
 go run ./cmd/server
+# Listens on http://localhost:8080
+
+# Terminal 3: Start frontend (Vite dev server)
+cd frontend
+npm install
+npm run dev
+# Listens on http://localhost:5173 with hot reload
 ```
 
 Set `ENV=development` in `.env` for permissive CORS.
 
-### Starting Frontend Only (Vite Dev Server)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Ensure backend is running on `:8080`. Frontend will be available at `http://localhost:5173`.
+**Access:** http://localhost:5173 (frontend dev server, not via Traefik)
 
 ---
 
 ## Health Checks
 
-### System Health
+### System Health (via Traefik HTTPS)
 
 ```bash
-# Quick check
-curl http://localhost:8080/api/health
+# With self-signed certificate (ignore warning)
+curl https://scouter.dev.local/api/health --insecure
 ```
 
 **Response (OK):**
@@ -109,10 +131,18 @@ curl http://localhost:8080/api/health
 }
 ```
 
-### LLM Provider Status
+### System Health (Direct, Internal)
+
+If backend is running locally on :8080:
 
 ```bash
-curl http://localhost:8080/api/health/llm
+curl http://localhost:8080/api/health
+```
+
+### LLM Provider Status (via Traefik)
+
+```bash
+curl https://scouter.dev.local/api/health/llm --insecure
 ```
 
 **Response:**
@@ -125,6 +155,21 @@ curl http://localhost:8080/api/health/llm
     { "name": "anthropic", "status": "ok", "circuit": "closed" }
   ]
 }
+```
+
+### Traefik Health
+
+Check reverse proxy routing:
+
+```bash
+# Traefik dashboard
+http://localhost:8082/dashboard/
+
+# Check routers
+curl http://localhost:8082/api/http/routers
+
+# Check services
+curl http://localhost:8082/api/http/services
 ```
 
 ### Service Logs
