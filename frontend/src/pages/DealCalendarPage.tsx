@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Topnav, UpcomingPromoStrip } from '../components/scouter'
+import { Topnav, UpcomingPromoStrip, HolidayWidget } from '../components/scouter'
 import { useDealCalendar } from '../hooks/useDealCalendar'
 import type { DealEvent } from '../api/dealCalendar'
 import type { PromoEvent } from '../utils/frenchPromoCalendar'

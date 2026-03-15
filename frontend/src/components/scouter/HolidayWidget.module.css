@@ -1,0 +1,206 @@
+/* HolidayWidget — French public holidays & store closing days */
+
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table thead {
+  border-bottom: 2px solid var(--border);
+}
+
+.table th {
+  padding: var(--gap-sm) var(--gap);
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-mid);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-body);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: var(--raised);
+}
+
+.table td {
+  padding: var(--gap) var(--gap);
+  color: var(--text);
+}
+
+.colDate {
+  width: 12%;
+}
+
+.colName {
+  width: 50%;
+}
+
+.colStatus {
+  width: 38%;
+}
+
+.cellDate {
+  text-align: left;
+}
+
+.dateCode {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--raised);
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+
+.cellName {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.cellStatus {
+  text-align: center;
+}
+
+/* Status badges */
+.badgeClosed {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--coral);
+  background: var(--coral-dim);
+  border: 1px solid var(--coral);
+  letter-spacing: 0.02em;
+}
+
+.badgeOpen {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--green);
+  background: var(--green-dim);
+  border: 1px solid var(--green);
+  letter-spacing: 0.02em;
+}
+
+/* Compact mode */
+.widgetCompact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.compactList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.compactItem {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: var(--gap-sm);
+  border-left: 3px solid var(--cyan);
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+}
+
+.compactDate {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  min-width: 100px;
+}
+
+.compactName {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .widget {
+    padding: var(--gap);
+    gap: var(--gap-sm);
+  }
+
+  .title {
+    font-size: 0.9rem;
+  }
+
+  .table {
+    font-size: 0.8rem;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--gap-sm);
+  }
+
+  .colDate {
+    width: 20%;
+  }
+
+  .colName {
+    width: 45%;
+  }
+
+  .colStatus {
+    width: 35%;
+  }
+
+  .dateCode {
+    font-size: 0.65rem;
+    padding: 1px 3px;
+  }
+
+  .badgeClosed,
+  .badgeOpen {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+}
