@@ -51,6 +51,38 @@ describe('SubstituteSchema', () => {
     const { name: _omit, ...withoutName } = validSubstitute
     expect(() => SubstituteSchema.parse(withoutName)).toThrow()
   })
+
+  // Phase 79 enrichment fields
+  it('accepts Phase 79 enrichment fields: savingsPercent, pros, cons, whyConsider', () => {
+    const enriched = {
+      ...validSubstitute,
+      savingsPercent: 46,
+      pros: ['Autonomie 60h', 'ANC efficace'],
+      cons: ['Son moins précis'],
+      whyConsider: 'La meilleure alternative budget.',
+    }
+    expect(() => SubstituteSchema.parse(enriched)).not.toThrow()
+    const result = SubstituteSchema.parse(enriched)
+    expect(result.savingsPercent).toBe(46)
+    expect(result.pros).toHaveLength(2)
+    expect(result.cons).toHaveLength(1)
+    expect(result.whyConsider).toBe('La meilleure alternative budget.')
+  })
+
+  it('accepts substitute without Phase 79 enrichment fields (backward compatible)', () => {
+    expect(() => SubstituteSchema.parse(validSubstitute)).not.toThrow()
+    const result = SubstituteSchema.parse(validSubstitute)
+    expect(result.savingsPercent).toBeUndefined()
+    expect(result.pros).toBeUndefined()
+    expect(result.cons).toBeUndefined()
+    expect(result.whyConsider).toBeUndefined()
+  })
+
+  it('savingsPercent zero is accepted', () => {
+    const s = { ...validSubstitute, savingsPercent: 0 }
+    expect(() => SubstituteSchema.parse(s)).not.toThrow()
+    expect(SubstituteSchema.parse(s).savingsPercent).toBe(0)
+  })
 })
 
 describe('SubstituteResponseSchema', () => {
@@ -67,6 +99,14 @@ describe('SubstituteResponseSchema', () => {
     expect(() => SubstituteResponseSchema.parse(empty)).not.toThrow()
     const result = SubstituteResponseSchema.parse(empty)
     expect(result.substitutes).toHaveLength(0)
+  })
+
+  it('accepts response with Phase 79 fields: originalPrice and cachedAt', () => {
+    const enriched = { ...validResponse, originalPrice: 1000.0, cachedAt: 1700000000 }
+    expect(() => SubstituteResponseSchema.parse(enriched)).not.toThrow()
+    const result = SubstituteResponseSchema.parse(enriched)
+    expect(result.originalPrice).toBe(1000.0)
+    expect(result.cachedAt).toBe(1700000000)
   })
 
   it('rejects response missing optionId', () => {

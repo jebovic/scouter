@@ -10,13 +10,20 @@ export const SubstituteSchema = z.object({
   reason: z.string(),
   advantage: z.enum(['cheaper', 'better_rated', 'eco_friendly', 'local']),
   url: z.string().optional(),
+  // Phase 79 enrichment fields
+  savingsPercent: z.number().optional(),
+  pros: z.array(z.string()).optional(),
+  cons: z.array(z.string()).optional(),
+  whyConsider: z.string().optional(),
 })
 
 export const SubstituteResponseSchema = z.object({
   optionId: z.string(),
   productName: z.string(),
+  originalPrice: z.number().optional(),
   substitutes: z.array(SubstituteSchema),
   generatedAt: z.string(),
+  cachedAt: z.number().optional(),
 })
 
 export type Substitute = z.infer<typeof SubstituteSchema>

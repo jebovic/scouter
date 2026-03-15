@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer } from '../components/shopping'
+import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -193,6 +193,9 @@ export default function ShoppingTracker() {
 
               {/* Retailer Radar */}
               {mission && <RetailerRadar missionSlug={mission.id} />}
+
+              {/* Purchase Timeline */}
+              {items.length > 0 && <PurchaseTimeline items={items} />}
 
               {/* AI optimizer */}
               {items.length >= 2 && slug && (

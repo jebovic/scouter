@@ -4,7 +4,7 @@ import { VoteButtons } from './VoteButtons'
 import { ReviewSummaryCard } from './ReviewSummaryCard'
 import { PriceComparisonPanel } from './PriceComparisonPanel'
 import { RetailerLinks } from './RetailerLinks'
-import { SubstitutePanel } from './SubstitutePanel'
+import { SubstituteSuggestions } from './SubstituteSuggestions'
 import { OptionNote } from './OptionNote'
 import type { Option } from '../../types'
 
@@ -290,7 +290,7 @@ export function OptionCard({
 
       <ReviewSummaryCard optionId={option.id} />
       <PriceComparisonPanel optionId={option.id} />
-      <SubstitutePanel optionId={option.id} />
+      <SubstituteSuggestions optionId={option.id} />
     </Card>
   )
 }

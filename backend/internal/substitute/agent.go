@@ -28,7 +28,7 @@ func NewAgent(provider llm.Provider) *Agent {
 
 // FindSubstitutes calls the LLM to produce a list of substitute products
 // for the given product name, category, and budget. Results are focused on
-// French market availability.
+// French market availability and include pros/cons + savings percent (Phase 79).
 func (a *Agent) FindSubstitutes(ctx context.Context, name, category string, budget float64) ([]Substitute, error) {
 	req := a.buildRequest(name, category, budget)
 
@@ -65,29 +65,28 @@ func (a *Agent) FindSubstitutes(ctx context.Context, name, category string, budg
 }
 
 func (a *Agent) buildRequest(name, category string, budget float64) llm.CompletionRequest {
-	prompt := fmt.Sprintf(`You are a French market product expert helping shoppers find alternatives.
+	prompt := fmt.Sprintf(
+		`Vous êtes un expert en consommation française. Pour '%s' à %.2f EUR (catégorie: %s), suggérez 3-5 alternatives moins chères disponibles en France, de qualité comparable. Donnez des alternatives réelles et disponibles sur le marché français actuel.
 
-Product: %s
-Category: %s
-Budget: %.2f EUR
-
-Suggest 2-3 alternative products that are genuinely available in France (sold at major French retailers like Fnac, Darty, Amazon France, Cdiscount, Leclerc, Boulanger, or direct brand websites). Use the suggest_substitutes tool to return structured results.
-
-Guidelines:
-- Each substitute should be a real, purchasable product in France right now
-- Prices should be realistic and in EUR
-- Advantage must be one of: cheaper, better_rated, eco_friendly, local
-- "local" means a French or European brand
-- "cheaper" means meaningfully less expensive than the original budget
-- "better_rated" means stronger consumer reviews / ratings
-- "eco_friendly" means certified sustainable or refurbished
-- Reason should be 1-2 sentences explaining why this is a good alternative
-- URL is optional but should be a plausible search URL when provided`, name, category, budget)
+Utilisez l'outil suggest_substitutes pour retourner les résultats structurés. Pour chaque alternative:
+- name: nom du produit
+- brand: marque
+- price: prix en EUR (doit être inférieur à %.2f)
+- currency: "EUR"
+- retailer: détaillant français (Fnac, Darty, Amazon France, Cdiscount, Leclerc, Boulanger)
+- reason: pourquoi c'est une bonne alternative (1-2 phrases)
+- advantage: "cheaper", "better_rated", "eco_friendly", ou "local"
+- savingsPercent: pourcentage d'économies vs le produit original (0-100)
+- pros: liste de 2-3 avantages en français
+- cons: liste de 1-2 inconvénients en français
+- whyConsider: 1 phrase expliquant pourquoi l'envisager
+- url: URL de recherche optionnelle`,
+		name, budget, category, budget)
 
 	return llm.CompletionRequest{
 		Messages:  []llm.Message{{Role: "user", Content: prompt}},
 		Tools:     []llm.Tool{substituteTool()},
-		MaxTokens: 1024,
+		MaxTokens: 1536,
 	}
 }
 
@@ -121,18 +120,20 @@ func unmarshalSubstitutes(input map[string]any) ([]Substitute, error) {
 	return payload.Substitutes, nil
 }
 
-// substituteTool returns the tool schema for structured substitute suggestions.
+// substituteTool returns the tool schema for structured substitute suggestions (Phase 79 enriched).
 func substituteTool() llm.Tool {
 	return llm.Tool{
 		Name:        "suggest_substitutes",
-		Description: "Submit a list of alternative product suggestions available in the French market. Call this once with all suggestions.",
+		Description: "Submit 3-5 cheaper alternative product suggestions available in the French market. Call this once with all suggestions.",
 		InputSchema: map[string]any{
 			"type":     "object",
 			"required": []string{"substitutes"},
 			"properties": map[string]any{
 				"substitutes": map[string]any{
 					"type":        "array",
-					"description": "Array of 2-3 alternative products available in France",
+					"description": "Array of 3-5 alternative products cheaper than the original, available in France",
+					"minItems":    3,
+					"maxItems":    5,
 					"items": map[string]any{
 						"type":     "object",
 						"required": []string{"name", "brand", "price", "currency", "retailer", "reason", "advantage"},
@@ -160,12 +161,34 @@ func substituteTool() llm.Tool {
 							},
 							"reason": map[string]any{
 								"type":        "string",
-								"description": "Why this is a good substitute (1-2 sentences)",
+								"description": "Why this is a good substitute (1-2 sentences in French)",
 							},
 							"advantage": map[string]any{
 								"type":        "string",
 								"description": "Primary advantage: cheaper, better_rated, eco_friendly, or local",
 								"enum":        []string{"cheaper", "better_rated", "eco_friendly", "local"},
+							},
+							"savingsPercent": map[string]any{
+								"type":        "number",
+								"description": "Percentage saved vs original price (0-100)",
+								"minimum":     0,
+								"maximum":     100,
+							},
+							"pros": map[string]any{
+								"type":        "array",
+								"description": "2-3 advantages in French",
+								"maxItems":    3,
+								"items":       map[string]any{"type": "string"},
+							},
+							"cons": map[string]any{
+								"type":        "array",
+								"description": "1-2 disadvantages in French",
+								"maxItems":    2,
+								"items":       map[string]any{"type": "string"},
+							},
+							"whyConsider": map[string]any{
+								"type":        "string",
+								"description": "One sentence in French explaining why to consider this alternative",
 							},
 							"url": map[string]any{
 								"type":        "string",

@@ -1,0 +1,252 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.title {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.ganttWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-x: auto;
+}
+
+.monthHeader {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+}
+
+.monthLabels {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  flex: 1;
+}
+
+.monthLabel {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.monthLabel:last-child {
+  border-right: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.itemName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchant {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barContainer {
+  position: relative;
+  height: 2.5rem;
+  background: var(--background);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.bar {
+  position: absolute;
+  height: 1.75rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.bar:hover {
+  opacity: 0.8;
+}
+
+.bar.now {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+.bar.soon {
+  background: var(--warning);
+  box-shadow: 0 0 8px rgba(217, 119, 6, 0.3);
+}
+
+.bar.wait {
+  background: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.badge {
+  position: absolute;
+  right: -2.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.badge.now {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.badge.soon {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.badge.wait {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+
+.legendTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.legendColor {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legendColor.now {
+  background: var(--success);
+}
+
+.legendColor.soon {
+  background: var(--warning);
+}
+
+.legendColor.wait {
+  background: var(--text-secondary);
+  opacity: 0.5;
+}
+
+@media (max-width: 1024px) {
+  .monthHeader,
+  .row {
+    grid-template-columns: 150px 1fr;
+  }
+
+  .badge {
+    right: -2rem;
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .root {
+    padding: 1rem;
+  }
+
+  .monthHeader,
+  .row {
+    grid-template-columns: 120px 1fr;
+  }
+
+  .monthLabel {
+    font-size: 0.7rem;
+    padding: 0.25rem;
+  }
+
+  .badge {
+    right: -1.5rem;
+    font-size: 0.55rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .legendItems {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

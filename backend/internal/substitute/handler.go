@@ -29,13 +29,19 @@ func NewHandler(getter OptionInfoGetter, cache *Cache, agent SubstituteAgent) *H
 
 // GetSubstitutes handles GET /api/options/{id}/substitutes.
 // It serves from cache when possible; otherwise calls the SubstituteAgent and
-// caches the result for 2 hours.
+// caches the result for 2 hours. The response includes originalPrice and
+// cachedAt (Phase 79 enrichment).
 func (h *Handler) GetSubstitutes(w http.ResponseWriter, r *http.Request) {
 	optionID := chi.URLParam(r, "id")
 
 	// Serve from cache if present.
 	if cached, ok := h.cache.Get(optionID); ok {
-		httputil.WriteJSON(w, http.StatusOK, cached)
+		// Set cachedAt to now when serving from cache so callers can detect staleness.
+		served := *cached
+		if served.CachedAt == 0 {
+			served.CachedAt = served.GeneratedAt.Unix()
+		}
+		httputil.WriteJSON(w, http.StatusOK, served)
 		return
 	}
 
@@ -57,11 +63,14 @@ func (h *Handler) GetSubstitutes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	now := time.Now().UTC()
 	resp := &SubstituteResponse{
-		OptionID:    optionID,
-		ProductName: name,
-		Substitutes: subs,
-		GeneratedAt: time.Now().UTC(),
+		OptionID:      optionID,
+		ProductName:   name,
+		OriginalPrice: budget,
+		Substitutes:   subs,
+		GeneratedAt:   now,
+		CachedAt:      0, // 0 = freshly generated
 	}
 
 	h.cache.Set(optionID, resp)

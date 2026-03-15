@@ -403,5 +403,14 @@
     "title": "Perfs",
     "disclaimer": "Metrics measured in real-time in your browser",
     "note": "Performance metrics vary based on your connection, device, and browser. Uses Navigation Timing API, Memory API (Chrome/Edge), and Network Information API."
+  },
+  "timeline": {
+    "title": "Purchase Timeline",
+    "empty": "No Items in Timeline",
+    "emptyDesc": "Add shopping items to see your purchase timeline.",
+    "legend": "Legend",
+    "priorityNow": "Buy now (this week)",
+    "prioritySoon": "Buy soon (next month)",
+    "priorityWait": "Wait for better opportunity (2+ months)"
   }
 }
