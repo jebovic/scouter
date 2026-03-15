@@ -105,12 +105,12 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 			m.name AS mission_name,
 			m.slug,
 			ph.price,
-			ph.created_at
+			ph.recorded_at
 		FROM price_history ph
 		JOIN shopping_items si ON si.id = ph.item_id
 		JOIN missions m ON m.id = si.mission_id
-		WHERE ph.created_at > NOW() - INTERVAL '7 days'
-		ORDER BY ph.created_at DESC
+		WHERE ph.recorded_at > NOW() - INTERVAL '7 days'
+		ORDER BY ph.recorded_at DESC
 		LIMIT 10
 	`)
 	if err != nil {
@@ -140,8 +140,8 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 		var prevPrice float64
 		prevRow := h.pool.QueryRow(ctx, `
 			SELECT price FROM price_history
-			WHERE item_id = $1 AND created_at < $2
-			ORDER BY created_at DESC
+			WHERE item_id = $1 AND recorded_at < $2
+			ORDER BY recorded_at DESC
 			LIMIT 1
 		`, itemID, createdAt)
 		_ = prevRow.Scan(&prevPrice) // ignore error — delta stays 0 if no prior row

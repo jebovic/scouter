@@ -29,13 +29,13 @@ const weeklyDigestQuery = `
 WITH current_prices AS (
   SELECT DISTINCT ON (item_id) item_id, price AS current_price
   FROM price_history
-  ORDER BY item_id, created_at DESC
+  ORDER BY item_id, recorded_at DESC
 ),
 week_ago_prices AS (
   SELECT DISTINCT ON (item_id) item_id, price AS old_price
   FROM price_history
-  WHERE created_at < NOW() - INTERVAL '7 days'
-  ORDER BY item_id, created_at DESC
+  WHERE recorded_at < NOW() - INTERVAL '7 days'
+  ORDER BY item_id, recorded_at DESC
 ),
 all_time_lows AS (
   SELECT item_id, MIN(price) AS min_price
