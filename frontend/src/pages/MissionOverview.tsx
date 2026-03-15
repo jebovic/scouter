@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
 import type { MissionPhase } from '../types'
@@ -142,6 +142,21 @@ export default function MissionOverview() {
           >
             {pricingPending ? `💰 ${t('mission.scoutingPrices')}` : `💰 ${t('mission.runPriceIntel')}`}
           </button>
+        </div>
+
+        {/* Mission Goal Tracker (Phase 80) */}
+        <div className={styles.section}>
+          <MissionGoalTracker
+            mission={{
+              budget: mission.budget,
+              currency: mission.currency,
+              createdAt: mission.createdAt,
+            }}
+            items={items.map(item => ({
+              currentPrice: item.price,
+              targetPrice: item.targetPrice,
+            }))}
+          />
         </div>
 
         {/* Mission Health Score (Phase 57) */}

@@ -4,7 +4,7 @@ import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
 import { useMissions } from '../hooks/useMission'
 import { useBadges } from '../hooks/useBadges'
-import { BadgeRow, BadgeToast, BudgetHeatmap } from '../components/scouter'
+import { BadgeRow, BadgeToast, BudgetHeatmap, ShoppingPersonaCard } from '../components/scouter'
 import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
@@ -92,6 +92,10 @@ export default function StatsPage() {
   return (
     <main className={styles.page}>
       <h1 className={styles.heading}>{t('stats.title')}</h1>
+
+      <section className={styles.section}>
+        <ShoppingPersonaCard />
+      </section>
 
       <div className={styles.summaryGrid}>
         <div className={styles.statCard}>

@@ -14,6 +14,19 @@ export const PersonaSchema = z.object({
 
 export type PersonaResult = z.infer<typeof PersonaSchema>
 
+export const ShoppingPersonaSchema = z.object({
+  archetype: z.string(),
+  icon: z.string(),
+  description: z.string(),
+  strengths: z.array(z.string()),
+  blindspots: z.array(z.string()),
+  tips: z.array(z.string()),
+  scoreProfile: z.record(z.string(), z.number()),
+  cachedAt: z.number(),
+})
+
+export type ShoppingPersonaResult = z.infer<typeof ShoppingPersonaSchema>
+
 // ── API functions ────────────────────────────────────────────────────────────
 
 export async function fetchPersona(): Promise<PersonaResult | null> {
@@ -33,4 +46,9 @@ export async function runPersona(): Promise<PersonaResult> {
     method: 'POST',
   })
   return PersonaSchema.parse(data)
+}
+
+export async function getShoppingPersona(): Promise<ShoppingPersonaResult> {
+  const data = await apiFetch<unknown>('/api/persona/shopping')
+  return ShoppingPersonaSchema.parse(data)
 }

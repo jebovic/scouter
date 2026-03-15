@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchPersona, runPersona } from '../api/persona'
+import { fetchPersona, runPersona, getShoppingPersona } from '../api/persona'
 import { useToast } from '../components/scouter'
 
 export function usePersona() {
@@ -10,6 +10,16 @@ export function usePersona() {
     retry: false,
   })
   return { persona, isLoading, error }
+}
+
+export function useShoppingPersona() {
+  const { data: shoppingPersona, isLoading, error } = useQuery({
+    queryKey: ['shoppingPersona'],
+    queryFn: getShoppingPersona,
+    staleTime: 4 * 60 * 60 * 1000, // 4h TTL matches backend cache
+    retry: false,
+  })
+  return { shoppingPersona, isLoading, error }
 }
 
 export function useRunPersona() {

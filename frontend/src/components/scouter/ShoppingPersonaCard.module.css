@@ -1,0 +1,229 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.icon {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.titleBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.archetype {
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gold, #f5a623);
+}
+
+.description {
+  margin: 0;
+  color: var(--text-secondary, var(--text-dim));
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* ── Score bars ──────────────────────────────────────────────────────────── */
+
+.scoreSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.scoreRow {
+  display: grid;
+  grid-template-columns: 7rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scoreLabel {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: lowercase;
+}
+
+.scoreBarWrap {
+  background: var(--border);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.scoreBar {
+  height: 100%;
+  width: var(--score-pct, 50%);
+  background: var(--color-gold, #f5a623);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.scoreValue {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+/* ── Insight grid ────────────────────────────────────────────────────────── */
+
+.insightGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .insightGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.insightBlock {
+  background: var(--surface-raised, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem;
+}
+
+.insightTitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.6rem;
+}
+
+.insightList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.strengthItem,
+.blindspotItem {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.strengthBullet {
+  color: var(--color-success, #4caf50);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.blindspotBullet {
+  color: var(--color-coral, #e8736a);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Tips ────────────────────────────────────────────────────────────────── */
+
+.tipsSection {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.tipsList {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tipItem {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.tipNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--color-gold, #f5a623);
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+.skeletonIcon,
+.skeletonTitle,
+.skeletonLine {
+  background: var(--border);
+  border-radius: 6px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonIcon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeletonLine {
+  width: 90%;
+  height: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

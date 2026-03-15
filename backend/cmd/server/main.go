@@ -366,6 +366,11 @@ func main() {
 	personaHandler := persona.NewHandler(personaAgent, personaRepo)
 	r.Route("/api/persona", personaHandler.Routes())
 
+	// AI Shopping Persona Insights (Phase 82)
+	shoppingPersonaAgent := persona.NewShoppingPersonaAgent(provider)
+	shoppingPersonaHandler := persona.NewShoppingPersonaHandler(missionRepo, optionRepo, shoppingRepo, shoppingPersonaAgent)
+	r.Get("/api/persona/shopping", shoppingPersonaHandler.GetShoppingPersona)
+
 	// Product barcode lookup (Phase 25)
 	productLooker := product.NewLooker()
 	r.Route("/api/products", product.Routes(productLooker))
