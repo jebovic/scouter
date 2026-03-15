@@ -15,11 +15,30 @@
 }
 
 .name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: 0.875rem;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.rankBadge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  cursor: help;
+  line-height: 1.4;
 }
 
 .meta {

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts } from '../components/scouter'
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
 import type { MissionPhase } from '../types'
@@ -140,6 +140,11 @@ export default function MissionOverview() {
         <div className={styles.section}>
           <h3 className={styles.cardLabel}>🎁 IDÉES CADEAUX</h3>
           <GiftFinderWidget missionId={mission.id} budget={mission.budget} />
+        </div>
+
+        {/* Merchant Loyalty Tracker (Phase 135) */}
+        <div className={styles.section}>
+          <LoyaltySummaryPanel missionId={mission.id} />
         </div>
 
         {/* Agent action buttons */}

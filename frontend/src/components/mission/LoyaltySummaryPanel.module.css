@@ -1,0 +1,208 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.75rem;
+}
+
+.headerTitle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Cashback hero ───────────────────────────────────────────────────────────── */
+.cashbackHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 1.25rem 1rem;
+  gap: 0.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cashbackLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.cashbackAmount {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+}
+
+/* ── Table ───────────────────────────────────────────────────────────────────── */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  padding: 0.5rem 1.25rem;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table th:not(:first-child) {
+  text-align: right;
+}
+
+.table td {
+  padding: 0.55rem 1.25rem;
+  color: var(--text);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table td:not(:first-child) {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* highlight rows that have cashback */
+.rowHighlight {
+  background: rgba(0, 230, 120, 0.04);
+}
+
+.merchantName {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.programName {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.tierBadge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(120, 120, 255, 0.12);
+  color: var(--purple, #a78bfa);
+  border: 1px solid rgba(120, 120, 255, 0.2);
+  margin-top: 0.15rem;
+}
+
+.cashbackCell {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.zeroCell {
+  color: var(--text-dim);
+}
+
+/* ── Empty ───────────────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.75rem 0;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.emptyIcon {
+  font-size: 1.5rem;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────────── */
+.skeletonBody {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeletonRow {
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--border) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .table th,
+  .table td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .cashbackAmount {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .cashbackHero {
+    padding: 1rem 1rem 0.85rem;
+  }
+}

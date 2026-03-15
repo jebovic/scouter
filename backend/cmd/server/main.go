@@ -105,6 +105,8 @@ import (
 	"github.com/jibei/scouter/internal/salecalendar"
 	"github.com/jibei/scouter/internal/conditionpricing"
 	"github.com/jibei/scouter/internal/dropreporter"
+	"github.com/jibei/scouter/internal/listsorter"
+	"github.com/jibei/scouter/internal/loyaltytracker"
 	"github.com/jibei/scouter/internal/targetsuggestion"
 )
 
@@ -717,6 +719,14 @@ func main() {
 	// Price Drop Predictor ML-Style (Phase 134)
 	dropReporterHandler := dropreporter.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/drop-prediction", dropReporterHandler.GetPrediction)
+
+	// Smart Shopping List Sorter (Phase 136)
+	listSorterHandler := listsorter.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/sorted-items", listSorterHandler.GetSortedItems)
+
+	// Merchant Loyalty Tracker (Phase 135)
+	loyaltyTrackerHandler := loyaltytracker.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/loyalty-summary", loyaltyTrackerHandler.GetLoyaltySummary)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

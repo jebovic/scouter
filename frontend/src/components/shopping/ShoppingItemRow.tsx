@@ -37,6 +37,7 @@ import { DropPredictionCard } from './DropPredictionCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
+import type { RankedItem } from '../../api/listsorter'
 import styles from './ShoppingItemRow.module.css'
 
 // Separate component so hooks only fire when the panel is actually rendered,
@@ -68,11 +69,13 @@ interface ShoppingItemRowProps {
   onStatusChange?: (status: ItemStatus) => void
   onPriceClick?: () => void
   onPin?: (itemId: string) => void
+  /** When set, shows a rank badge with reason tooltip */
+  rank?: RankedItem
 }
 
 const STATUSES: ItemStatus[] = ['buy', 'watch', 'flash-sale', 'preorder', 'defer', 'crisis']
 
-export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusChange, onPriceClick, onPin }: ShoppingItemRowProps) {
+export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusChange, onPriceClick, onPin, rank }: ShoppingItemRowProps) {
   const [editingTarget, setEditingTarget] = useState(false)
   const [targetInput, setTargetInput] = useState('')
   const [showIntel, setShowIntel] = useState(false)
@@ -113,7 +116,18 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       <div className={styles.row}>
       {/* Name + merchant */}
       <div className={styles.info}>
-        <div className={styles.name}>{item.name}</div>
+        <div className={styles.name}>
+          {rank && (
+            <span
+              className={styles.rankBadge}
+              title={rank.reason}
+              aria-label={`Rang ${rank.rank} — ${rank.reason}`}
+            >
+              #{rank.rank}
+            </span>
+          )}
+          {item.name}
+        </div>
         <div className={styles.meta}>
           {item.merchant} · {item.costCategory}
           <button
