@@ -6,6 +6,8 @@
 
 **Version:** 0.1.0 · **Status:** Production-ready · **License:** MIT
 
+![Dashboard with missions](docs/assets/screenshot-dashboard-with-missions.png)
+
 ---
 
 ## What SCOUTER Does
@@ -22,27 +24,13 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 6. **Record Purchase** — Log what you actually bought, capture lessons learned
 7. **Analyze Results** — Efficiency scorecard (A/B/C/D), spending insights, future recommendations
 
-### Screenshots
-
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-
-![Dashboard with missions](docs/assets/screenshot-dashboard-with-missions.png)
-*Dashboard showing active missions with budget bars and status*
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
 
 ![Mission Overview](docs/assets/screenshot-mission-overview.png)
-*Mission detail page with timeline and key metrics*
+*Mission detail with timeline and key metrics*
 
-![Options Comparison](docs/assets/screenshot-mission-options.png)
-*Compare options side-by-side with constraint checking*
-
-![Shopping Tracker](docs/assets/screenshot-mission-shopping.png)
-*Price history, budget burn, and deal alerts*
-
-![Semantic Search](docs/assets/screenshot-search.png)
-*Find similar options across all missions*
-
-![Settings](docs/assets/screenshot-settings.png)
-*Configure currency, language, and LLM provider*
+![Sidebar Navigation](docs/assets/screenshot-sidebar.png)
+*Collapsible mission list and quick navigation*
 
 </div>
 
@@ -60,6 +48,9 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 | **Semantic Search** | Find similar options across all missions (pgvector, 300ms debounce) |
 | **Price Alerts** | Background scheduler checks prices, fires notifications on changes |
 
+![Semantic Search](docs/assets/screenshot-search.png)
+*Instant semantic search — find similar options across all missions*
+
 ### Comparison & Analysis
 
 | Feature | Capability |
@@ -70,6 +61,16 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 | **Deal Calendar** | Flash sales and promotional calendar |
 | **French Benchmark** | Compare price to French market median (bon prix / prix moyen / au-dessus) |
 
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
+
+![Options Comparison](docs/assets/screenshot-mission-options.png)
+*Side-by-side comparison with constraint checking*
+
+![Options Tab Detail](docs/assets/screenshot-mission-tab-options.png)
+*Option cards with deal scores and attributes*
+
+</div>
+
 ### Budget & Spending
 
 | Feature | Capability |
@@ -79,6 +80,26 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 | **Quantity Optimizer** | Discount tiers [1, 2, 3, 5, 10] with FNV-32a discount curve |
 | **Wishlist Prioritizer** | Rank items by urgency + trend + budget fit |
 | **Scorecard** | Efficiency grade (A/B/C/D), analytics, 4-metric breakdown |
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
+
+![Shopping Tracker](docs/assets/screenshot-mission-shopping.png)
+*Price history, budget burn rate, and deal alerts*
+
+![Spending Stats](docs/assets/screenshot-stats.png)
+*Total spent and category breakdown*
+
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
+
+![Wishlist](docs/assets/screenshot-wishlist.png)
+*Prioritized wishlist ranked by urgency, trend, and budget fit*
+
+![Purchase History](docs/assets/screenshot-history.png)
+*Full purchase history with lessons learned*
+
+</div>
 
 ### Collaboration & Sharing
 
@@ -98,6 +119,26 @@ SCOUTER guides you from "Should I buy this?" through research, price tracking, p
 | **Dark/Light Theme** | Automatic theme switching with system preference |
 | **Responsive Design** | Mobile, tablet, desktop optimized |
 | **PWA Support** | Install as app, offline capability |
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
+
+![Dark Theme](docs/assets/screenshot-dark-theme.png)
+*Dark theme with SCOUTER design system*
+
+![Notifications](docs/assets/screenshot-notifications.png)
+*Price alerts and deal notifications*
+
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0;">
+
+![Deal Calendar](docs/assets/screenshot-deal-calendar.png)
+*Flash sales and promotional event calendar*
+
+![Settings](docs/assets/screenshot-settings.png)
+*Configure currency, language, and LLM provider*
+
+</div>
 
 ---
 
