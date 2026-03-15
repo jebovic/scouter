@@ -8,6 +8,8 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+  metrics:
+    address: ":8899"
 
 providers:
   docker:
@@ -19,6 +21,21 @@ providers:
 api:
   dashboard: true
   insecure: true
+
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addServicesLabels: false
+    addRoutersLabels: false
+    buckets:
+      - 0.01
+      - 0.05
+      - 0.1
+      - 0.3
+      - 0.5
+      - 1.0
+      - 5.0
 
 log:
   level: WARN

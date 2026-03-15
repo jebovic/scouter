@@ -32,3 +32,19 @@ groups:
           severity: critical
         annotations:
           summary: "Scouter backend is down"
+
+      - alert: TraefikDown
+        expr: up{job="traefik"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Traefik reverse proxy is down"
+
+      - alert: HighTraefikErrorRate
+        expr: sum(rate(traefik_entrypoint_requests_total{code=~"5.."}[5m])) / sum(rate(traefik_entrypoint_requests_total[5m])) > 0.05 and sum(rate(traefik_entrypoint_requests_total[5m])) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Traefik 5xx error rate > 5%"
