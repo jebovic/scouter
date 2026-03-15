@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard } from '../components/shopping'
+import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard, WishlistShareCard, BudgetPlannerPanel } from '../components/shopping'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -31,6 +31,8 @@ export default function ShoppingTracker() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [addForm, setAddForm] = useState<Partial<ShoppingItemCreateRequest>>({})
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
+  const [showShareCard, setShowShareCard] = useState(false)
+  const [showBudgetPlanner, setShowBudgetPlanner] = useState(false)
 
   const isLoading = missionLoading || itemsLoading
 
@@ -103,6 +105,22 @@ export default function ShoppingTracker() {
               >
                 <span aria-hidden="true">💰</span>{pricingPending ? ` ${t('pricing.scouting')}` : ` ${t('pricing.priceIntel')}`}
               </button>
+              <button
+                className={styles.addBtn}
+                onClick={() => setShowShareCard((v) => !v)}
+                aria-pressed={showShareCard}
+              >
+                {showShareCard ? 'Hide Share Card' : 'Share Wishlist'}
+              </button>
+              {items.length > 0 && mission && (
+                <button
+                  className={styles.addBtn}
+                  onClick={() => setShowBudgetPlanner((v) => !v)}
+                  aria-pressed={showBudgetPlanner}
+                >
+                  📋 Plan
+                </button>
+              )}
               {/* View mode toggle */}
               <div className={styles.viewToggle} role="group" aria-label="View mode">
                 <button
@@ -130,6 +148,11 @@ export default function ShoppingTracker() {
             <div className={styles.budgetCard}>
               <BudgetBar spent={spent} budget={mission.budget} currency={mission.currency} />
             </div>
+          )}
+
+          {/* Wishlist share card */}
+          {showShareCard && mission && (
+            <WishlistShareCard missionId={mission.id} currency={mission.currency} />
           )}
 
           {/* Add item form modal */}
@@ -198,6 +221,15 @@ export default function ShoppingTracker() {
           )}
 
           {/* Content */}
+          {/* Smart Budget Planner */}
+          {showBudgetPlanner && mission && (
+            <BudgetPlannerPanel
+              missionId={mission.id}
+              currency={mission.currency}
+              onClose={() => setShowBudgetPlanner(false)}
+            />
+          )}
+
           {/* Smart Shopping List Optimizer */}
           {items.length > 0 && mission && (
             <ShoppingOptimizerPanel missionId={mission.id} />

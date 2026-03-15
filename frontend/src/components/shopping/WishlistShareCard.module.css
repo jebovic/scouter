@@ -1,0 +1,158 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: var(--font-display);
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.budget {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.copyBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  transition: background 0.15s, color 0.15s;
+}
+
+.copyBtn:hover {
+  background: var(--cyan);
+  color: var(--void);
+}
+
+.shareBtn {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  transition: background 0.15s, color 0.15s;
+}
+
+.shareBtn:hover {
+  background: var(--gold);
+  color: var(--void);
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-raised, var(--void));
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.itemName {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemMerchant {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.itemPrice {
+  font-size: 0.85rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.statusBuy { background: var(--green-dim, #0d2b1a); color: var(--green, #4ade80); }
+.statusFlashSale { background: var(--orange-dim, #2b1a00); color: var(--orange, #fb923c); }
+.statusPreorder { background: var(--gold-dim, #2b2000); color: var(--gold); }
+.statusDefer { color: var(--text-dim); background: transparent; }
+.statusWatch { background: var(--purple-dim, #1a0b2b); color: var(--purple, #a78bfa); }
+.statusCrisis { background: var(--coral-dim, #2b0d0d); color: var(--coral, #f87171); }
+.statusDefault { background: var(--surface); color: var(--text-dim); }
+
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
+
+.copied {
+  color: var(--green, #4ade80);
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .copyBtn,
+  .shareBtn {
+    flex: 1;
+    text-align: center;
+  }
+}

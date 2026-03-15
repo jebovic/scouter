@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/budgetplanner"
 	"github.com/jibei/scouter/internal/pricedigest"
 	"github.com/jibei/scouter/internal/purchaseadvisor"
 	"github.com/jibei/scouter/internal/budgetalert"
@@ -85,6 +86,7 @@ import (
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
+	"github.com/jibei/scouter/internal/wishlistshare"
 )
 
 func main() {
@@ -572,6 +574,10 @@ func main() {
 	budgetrecHandler := budgetrec.NewHandler(shoppingSvc)
 	r.Get("/api/missions/{missionID}/budget-analysis", budgetrecHandler.GetAnalysis)
 
+	// Smart Budget Planner with Purchase Sequencing (Phase 115)
+	budgetPlannerHandler := budgetplanner.NewHandler(pool)
+	r.Get("/api/missions/{id}/budget-plan", budgetPlannerHandler.GetPlan)
+
 	// Smart Price Alert Rules (Phase 100) — in-memory, no DB dependency
 	alertRuleRepo := pricealertrule.NewRepository()
 	alertRuleHandler := pricealertrule.NewHandler(alertRuleRepo)
@@ -613,6 +619,10 @@ func main() {
 	// Price Drop Alert Digest (Phase 113) — 24h price change summary, direct pool query
 	priceDigestHandler := pricedigest.NewHandler(pool)
 	r.Get("/api/price-digest", priceDigestHandler.GetDigest)
+
+	// Wishlist Social Sharing (Phase 114) — in-memory cache, 5 min TTL
+	wishlistShareHandler := wishlistshare.NewHandler(pool)
+	r.Get("/api/missions/{id}/wishlist-card", wishlistShareHandler.GetWishlistCard)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

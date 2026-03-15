@@ -1,0 +1,295 @@
+@import '../../styles/theme.css';
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.closeBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.closeBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Budget status bar */
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.statusBar.under {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #4caf50;
+}
+
+.statusBar.tight {
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  color: #ff9800;
+}
+
+.statusBar.over {
+  background: rgba(239, 83, 80, 0.1);
+  border: 1px solid rgba(239, 83, 80, 0.3);
+  color: #ef5350;
+}
+
+.statusIcon {
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.statusText {
+  flex: 1;
+  min-width: 0;
+}
+
+.statusLabel {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.statusMeta {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-top: 0.125rem;
+}
+
+.savings {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.12);
+  border-radius: 6px;
+  padding: 0.25rem 0.625rem;
+  white-space: nowrap;
+}
+
+/* Section headings */
+.sectionTitle {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 0.625rem;
+}
+
+/* Item list */
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+
+.itemRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.rank {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.125rem;
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statusBadge.buy       { background: rgba(76,175,80,0.15); color: #4caf50; }
+.statusBadge.flash-sale { background: rgba(255,152,0,0.15); color: #ff9800; }
+.statusBadge.watch     { background: rgba(156,39,176,0.15); color: #9c27b0; }
+.statusBadge.defer     { background: rgba(158,158,158,0.15); color: var(--text-dim); }
+.statusBadge.crisis    { background: rgba(239,83,80,0.15); color: #ef5350; }
+.statusBadge.preorder  { background: rgba(255,193,7,0.15); color: #ffc107; }
+
+.itemReason {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.itemPrice {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.priceValue {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cumulative {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  margin-top: 0.125rem;
+  white-space: nowrap;
+}
+
+/* Deferred section */
+.deferredSection {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.deferredRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  background: rgba(158, 158, 158, 0.05);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.deferredName {
+  font-size: 0.8125rem;
+  color: var(--text-dim);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deferredReason {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  opacity: 0.75;
+  margin-top: 0.125rem;
+}
+
+.deferredPrice {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* Loading / error states */
+.loading {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+}
+
+.error {
+  color: var(--color-crisis, #ef5350);
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  padding: 1.5rem 0;
+}
+
+@media (max-width: 640px) {
+  .statusBar {
+    flex-wrap: wrap;
+  }
+  .itemRow {
+    flex-wrap: wrap;
+  }
+  .itemPrice {
+    width: 100%;
+    text-align: left;
+    margin-top: 0.25rem;
+  }
+}
