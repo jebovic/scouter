@@ -31,6 +31,7 @@ import { CouponFinderCard } from './CouponFinderCard'
 import { ItemTagsDisplay } from './ItemTagsDisplay'
 import { PriceStreakBadge } from './PriceStreakBadge'
 import { PriceFloorCard } from './PriceFloorCard'
+import { ConditionPricingCard } from './ConditionPricingCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -271,6 +272,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <PriceFloorCard missionId={missionId} itemId={item.id} />
+      )}
+      {showIntel && (
+        <ConditionPricingCard missionId={missionId} itemId={item.id} />
       )}
     </>
   )

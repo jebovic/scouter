@@ -101,6 +101,8 @@ import (
 	"github.com/jibei/scouter/internal/pricestreak"
 	"github.com/jibei/scouter/internal/duplicatedetector"
 	"github.com/jibei/scouter/internal/pricefloor"
+	"github.com/jibei/scouter/internal/salecalendar"
+	"github.com/jibei/scouter/internal/conditionpricing"
 )
 
 func main() {
@@ -691,6 +693,14 @@ func main() {
 	// Smart Duplicate Item Detector (Phase 128) — 30min in-memory cache
 	duplicateDetectorHandler := duplicatedetector.NewHandler(pool)
 	r.Get("/api/missions/{id}/duplicates", duplicateDetectorHandler.GetDuplicates)
+
+	// Item Condition & Grade Tracker (Phase 131) — 2h in-memory cache
+	conditionPricingHandler := conditionpricing.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/condition-pricing", conditionPricingHandler.GetConditionPricing)
+
+	// Flash Sale Calendar — French market (Phase 130) — hardcoded, no DB
+	saleCalendarHandler := salecalendar.NewHandler()
+	r.Get("/api/sale-calendar", saleCalendarHandler.GetCalendar)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

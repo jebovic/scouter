@@ -1,0 +1,269 @@
+@import '../../styles/theme.css';
+
+.wrapper {
+  display: inline-block;
+}
+
+.triggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.triggerBtn:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+}
+
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.panel {
+  margin-top: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 380px;
+  max-width: 600px;
+}
+
+.heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.loading {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.savingsBanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--status-buy) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 40%, transparent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.bestLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bestLink:hover {
+  text-decoration: underline;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thCond     { width: 34%; }
+.thPrice    { width: 18%; text-align: right; }
+.thDiscount { width: 14%; text-align: center; }
+.thPlatform { width: 22%; }
+.thWarranty { width: 12%; text-align: center; }
+
+.condRow td {
+  padding: 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  vertical-align: middle;
+}
+
+.condRow:last-child td {
+  border-bottom: none;
+}
+
+.bestRow {
+  background: color-mix(in srgb, var(--status-buy) 8%, transparent);
+}
+
+.condCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.condLabel {
+  color: var(--text);
+}
+
+.gradeBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.gradeAPlus {
+  background: color-mix(in srgb, var(--status-buy) 20%, transparent);
+  color: var(--status-buy);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 50%, transparent);
+}
+
+.gradeA {
+  background: color-mix(in srgb, var(--status-recommended) 20%, transparent);
+  color: var(--status-recommended);
+  border: 1px solid color-mix(in srgb, var(--status-recommended) 50%, transparent);
+}
+
+.gradeB {
+  background: color-mix(in srgb, var(--status-watch) 20%, transparent);
+  color: var(--status-watch);
+  border: 1px solid color-mix(in srgb, var(--status-watch) 50%, transparent);
+}
+
+.gradeC {
+  background: color-mix(in srgb, var(--status-defer) 20%, transparent);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+.bestBadge {
+  font-size: 0.62rem;
+  background: var(--status-buy);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priceCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.discountCell {
+  text-align: center;
+}
+
+.discountBadge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--status-buy) 18%, transparent);
+  color: var(--status-buy);
+}
+
+.platformCell {
+  font-size: 0.78rem;
+}
+
+.platformLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.platformLink:hover {
+  text-decoration: underline;
+}
+
+.warrantyCell {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.availDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.availGreen {
+  background: var(--status-buy);
+}
+
+.availOrange {
+  background: var(--status-flash-sale, #f97316);
+}
+
+.availRed {
+  background: var(--status-crisis);
+}
+
+.recommendation {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.5;
+  padding: 8px 10px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 6px;
+  border-left: 3px solid var(--accent);
+}
+
+.disclaimer {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.closeBtn {
+  display: block;
+  margin: 8px auto 0;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: var(--surface-raised);
+}
