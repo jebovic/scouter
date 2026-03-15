@@ -1,0 +1,257 @@
+@import '../../styles/theme.css';
+
+/* ── Card shell ────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* ── Completion ring + budget bar row ──────────────────────────────────────── */
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-lg);
+}
+
+.ringWrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+}
+
+.ringWrap svg {
+  transform: rotate(-90deg);
+}
+
+.ringBg {
+  fill: none;
+  stroke: var(--raised);
+}
+
+.ringFill {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.ringLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.ringPct {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.ringUnit {
+  font-size: 0.5625rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-top: 1px;
+}
+
+/* ── Budget block beside the ring ──────────────────────────────────────────── */
+
+.budgetBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.budgetLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-mid);
+  font-family: var(--font-display);
+}
+
+.budgetTrack {
+  height: 6px;
+  background: var(--raised);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.budgetFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--green);
+  width: calc(var(--pct) * 1%);
+  transition: width 0.5s ease;
+}
+
+.budgetFill[data-over='true'] {
+  background: var(--coral);
+}
+
+.budgetMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+/* ── Status breakdown grid ─────────────────────────────────────────────────── */
+
+.breakdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-sm);
+}
+
+.stat {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.statCount {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.statCount[data-status='buy']        { color: var(--green); }
+.statCount[data-status='watch']      { color: var(--purple); }
+.statCount[data-status='defer']      { color: var(--text-dim); }
+.statCount[data-status='flash-sale'] { color: var(--orange); }
+
+.statLabel {
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  text-align: center;
+}
+
+/* ── Top saving badge ──────────────────────────────────────────────────────── */
+
+.savingBadge {
+  background: var(--raised);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 8px var(--gap);
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.savingIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.savingBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.savingName {
+  font-size: 0.75rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-body);
+}
+
+.savingAmount {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ── Empty / Loading / Error ───────────────────────────────────────────────── */
+
+.empty {
+  text-align: center;
+  padding: var(--gap);
+  color: var(--text-dim);
+  font-size: 0.8125rem;
+  font-family: var(--font-body);
+}
+
+.skeleton {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.skeletonCircle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeletonLine {
+  height: 12px;
+  flex: 1;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-sm);
+}
+
+.skeletonCell {
+  height: 52px;
+  border-radius: var(--radius-sm);
+}
+
+.errorState {
+  padding: var(--gap);
+  text-align: center;
+  color: var(--coral);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}

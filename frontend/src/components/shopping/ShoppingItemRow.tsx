@@ -24,6 +24,7 @@ import { WatchlistButton } from './WatchlistButton'
 import { CurrencyConverter } from './CurrencyConverter'
 import { LoyaltyCalculator } from './LoyaltyCalculator'
 import { FrenchMarketInsight } from './FrenchMarketInsight'
+import { NegotiationSimulator } from './NegotiationSimulator'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -202,6 +203,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
         <PriceAlertRules itemId={item.id} currentPrice={item.price} />
         <NegotiationCoach itemId={item.id} />
+        <NegotiationSimulator missionId={missionId} itemId={item.id} />
         <PriceHistoryExportButton missionId={missionId} itemId={item.id} itemName={item.name} />
         <CarbonBadge itemName={item.name} category={item.costCategory} />
         <SeasonalBadge itemName={item.name} category={item.costCategory} />

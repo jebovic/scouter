@@ -1,0 +1,263 @@
+@import '../../styles/theme.css';
+
+/* ── Trigger button ────────────────────────────────────────────────────────── */
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.triggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--cyan);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.triggerBtn:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Panel ───────────────────────────────────────────────────────────────── */
+.panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 60;
+  width: 360px;
+  max-width: 90vw;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.itemName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.priceTarget {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.savingsBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(72, 199, 142, 0.15);
+  color: var(--green, #48c78e);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Conversation ────────────────────────────────────────────────────────── */
+.conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.phaseSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Phase label */
+.phaseLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.phaseLabel_opening {
+  background: rgba(99, 162, 255, 0.15);
+  color: #63a2ff;
+}
+
+.phaseLabel_negotiation {
+  background: rgba(255, 167, 38, 0.15);
+  color: #ffa726;
+}
+
+.phaseLabel_closing {
+  background: rgba(72, 199, 142, 0.15);
+  color: #48c78e;
+}
+
+/* ── Chat bubbles ────────────────────────────────────────────────────────── */
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  max-width: 90%;
+  font-size: 0.78rem;
+}
+
+.bubbleYou {
+  align-self: flex-end;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-bottom-right-radius: 2px;
+}
+
+.bubbleVendeur {
+  align-self: flex-start;
+  background: rgba(99, 162, 255, 0.08);
+  border: 1px solid rgba(99, 162, 255, 0.2);
+  border-bottom-left-radius: 2px;
+}
+
+/* Phase tint overrides */
+.phase_opening.bubbleYou {
+  border-color: rgba(99, 162, 255, 0.3);
+}
+
+.phase_negotiation.bubbleYou {
+  border-color: rgba(255, 167, 38, 0.3);
+}
+
+.phase_closing.bubbleYou {
+  border-color: rgba(72, 199, 142, 0.3);
+}
+
+.bubbleSpeaker {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.bubbleText {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.bubbleTip {
+  margin: 4px 0 0;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  padding-top: 4px;
+}
+
+/* ── Tips section ────────────────────────────────────────────────────────── */
+.tipsSection {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.tipsTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  margin: 0 0 6px;
+}
+
+.tipsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tipItem {
+  font-size: 0.75rem;
+  color: var(--text-mid, var(--text));
+  padding-left: 12px;
+  position: relative;
+}
+
+.tipItem::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--cyan);
+}
+
+/* ── Close button ────────────────────────────────────────────────────────── */
+.closeBtn {
+  align-self: flex-end;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.closeBtn:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}

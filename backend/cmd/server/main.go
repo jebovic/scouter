@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/missionprogress"
 	"github.com/jibei/scouter/internal/budgetplanner"
 	"github.com/jibei/scouter/internal/pricedigest"
 	"github.com/jibei/scouter/internal/purchaseadvisor"
@@ -86,6 +87,7 @@ import (
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
+	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 )
 
@@ -623,6 +625,14 @@ func main() {
 	// Wishlist Social Sharing (Phase 114) — in-memory cache, 5 min TTL
 	wishlistShareHandler := wishlistshare.NewHandler(pool)
 	r.Get("/api/missions/{id}/wishlist-card", wishlistShareHandler.GetWishlistCard)
+
+	// Price Negotiation Simulator (Phase 116) — deterministic scripts, 1h in-memory cache
+	negotiationSimHandler := negotiationsim.NewHandler(shoppingRepo)
+	r.Get("/api/missions/{missionId}/items/{itemId}/negotiation-script", negotiationSimHandler.GetScript)
+
+	// Mission Progress Dashboard Widget (Phase 117) — 5min in-memory cache
+	missionProgressHandler := missionprogress.NewHandler(pool)
+	r.Get("/api/missions/{id}/progress", missionProgressHandler.GetProgress)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
