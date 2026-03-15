@@ -15,7 +15,83 @@ import {
   useAgentRuns,
 } from '../hooks'
 import type { ShoppingItem, ShoppingItemCreateRequest } from '../types'
+import { useFrenchBenchmark } from '../hooks/useFrenchBenchmark'
+import { useTimelinePlanner } from '../hooks/useTimelinePlanner'
 import styles from './ShoppingTracker.module.css'
+
+function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
+  const { data, isLoading } = useFrenchBenchmark(missionId)
+  if (isLoading) return <div style={{ padding: '10px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>Analyse du marché français…</div>
+  if (!data) return null
+  const verdictColor = data.verdictCode === 'bon_prix'
+    ? 'var(--status-buy)'
+    : data.verdictCode === 'au_dessus_du_marche'
+      ? 'var(--status-crisis)'
+      : 'var(--text-dim)'
+  return (
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+        <span style={{ fontSize: '1.1rem' }}>🇫🇷</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>Benchmark Marché Français</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)' }}>{data.medianPrice.toFixed(0)} €</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Médiane marché</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent)' }}>{data.yourAvgPrice.toFixed(0)} €</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Votre moyenne</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: verdictColor }}>{data.verdictCode === 'bon_prix' ? '✓ Bon prix' : data.verdictCode === 'au_dessus_du_marche' ? '⚠ Élevé' : '~ Moyen'}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{data.sampleSize} offres</div>
+        </div>
+      </div>
+      <p style={{ fontSize: '0.8rem', color: verdictColor, fontWeight: 500, marginBottom: '8px' }}>{data.verdict}</p>
+      {data.tips.length > 0 && (
+        <ul style={{ fontSize: '0.78rem', color: 'var(--text-dim)', paddingLeft: '16px', margin: 0 }}>
+          {data.tips.map((tip, i) => <li key={i}>{tip}</li>)}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+function PurchaseTimelineCard({ missionId }: { missionId: string }) {
+  const { data, isLoading } = useTimelinePlanner(missionId)
+  if (isLoading) return null
+  if (!data || data.totalItems === 0) return null
+  return (
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+        <span style={{ fontSize: '1.1rem' }}>📅</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>Plan d'achat 4 semaines</span>
+        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-dim)' }}>{data.totalItems} article(s)</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+        {data.buckets.map((b) => (
+          <div key={b.week} style={{
+            background: 'var(--surface-alt)',
+            borderRadius: '8px',
+            padding: '10px',
+            border: b.itemCount > 0 ? '1px solid var(--accent)' : '1px solid var(--border)',
+          }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', marginBottom: '4px' }}>{b.label}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--accent)', marginBottom: '6px' }}>{b.action}</div>
+            {b.items.length > 0
+              ? b.items.map((item, i) => (
+                  <div key={i} style={{ fontSize: '0.75rem', color: 'var(--text)', padding: '2px 0' }}>• {item}</div>
+                ))
+              : <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>Aucun article</div>
+            }
+            <div style={{ marginTop: '6px', fontSize: '0.68rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>{b.promoHint}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function ShoppingTracker() {
   const { slug } = useParams<{ slug: string }>()
@@ -257,6 +333,12 @@ export default function ShoppingTracker() {
 
               {/* Retailer Radar */}
               {mission && <RetailerRadar missionSlug={mission.id} />}
+
+              {/* French Market Benchmark */}
+              {mission && <FrenchBenchmarkPanel missionId={mission.id} />}
+
+              {/* Purchase Timeline Planner (4-week plan) */}
+              {mission && <PurchaseTimelineCard missionId={mission.id} />}
 
               {/* Purchase Timeline */}
               {items.length > 0 && <PurchaseTimeline items={items} />}

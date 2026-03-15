@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts } from '../components/scouter'
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
+import { useScorecard } from '../hooks/useScorecard'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
@@ -12,6 +13,71 @@ import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import styles from './MissionOverview.module.css'
 
 const PHASES: MissionPhase[] = ['researching', 'comparing', 'buying', 'done']
+
+function MissionScorecardSection({ missionId }: { missionId: string }) {
+  const { data, isLoading } = useScorecard(missionId)
+  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>Calcul du bilan…</div>
+  if (!data) return null
+  const gradeColor = { A: 'var(--status-buy)', B: 'var(--accent)', C: 'var(--status-watch)', D: 'var(--status-crisis)' }[data.grade] ?? 'var(--text-dim)'
+  return (
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+        <span style={{ fontSize: '1.3rem' }}>🎖️</span>
+        <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>Bilan de mission</span>
+        <span style={{
+          marginLeft: 'auto',
+          fontSize: '2rem',
+          fontWeight: 900,
+          color: gradeColor,
+          lineHeight: 1,
+        }}>{data.grade}</span>
+      </div>
+      <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '14px' }}>{data.summary}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '14px' }}>
+        {[
+          { label: 'Recherche', value: data.dimensions.research },
+          { label: 'Prix', value: data.dimensions.pricing },
+          { label: 'Budget', value: data.dimensions.budgeting },
+          { label: 'Rapidité', value: data.dimensions.speed },
+        ].map((d) => (
+          <div key={d.label} style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>{d.value}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{d.label}</div>
+            <div style={{
+              height: '4px',
+              borderRadius: '2px',
+              background: 'var(--border)',
+              marginTop: '4px',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${d.value}%`,
+                background: gradeColor,
+                borderRadius: '2px',
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {data.achievements.map((a) => (
+          <div key={a.title} style={{
+            padding: '5px 10px',
+            borderRadius: '20px',
+            fontSize: '0.75rem',
+            background: a.earned ? 'var(--accent)' : 'var(--surface-alt)',
+            color: a.earned ? '#fff' : 'var(--text-dim)',
+            border: a.earned ? 'none' : '1px solid var(--border)',
+            opacity: a.earned ? 1 : 0.5,
+          }} title={a.description}>
+            {a.earned ? '✓ ' : ''}{a.title}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function MissionOverview() {
   const { slug } = useParams<{ slug: string }>()
@@ -438,6 +504,11 @@ export default function MissionOverview() {
               onSave={async (lessons) => { await updateMission({ lessons }) }}
             />
           </div>
+        )}
+
+        {/* Mission Completion Scorecard — visible when done */}
+        {mission.phase === 'done' && (
+          <MissionScorecardSection missionId={mission.id} />
         )}
 
         {/* Comment threads */}

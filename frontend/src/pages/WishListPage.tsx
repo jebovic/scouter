@@ -6,6 +6,7 @@ import { useWishList, useCreateWishListItem, useDeleteWishListItem } from '../ho
 import { lookupProduct } from '../api/product'
 import type { ProductInfo } from '../api/product'
 import { copyShareLink } from '../utils/wishlistShare'
+import { useWishlistPrioritizer } from '../hooks/useWishlistPrioritizer'
 import styles from './WishListPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP'] as const
@@ -24,6 +25,69 @@ const emptyForm: AddFormState = {
   targetPrice: '',
   currency: 'EUR',
   notes: '',
+}
+
+function WishlistPriorityCard() {
+  const { data, isLoading, isError } = useWishlistPrioritizer()
+  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.85rem' }}>Calcul des priorités…</div>
+  if (isError || !data || data.items.length === 0) return null
+  return (
+    <div style={{
+      background: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: '12px',
+      padding: '16px',
+      marginBottom: '24px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+        <span style={{ fontSize: '1.1rem' }}>🏆</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)' }}>Priorités intelligentes</span>
+        {data.topPick && (
+          <span style={{
+            marginLeft: 'auto',
+            fontSize: '0.75rem',
+            background: 'var(--accent)',
+            color: '#fff',
+            borderRadius: '6px',
+            padding: '2px 8px',
+          }}>Top: {data.topPick.name}</span>
+        )}
+      </div>
+      <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginBottom: '12px' }}>{data.summary}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {data.items.slice(0, 5).map((item) => (
+          <div key={item.id} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '8px 10px',
+            background: 'var(--surface-alt)',
+            borderRadius: '8px',
+          }}>
+            <span style={{
+              minWidth: '22px',
+              height: '22px',
+              borderRadius: '50%',
+              background: item.rank === 1 ? 'var(--accent)' : 'var(--border)',
+              color: item.rank === 1 ? '#fff' : 'var(--text-dim)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+            }}>{item.rank}</span>
+            <span style={{ flex: 1, fontSize: '0.85rem', color: 'var(--text)', fontWeight: 500 }}>{item.name}</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{item.verdict}</span>
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              color: item.score >= 75 ? 'var(--status-buy)' : item.score >= 50 ? 'var(--status-watch)' : 'var(--text-dim)',
+            }}>{Math.round(item.score)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function WishListPage() {
@@ -301,6 +365,9 @@ export default function WishListPage() {
         </div>
         {formError && <p className={styles.error}>{formError}</p>}
       </form>
+
+      {/* Smart Priority Panel */}
+      {items.length > 0 && <WishlistPriorityCard />}
 
       {/* List */}
       {isLoading ? (
