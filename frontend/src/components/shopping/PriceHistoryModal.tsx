@@ -36,7 +36,7 @@ export function PriceHistoryModal({ item, currency, onClose }: PriceHistoryModal
         ) : snapshots.length === 0 ? (
           <p className={styles.noHistory}>No price history yet</p>
         ) : (
-          <PriceHistoryChart snapshots={snapshots} currency={currency} />
+          <PriceHistoryChart snapshots={snapshots} currency={currency} targetPrice={item.targetPrice} />
         )}
       </div>
     </div>

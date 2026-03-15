@@ -76,6 +76,7 @@ import (
 	"github.com/jibei/scouter/internal/rebalancer"
 	"github.com/jibei/scouter/internal/receipt"
 	"github.com/jibei/scouter/internal/seasonal"
+	"github.com/jibei/scouter/internal/shoppingoptimizer"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
@@ -583,6 +584,10 @@ func main() {
 	loyaltyHandler := loyaltypoints.NewHandler(loyaltySvc)
 	r.Get("/api/loyalty/programs", loyaltyHandler.ListPrograms)
 	r.Post("/api/loyalty/calculate", loyaltyHandler.Calculate)
+
+	// Smart Shopping List Optimizer (Phase 104) — deterministic, no LLM
+	shopOptimizerHandler := shoppingoptimizer.NewHandler(pool)
+	r.Post("/api/missions/{missionID}/shopping/optimize", shopOptimizerHandler.Optimize)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

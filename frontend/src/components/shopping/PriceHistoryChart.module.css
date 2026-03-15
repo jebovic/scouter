@@ -1,6 +1,37 @@
+.wrapper {
+  position: relative;
+}
+
+.pctBadge {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  z-index: 1;
+  pointer-events: none;
+  line-height: 1;
+}
+
 .empty {
   padding: 2rem;
   text-align: center;
   color: var(--text-dim);
   font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.emptyText {
+  margin: 0;
+  max-width: 240px;
+  line-height: 1.4;
 }
