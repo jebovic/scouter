@@ -28,6 +28,7 @@ import (
 	"github.com/jibei/scouter/internal/envelope"
 	"github.com/jibei/scouter/internal/export"
 	"github.com/jibei/scouter/internal/forecast"
+	"github.com/jibei/scouter/internal/health"
 	"github.com/jibei/scouter/internal/httputil"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/metrics"
@@ -403,6 +404,12 @@ func main() {
 	summaryHandler := summary.NewHandler(summaryAgent, missionRepo, optionRepo, shoppingRepo, summaryCache)
 	r.Post("/api/missions/{missionID}/summary", summaryHandler.Generate)
 	r.Get("/api/missions/{missionID}/summary", summaryHandler.Get)
+
+	// Mission Health Score (Phase 57)
+	healthCache := health.NewCache(30 * time.Minute)
+	healthAgent := health.NewAgent(provider)
+	healthHandler := health.NewHandler(missionRepo, optionRepo, shoppingRepo, healthAgent, healthCache)
+	r.Get("/api/missions/{slug}/health", healthHandler.GetHealth)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

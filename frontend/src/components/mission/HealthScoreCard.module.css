@@ -1,0 +1,214 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* ── Score Hero ──────────────────────────────────────────────────────────── */
+
+.scoreHero {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-lg);
+}
+
+.scoreCircle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--raised);
+  border: 2px solid var(--border-glow);
+  flex-shrink: 0;
+}
+
+.scoreValue {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.scoreDenominator {
+  font-size: 0.625rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.gradeLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grade {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.grade[data-grade='A'] { color: var(--green); }
+.grade[data-grade='B'] { color: var(--cyan); }
+.grade[data-grade='C'] { color: var(--gold); }
+.grade[data-grade='D'] { color: var(--orange); }
+.grade[data-grade='F'] { color: var(--coral); }
+
+.gradeSubLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+}
+
+/* ── Signals ─────────────────────────────────────────────────────────────── */
+
+.signals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.signal {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.signalIcon {
+  font-size: 1rem;
+  text-align: center;
+}
+
+.signalBar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.signalName {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  font-family: var(--font-body);
+}
+
+.signalTrack {
+  height: 4px;
+  background: var(--raised);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.signalFill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--cyan);
+  width: calc(var(--pct) * 1%);
+  transition: width 0.4s ease;
+}
+
+.signalScore {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  text-align: right;
+}
+
+/* ── AI Summary / Advice ─────────────────────────────────────────────────── */
+
+.aiBlock {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  border-left: 3px solid var(--cyan-dim);
+}
+
+.aiLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  font-family: var(--font-display);
+}
+
+.aiText {
+  font-size: 0.8125rem;
+  color: var(--text);
+  line-height: 1.55;
+  font-family: var(--font-body);
+}
+
+.adviceText {
+  font-size: 0.8125rem;
+  color: var(--text-mid);
+  font-style: italic;
+  line-height: 1.5;
+  font-family: var(--font-body);
+}
+
+/* ── Loading / Error ─────────────────────────────────────────────────────── */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.skeleton {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeletonCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.skeletonLine {
+  height: 12px;
+}
+
+.errorState {
+  padding: var(--gap);
+  text-align: center;
+  color: var(--coral);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}
