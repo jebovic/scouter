@@ -32,6 +32,7 @@ import (
 	"github.com/jibei/scouter/internal/negotiation"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
+	"github.com/jibei/scouter/internal/persona"
 	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
@@ -301,6 +302,12 @@ func main() {
 
 	// Wish List route (repo+checker declared above, before the scheduler block)
 	r.Route("/api/wishlist", wishlist.Routes(wishlistRepo))
+
+	// Spending Persona (Phase 26)
+	personaRepo := persona.NewRepository(pool)
+	personaAgent := persona.NewPersonaAgent(provider, personaRepo, pool)
+	personaHandler := persona.NewHandler(personaAgent, personaRepo)
+	r.Route("/api/persona", personaHandler.Routes())
 
 	// Product barcode lookup (Phase 25)
 	productLooker := product.NewLooker()

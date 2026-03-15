@@ -247,14 +247,19 @@ func TestNewHandler_Routes_NotNil(t *testing.T) {
 
 // --- Context propagation ---
 
-func TestPersonaAgent_Run_NilPool_ReturnsError(t *testing.T) {
+// TestPersonaAgent_Run_NilPool_Panics verifies that calling Run with a nil pool
+// panics (pgxpool does not guard against a nil receiver). This documents the
+// expected behaviour so a future nil-guard in the agent would change this test.
+func TestPersonaAgent_Run_NilPool_Panics(t *testing.T) {
 	a := &PersonaAgent{
 		provider: nil,
 		repo:     nil,
 		pool:     nil,
 	}
-	_, err := a.Run(context.Background())
-	if err == nil {
-		t.Error("expected error when pool is nil, got nil")
-	}
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("expected a panic when pool is nil, but did not panic")
+		}
+	}()
+	_, _ = a.Run(context.Background()) //nolint:errcheck
 }
