@@ -143,3 +143,22 @@
   font-size: 12px;
   color: var(--text-mid, var(--text-dim));
 }
+
+.footer {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  text-align: right;
+}
+
+.viewAll {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.viewAll:hover {
+  text-decoration: underline;
+  color: var(--text);
+}

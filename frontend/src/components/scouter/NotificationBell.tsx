@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useNotifications, useMarkNotificationRead, useMarkAllRead } from '../../hooks'
 import styles from './NotificationBell.module.css'
 
@@ -7,7 +8,7 @@ export function NotificationBell() {
   const { notifications } = useNotifications()
   const unread = notifications.filter((n) => !n.read).length
   const markRead = useMarkNotificationRead()
-  const markAll = useMarkAllRead()
+  const { mutate: markAll } = useMarkAllRead()
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export function NotificationBell() {
             <p className={styles.empty}>No notifications</p>
           ) : (
             <ul className={styles.list}>
-              {notifications.map((n) => (
+              {notifications.slice(0, 5).map((n) => (
                 <li
                   key={n.id}
                   className={`${styles.item} ${n.read ? styles.read : styles.unread}`}
@@ -73,6 +74,15 @@ export function NotificationBell() {
               ))}
             </ul>
           )}
+          <div className={styles.footer}>
+            <Link
+              to="/notifications"
+              className={styles.viewAll}
+              onClick={() => setOpen(false)}
+            >
+              View all →
+            </Link>
+          </div>
         </div>
       )}
     </div>

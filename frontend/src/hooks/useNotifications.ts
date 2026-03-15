@@ -3,15 +3,16 @@ import {
   listNotifications,
   markNotificationRead,
   markAllNotificationsRead,
+  deleteNotification,
 } from '../api'
-import type { Notification } from '../types'
+import type { Notification, NotificationFilterParams } from '../api/notifications'
 
 const POLL_INTERVAL_MS = 60_000
 
-export function useNotifications() {
+export function useNotifications(params: NotificationFilterParams = {}) {
   const { data: notifications = [], isLoading, error } = useQuery<Notification[]>({
-    queryKey: ['notifications'],
-    queryFn: () => listNotifications(),
+    queryKey: ['notifications', params],
+    queryFn: () => listNotifications(params),
     refetchInterval: POLL_INTERVAL_MS,
   })
   return { notifications, isLoading, error }
@@ -36,11 +37,22 @@ export function useMarkNotificationRead() {
 
 export function useMarkAllRead() {
   const qc = useQueryClient()
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: markAllNotificationsRead,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['notifications'] })
     },
   })
-  return mutate
+  return { mutate, isPending }
+}
+
+export function useDeleteNotification() {
+  const qc = useQueryClient()
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteNotification,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] })
+    },
+  })
+  return { mutate, isPending }
 }
