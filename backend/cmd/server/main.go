@@ -109,7 +109,9 @@ import (
 	"github.com/jibei/scouter/internal/holidayalert"
 	"github.com/jibei/scouter/internal/loyaltytracker"
 	"github.com/jibei/scouter/internal/priceannotation"
+	"github.com/jibei/scouter/internal/roicalculator"
 	"github.com/jibei/scouter/internal/targetsuggestion"
+	"github.com/jibei/scouter/internal/volatilitycalendar"
 )
 
 func main() {
@@ -737,6 +739,14 @@ func main() {
 	// French Public Holidays & Shopping Events (Phase 138) — static, no DB
 	holidayAlertHandler := holidayalert.NewHandler()
 	r.Get("/api/holidays-and-events", holidayAlertHandler.List)
+
+	// Price Volatility Heatmap Calendar (Phase 139) — 2h cache
+	volatilityCalendarHandler := volatilitycalendar.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/volatility-calendar", volatilityCalendarHandler.GetCalendar)
+
+	// Mission ROI Calculator (Phase 140) — 30min in-memory cache
+	roiHandler := roicalculator.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/roi", roiHandler.GetROI)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
