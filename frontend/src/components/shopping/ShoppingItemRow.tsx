@@ -41,6 +41,7 @@ import { ElasticityCard } from './ElasticityCard'
 import { NegotiationScriptCard } from './NegotiationScriptCard'
 import { StockStatusBadge } from './StockStatusBadge'
 import { PriceComparisonTable } from './PriceComparisonTable'
+import { DealAggregatorCard } from './DealAggregatorCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -321,6 +322,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <PriceComparisonTable missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <DealAggregatorCard missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

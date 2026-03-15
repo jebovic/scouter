@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { detectBudgetAlerts, BudgetAlert } from '../utils/budgetAlerts'
+import { detectBudgetAlerts } from '../utils/budgetAlerts'
+import type { BudgetAlert } from '../utils/budgetAlerts'
 
 export function useBudgetAlerts(
   spent: number,

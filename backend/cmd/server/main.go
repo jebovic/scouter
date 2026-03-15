@@ -126,6 +126,8 @@ import (
 	"github.com/jibei/scouter/internal/stockalert"
 	"github.com/jibei/scouter/internal/bundledetector"
 	"github.com/jibei/scouter/internal/timingrecommender"
+	"github.com/jibei/scouter/internal/dealaggregator"
+	"github.com/jibei/scouter/internal/burnrate"
 )
 
 func main() {
@@ -817,6 +819,14 @@ func main() {
 	// Smart Purchase Timing Score (Phase 154)
 	timingRecommenderHandler := timingrecommender.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/timing-score", timingRecommenderHandler.GetScore)
+
+	// Smart Deal Aggregator (Phase 155)
+	dealAggregatorHandler := dealaggregator.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/deals", dealAggregatorHandler.GetDeals)
+
+	// Budget Burn Rate Tracker (Phase 156)
+	burnRateHandler := burnrate.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/burn-rate", burnRateHandler.GetBurnRate)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

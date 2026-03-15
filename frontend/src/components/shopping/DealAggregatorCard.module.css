@@ -1,0 +1,123 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 12px 0;
+}
+
+.skeleton {
+  background: var(--surface-alt, rgba(255, 255, 255, 0.05));
+  border-radius: 8px;
+  height: 80px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.bestDeal {
+  border: 1.5px solid gold;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.bestDealLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: gold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.deal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
+  flex-wrap: wrap;
+}
+
+.deal:last-child {
+  border-bottom: none;
+}
+
+.source {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent, #7c9ef8);
+  background: rgba(124, 158, 248, 0.12);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.dealTitle {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discount {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: #e53e3e;
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.price {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.hot {
+  font-size: 0.85rem;
+}
+
+.votes {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.link {
+  font-size: 0.72rem;
+  color: var(--accent, #7c9ef8);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

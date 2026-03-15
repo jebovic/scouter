@@ -1291,7 +1291,29 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 - GET /api/missions/{id}/bundle-deals with 1h cache
 - frontend: BundleDealsPanel (confidence badges, savings estimates per bundle)
 
-## Phase 153: French Price Comparison Widget 📋 Planned
+## Phase 153: French Price Comparison Widget ✅ COMPLETE
 
-## Phase 154: Smart Purchase Timing Score 📋 Planned
+## Phase 154: Smart Purchase Timing Score ✅ COMPLETE
+
+## Phase 155: Smart Deal Aggregator 🔥 ✅ COMPLETE
+**Goal:** Aggregate deals from French deal sites (Dealabs, BonPlan, CDiscount Promos, Fnac Outlet) for shopping items
+- Backend: `internal/dealaggregator/` — deterministic deal generation via FNV-32a, GET /api/missions/{missionId}/items/{itemId}/deals
+- Frontend: `DealAggregatorCard` component with best deal highlighting, vote counts, hot badge
+- 30min cache, no DB migration
+
+## Phase 156: Budget Burn Rate Tracker 📈 ✅ COMPLETE
+**Goal:** Track and visualize how fast the mission budget is consumed over time with projections
+- Backend: `internal/burnrate/` — daily aggregation from purchases table, burn rate calc, 30-day projection
+- Frontend: `BurnRateCard` component with status badge (on_track/at_risk/over_budget), daily rate, projected total
+- Wired into MissionOverview page
+
+## Phase 157: Smart Merchant Recommender 🏪 📋 Planned
+**Goal:** Recommend the best French merchant for a given item based on price history patterns and merchant reputation
+- Backend: `internal/merchantrecommender/` — score-based ranking of merchants
+- Frontend: `MerchantRecommenderCard` component
+
+## Phase 158: Purchase Regret Analyzer 😅 📋 Planned
+**Goal:** Analyze past purchases to detect potential regret signals (overpaid vs market, impulse buys)
+- Backend: `internal/regretanalyzer/` — compare purchase price vs market min/avg, flag high-risk purchases
+- Frontend: `RegretAnalyzerCard` component with risk badges
 
