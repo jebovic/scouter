@@ -14,6 +14,7 @@ const StatsPage = lazy(() => import('./pages/StatsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const JoinPage = lazy(() => import('./pages/JoinPage'))
 const WishListPage = lazy(() => import('./pages/WishListPage'))
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/wishlist" element={<WishListPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />

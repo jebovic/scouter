@@ -314,6 +314,29 @@
     "tips": "Conseils",
     "lastAnalyzed": "Dernière analyse"
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "empty": "Aucune notification",
+    "emptyDesc": "Les alertes de prix et les notifications de tendance apparaîtront ici.",
+    "viewAll": "Tout voir →",
+    "deleteConfirm": "Supprimer la notification",
+    "filterAll": "Tout",
+    "filterPriceDrop": "Baisse de prix",
+    "filterTargetHit": "Cible atteinte",
+    "filterTrendAlert": "Alerte tendance"
+  },
+  "travel": {
+    "title": "RECHERCHE DE VOYAGE",
+    "flights": "Vols",
+    "trains": "Trains",
+    "from": "Départ",
+    "to": "Arrivée",
+    "date": "Date",
+    "search": "Rechercher",
+    "searching": "Recherche...",
+    "noResults": "Aucun résultat pour cet itinéraire."
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

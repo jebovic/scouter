@@ -314,6 +314,29 @@
     "tips": "Tips",
     "lastAnalyzed": "Last analyzed"
   },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "empty": "No Notifications",
+    "emptyDesc": "Price alerts and trend notifications will appear here.",
+    "viewAll": "View all →",
+    "deleteConfirm": "Delete notification",
+    "filterAll": "All",
+    "filterPriceDrop": "Price Drop",
+    "filterTargetHit": "Target Hit",
+    "filterTrendAlert": "Trend Alert"
+  },
+  "travel": {
+    "title": "TRAVEL SEARCH",
+    "flights": "Flights",
+    "trains": "Trains",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "search": "Search",
+    "searching": "Searching...",
+    "noResults": "No results found for this route."
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",

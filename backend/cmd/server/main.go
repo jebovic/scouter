@@ -42,6 +42,7 @@ import (
 	"github.com/jibei/scouter/internal/settings"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
+	"github.com/jibei/scouter/internal/travel"
 	"github.com/jibei/scouter/internal/usage"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/wishlist"
@@ -312,6 +313,13 @@ func main() {
 	// Product barcode lookup (Phase 25)
 	productLooker := product.NewLooker()
 	r.Route("/api/products", product.Routes(productLooker))
+
+	// Travel integrations (Phase 29)
+	avClient := travel.NewAviationStackClient(cfg.AviationStackAPIKey, cfg.AviationStackBaseURL)
+	sncfClient := travel.NewSNCFClient(cfg.SNCFAPIKey, cfg.SNCFBaseURL)
+	travelCache := travel.NewCache(time.Hour)
+	travelHandler := travel.NewHandler(avClient, sncfClient, travelCache)
+	r.Mount("/api/travel", travelHandler.Routes())
 
 	// Weighted Comparison Matrix (Phase 22)
 	comparisonRepo := comparison.NewRepository(pool)

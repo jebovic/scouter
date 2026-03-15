@@ -35,6 +35,12 @@ type Config struct {
 
 	// Phase 14: Observability
 	MetricsEnabled bool
+
+	// Phase 29: Travel APIs
+	AviationStackAPIKey  string
+	AviationStackBaseURL string // default: "https://api.aviationstack.com"
+	SNCFAPIKey           string
+	SNCFBaseURL          string // default: "https://api.sncf.com/v1"
 }
 
 // Load reads required environment variables, returning an error if any are missing.
@@ -138,6 +144,18 @@ func Load() (*Config, error) {
 
 	// Phase 14: Metrics
 	cfg.MetricsEnabled = os.Getenv("METRICS_ENABLED") == "true"
+
+	// Phase 29: Travel APIs
+	cfg.AviationStackAPIKey = os.Getenv("AVIATIONSTACK_API_KEY")
+	cfg.AviationStackBaseURL = os.Getenv("AVIATIONSTACK_BASE_URL")
+	if cfg.AviationStackBaseURL == "" {
+		cfg.AviationStackBaseURL = "https://api.aviationstack.com"
+	}
+	cfg.SNCFAPIKey = os.Getenv("SNCF_API_KEY")
+	cfg.SNCFBaseURL = os.Getenv("SNCF_BASE_URL")
+	if cfg.SNCFBaseURL == "" {
+		cfg.SNCFBaseURL = "https://api.sncf.com/v1"
+	}
 
 	return cfg, nil
 }
