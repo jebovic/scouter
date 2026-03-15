@@ -40,7 +40,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       {!missionSlug && (
         <div className={styles.subNav}>
           {[
-            { label: '📊 Analytics', path: '/analytics' },
+            { label: '📊 Stats & Analytics', path: '/stats' },
             { label: 'Insights', path: '/insights' },
             { label: 'Kanban', path: '/kanban' },
             { label: 'Cashback', path: '/cashback' },
@@ -49,7 +49,6 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
             { label: 'Bons Plans', path: '/deal-calendar' },
             { label: 'Fidélité', path: '/loyalty' },
             { label: 'History', path: '/history' },
-            { label: 'Stats', path: '/stats' },
             { label: 'Digest', path: '/digest' },
             { label: 'Perfs', path: '/performance' },
             { label: 'Settings', path: '/settings' },

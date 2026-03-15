@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '../lib/queryKeys'
 import {
   getPurchaseRecord,
   createPurchaseRecord,
@@ -11,7 +12,7 @@ import {
 
 export function usePurchaseRecord(missionId: string | undefined) {
   return useQuery({
-    queryKey: ['purchase', missionId],
+    queryKey: queryKeys.purchase(missionId ?? ''),
     queryFn: () => getPurchaseRecord(missionId!),
     enabled: !!missionId,
   })
@@ -22,9 +23,9 @@ export function useRecordPurchase(missionId: string) {
   return useMutation({
     mutationFn: (req: CreatePurchaseRequest) => createPurchaseRecord(missionId, req),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['purchase', missionId] })
-      qc.invalidateQueries({ queryKey: ['missions'] })
-      qc.invalidateQueries({ queryKey: ['stats'] })
+      qc.invalidateQueries({ queryKey: queryKeys.purchase(missionId) })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
+      qc.invalidateQueries({ queryKey: queryKeys.stats() })
     },
   })
 }
@@ -34,14 +35,14 @@ export function useUpdatePurchase(missionId: string) {
   return useMutation({
     mutationFn: (req: UpdatePurchaseRequest) => updatePurchaseRecord(missionId, req),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['purchase', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.purchase(missionId) })
     },
   })
 }
 
 export function useStats() {
   return useQuery({
-    queryKey: ['stats'],
+    queryKey: queryKeys.stats(),
     queryFn: getStats,
     staleTime: 5 * 60 * 1000,
   })

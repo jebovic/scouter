@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '../lib/queryKeys'
 import {
   listShoppingItems,
   createShoppingItem,
@@ -19,7 +20,7 @@ export function useShopping(missionId: string) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['shopping', missionId],
+    queryKey: queryKeys.shopping.all(missionId),
     queryFn: () => listShoppingItems(missionId),
     enabled: Boolean(missionId),
   })

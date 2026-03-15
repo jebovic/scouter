@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '../lib/queryKeys'
 import {
   listNotifications,
   markNotificationRead,
@@ -11,7 +12,7 @@ const POLL_INTERVAL_MS = 60_000
 
 export function useNotifications(params: NotificationFilterParams = {}) {
   const { data: notifications = [], isLoading, error } = useQuery<Notification[]>({
-    queryKey: ['notifications', params],
+    queryKey: [...queryKeys.notifications.all(), params],
     queryFn: () => listNotifications(params),
     refetchInterval: POLL_INTERVAL_MS,
   })
@@ -29,7 +30,7 @@ export function useMarkNotificationRead() {
   const { mutate } = useMutation({
     mutationFn: markNotificationRead,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['notifications'] })
+      qc.invalidateQueries({ queryKey: queryKeys.notifications.all() })
     },
   })
   return mutate
@@ -40,7 +41,7 @@ export function useMarkAllRead() {
   const { mutate, isPending } = useMutation({
     mutationFn: markAllNotificationsRead,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['notifications'] })
+      qc.invalidateQueries({ queryKey: queryKeys.notifications.all() })
     },
   })
   return { mutate, isPending }
@@ -51,7 +52,7 @@ export function useDeleteNotification() {
   const { mutate, isPending } = useMutation({
     mutationFn: deleteNotification,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['notifications'] })
+      qc.invalidateQueries({ queryKey: queryKeys.notifications.all() })
     },
   })
   return { mutate, isPending }

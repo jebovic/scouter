@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '../lib/queryKeys'
 import {
   getSettings,
   updateSettings as updateSettingsApi,
@@ -7,7 +8,7 @@ import {
 
 export function useSettings() {
   return useQuery({
-    queryKey: ['settings'],
+    queryKey: queryKeys.settings(),
     queryFn: getSettings,
     staleTime: 10 * 60 * 1000,
   })

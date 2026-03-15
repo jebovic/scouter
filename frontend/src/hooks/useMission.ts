@@ -10,6 +10,7 @@ import {
   cloneMission,
 } from '../api'
 import { useToast } from '../components/scouter'
+import { queryKeys } from '../lib/queryKeys'
 import type { MissionCreateRequest, MissionUpdateRequest } from '../types'
 
 export function useMissions() {
@@ -18,7 +19,7 @@ export function useMissions() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['missions'],
+    queryKey: queryKeys.missions.all(),
     queryFn: listMissions,
   })
   return { missions, isLoading, error }
@@ -30,7 +31,7 @@ export function useMission(slug: string) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['missions', slug],
+    queryKey: queryKeys.missions.detail(slug),
     queryFn: () => getMission(slug),
     enabled: Boolean(slug),
   })
@@ -43,7 +44,7 @@ export function useCreateMission() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (req: MissionCreateRequest) => createMission(req),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
       toast('Mission created', 'success')
     },
     onError: (err: unknown) => toast(`Failed to create mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -57,8 +58,8 @@ export function useUpdateMission(slug: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (req: MissionUpdateRequest) => updateMission(slug, req),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['missions'] })
-      qc.invalidateQueries({ queryKey: ['missions', slug] })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.detail(slug) })
       toast('Mission updated', 'success')
     },
     onError: (err: unknown) => toast(`Failed to update mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -72,7 +73,7 @@ export function useDeleteMission() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (slug: string) => deleteMission(slug),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
       toast('Mission deleted', 'success')
     },
     onError: (err: unknown) => toast(`Failed to delete mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -86,7 +87,7 @@ export function useDuplicateMission() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (slug: string) => duplicateMission(slug),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
       toast('Mission duplicated', 'success')
     },
     onError: (err: unknown) => toast(`Failed to duplicate mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -101,7 +102,7 @@ export function useCloneMission() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (slug: string) => cloneMission(slug),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
       toast(t('mission.cloned'), 'success')
     },
     onError: (err: unknown) => toast(t('mission.cloneError', { message: err instanceof Error ? err.message : t('common.error') }), 'error'),

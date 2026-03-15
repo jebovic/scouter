@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listOptions, updateOption, deleteOption, pinOption, rejectOption, unrejectOption, deletePinnedOptions } from '../api'
 import { useToast } from '../components/scouter'
+import { queryKeys } from '../lib/queryKeys'
 import type { OptionUpdateRequest } from '../types'
 
 export function useOptions(missionId: string) {
@@ -9,7 +10,7 @@ export function useOptions(missionId: string) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['options', missionId],
+    queryKey: queryKeys.options.all(missionId),
     queryFn: () => listOptions(missionId),
     enabled: Boolean(missionId),
   })

@@ -10,9 +10,9 @@ import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, 
 import { ExpenseCategoryPanel } from '../components/mission'
 import type { MissionPhase } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
+import { PhaseSection } from './mission-overview/PhaseSection'
+import { QuickNavSection } from './mission-overview/QuickNavSection'
 import styles from './MissionOverview.module.css'
-
-const PHASES: MissionPhase[] = ['researching', 'comparing', 'buying', 'done']
 
 function MissionScorecardSection({ missionId }: { missionId: string }) {
   const { data, isLoading } = useScorecard(missionId)
@@ -192,21 +192,7 @@ export default function MissionOverview() {
           </div>
 
           {/* Phase switcher */}
-          <div className={styles.card}>
-            <h3 className={styles.cardLabel}>{t('mission.phase').toUpperCase()}</h3>
-            <div className={styles.phaseButtons}>
-              {PHASES.map((p) => (
-                <button
-                  key={p}
-                  onClick={() => handlePhase(p)}
-                  disabled={updatePending}
-                  className={`${styles.phaseBtn} ${mission.phase === p ? styles.phaseBtnActive : ''}`}
-                >
-                  {t(`mission.phases.${p}`)}
-                </button>
-              ))}
-            </div>
-          </div>
+          <PhaseSection mission={mission} updatePending={updatePending} handlePhase={handlePhase} />
         </div>
 
         {/* Budget Allocation Advisor (Phase 163) */}
@@ -523,25 +509,7 @@ export default function MissionOverview() {
         </div>
 
         {/* Quick nav */}
-
-        <div className={styles.quickNav}>
-          <button
-            onClick={() => navigate(`/missions/${slug}/options`)}
-            className={styles.quickNavBtn}
-          >
-            <div className={styles.quickNavIcon}>🔍</div>
-            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleOptions}`}>{t('quickNav.optionsExplorer')}</div>
-            <div className={styles.quickNavDesc}>{t('quickNav.optionsDesc')}</div>
-          </button>
-          <button
-            onClick={() => navigate(`/missions/${slug}/shopping`)}
-            className={styles.quickNavBtn}
-          >
-            <div className={styles.quickNavIcon}>🛒</div>
-            <div className={`${styles.quickNavTitle} ${styles.quickNavTitleShopping}`}>{t('quickNav.shoppingTracker')}</div>
-            <div className={styles.quickNavDesc}>{t('quickNav.shoppingDesc')}</div>
-          </button>
-        </div>
+        <QuickNavSection mission={mission} />
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
 
