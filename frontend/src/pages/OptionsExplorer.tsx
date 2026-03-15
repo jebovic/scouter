@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
-import { OptionCard, ComparisonTable, RadarChart, ConstraintChecker } from '../components/options'
+import { OptionCard, ComparisonTable, RadarChart, ConstraintChecker, LivePricesPanel } from '../components/options'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -169,14 +169,22 @@ export default function OptionsExplorer() {
               )}
               <div className={styles.optionsGrid}>
                 {filtered.map((option) => (
-                  <OptionCard
-                    key={option.id}
-                    option={option}
-                    score={decision?.scores.find((s) => s.optionId === option.id)?.score}
-                    onPin={(id) => pinOption(id)}
-                    onReject={(id) => setRejectTarget(id)}
-                    onUnreject={(id) => unrejectOption(id)}
-                  />
+                  <div key={option.id}>
+                    <OptionCard
+                      option={option}
+                      score={decision?.scores.find((s) => s.optionId === option.id)?.score}
+                      onPin={(id) => pinOption(id)}
+                      onReject={(id) => setRejectTarget(id)}
+                      onUnreject={(id) => unrejectOption(id)}
+                    />
+                    {mission && (
+                      <LivePricesPanel
+                        missionId={mission.id}
+                        optionId={option.id}
+                        missionCategory={mission.category}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
