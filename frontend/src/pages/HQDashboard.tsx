@@ -1,11 +1,71 @@
 import { useState, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid } from '../components/scouter'
 import { MissionCard, MissionForm, TemplateGallery, TemplatePreview } from '../components/mission'
-import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates } from '../hooks'
-import { useNavigate } from 'react-router-dom'
+import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar } from '../hooks'
 import type { MissionCreateRequest, Template } from '../types'
+import type { DealEvent } from '../api/dealCalendar'
 import styles from './HQDashboard.module.css'
+
+function findNextDeal(events: DealEvent[]): DealEvent | null {
+  const now = Date.now()
+  const upcoming = events
+    .filter((e) => new Date(e.startDate).getTime() > now)
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+  return upcoming[0] ?? null
+}
+
+function daysUntil(isoDate: string): number {
+  const ms = new Date(isoDate).getTime() - Date.now()
+  return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)))
+}
+
+function NextDealWidget() {
+  const { events, isLoading } = useDealCalendar({ upcoming: true })
+  const next = findNextDeal(events)
+
+  if (isLoading) {
+    return <div className={styles.nextDeal} style={{ opacity: 0.4 }} />
+  }
+
+  if (!next) return null
+
+  const days = daysUntil(next.startDate)
+  const dateStr = new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(next.startDate))
+
+  const levelColor =
+    next.discountLevel === 'high'
+      ? 'var(--coral)'
+      : next.discountLevel === 'medium'
+        ? 'var(--gold)'
+        : 'var(--green)'
+
+  return (
+    <div className={styles.nextDeal}>
+      <span className={styles.nextDealLabel}>PROCHAIN BON PLAN</span>
+      <div className={styles.nextDealBody}>
+        <span className={styles.nextDealName}>{next.name}</span>
+        <span
+          className={styles.nextDealCountdown}
+          style={{ color: levelColor } as React.CSSProperties}
+        >
+          J-{days}
+        </span>
+      </div>
+      <div className={styles.nextDealMeta}>
+        {dateStr}
+        <Link to="/deal-calendar" className={styles.nextDealLink}>
+          Voir le calendrier →
+        </Link>
+      </div>
+    </div>
+  )
+}
 
 export default function HQDashboard() {
   const { t } = useTranslation()
@@ -92,6 +152,8 @@ export default function HQDashboard() {
           <div className={styles.usageWrapper}>
             <UsageWidget />
           </div>
+
+          <NextDealWidget />
 
           {isLoading ? (
             <ScouterGrid cols={3}>

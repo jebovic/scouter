@@ -63,6 +63,65 @@
   border-top: 1px solid var(--border);
 }
 
+/* Next deal widget */
+.nextDeal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 72px;
+}
+
+.nextDealLabel {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.nextDealBody {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nextDealName {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.nextDealCountdown {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.nextDealMeta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nextDealLink {
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 0.78rem;
+}
+
+.nextDealLink:hover {
+  text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .header {

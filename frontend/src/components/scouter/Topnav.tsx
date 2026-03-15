@@ -42,6 +42,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
           {[
             { label: 'Wishlist', path: '/wishlist' },
             { label: 'Envelopes', path: '/envelopes' },
+            { label: 'Bons Plans', path: '/deal-calendar' },
             { label: 'History', path: '/history' },
             { label: 'Stats', path: '/stats' },
             { label: 'Settings', path: '/settings' },

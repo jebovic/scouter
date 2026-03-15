@@ -21,6 +21,7 @@ import (
 	"github.com/jibei/scouter/internal/comparison"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
+	"github.com/jibei/scouter/internal/dealcalendar"
 	"github.com/jibei/scouter/internal/decision"
 	"github.com/jibei/scouter/internal/embedding"
 	"github.com/jibei/scouter/internal/envelope"
@@ -195,6 +196,9 @@ func main() {
 	templateReg := template.NewRegistry()
 	templateHandler := template.NewHandler(templateReg)
 
+	// Deal Calendar (no DB dependency — hardcoded French events)
+	dealCalHandler := dealcalendar.NewHandler()
+
 	// Router
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -284,6 +288,9 @@ func main() {
 	// Templates
 	r.Get("/api/templates", templateHandler.List)
 	r.Get("/api/templates/{slug}", templateHandler.Get)
+
+	// Deal Calendar
+	r.Get("/api/deal-calendar", dealCalHandler.List)
 
 	// Settings (Phase 13)
 	r.Get("/api/settings", settingsHandler.GetAll)

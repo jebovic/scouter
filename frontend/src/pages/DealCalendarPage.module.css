@@ -1,0 +1,250 @@
+.page {
+  flex: 1;
+  padding: 2rem;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Header */
+.header {
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  font-size: 1.8rem;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Category filter */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.filterBtn {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-mid);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filterBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.filterBtnActive {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: var(--void);
+  font-weight: 600;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Event card */
+.card {
+  display: flex;
+  gap: 1rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: border-color 0.2s, opacity 0.2s;
+}
+
+.cardActive {
+  border-color: var(--cyan);
+  animation: activePulse 2.4s ease-in-out infinite;
+}
+
+.cardPast {
+  opacity: 0.5;
+}
+
+@keyframes activePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 210, 210, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(0, 210, 210, 0.2); }
+}
+
+/* Colored left bar */
+.bar {
+  width: 5px;
+  flex-shrink: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.barLow {
+  background: var(--green);
+}
+
+.barMedium {
+  background: var(--gold);
+}
+
+.barHigh {
+  background: var(--coral);
+}
+
+/* Card body */
+.body {
+  padding: 1rem 1rem 1rem 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.eventName {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.dateRange {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  font-family: var(--font-mono);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.categoryBadge {
+  background: rgba(0, 210, 210, 0.1);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.discountLow {
+  background: rgba(80, 200, 120, 0.12);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.discountMedium {
+  background: rgba(220, 170, 0, 0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.discountHigh {
+  background: rgba(220, 80, 60, 0.12);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.activeBadge {
+  background: var(--cyan);
+  color: var(--void);
+  border-color: var(--cyan);
+  animation: badgePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.description {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  color: var(--text-mid);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+}
+
+/* Skeleton */
+.skeletonCard {
+  height: 108px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  opacity: 0.4;
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  from { opacity: 0.3; }
+  to { opacity: 0.55; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .filters {
+    gap: 0.4rem;
+  }
+
+  .filterBtn {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+  }
+}
