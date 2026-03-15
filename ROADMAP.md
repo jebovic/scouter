@@ -1211,5 +1211,58 @@ recharts LineChart per shopping item showing price evolution over time.
 
 ## Phase 131: Item Condition Tracker 📋 Planned
 
-## Phase 132: Flash Sale Calendar 📋 Planned
+## Phase 132: Budget Heatmap ✅ COMPLETE
+Category × month intensity grid with CSS-colored cells, wired in AnalyticsPage.
+
+## Phase 133: Smart Price Thresholds ✅ COMPLETE
+Conservative/moderate/aggressive target price strategies with apply-to-item mutation.
+
+## Phase 134: Price Drop Predictor ✅ COMPLETE
+Linear regression + velocity analysis, probability bar, French signals.
+
+## Phase 135: Merchant Loyalty Tracker ✅ COMPLETE
+French loyalty programs (Fnac+, Club Darty, etc.), estimated cashback per merchant.
+
+## Phase 136: Smart Shopping List Sorter ✅ COMPLETE
+AI-style urgency scoring, "🧠 Tri intelligent" toggle, rank badges.
+
+## Phase 137: Price Timeline Annotations ✅ COMPLETE
+Event detection (new low, rebound, spike), vertical timeline in ShoppingItemRow.
+
+## Phase 138: French Public Holidays & Events Alert ✅ COMPLETE
+2026 jours fériés + soldes/Black Friday, dismissible banner in HQDashboard.
+
+## Phase 139: Price Volatility Heatmap Calendar ✅ COMPLETE
+Weekly volatility grid (90-day), intensity-colored CSS cells, most volatile week.
+
+## Phase 140: Mission ROI Calculator ✅ COMPLETE
+Savings vs estimate, days tracking, price checks, 0-100 ROI score with verdict.
+
+## Phase 141: French Inflation Impact Tracker ✅ COMPLETE
+CPI rates by category, monthly/3-month inflation cost, color-coded table.
+
+## Phase 142: Purchase Decision Matrix ✅ COMPLETE
+5-criteria MCDA (price/urgency/value/availability/confidence), ranked with recommendations.
+
+## Phase 143: Smart Notification Rules Engine ✅ COMPLETE
+7 alert rules (target hit, near target, flash sale, drops, spikes), critical/warning severity.
+
+## Phase 144: Collaborative Vote Summary ✅ COMPLETE
+Net score, approval rate, sentiment, most approved/controversial items.
+
+## Phase 145: Price Elasticity Estimator ✅ COMPLETE
+-3 to +3 gauge, classification, optimal buy threshold computation.
+
+## Phase 146: Mission Markdown Report Export ✅ COMPLETE
+Full markdown report download with items by status, top savings, recommendations.
+
+## Phase 147: Cross-Mission Analytics Dashboard ✅ COMPLETE
+Savings comparison across missions, efficiency ratings, CSS bar chart in AnalyticsPage.
+
+## Phase 148: Smart Reorder Suggestions ✅ COMPLETE
+Priority-scored buy order, merchant batch grouping, delivery savings notes.
+
+## Phase 149: Real-Time Stock Alert Simulator 📋 Planned
+
+## Phase 150: Price Negotiation Script Generator 📋 Planned
 
