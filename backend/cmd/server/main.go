@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/agentrun"
+	"github.com/jibei/scouter/internal/collaborator"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
@@ -37,6 +38,7 @@ import (
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
+	"github.com/jibei/scouter/internal/vote"
 )
 
 func main() {
@@ -158,6 +160,14 @@ func main() {
 	settingsRepo := settings.NewRepository(pool)
 	settingsHandler := settings.NewHandler(settingsRepo)
 
+	// Collaborative missions (Phase 16)
+	collaboratorRepo := collaborator.NewRepository(pool)
+	collaboratorSvc := collaborator.NewService(collaboratorRepo)
+	collaboratorHandler := collaborator.NewHandler(collaboratorSvc)
+	voteRepo := vote.NewRepository(pool)
+	voteSvc := vote.NewService(voteRepo)
+	voteHandler := vote.NewHandler(voteSvc)
+
 	// Admin data management (Phase 13)
 	adminHandler := admin.NewHandler(pool)
 
@@ -264,6 +274,13 @@ func main() {
 
 	// Data management (Phase 13)
 	r.Delete("/api/data", adminHandler.DeleteAllData)
+
+	// Collaborative missions (Phase 16)
+	r.Mount("/api/missions/{missionID}/invites", collaboratorHandler.InviteRoutes())
+	r.Mount("/api/missions/{missionID}/collaborators", collaboratorHandler.CollaboratorRoutes())
+	r.Get("/api/invites/{token}", collaboratorHandler.GetInvite)
+	r.Post("/api/invites/{token}/join", collaboratorHandler.JoinMission)
+	r.Mount("/api/options/{optionID}/votes", voteHandler.Routes())
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

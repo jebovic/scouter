@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel } from '../components/mission'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
 import type { MissionPhase } from '../types'
 import styles from './MissionOverview.module.css'
@@ -130,6 +130,11 @@ export default function MissionOverview() {
         {/* Category template */}
         <div className={styles.section}>
           <CategoryTemplate category={mission.category} />
+        </div>
+
+        {/* Collaborators */}
+        <div className={styles.section}>
+          <CollaboratorsPanel missionId={mission.id} />
         </div>
 
         {/* Constraints */}

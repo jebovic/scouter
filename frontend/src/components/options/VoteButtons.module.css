@@ -1,0 +1,60 @@
+@import '../../styles/theme.css';
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  border-color: var(--border-glow);
+  color: var(--text);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.upActive {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.downActive {
+  border-color: var(--coral);
+  color: var(--coral);
+  background: var(--coral-dim);
+}
+
+.score {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  min-width: 2rem;
+  text-align: center;
+}
+
+.positive {
+  color: var(--cyan);
+}
+
+.negative {
+  color: var(--coral);
+}

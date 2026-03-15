@@ -12,6 +12,7 @@ const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ defaul
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const StatsPage = lazy(() => import('./pages/StatsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const JoinPage = lazy(() => import('./pages/JoinPage'))
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<HQDashboard />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/invites/:token" element={<JoinPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/stats" element={<StatsPage />} />
             <Route path="/settings" element={<SettingsPage />} />

@@ -1,5 +1,6 @@
 import { Card, Badge } from '../scouter'
 import { AttributeRenderer } from './AttributeRenderer'
+import { VoteButtons } from './VoteButtons'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
@@ -166,6 +167,8 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
           View →
         </a>
       )}
+
+      <VoteButtons optionId={option.id} />
 
       {(onPin || onReject) && (
         <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
