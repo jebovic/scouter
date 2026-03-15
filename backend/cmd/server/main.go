@@ -36,6 +36,7 @@ import (
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/persona"
+	"github.com/jibei/scouter/internal/prediction"
 	"github.com/jibei/scouter/internal/pricecomp"
 	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
@@ -378,6 +379,10 @@ func main() {
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)
 	r.Mount("/api/options/{optionID}", negotiationHandler.Routes())
+
+	// Smart Price Prediction (Phase 52)
+	predictionHandler := prediction.NewHandler(shoppingRepo)
+	r.Get("/api/shopping-items/{id}/prediction", predictionHandler.GetPrediction)
 
 	// Stock availability heuristic (Phase 42)
 	stockCache := stockcheck.NewCache(5 * time.Minute)

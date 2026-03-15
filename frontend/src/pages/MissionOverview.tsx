@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
+import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord } from '../hooks'
 import type { MissionPhase } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import styles from './MissionOverview.module.css'
@@ -21,7 +21,6 @@ export default function MissionOverview() {
   const { triggerPricing, isPending: pricingPending } = usePriceIntel(mission?.id ?? '')
   const { updateMission, isPending: updatePending } = useUpdateMission(slug!)
   const { data: purchaseRecord } = usePurchaseRecord(mission?.id)
-  const { decision } = useDecision(mission?.id ?? '')
   const [showScanner, setShowScanner] = useState(false)
   const [scanPrefill, setScanPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
   const [scanKey, setScanKey] = useState(0)
@@ -197,16 +196,12 @@ export default function MissionOverview() {
           <CoachPanel missionSlug={mission.slug} />
         </div>
 
-        {/* Mission Timeline */}
+        {/* Activity Timeline */}
         <div className={`${styles.card} ${styles.section}`}>
-          <h3 className={styles.cardLabel}>{t('mission.missionProgress').toUpperCase()}</h3>
+          <h3 className={styles.cardLabel}>{t('mission.activityFeed').toUpperCase()}</h3>
           <MissionTimeline
-            createdAt={mission.createdAt}
-            hasDecision={!!decision}
-            decisionAt={decision?.createdAt}
-            hasPurchase={!!purchaseRecord}
-            purchasedAt={purchaseRecord?.purchasedAt}
-            hasReview={!!purchaseRecord?.review}
+            missionId={mission.id}
+            missionSlug={mission.slug}
           />
         </div>
 

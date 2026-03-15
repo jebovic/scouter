@@ -1,0 +1,52 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: default;
+  user-select: none;
+}
+
+/* Trend variants */
+.rising {
+  background: color-mix(in srgb, var(--status-crisis) 12%, transparent);
+  color: var(--status-crisis);
+  border: 1px solid color-mix(in srgb, var(--status-crisis) 25%, transparent);
+}
+
+.falling {
+  background: color-mix(in srgb, var(--status-buy) 12%, transparent);
+  color: var(--status-buy);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 25%, transparent);
+}
+
+.stable {
+  background: color-mix(in srgb, var(--text-dim) 10%, transparent);
+  color: var(--text-dim);
+  border: 1px solid color-mix(in srgb, var(--text-dim) 20%, transparent);
+}
+
+/* Confidence dot */
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotHigh {
+  background: #22c55e; /* green */
+}
+
+.dotMedium {
+  background: #eab308; /* yellow */
+}
+
+.dotLow {
+  background: #ef4444; /* red */
+}

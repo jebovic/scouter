@@ -3,6 +3,7 @@ import { Badge } from '../scouter'
 import { TrendBadge } from './TrendBadge'
 import { DealScoreBadge } from './DealScoreBadge'
 import { PriceSparkline } from './PriceSparkline'
+import { PricePredictionBadge } from './PricePredictionBadge'
 import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
@@ -159,6 +160,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
           📊
         </button>
         {showIntel && <DealIntelPanel missionId={missionId} itemId={item.id} />}
+        <PricePredictionBadge itemId={item.id} />
       </div>
 
       <Badge variant={item.status} />
