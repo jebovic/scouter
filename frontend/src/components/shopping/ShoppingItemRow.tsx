@@ -5,6 +5,7 @@ import { DealScoreBadge } from './DealScoreBadge'
 import { DealExplainerPopover } from './DealExplainerPopover'
 import { PriceSparkline } from './PriceSparkline'
 import { PricePredictionBadge } from './PricePredictionBadge'
+import { PriceAlertBadge } from './PriceAlertBadge'
 import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
@@ -118,6 +119,8 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
             {priceDelta > 0 ? '+' : ''}{fmt(priceDelta)}
           </div>
         )}
+        {/* Price Alert Badge */}
+        <PriceAlertBadge currentPrice={item.price} targetPrice={item.targetPrice} currency={currency} />
         {/* Target price */}
         {editingTarget ? (
           <input

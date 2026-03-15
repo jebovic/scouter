@@ -1,0 +1,27 @@
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+}
+
+.achieved {
+  background: color-mix(in srgb, var(--status-buy) 15%, transparent);
+  color: var(--status-buy);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 30%, transparent);
+}
+
+.close {
+  background: color-mix(in srgb, var(--gold) 15%, transparent);
+  color: var(--gold);
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+}
+
+.set {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+}

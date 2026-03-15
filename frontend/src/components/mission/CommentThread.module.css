@@ -1,0 +1,187 @@
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin: 0 0 4px 0;
+}
+
+/* ── Comment list ──────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 8px 0;
+}
+
+/* ── Single comment card ───────────────────────────── */
+
+.comment {
+  position: relative;
+  border-left: 3px solid var(--border);
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+}
+
+.comment:hover .deleteBtn {
+  opacity: 1;
+}
+
+.commentMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.author {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.time {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.body {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.deleteBtn:hover {
+  color: var(--danger, #e53e3e);
+}
+
+/* ── Collapse toggle ───────────────────────────────── */
+
+.toggleBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.toggleBtn:hover {
+  color: var(--text);
+}
+
+/* ── Compose form ──────────────────────────────────── */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.authorInput {
+  flex: 0 0 140px;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+.authorInput:focus {
+  border-color: var(--primary, #4a90d9);
+}
+
+.textarea {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.5;
+  font-family: inherit;
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--primary, #4a90d9);
+}
+
+.formFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.charCount {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.charCountWarn {
+  color: #e53e3e;
+}
+
+.submitBtn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary, #4a90d9);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

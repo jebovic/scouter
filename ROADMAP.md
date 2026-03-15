@@ -82,8 +82,8 @@
 | 56 | Quick Note / Annotation on Options | Interface | Low | ✅ Done |
 | 57 | Mission Health Score (AI composite rating) | Agent | High | ✅ Done |
 | 58 | Price Drop Email Digest (weekly summary) | Functional | Medium | 📋 Planned |
-| 59 | Smart Retailer Radar (live stock + price aggregator) | Functional | High | 📋 Planned |
-| 60 | AI Deal Explainer (why is this a good deal?) | Agent | Medium | 📋 Planned |
+| 59 | Smart Retailer Radar (live stock + price aggregator) | Functional | High | ✅ Done |
+| 60 | AI Deal Explainer (why is this a good deal?) | Agent | Medium | ✅ Done |
 | 61 | Mission Collaboration Threads (inline comments) | Functional | Medium | 📋 Planned |
 | 62 | French Public Holidays & Closing Days Widget | Interface | Low | 📋 Planned |
 | 63 | Option Price Alert (per-option threshold) | Functional | High | 📋 Planned |

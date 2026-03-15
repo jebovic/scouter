@@ -21,6 +21,7 @@ import (
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/coach"
 	"github.com/jibei/scouter/internal/collaborator"
+	"github.com/jibei/scouter/internal/comment"
 	"github.com/jibei/scouter/internal/comparison"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
@@ -393,6 +394,21 @@ func main() {
 	dealExplainAgent := dealexplain.NewAgent(provider)
 	dealExplainHandler := dealexplain.NewHandler(shoppingRepo, dealExplainAgent, dealExplainCache)
 	r.Get("/api/shopping-items/{id}/explain", dealExplainHandler.Explain)
+
+	// Mission Collaboration Threads (Phase 61)
+	commentRepo := comment.NewRepository(pool)
+	commentResolver := comment.NewBridgeResolver(func(ctx context.Context, slug string) (string, bool, error) {
+		m, err := missionSvc.GetBySlug(ctx, slug)
+		if err != nil {
+			return "", false, err
+		}
+		if m == nil {
+			return "", false, nil
+		}
+		return m.ID.String(), true, nil
+	})
+	commentHandler := comment.NewHandler(commentRepo, commentResolver)
+	r.Mount("/api/missions/{slug}/comments", commentHandler.Routes())
 
 	// Stock availability heuristic (Phase 42)
 	stockCache := stockcheck.NewCache(5 * time.Minute)
