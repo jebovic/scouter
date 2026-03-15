@@ -34,6 +34,7 @@ import { PriceFloorCard } from './PriceFloorCard'
 import { ConditionPricingCard } from './ConditionPricingCard'
 import { TargetSuggestionCard } from './TargetSuggestionCard'
 import { DropPredictionCard } from './DropPredictionCard'
+import { PriceAnnotationList } from './PriceAnnotationList'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -297,6 +298,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <DropPredictionCard missionId={missionId} itemId={item.id} />
+      )}
+      {showIntel && (
+        <PriceAnnotationList missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

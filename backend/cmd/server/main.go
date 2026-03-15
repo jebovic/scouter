@@ -106,7 +106,9 @@ import (
 	"github.com/jibei/scouter/internal/conditionpricing"
 	"github.com/jibei/scouter/internal/dropreporter"
 	"github.com/jibei/scouter/internal/listsorter"
+	"github.com/jibei/scouter/internal/holidayalert"
 	"github.com/jibei/scouter/internal/loyaltytracker"
+	"github.com/jibei/scouter/internal/priceannotation"
 	"github.com/jibei/scouter/internal/targetsuggestion"
 )
 
@@ -727,6 +729,14 @@ func main() {
 	// Merchant Loyalty Tracker (Phase 135)
 	loyaltyTrackerHandler := loyaltytracker.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/loyalty-summary", loyaltyTrackerHandler.GetLoyaltySummary)
+
+	// Price Timeline Annotations (Phase 137)
+	priceAnnotationHandler := priceannotation.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/price-annotations", priceAnnotationHandler.GetAnnotations)
+
+	// French Public Holidays & Shopping Events (Phase 138) — static, no DB
+	holidayAlertHandler := holidayalert.NewHandler()
+	r.Get("/api/holidays-and-events", holidayAlertHandler.List)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
