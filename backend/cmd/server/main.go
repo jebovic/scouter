@@ -94,6 +94,7 @@ import (
 	"github.com/jibei/scouter/internal/wishlist"
 	"github.com/jibei/scouter/internal/competitorprice"
 	"github.com/jibei/scouter/internal/couponfinder"
+	"github.com/jibei/scouter/internal/negotiationoutcome"
 	"github.com/jibei/scouter/internal/negotiationscript"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
@@ -122,6 +123,7 @@ import (
 	"github.com/jibei/scouter/internal/crossmission"
 	"github.com/jibei/scouter/internal/reordersuggestion"
 	"github.com/jibei/scouter/internal/stockalert"
+	"github.com/jibei/scouter/internal/bundledetector"
 )
 
 func main() {
@@ -797,6 +799,14 @@ func main() {
 	// Real-Time Stock Availability Alert Simulator (Phase 149) — deterministic FNV hash, 30min in-memory cache
 	stockAlertHandler := stockalert.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/stock-status", stockAlertHandler.GetStockStatus)
+
+	// Negotiation Outcome Tracker (Phase 151)
+	negotiationOutcomeHandler := negotiationoutcome.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/negotiation-outcomes", negotiationOutcomeHandler.GetOutcomes)
+
+	// Smart Bundle Deal Detector (Phase 152)
+	bundleDetectorHandler := bundledetector.NewHandler(pool)
+	r.Get("/api/missions/{id}/bundle-deals", bundleDetectorHandler.GetBundles)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

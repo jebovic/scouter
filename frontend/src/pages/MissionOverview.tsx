@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts } from '../components/scouter'
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
 import type { MissionPhase } from '../types'
@@ -163,6 +163,11 @@ export default function MissionOverview() {
         {/* Collaborative Wishlist Voting (Phase 144) */}
         <div className={styles.section}>
           <VoteSummaryPanel missionId={mission.id} />
+        </div>
+
+        {/* Negotiation Outcome Tracker (Phase 151) */}
+        <div className={styles.section}>
+          <NegotiationOutcomePanel missionId={mission.id} />
         </div>
 
         {/* Reorder Suggestions (Phase 148) */}

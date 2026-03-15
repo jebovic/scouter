@@ -1262,7 +1262,22 @@ Savings comparison across missions, efficiency ratings, CSS bar chart in Analyti
 ## Phase 148: Smart Reorder Suggestions ✅ COMPLETE
 Priority-scored buy order, merchant batch grouping, delivery savings notes.
 
-## Phase 149: Real-Time Stock Alert Simulator 📋 Planned
+## Phase 149: Real-Time Stock Alert Simulator ✅ COMPLETE
 
-## Phase 150: Price Negotiation Script Generator 📋 Planned
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/stockalert/: FNV-hash stock simulation, 30min in-memory cache
+- GET /api/missions/{id}/items/{id}/stock-status
+- frontend: StockStatusBadge (pill badge, always visible in ShoppingItemRow)
+
+## Phase 150: Contextual Negotiation Script Generator ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/negotiationscript/: French negotiation scripts with merchant context
+- GET /api/missions/{id}/items/{id}/negotiation-script
+- 7 known French merchants (Fnac, Darty, Cdiscount, Boulanger, etc.)
+- frontend: NegotiationScriptCard with copy button in ShoppingItemRow deal intel panel
+
+## Phase 151: Negotiation Outcome Tracker 🔄 In Progress
+
+## Phase 152: Smart Bundle Deal Detector 🔄 In Progress
 
