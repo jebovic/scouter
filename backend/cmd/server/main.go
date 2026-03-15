@@ -37,6 +37,7 @@ import (
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
+	"github.com/jibei/scouter/internal/reviews"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/settings"
@@ -314,6 +315,12 @@ func main() {
 	productLooker := product.NewLooker()
 	r.Route("/api/products", product.Routes(productLooker))
 
+	// Social Proof & Review Aggregation (Phase 30)
+	reviewsCache := reviews.NewCache(6 * time.Hour)
+	reviewsAgent := reviews.NewAgent(provider)
+	reviewsGetter := reviews.NewOptionRepoGetter(optionRepo)
+	reviewsHandler := reviews.NewHandler(reviewsGetter, reviewsCache, reviewsAgent)
+
 	// Travel integrations (Phase 29)
 	avClient := travel.NewAviationStackClient(cfg.AviationStackAPIKey, cfg.AviationStackBaseURL)
 	sncfClient := travel.NewSNCFClient(cfg.SNCFAPIKey, cfg.SNCFBaseURL)
@@ -325,6 +332,10 @@ func main() {
 	comparisonRepo := comparison.NewRepository(pool)
 	r.Route("/api/missions/{missionID}/comparison-weights", comparison.WeightRoutes(comparisonRepo, pool))
 	r.Get("/api/missions/{missionID}/matrix", comparison.NewHandler(comparisonRepo, pool).Matrix)
+
+	// Social Proof & Review Aggregation (Phase 30)
+	r.Get("/api/options/{id}/reviews", reviewsHandler.GetReviews)
+	r.Post("/api/options/{id}/reviews/refresh", reviewsHandler.RefreshReviews)
 
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)

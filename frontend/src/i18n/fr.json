@@ -326,6 +326,19 @@
     "filterTargetHit": "Cible atteinte",
     "filterTrendAlert": "Alerte tendance"
   },
+  "reviews": {
+    "title": "AVIS COMMUNAUTÉ",
+    "refresh": "Actualiser",
+    "refreshing": "Actualisation...",
+    "positive": "Positif",
+    "neutral": "Neutre",
+    "negative": "Négatif",
+    "pros": "Points forts",
+    "cons": "Points faibles",
+    "reviews": "avis",
+    "via": "via",
+    "updated": "mis à jour"
+  },
   "travel": {
     "title": "RECHERCHE DE VOYAGE",
     "flights": "Vols",

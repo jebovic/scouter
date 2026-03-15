@@ -51,11 +51,16 @@
 | 25 | EAN Barcode Lookup (Open Food Facts) | Functional | Medium | ✅ Done |
 | 26 | Spending Persona (AI buyer archetype) | Agent | Medium | ✅ Done |
 | 27 | Price History Chart (recharts LineChart) | Interface | Medium | ✅ Done |
-| **28** | **Smart Notifications Center** | **Interface** | **High** | 🔄 In Progress |
-| 29 | French Market Integrations (travel APIs) | Functional | High | 📋 Planned |
-| 30 | Social Proof & Review Aggregation | Functional | Medium | 📋 Planned |
+| **28** | **Smart Notifications Center** | **Interface** | **High** | ✅ Done |
+| 29 | French Market Integrations (travel APIs) | Functional | High | ✅ Done |
+| 30 | Social Proof & Review Aggregation | Functional | Medium | 🔄 In Progress |
+| 31 | Product Price Comparison (LeLynx / idealo FR) | Functional | High | 📋 Planned |
+| 32 | AI Purchase Timing Advisor | Agent | Medium | 📋 Planned |
+| 33 | Mission Export to PDF | Interface | Low | 📋 Planned |
+| 34 | Dark/Light Theme Toggle | Interface | Low | 📋 Planned |
+| 35 | Budget Envelope (envelope budgeting method) | Functional | Medium | 📋 Planned |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2
 
 ---
 
@@ -735,7 +740,7 @@ recharts LineChart per shopping item showing price evolution over time.
 ## Phase 28: Smart Notifications Center
 
 **Type**: Interface | **Priority**: High | **Complexity**: Medium
-**Status**: 🔄 In Progress
+**Status**: ✅ Done (2026-03-15)
 
 **User Value**: Replace the 60s-polling dropdown with a dedicated, actionable notifications page. Users can filter by mission, mark all read, delete, and click-through to the relevant item.
 
@@ -758,7 +763,7 @@ recharts LineChart per shopping item showing price evolution over time.
 ## Phase 29: French Market Integrations
 
 **Type**: Functional | **Priority**: High | **Complexity**: High
-**Status**: 📋 Planned
+**Status**: ✅ Done (2026-03-15)
 
 **User Value**: Real-time travel + product prices from French-market public APIs — Aviationstack for flights, SNCF (French rail) open data for trains, Google Shopping-style price comparison.
 
@@ -779,7 +784,7 @@ recharts LineChart per shopping item showing price evolution over time.
 ## Phase 30: Social Proof & Review Aggregation
 
 **Type**: Functional | **Priority**: Medium | **Complexity**: High
-**Status**: 📋 Planned
+**Status**: 🔄 In Progress (2026-03-15)
 
 **User Value**: Pull community sentiment for a product from public sources — Trustpilot, Amazon FR reviews summary, Reddit mentions — to help users validate their shortlisted options with social proof.
 
@@ -792,3 +797,100 @@ recharts LineChart per shopping item showing price evolution over time.
 - `ReviewSummaryCard` on OptionCard detail view
 - Sentiment gauge (positive/neutral/negative %)
 - "Last refreshed" timestamp + manual refresh button
+
+---
+
+## Phase 31: Product Price Comparison (idealo FR / LeLynx)
+
+**Type**: Functional | **Priority**: High | **Complexity**: High
+**Status**: 📋 Planned
+
+**User Value**: Compare live prices across French e-commerce retailers (Fnac, Cdiscount, Amazon FR, Darty) for any product in the user's mission options list — surfacing the best deal in one click.
+
+### Backend
+- `internal/pricecomp/` — PriceCompAgent: LLM-powered extraction of e-commerce price listings
+- `GET /api/options/:id/price-comparison` — returns price comparison across retailers
+- In-memory 30min TTL cache
+- Scraping-safe: user-agent rotation, request throttling
+
+### Frontend
+- `PriceComparisonPanel` in OptionsExplorer detail view
+- Retailer badge (logo/color coded), current price, availability indicator
+- Sort by price ascending; highlight lowest price
+- "Buy Now" external link button per retailer
+
+---
+
+## Phase 32: AI Purchase Timing Advisor
+
+**Type**: Agent | **Priority**: Medium | **Complexity**: Medium
+**Status**: 📋 Planned
+
+**User Value**: "Should I buy now or wait?" — the LLM analyzes seasonal patterns, price history, product lifecycle, and upcoming sale events (Black Friday, French sales periods — Soldes d'été/d'hiver) to recommend optimal purchase timing.
+
+### Backend
+- `internal/timing/` — TimingAgent: analyzes price history + product category → timing recommendation
+- `POST /api/missions/:id/timing-advice` — runs agent, returns JSON {recommendation, rationale, waitUntil, confidence}
+- Cached 24h per mission
+
+### Frontend
+- `TimingAdvisorCard` on MissionOverview (below ForecastPanel)
+- Recommendation badge: BUY_NOW / WAIT / UNSURE
+- Rationale text + estimated wait period
+- "Next sale event" countdown chip (Soldes calendar hardcoded for FR market)
+
+---
+
+## Phase 33: Mission Export to PDF
+
+**Type**: Interface | **Priority**: Low | **Complexity**: Medium
+**Status**: 📋 Planned
+
+**User Value**: Download a full mission report as a shareable PDF — options table, budget analysis, decision recommendation, purchase history — perfect for submitting to employers for reimbursement or sharing with family.
+
+### Backend
+- Extend `internal/export/` — add PDF generation via `github.com/jung-kurt/gofpdf` or wkhtmltopdf
+- `GET /api/missions/:id/export?format=pdf` (existing endpoint extended)
+- Generate structured PDF: mission name, category, budget, options table, decision summary
+
+### Frontend
+- Add PDF download button to existing Export section in MissionOverview
+- Show progress indicator during generation (server-side render)
+
+---
+
+## Phase 34: Smart Dark/Light Mode
+
+**Type**: Interface | **Priority**: Low | **Complexity**: Low
+**Status**: 📋 Planned
+
+**User Value**: Respect system OS light/dark preference and allow manual override — persisted in localStorage. Improve readability and energy efficiency on OLED screens.
+
+### Frontend
+- `useTheme` hook: detects `prefers-color-scheme`, reads localStorage override
+- `ThemeContext` + `ThemeProvider` in App root
+- CSS variable swap: define `[data-theme="light"]` overrides for all `--` tokens in theme.css
+- Theme toggle button in Settings page + Topnav quick toggle
+- Smooth transition: `transition: background-color 0.2s, color 0.2s` on `:root`
+
+---
+
+## Phase 35: Envelope Budgeting Integration
+
+**Type**: Functional | **Priority**: Medium | **Complexity**: Medium
+**Status**: 📋 Planned
+
+**User Value**: Apply the zero-based envelope budgeting method to missions — allocate your total monthly budget across multiple missions and see how each purchase affects your overall financial picture.
+
+### Backend
+- `internal/envelope/` — envelope model (id, name, monthly_amount, currency)
+- `envelopes` table + migrations
+- CRUD API: `GET/POST /api/envelopes`, `PATCH/DELETE /api/envelopes/:id`
+- Link missions to envelopes: `mission.envelope_id` FK
+
+### Frontend
+- `EnvelopesPage` at `/envelopes`
+- Visual envelope cards (fill gauge % of budget used vs allocated)
+- Mission list within each envelope
+- Budget health score across all envelopes (overbudget = red, healthy = cyan)
+- Nav link in Layout sidebar

@@ -326,6 +326,19 @@
     "filterTargetHit": "Target Hit",
     "filterTrendAlert": "Trend Alert"
   },
+  "reviews": {
+    "title": "COMMUNITY REVIEWS",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative",
+    "pros": "Pros",
+    "cons": "Cons",
+    "reviews": "reviews",
+    "via": "via",
+    "updated": "updated"
+  },
   "travel": {
     "title": "TRAVEL SEARCH",
     "flights": "Flights",
