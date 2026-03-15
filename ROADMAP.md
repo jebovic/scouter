@@ -92,8 +92,8 @@
 | 66 | Budget Variance Heatmap (month over month) | Interface | Medium | ✅ Done |
 | 67 | Mission Cloning with Deep Copy | Functional | Low | ✅ Done |
 | 68 | AI Shopping List Optimizer (best order to buy) | Agent | High | ✅ Done |
-| 69 | Smart Receipt Analyzer (AI itemization) | Agent | Medium | 📋 Planned |
-| 70 | Price Benchmark vs Market Average (AI) | Agent | High | 📋 Planned |
+| 69 | Smart Receipt Analyzer (AI itemization) | Agent | Medium | ✅ Done |
+| 70 | Price Benchmark vs Market Average (AI) | Agent | High | ✅ Done |
 | 71 | Seasonal Price Calendar (buy at the right time) | Interface | Medium | 📋 Planned |
 | 72 | AI Mission Summary Card (executive brief) | Agent | Medium | 📋 Planned |
 | 73 | Multi-Currency Live Converter (ECB rates) | Functional | Medium | 📋 Planned |

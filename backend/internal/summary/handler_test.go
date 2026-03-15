@@ -17,31 +17,28 @@ import (
 	"github.com/jibei/scouter/internal/summary"
 )
 
-// ── fakes ────────────────────────────────────────────────────────────────────
+// ── fakes ─────────────────────────────────────────────────────────────────────
 
-// fakeGenerator implements summary.Generator interface for handler tests.
-type fakeGenerator struct {
-	content string
-	err     error
-	called  int
+type fakeBriefer struct {
+	result *summary.MissionSummary
+	err    error
+	calls  int
 }
 
-func (f *fakeGenerator) Generate(_ context.Context, _ mission.Mission, _ []option.Option, _ []shopping.Item) (string, error) {
-	f.called++
-	return f.content, f.err
+func (f *fakeBriefer) Brief(_ context.Context, _ mission.Mission, _ []option.Option, _ []shopping.Item) (*summary.MissionSummary, error) {
+	f.calls++
+	return f.result, f.err
 }
 
-// fakeMissionGetter implements summary.MissionGetter.
 type fakeMissionGetter struct {
 	m   *mission.Mission
 	err error
 }
 
-func (f *fakeMissionGetter) GetByID(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
+func (f *fakeMissionGetter) GetBySlug(_ context.Context, _ string) (*mission.Mission, error) {
 	return f.m, f.err
 }
 
-// fakeOptionLister implements summary.OptionLister.
 type fakeOptionLister struct {
 	opts []option.Option
 	err  error
@@ -51,7 +48,6 @@ func (f *fakeOptionLister) ListByMission(_ context.Context, _ uuid.UUID) ([]opti
 	return f.opts, f.err
 }
 
-// fakeShoppingLister implements summary.ShoppingLister.
 type fakeShoppingLister struct {
 	items []shopping.Item
 	err   error
@@ -63,236 +59,240 @@ func (f *fakeShoppingLister) ListByMission(_ context.Context, _ uuid.UUID) ([]sh
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const testMissionID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+const testSlug = "test-mission"
 
 func goodMission() *mission.Mission {
-	id := uuid.MustParse(testMissionID)
 	return &mission.Mission{
-		ID:       id,
-		Name:     "Test Mission",
-		Category: "computing",
-		Budget:   1500.0,
+		ID:       uuid.MustParse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+		Slug:     testSlug,
+		Name:     "Casque Audio",
+		Category: "electronics",
+		Budget:   300.0,
 		Currency: "EUR",
 	}
 }
 
-func mountSummaryRouter(h *summary.Handler) http.Handler {
+func makeSummary(verdict string) *summary.MissionSummary {
+	return &summary.MissionSummary{
+		MissionSlug: testSlug,
+		Bullets: []string{
+			"✅ Meilleure option: Sony WH-1000XM5 à 279€",
+			"⚠️ Budget: 85% utilisé",
+			"🎯 Prochaine action: comparer avec Bose QC45",
+		},
+		Verdict:  verdict,
+		CachedAt: time.Now().Unix(),
+	}
+}
+
+func mountRouter(h *summary.Handler) http.Handler {
 	r := chi.NewRouter()
-	r.Post("/api/missions/{missionID}/summary", h.Generate)
-	r.Get("/api/missions/{missionID}/summary", h.Get)
+	r.Get("/api/missions/{slug}/summary", h.Get)
 	return r
 }
 
-// ── POST /api/missions/{missionID}/summary — generate ────────────────────────
+func buildHandler(mget *fakeMissionGetter, olist *fakeOptionLister, slist *fakeShoppingLister, br *fakeBriefer, cache *summary.Cache) *summary.Handler {
+	return summary.NewHandler(mget, olist, slist, br, cache)
+}
 
-func TestHandler_Generate_HappyPath(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
+// ── GET /api/missions/{slug}/summary — success verdicts ───────────────────────
+
+func TestHandler_Get_GoVerdict(t *testing.T) {
+	br := &fakeBriefer{result: makeSummary("go")}
 	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{opts: makeOptions()}
-	slist := &fakeShoppingLister{items: makeShoppingItems()}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
 
-	req := httptest.NewRequest(http.MethodPost, "/api/missions/"+testMissionID+"/summary", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
 	w := httptest.NewRecorder()
-	mountSummaryRouter(h).ServeHTTP(w, req)
+	mountRouter(h).ServeHTTP(w, req)
 
-	if w.Code != http.StatusCreated {
-		t.Fatalf("expected 201, got %d: %s", w.Code, w.Body.String())
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
 	}
-
-	var got summary.ShoppingSummary
+	var got summary.MissionSummary
 	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
-		t.Fatalf("decode response: %v", err)
+		t.Fatalf("decode: %v", err)
 	}
-	if got.Content != sampleMarkdown {
-		t.Errorf("expected content to match generated markdown")
+	if got.Verdict != "go" {
+		t.Errorf("expected verdict 'go', got %q", got.Verdict)
 	}
-	if got.MissionID.String() != testMissionID {
-		t.Errorf("expected missionId %s, got %s", testMissionID, got.MissionID)
+	if got.MissionSlug != testSlug {
+		t.Errorf("expected missionSlug %q, got %q", testSlug, got.MissionSlug)
 	}
-	if got.GeneratedAt.IsZero() {
-		t.Error("expected GeneratedAt to be set")
+	if len(got.Bullets) < 3 {
+		t.Errorf("expected at least 3 bullets, got %d", len(got.Bullets))
 	}
-	if got.ID == uuid.Nil {
-		t.Error("expected ID to be set")
-	}
-	if gen.called != 1 {
-		t.Errorf("expected generator called once, got %d", gen.called)
+	if got.CachedAt == 0 {
+		t.Error("expected cachedAt to be set")
 	}
 }
 
-func TestHandler_Generate_MissionNotFound(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
-	mget := &fakeMissionGetter{m: nil, err: nil} // nil means not found
+func TestHandler_Get_WaitVerdict(t *testing.T) {
+	br := &fakeBriefer{result: makeSummary("wait")}
+	mget := &fakeMissionGetter{m: goodMission()}
 	olist := &fakeOptionLister{}
 	slist := &fakeShoppingLister{}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
 
-	req := httptest.NewRequest(http.MethodPost, "/api/missions/"+testMissionID+"/summary", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
 	w := httptest.NewRecorder()
-	mountSummaryRouter(h).ServeHTTP(w, req)
+	mountRouter(h).ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var got summary.MissionSummary
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if got.Verdict != "wait" {
+		t.Errorf("expected verdict 'wait', got %q", got.Verdict)
+	}
+}
+
+func TestHandler_Get_ResearchMoreVerdict(t *testing.T) {
+	br := &fakeBriefer{result: makeSummary("research_more")}
+	mget := &fakeMissionGetter{m: goodMission()}
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
+	w := httptest.NewRecorder()
+	mountRouter(h).ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var got summary.MissionSummary
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if got.Verdict != "research_more" {
+		t.Errorf("expected verdict 'research_more', got %q", got.Verdict)
+	}
+}
+
+// ── cache hit ─────────────────────────────────────────────────────────────────
+
+func TestHandler_Get_CacheHit_ReturnsSameResult(t *testing.T) {
+	br := &fakeBriefer{result: makeSummary("go")}
+	mget := &fakeMissionGetter{m: goodMission()}
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
+	router := mountRouter(h)
+
+	// First call: generates.
+	r1 := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
+	w1 := httptest.NewRecorder()
+	router.ServeHTTP(w1, r1)
+	if w1.Code != http.StatusOK {
+		t.Fatalf("first GET failed: %d", w1.Code)
+	}
+
+	// Second call: must come from cache (briefer not called again).
+	r2 := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
+	w2 := httptest.NewRecorder()
+	router.ServeHTTP(w2, r2)
+	if w2.Code != http.StatusOK {
+		t.Fatalf("second GET failed: %d", w2.Code)
+	}
+
+	if br.calls != 1 {
+		t.Errorf("expected briefer called once (cache hit on 2nd), got %d calls", br.calls)
+	}
+
+	var got1, got2 summary.MissionSummary
+	_ = json.NewDecoder(w1.Body).Decode(&got1)
+	_ = json.NewDecoder(w2.Body).Decode(&got2)
+	if got1.CachedAt != got2.CachedAt {
+		t.Errorf("expected same cachedAt on cache hit: %d vs %d", got1.CachedAt, got2.CachedAt)
+	}
+}
+
+// ── 404 for unknown slug ──────────────────────────────────────────────────────
+
+func TestHandler_Get_UnknownSlug_Returns404(t *testing.T) {
+	br := &fakeBriefer{}
+	mget := &fakeMissionGetter{m: nil, err: nil} // nil mission = not found
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/unknown-slug/summary", nil)
+	w := httptest.NewRecorder()
+	mountRouter(h).ServeHTTP(w, req)
 
 	if w.Code != http.StatusNotFound {
 		t.Fatalf("expected 404, got %d: %s", w.Code, w.Body.String())
 	}
-	if gen.called != 0 {
-		t.Errorf("generator should not be called when mission not found, got %d calls", gen.called)
+	if br.calls != 0 {
+		t.Errorf("briefer should not be called when mission not found, got %d calls", br.calls)
 	}
 }
 
-func TestHandler_Generate_MissionRepoError(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
+// ── error paths ───────────────────────────────────────────────────────────────
+
+func TestHandler_Get_MissionRepoError_Returns500(t *testing.T) {
+	br := &fakeBriefer{}
 	mget := &fakeMissionGetter{err: errors.New("db error")}
 	olist := &fakeOptionLister{}
 	slist := &fakeShoppingLister{}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
 
-	req := httptest.NewRequest(http.MethodPost, "/api/missions/"+testMissionID+"/summary", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
 	w := httptest.NewRecorder()
-	mountSummaryRouter(h).ServeHTTP(w, req)
+	mountRouter(h).ServeHTTP(w, req)
 
 	if w.Code != http.StatusInternalServerError {
 		t.Fatalf("expected 500, got %d: %s", w.Code, w.Body.String())
 	}
 }
 
-func TestHandler_Generate_GeneratorError(t *testing.T) {
-	gen := &fakeGenerator{err: errors.New("llm unavailable")}
+func TestHandler_Get_BrieferError_Returns502(t *testing.T) {
+	br := &fakeBriefer{err: errors.New("llm unavailable")}
 	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{opts: makeOptions()}
-	slist := &fakeShoppingLister{items: makeShoppingItems()}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
 
-	req := httptest.NewRequest(http.MethodPost, "/api/missions/"+testMissionID+"/summary", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
 	w := httptest.NewRecorder()
-	mountSummaryRouter(h).ServeHTTP(w, req)
+	mountRouter(h).ServeHTTP(w, req)
 
 	if w.Code != http.StatusBadGateway {
 		t.Fatalf("expected 502, got %d: %s", w.Code, w.Body.String())
 	}
 }
 
-func TestHandler_Generate_InvalidMissionID(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
-	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{}
-	slist := &fakeShoppingLister{}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
+// ── cache unit tests ──────────────────────────────────────────────────────────
 
-	r := chi.NewRouter()
-	r.Post("/api/missions/{missionID}/summary", h.Generate)
-	req := httptest.NewRequest(http.MethodPost, "/api/missions/not-a-uuid/summary", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	if w.Code != http.StatusBadRequest {
-		t.Fatalf("expected 400 for invalid UUID, got %d: %s", w.Code, w.Body.String())
-	}
-}
-
-// ── GET /api/missions/{missionID}/summary ─────────────────────────────────────
-
-func TestHandler_Get_CacheHit(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
-	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{opts: makeOptions()}
-	slist := &fakeShoppingLister{items: makeShoppingItems()}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
-	router := mountSummaryRouter(h)
-
-	// First: POST to generate and cache.
-	r1 := httptest.NewRequest(http.MethodPost, "/api/missions/"+testMissionID+"/summary", nil)
-	w1 := httptest.NewRecorder()
-	router.ServeHTTP(w1, r1)
-	if w1.Code != http.StatusCreated {
-		t.Fatalf("POST failed: %d %s", w1.Code, w1.Body.String())
-	}
-
-	// Second: GET should return cached value.
-	r2 := httptest.NewRequest(http.MethodGet, "/api/missions/"+testMissionID+"/summary", nil)
-	w2 := httptest.NewRecorder()
-	router.ServeHTTP(w2, r2)
-	if w2.Code != http.StatusOK {
-		t.Fatalf("expected 200 on cache hit, got %d: %s", w2.Code, w2.Body.String())
-	}
-
-	var got summary.ShoppingSummary
-	if err := json.NewDecoder(w2.Body).Decode(&got); err != nil {
-		t.Fatalf("decode: %v", err)
-	}
-	if got.Content != sampleMarkdown {
-		t.Errorf("expected cached content to match")
-	}
-	// Generator should only have been called once (from POST).
-	if gen.called != 1 {
-		t.Errorf("expected generator called once total (GET served from cache), got %d", gen.called)
-	}
-}
-
-func TestHandler_Get_CacheMiss_Returns404(t *testing.T) {
-	gen := &fakeGenerator{content: sampleMarkdown}
-	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{}
-	slist := &fakeShoppingLister{}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
-
-	req := httptest.NewRequest(http.MethodGet, "/api/missions/"+testMissionID+"/summary", nil)
-	w := httptest.NewRecorder()
-	mountSummaryRouter(h).ServeHTTP(w, req)
-
-	if w.Code != http.StatusNotFound {
-		t.Fatalf("expected 404 when no cached summary, got %d: %s", w.Code, w.Body.String())
-	}
-}
-
-func TestHandler_Get_InvalidMissionID(t *testing.T) {
-	gen := &fakeGenerator{}
-	mget := &fakeMissionGetter{m: goodMission()}
-	olist := &fakeOptionLister{}
-	slist := &fakeShoppingLister{}
-	cache := summary.NewCache(24 * time.Hour)
-	h := summary.NewHandler(gen, mget, olist, slist, cache)
-
-	r := chi.NewRouter()
-	r.Get("/api/missions/{missionID}/summary", h.Get)
-	req := httptest.NewRequest(http.MethodGet, "/api/missions/not-a-uuid/summary", nil)
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	if w.Code != http.StatusBadRequest {
-		t.Fatalf("expected 400 for invalid UUID, got %d: %s", w.Code, w.Body.String())
-	}
-}
-
-// ── Cache unit tests ──────────────────────────────────────────────────────────
-
-func TestSummaryCache_SetAndGet(t *testing.T) {
+func TestCache_SetAndGet(t *testing.T) {
 	c := summary.NewCache(time.Hour)
-	s := &summary.ShoppingSummary{
-		ID:          uuid.New(),
-		MissionID:   uuid.MustParse(testMissionID),
-		Content:     "# Test",
-		GeneratedAt: time.Now().UTC(),
-	}
-	c.Set(testMissionID, s)
+	s := makeSummary("go")
+	s.MissionSlug = "my-mission"
+	c.Set("my-mission", s)
 
-	got, ok := c.Get(testMissionID)
+	got, ok := c.Get("my-mission")
 	if !ok {
 		t.Fatal("expected cache hit")
 	}
-	if got.Content != "# Test" {
-		t.Errorf("expected content '# Test', got %s", got.Content)
+	if got.Verdict != "go" {
+		t.Errorf("expected verdict 'go', got %q", got.Verdict)
 	}
 }
 
-func TestSummaryCache_MissOnUnknownKey(t *testing.T) {
+func TestCache_MissOnUnknownKey(t *testing.T) {
 	c := summary.NewCache(time.Hour)
 	_, ok := c.Get("nonexistent")
 	if ok {
@@ -300,9 +300,9 @@ func TestSummaryCache_MissOnUnknownKey(t *testing.T) {
 	}
 }
 
-func TestSummaryCache_ExpiredEntry(t *testing.T) {
+func TestCache_ExpiredEntry(t *testing.T) {
 	c := summary.NewCache(1 * time.Millisecond)
-	s := &summary.ShoppingSummary{ID: uuid.New(), Content: "test"}
+	s := makeSummary("wait")
 	c.Set("key", s)
 	time.Sleep(5 * time.Millisecond)
 	_, ok := c.Get("key")
@@ -311,9 +311,9 @@ func TestSummaryCache_ExpiredEntry(t *testing.T) {
 	}
 }
 
-func TestSummaryCache_Delete(t *testing.T) {
+func TestCache_Delete(t *testing.T) {
 	c := summary.NewCache(time.Hour)
-	s := &summary.ShoppingSummary{ID: uuid.New(), Content: "test"}
+	s := makeSummary("go")
 	c.Set("key", s)
 	c.Delete("key")
 	_, ok := c.Get("key")
@@ -322,10 +322,10 @@ func TestSummaryCache_Delete(t *testing.T) {
 	}
 }
 
-func TestSummaryCache_OverwriteExisting(t *testing.T) {
+func TestCache_OverwriteExisting(t *testing.T) {
 	c := summary.NewCache(time.Hour)
-	s1 := &summary.ShoppingSummary{ID: uuid.New(), Content: "first"}
-	s2 := &summary.ShoppingSummary{ID: uuid.New(), Content: "second"}
+	s1 := makeSummary("go")
+	s2 := makeSummary("wait")
 	c.Set("key", s1)
 	c.Set("key", s2)
 
@@ -333,7 +333,7 @@ func TestSummaryCache_OverwriteExisting(t *testing.T) {
 	if !ok {
 		t.Fatal("expected cache hit after overwrite")
 	}
-	if got.Content != "second" {
-		t.Errorf("expected 'second', got %s", got.Content)
+	if got.Verdict != "wait" {
+		t.Errorf("expected 'wait', got %q", got.Verdict)
 	}
 }

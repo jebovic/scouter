@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { generateSummary, fetchSummary } from '../api/summary'
-import type { ShoppingSummaryDTO } from '../api/summary'
+import { generateSummary, fetchSummary, getMissionSummary } from '../api/summary'
+import type { ShoppingSummaryDTO, MissionSummaryDTO } from '../api/summary'
+
+// ── Legacy Shopping Summary hooks (Phase 43) ──────────────────────────────────
 
 const SUMMARY_KEY = (missionId: string) => ['summary', missionId] as const
 
@@ -26,4 +28,41 @@ export function useGenerateSummary(missionId: string) {
   })
 
   return { generate, isPending, error }
+}
+
+// ── Mission Summary Card hook (Phase 72) ─────────────────────────────────────
+
+const MISSION_BRIEF_KEY = (slug: string) => ['mission-brief', slug] as const
+
+/**
+ * useMissionSummary fetches the AI executive brief for a mission.
+ *
+ * @param slug   Mission slug used to call GET /api/missions/{slug}/summary
+ * @param enabled Set to true to trigger the fetch (lazy by default).
+ *               The backend generates and caches on first GET, so enabling
+ *               this will call the LLM if not already cached server-side.
+ */
+export function useMissionSummary(slug: string, enabled: boolean = false) {
+  const qc = useQueryClient()
+
+  const { data, isLoading, isError, error, refetch } = useQuery<MissionSummaryDTO>({
+    queryKey: MISSION_BRIEF_KEY(slug),
+    queryFn: () => getMissionSummary(slug),
+    staleTime: 60 * 60 * 1000, // 1h — mirrors server-side cache TTL
+    enabled: !!slug && enabled,
+    retry: 1,
+  })
+
+  function invalidate() {
+    qc.invalidateQueries({ queryKey: MISSION_BRIEF_KEY(slug) })
+  }
+
+  return {
+    brief: data ?? null,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    invalidate,
+  }
 }

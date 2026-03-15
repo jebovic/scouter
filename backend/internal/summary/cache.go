@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-// cacheEntry holds a cached ShoppingSummary and its expiry time.
+// cacheEntry holds a cached MissionSummary and its expiry time.
 type cacheEntry struct {
-	value     *ShoppingSummary
+	value     *MissionSummary
 	expiresAt time.Time
 }
 
-// Cache is a simple in-memory TTL cache for ShoppingSummary values,
-// safe for concurrent use. Keyed by mission ID string.
+// Cache is a simple in-memory TTL cache for MissionSummary values,
+// safe for concurrent use. Keyed by mission slug.
 type Cache struct {
 	mu    sync.RWMutex
 	items map[string]cacheEntry
@@ -27,9 +27,9 @@ func NewCache(ttl time.Duration) *Cache {
 	}
 }
 
-// Get returns the cached ShoppingSummary for key and true when a non-expired
+// Get returns the cached MissionSummary for key and true when a non-expired
 // entry exists.
-func (c *Cache) Get(key string) (*ShoppingSummary, bool) {
+func (c *Cache) Get(key string) (*MissionSummary, bool) {
 	c.mu.RLock()
 	e, ok := c.items[key]
 	c.mu.RUnlock()
@@ -43,7 +43,7 @@ func (c *Cache) Get(key string) (*ShoppingSummary, bool) {
 }
 
 // Set stores val under key, overwriting any existing entry.
-func (c *Cache) Set(key string, val *ShoppingSummary) {
+func (c *Cache) Set(key string, val *MissionSummary) {
 	c.mu.Lock()
 	c.items[key] = cacheEntry{value: val, expiresAt: time.Now().Add(c.ttl)}
 	c.mu.Unlock()

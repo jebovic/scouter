@@ -449,12 +449,11 @@ func main() {
 	substituteHandler := substitute.NewHandler(substituteGetter, substituteCache, substituteAgent)
 	r.Get("/api/options/{id}/substitutes", substituteHandler.GetSubstitutes)
 
-	// AI Shopping Summary Report (Phase 43)
-	summaryCache := summary.NewCache(24 * time.Hour)
+	// AI Mission Summary Card (Phase 72)
+	summaryCache := summary.NewCache(time.Hour)
 	summaryAgent := summary.NewAgent(provider)
-	summaryHandler := summary.NewHandler(summaryAgent, missionRepo, optionRepo, shoppingRepo, summaryCache)
-	r.Post("/api/missions/{missionID}/summary", summaryHandler.Generate)
-	r.Get("/api/missions/{missionID}/summary", summaryHandler.Get)
+	summaryHandler := summary.NewHandler(missionRepo, optionRepo, shoppingRepo, summaryAgent, summaryCache)
+	r.Get("/api/missions/{slug}/summary", summaryHandler.Get)
 
 	// Mission Health Score (Phase 57)
 	healthCache := health.NewCache(30 * time.Minute)

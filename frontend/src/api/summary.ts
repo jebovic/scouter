@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { apiFetch } from './client'
 
+// ── Legacy Shopping Summary (Phase 43) ───────────────────────────────────────
+
 export const ShoppingSummarySchema = z.object({
   id: z.string().uuid(),
   missionId: z.string().uuid(),
@@ -24,4 +26,24 @@ export async function fetchSummary(missionId: string): Promise<ShoppingSummaryDT
   } catch {
     return null
   }
+}
+
+// ── Mission Summary Card (Phase 72) ──────────────────────────────────────────
+
+export const VerdictSchema = z.enum(['go', 'wait', 'research_more'])
+
+export type Verdict = z.infer<typeof VerdictSchema>
+
+export const MissionSummarySchema = z.object({
+  missionSlug: z.string(),
+  bullets: z.array(z.string()).min(1),
+  verdict: VerdictSchema,
+  cachedAt: z.number().int(), // Unix timestamp (seconds)
+})
+
+export type MissionSummaryDTO = z.infer<typeof MissionSummarySchema>
+
+export async function getMissionSummary(slug: string): Promise<MissionSummaryDTO> {
+  const data = await apiFetch<unknown>(`/api/missions/${slug}/summary`)
+  return MissionSummarySchema.parse(data)
 }

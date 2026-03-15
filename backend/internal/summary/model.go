@@ -1,19 +1,13 @@
-// Package summary implements the AI Shopping Summary Report (Phase 43).
-// It generates a concise French-language markdown report via the LLM,
-// summarising research findings, top recommendations, and purchase timing advice.
-// The report is cached in memory (sync.RWMutex + TTL) — no DB migration needed.
+// Package summary implements the AI Mission Summary Card (Phase 72).
+// It generates a concise French-language executive brief via the LLM using
+// tool-use for structured output. The result is cached in-memory (sync.RWMutex
+// + 1h TTL) keyed by mission slug — no DB migration needed.
 package summary
 
-import (
-	"time"
-
-	"github.com/google/uuid"
-)
-
-// ShoppingSummary is the generated markdown report for a mission.
-type ShoppingSummary struct {
-	ID          uuid.UUID `json:"id"`
-	MissionID   uuid.UUID `json:"missionId"`
-	Content     string    `json:"content"`     // Markdown text
-	GeneratedAt time.Time `json:"generatedAt"`
+// MissionSummary is the AI-generated executive brief for a mission.
+type MissionSummary struct {
+	MissionSlug string   `json:"missionSlug"`
+	Bullets     []string `json:"bullets"`  // 3-5 French bullet points with emojis
+	Verdict     string   `json:"verdict"`  // "go" | "wait" | "research_more"
+	CachedAt    int64    `json:"cachedAt"` // Unix timestamp (seconds)
 }

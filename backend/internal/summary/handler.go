@@ -3,7 +3,6 @@ package summary
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -13,52 +12,59 @@ import (
 	"github.com/jibei/scouter/internal/shopping"
 )
 
-// MissionGetter fetches a mission by UUID.
-type MissionGetter interface {
-	GetByID(ctx context.Context, id uuid.UUID) (*mission.Mission, error)
+// MissionSlugGetter fetches a mission by slug.
+type MissionSlugGetter interface {
+	GetBySlug(ctx context.Context, slug string) (*mission.Mission, error)
 }
 
-// OptionLister lists options belonging to a mission.
+// OptionLister lists options belonging to a mission by mission UUID.
 type OptionLister interface {
 	ListByMission(ctx context.Context, missionID uuid.UUID) ([]option.Option, error)
 }
 
-// ShoppingLister lists shopping items belonging to a mission.
+// ShoppingLister lists shopping items belonging to a mission by mission UUID.
 type ShoppingLister interface {
 	ListByMission(ctx context.Context, missionID uuid.UUID) ([]shopping.Item, error)
 }
 
-// Handler exposes summary endpoints over HTTP.
+// Handler exposes the mission brief endpoint over HTTP.
 type Handler struct {
-	generator Generator
-	missions  MissionGetter
-	options   OptionLister
-	shopping  ShoppingLister
-	cache     *Cache
+	briefer  Briefer
+	missions MissionSlugGetter
+	options  OptionLister
+	shopping ShoppingLister
+	cache    *Cache
 }
 
 // NewHandler returns a Handler wired to the given dependencies.
-func NewHandler(gen Generator, missions MissionGetter, options OptionLister, shopping ShoppingLister, cache *Cache) *Handler {
+func NewHandler(missions MissionSlugGetter, options OptionLister, shopping ShoppingLister, briefer Briefer, cache *Cache) *Handler {
 	return &Handler{
-		generator: gen,
-		missions:  missions,
-		options:   options,
-		shopping:  shopping,
-		cache:     cache,
+		briefer:  briefer,
+		missions: missions,
+		options:  options,
+		shopping: shopping,
+		cache:    cache,
 	}
 }
 
-// Generate handles POST /api/missions/{missionID}/summary.
-// It loads the mission, options, and shopping items, calls the SummaryAgent,
-// caches and returns the result.
-func (h *Handler) Generate(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionID"))
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission ID")
+// Get handles GET /api/missions/{slug}/summary.
+// Returns the cached brief if available (within 1h TTL), otherwise generates
+// a new one via the LLM agent, caches it, and returns it.
+func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	if slug == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "missing mission slug")
 		return
 	}
 
-	m, err := h.missions.GetByID(r.Context(), missionID)
+	// Cache hit: return immediately without calling LLM.
+	if cached, ok := h.cache.Get(slug); ok {
+		httputil.WriteJSON(w, http.StatusOK, cached)
+		return
+	}
+
+	// Load mission.
+	m, err := h.missions.GetBySlug(r.Context(), slug)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -68,49 +74,26 @@ func (h *Handler) Generate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	opts, err := h.options.ListByMission(r.Context(), missionID)
+	// Load options and shopping items for context.
+	opts, err := h.options.ListByMission(r.Context(), m.ID)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 
-	items, err := h.shopping.ListByMission(r.Context(), missionID)
+	items, err := h.shopping.ListByMission(r.Context(), m.ID)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 
-	content, err := h.generator.Generate(r.Context(), *m, opts, items)
+	// Generate brief via LLM agent.
+	brief, err := h.briefer.Brief(r.Context(), *m, opts, items)
 	if err != nil {
 		httputil.WriteError(w, http.StatusBadGateway, "summary service unavailable")
 		return
 	}
 
-	s := &ShoppingSummary{
-		ID:          uuid.New(),
-		MissionID:   missionID,
-		Content:     content,
-		GeneratedAt: time.Now().UTC(),
-	}
-
-	h.cache.Set(missionID.String(), s)
-	httputil.WriteJSON(w, http.StatusCreated, s)
-}
-
-// Get handles GET /api/missions/{missionID}/summary.
-// Returns the cached summary if available, 404 otherwise (use POST to generate).
-func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionID"))
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission ID")
-		return
-	}
-
-	cached, ok := h.cache.Get(missionID.String())
-	if !ok {
-		httputil.WriteError(w, http.StatusNotFound, "no summary available — POST to generate one")
-		return
-	}
-
-	httputil.WriteJSON(w, http.StatusOK, cached)
+	h.cache.Set(slug, brief)
+	httputil.WriteJSON(w, http.StatusOK, brief)
 }

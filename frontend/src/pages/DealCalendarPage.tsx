@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Topnav, UpcomingPromoStrip, HolidayWidget } from '../components/scouter'
+import { Topnav, UpcomingPromoStrip, HolidayWidget, SeasonalCalendar } from '../components/scouter'
 import { useDealCalendar } from '../hooks/useDealCalendar'
 import type { DealEvent } from '../api/dealCalendar'
 import type { PromoEvent } from '../utils/frenchPromoCalendar'
@@ -125,6 +125,8 @@ export default function DealCalendarPage() {
       <Topnav />
       <main className={styles.page}>
         <UpcomingPromoStrip onEventClick={handlePromoEventClick} />
+        <HolidayWidget />
+        <SeasonalCalendar />
 
         <div className={styles.header}>
           <h1 className={styles.title}>Calendrier des bons plans</h1>
