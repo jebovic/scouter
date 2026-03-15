@@ -1403,6 +1403,19 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 
 ---
 
+## Architect + Frontend-Design Review Session (2026-03-15) ✅ COMPLETE
+
+Full codebase review by architect + frontend-design agents. 4 tiers of improvements shipped.
+
+| Tier | Item | Commit |
+|------|------|--------|
+| 1 | Toast auto-dismiss, OptionCard min-height, modal focus trap | `af818e7`-era |
+| 2 | Topnav sticky + scroll shadow, OnboardingOverlay focus trap, ScouterGrid responsive columns | `af818e7`-era |
+| 3 | `createBrowserRouter` migration + lazy routes, Stats/Analytics merge with ARIA tabs, chart a11y | `0baab75` |
+| 4 | MissionOverview decomp (PhaseSection/QuickNavSection), ShoppingItemRow decomp (PriceCell/DealBadges), query key factory, PWA cache policies | `0baab75` |
+
+---
+
 ## v0.1.0 — SCOUTER Universal (2026-03-15)
 
 **172 phases shipped. First public milestone.**
