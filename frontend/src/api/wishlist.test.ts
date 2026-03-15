@@ -10,6 +10,9 @@ const validItem = {
   targetPrice: 299.99,
   currency: 'EUR',
   notes: 'Wait for Black Friday deal',
+  alertEnabled: false,
+  lastCheckedAt: null,
+  lastCheckedPrice: null,
   createdAt: '2026-01-15T10:00:00Z',
   updatedAt: '2026-01-15T10:00:00Z',
 }
