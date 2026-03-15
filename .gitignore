@@ -8,6 +8,7 @@ backend/bin/
 backend/*.exe
 backend/*.out
 backend/server
+backend/seed
 
 # Playwright
 frontend/playwright-report/
