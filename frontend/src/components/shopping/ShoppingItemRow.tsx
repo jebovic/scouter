@@ -27,6 +27,7 @@ import { FrenchMarketInsight } from './FrenchMarketInsight'
 import { PriceInsightsCard } from './PriceInsightsCard'
 import { NegotiationSimulator } from './NegotiationSimulator'
 import { CompetitorPriceTable } from './CompetitorPriceTable'
+import { CouponFinderCard } from './CouponFinderCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -259,6 +260,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <CompetitorPriceTable missionId={missionId} itemId={item.id} />
+      )}
+      {showIntel && (
+        <CouponFinderCard missionId={missionId} itemId={item.id} />
       )}
     </>
   )

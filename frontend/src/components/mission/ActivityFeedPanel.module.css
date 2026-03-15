@@ -1,0 +1,164 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Stats bar ─────────────────────────────────────────────────────────────── */
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.75rem;
+  gap: 0.25rem;
+  border-right: 1px solid var(--border);
+}
+
+.statCard:last-child {
+  border-right: none;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.04em;
+}
+
+.statLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ── Feed section ──────────────────────────────────────────────────────────── */
+.feedSection {
+  padding: 1rem 1.25rem;
+}
+
+.feedLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+
+.feedList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ── Activity row ──────────────────────────────────────────────────────────── */
+.activityRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s;
+}
+
+.activityRow:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.activityIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.activityBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.activityDesc {
+  font-size: 0.83rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activityMeta {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+}
+
+.emptyIcon {
+  font-size: 1.6rem;
+}
+
+.emptyText {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--border) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statCard:nth-child(2) {
+    border-right: none;
+  }
+
+  .statCard:nth-child(1),
+  .statCard:nth-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 1024px) {
+  .statValue {
+    font-size: 1.1rem;
+  }
+}

@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/jibei/scouter/internal/activityfeed"
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/missionprogress"
 	"github.com/jibei/scouter/internal/priceinsights"
@@ -89,6 +90,7 @@ import (
 	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
 	"github.com/jibei/scouter/internal/competitorprice"
+	"github.com/jibei/scouter/internal/couponfinder"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 )
@@ -636,6 +638,10 @@ func main() {
 	missionProgressHandler := missionprogress.NewHandler(pool)
 	r.Get("/api/missions/{id}/progress", missionProgressHandler.GetProgress)
 
+	// Activity Feed (Phase 121)
+	activityFeedHandler := activityfeed.NewHandler(pool)
+	r.Get("/api/activity-feed", activityFeedHandler.GetFeed)
+
 	// Price History Insights (Phase 118) — 2h in-memory cache
 	priceInsightsHandler := priceinsights.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/price-insights", priceInsightsHandler.GetInsights)
@@ -643,6 +649,10 @@ func main() {
 	// Competitor Price Monitor (Phase 119) — deterministic FNV hash, 30min in-memory cache
 	competitorPriceHandler := competitorprice.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/competitor-prices", competitorPriceHandler.GetCompetitorPrices)
+
+	// Smart Coupon & Promo Finder (Phase 120) — deterministic FNV hash, 1h in-memory cache
+	couponFinderHandler := couponfinder.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/coupons", couponFinderHandler.FindCoupons)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
