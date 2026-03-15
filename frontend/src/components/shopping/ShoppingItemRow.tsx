@@ -13,6 +13,7 @@ import { VATCalculator } from './VATCalculator'
 import { VoteBar } from './VoteBar'
 import { PriceForecastCard } from './PriceForecastCard'
 import { PriceAnalyticsPanel } from './PriceAnalyticsPanel'
+import { ReviewSummaryCard } from './ReviewSummaryCard'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { MarketplaceComparator } from './MarketplaceComparator'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
@@ -20,6 +21,7 @@ import { CarbonBadge } from './CarbonBadge'
 import { SeasonalBadge } from './SeasonalBadge'
 import { WatchlistButton } from './WatchlistButton'
 import { CurrencyConverter } from './CurrencyConverter'
+import { LoyaltyCalculator } from './LoyaltyCalculator'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -138,6 +140,10 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         {item.price > 0 && (
           <CurrencyConverter basePrice={item.price} baseCurrency={currency} />
         )}
+        {/* Loyalty Points & Cashback Calculator */}
+        {item.price > 0 && (
+          <LoyaltyCalculator basePrice={item.price} merchant={item.merchant} />
+        )}
         {/* Price Alert Badge */}
         <PriceAlertBadge currentPrice={item.price} targetPrice={item.targetPrice} currency={currency} />
         {/* Target price */}
@@ -232,6 +238,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <PriceAnalyticsPanel missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <ReviewSummaryCard itemId={item.id} itemName={item.name} />
       )}
     </>
   )

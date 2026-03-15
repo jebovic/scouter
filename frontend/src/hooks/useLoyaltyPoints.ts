@@ -1,4 +1,10 @@
 import { useState, useCallback } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { getPrograms, calculatePoints } from '../api/loyalty'
+
+// ---------------------------------------------------------------------------
+// Local-storage point balance tracker (unchanged from original)
+// ---------------------------------------------------------------------------
 
 const STORAGE_KEY = 'scouter_loyalty_points'
 
@@ -56,4 +62,34 @@ export function useLoyaltyPoints(): LoyaltyPointsState {
   }, [])
 
   return { balances, setPoints, clearPoints }
+}
+
+// ---------------------------------------------------------------------------
+// API-backed hooks: program registry + calculation
+// ---------------------------------------------------------------------------
+
+const PROGRAMS_KEY = ['loyalty-programs'] as const
+
+/** Fetches the full list of French loyalty programs (24 h stale). */
+export function usePrograms() {
+  return useQuery({
+    queryKey: PROGRAMS_KEY,
+    queryFn: getPrograms,
+    staleTime: 24 * 60 * 60 * 1000,
+  })
+}
+
+/** Mutation: calculate points / cashback for a given purchase. */
+export function useCalculatePoints() {
+  return useMutation({
+    mutationFn: ({
+      retailer,
+      price,
+      programName,
+    }: {
+      retailer: string
+      price: number
+      programName: string
+    }) => calculatePoints(retailer, price, programName),
+  })
 }

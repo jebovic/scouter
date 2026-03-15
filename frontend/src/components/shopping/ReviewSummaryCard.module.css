@@ -1,0 +1,180 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex: 1;
+}
+
+/* Coloured score circle */
+.scoreCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  --score-bg: var(--text-dim);
+  background: var(--score-bg);
+}
+
+.scoreCircle.excellent {
+  --score-bg: #22c55e;
+}
+
+.scoreCircle.good {
+  --score-bg: #84cc16;
+}
+
+.scoreCircle.average {
+  --score-bg: #f59e0b;
+}
+
+.scoreCircle.poor {
+  --score-bg: #ef4444;
+}
+
+.reviewCount {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* Two-column pros/cons */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.colLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.colLabel.pros {
+  color: #22c55e;
+}
+
+.colLabel.cons {
+  color: #ef4444;
+}
+
+.listItem {
+  font-size: 0.78rem;
+  color: var(--text);
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+  line-height: 1.35;
+}
+
+.bullet {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Verdict */
+.verdict {
+  font-size: 0.8rem;
+  color: var(--text);
+  font-style: italic;
+  border-left: 3px solid var(--border);
+  padding-left: 8px;
+  line-height: 1.4;
+}
+
+/* Recommended / Avoid lists */
+.tags {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tagRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tagLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 1px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised, var(--surface));
+  color: var(--text-dim);
+}
+
+.tag.rec {
+  border-color: #22c55e40;
+  color: #22c55e;
+  background: #22c55e10;
+}
+
+.tag.avoid {
+  border-color: #ef444440;
+  color: #ef4444;
+  background: #ef444410;
+}
+
+.loading {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.error {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-style: italic;
+}

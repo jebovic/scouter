@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/loyaltypoints"
 	"github.com/jibei/scouter/internal/pricealertrule"
 	"github.com/jibei/scouter/internal/currency"
 	"github.com/jibei/scouter/internal/priceanalytics"
@@ -60,6 +61,7 @@ import (
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/reviews"
+	"github.com/jibei/scouter/internal/reviewsummary"
 	"github.com/jibei/scouter/internal/timing"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
@@ -571,6 +573,16 @@ func main() {
 	r.Get("/api/items/{itemID}/alert-rules", alertRuleHandler.ListRules)
 	r.Delete("/api/items/{itemID}/alert-rules/{ruleID}", alertRuleHandler.DeleteRule)
 	r.Post("/api/items/{itemID}/alert-rules/check", alertRuleHandler.CheckRules)
+
+	// Product Review Aggregator (Phase 102) — deterministic, in-memory cache
+	reviewSummaryHandler := reviewsummary.NewHandler()
+	r.Get("/api/items/{itemID}/review-summary", reviewSummaryHandler.GetReviewSummary)
+
+	// Loyalty Points & Cashback Tracker (Phase 103) — hardcoded French registry, no DB
+	loyaltySvc := loyaltypoints.NewService()
+	loyaltyHandler := loyaltypoints.NewHandler(loyaltySvc)
+	r.Get("/api/loyalty/programs", loyaltyHandler.ListPrograms)
+	r.Post("/api/loyalty/calculate", loyaltyHandler.Calculate)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
