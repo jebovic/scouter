@@ -58,6 +58,13 @@
   resize: vertical;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .submit {
   background: var(--cyan);
   color: var(--void, #050810);
@@ -67,7 +74,6 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  align-self: flex-start;
   transition: opacity 0.15s;
   font-family: var(--font-display);
   letter-spacing: 0.05em;
@@ -76,6 +82,34 @@
 .submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.coachBtn {
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+}
+
+.coachBtn:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--void, #050810);
+}
+
+.coachBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coachPanel {
+  margin-top: 16px;
 }
 
 .success {

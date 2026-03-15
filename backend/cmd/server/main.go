@@ -27,6 +27,7 @@ import (
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
+	"github.com/jibei/scouter/internal/negotiation"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/pricing"
@@ -281,6 +282,10 @@ func main() {
 	r.Get("/api/invites/{token}", collaboratorHandler.GetInvite)
 	r.Post("/api/invites/{token}/join", collaboratorHandler.JoinMission)
 	r.Mount("/api/options/{optionID}/votes", voteHandler.Routes())
+
+	// AI Negotiation Coach (Phase 17)
+	negotiationHandler := negotiation.NewHandler(pool, provider)
+	r.Mount("/api/options/{optionID}", negotiationHandler.Routes())
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

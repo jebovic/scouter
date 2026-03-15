@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { StarRating } from '../scouter/StarRating'
 import { useRecordPurchase, useUpdatePurchase } from '../../hooks/usePurchase'
+import { useNegotiation } from '../../hooks/useNegotiation'
+import { NegotiationCoach } from './NegotiationCoach'
 import type { PurchaseRecord } from '../../api/purchase'
 import styles from './PurchaseForm.module.css'
 
 interface PurchaseFormProps {
   missionId: string
+  selectedOptionId?: string | null
   existingRecord?: PurchaseRecord | null
 }
 
-export function PurchaseForm({ missionId, existingRecord }: PurchaseFormProps) {
+export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: PurchaseFormProps) {
   const today = new Date().toISOString().split('T')[0]
   const [purchasedAt, setPurchasedAt] = useState(existingRecord?.purchasedAt?.split('T')[0] ?? today)
   const [finalPrice, setFinalPrice] = useState(String(existingRecord?.finalPrice ?? ''))
@@ -17,9 +20,11 @@ export function PurchaseForm({ missionId, existingRecord }: PurchaseFormProps) {
   const [satisfaction, setSatisfaction] = useState<number | null>(existingRecord?.satisfaction ?? null)
   const [review, setReview] = useState(existingRecord?.review ?? '')
   const [success, setSuccess] = useState(false)
+  const [showCoach, setShowCoach] = useState(false)
 
   const record = useRecordPurchase(missionId)
   const update = useUpdatePurchase(missionId)
+  const negotiation = useNegotiation(selectedOptionId ?? '')
 
   const isEditing = !!existingRecord
 
@@ -112,10 +117,42 @@ export function PurchaseForm({ missionId, existingRecord }: PurchaseFormProps) {
         {(record.isError || update.isError) && (
           <p className={styles.error}>Failed to save. Please try again.</p>
         )}
-        <button type="submit" className={styles.submit} disabled={isPending}>
-          {isPending ? 'Saving...' : isEditing ? 'Update Purchase' : 'Record Purchase'}
-        </button>
+        <div className={styles.actions}>
+          <button type="submit" className={styles.submit} disabled={isPending}>
+            {isPending ? 'Saving...' : isEditing ? 'Update Purchase' : 'Record Purchase'}
+          </button>
+          {selectedOptionId && (
+            <button
+              type="button"
+              className={styles.coachBtn}
+              disabled={negotiation.isPending}
+              onClick={() => {
+                negotiation.reset()
+                setShowCoach(false)
+                negotiation.coach(undefined, {
+                  onSuccess: () => setShowCoach(true),
+                })
+              }}
+            >
+              {negotiation.isPending ? 'Analyzing...' : 'Coach Me'}
+            </button>
+          )}
+        </div>
+        {negotiation.error && (
+          <p className={styles.error}>Failed to load negotiation script. Please try again.</p>
+        )}
       </form>
+      {showCoach && negotiation.script && (
+        <div className={styles.coachPanel}>
+          <NegotiationCoach
+            script={negotiation.script}
+            onClose={() => {
+              setShowCoach(false)
+              negotiation.reset()
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }
