@@ -1,0 +1,136 @@
+@import '../../styles/theme.css';
+
+.bottomNav {
+  display: none;
+}
+
+/* Only show on mobile */
+@media (max-width: 640px) {
+  .bottomNav {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-h, 60px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--abyss);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+  }
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 44px;
+  padding: 6px 4px;
+  color: var(--text-dim);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  transition: color 0.15s;
+}
+
+.tab:hover,
+.tabActive {
+  color: var(--cyan);
+}
+
+.tabLabel {
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* FAB center tab */
+.fabTab {
+  color: var(--text-dim);
+}
+
+.fabTab:hover .fab,
+.fabTab:focus .fab {
+  transform: scale(1.1);
+}
+
+.fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--void);
+  margin-top: -8px;
+  transition: transform 0.15s;
+}
+
+/* ── Quick add sheet ─────────────────────────────────── */
+.quickAddOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+}
+
+.quickAddSheet {
+  width: 100%;
+  background: var(--surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 12px 0 calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.sheetTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  padding: 0 20px 12px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.sheetActions {
+  padding: 8px 0;
+}
+
+.sheetAction {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  color: var(--text-mid);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.1s;
+}
+
+.sheetAction:hover,
+.sheetAction:active {
+  background: var(--raised);
+  color: var(--text);
+}
+
+.sheetActionIcon {
+  display: flex;
+  align-items: center;
+  color: var(--cyan);
+}

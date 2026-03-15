@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Menu, Sun, Moon } from 'lucide-react'
 import { useSidebar } from '../../contexts/sidebar'
 import { useTheme } from '../../hooks/useTheme'
 import { LLMStatus } from './LLMStatus'
@@ -17,7 +18,6 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
   const location = useLocation()
   const { openSidebar } = useSidebar()
   const { isDark, toggleTheme } = useTheme()
-
   const isActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(path + '/')
 
@@ -26,9 +26,9 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
 
   return (
     <nav className={styles.nav}>
-      {/* Sidebar toggle */}
+      {/* Sidebar toggle — mobile only (NavRail handles desktop) */}
       <button className={styles.menuBtn} onClick={openSidebar} aria-label="Open missions sidebar">
-        ☰
+        <Menu size={18} aria-hidden="true" />
       </button>
 
       {/* Logo */}
@@ -36,37 +36,9 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
         {t('nav.hq')}
       </Link>
 
-      {/* Global nav links — only show when not in a mission sub-nav */}
-      {!missionSlug && (
-        <div className={styles.subNav}>
-          {[
-            { label: '📊 Stats & Analytics', path: '/stats' },
-            { label: 'Insights', path: '/insights' },
-            { label: 'Kanban', path: '/kanban' },
-            { label: 'Cashback', path: '/cashback' },
-            { label: 'Wishlist', path: '/wishlist' },
-            { label: 'Envelopes', path: '/envelopes' },
-            { label: 'Bons Plans', path: '/deal-calendar' },
-            { label: 'Fidélité', path: '/loyalty' },
-            { label: 'History', path: '/history' },
-            { label: 'Digest', path: '/digest' },
-            { label: 'Perfs', path: '/performance' },
-            { label: 'Settings', path: '/settings' },
-          ].map(({ label, path }) => (
-            <Link
-              key={path}
-              to={path}
-              className={isActive(path) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
-      )}
-
+      {/* Mission breadcrumb + sub-nav — only when inside a mission */}
       {missionSlug && (
         <>
-          {/* Breadcrumb separator — comms style */}
           <span className={styles.separator}>//</span>
 
           <Link
@@ -113,7 +85,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
           aria-label="Toggle theme"
           title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          {isDark ? '☀' : '🌙'}
+          {isDark ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
         </button>
         <LLMStatus />
         <NotificationBell />

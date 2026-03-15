@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useReceipts, useAnalyzeReceipt } from '../../hooks/useReceipt'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { ReceiptAnalysis } from '../../api/receipt'
 import styles from './ReceiptAnalyzer.module.css'
 
@@ -9,21 +10,11 @@ interface Props {
 
 const CURRENCIES = ['EUR', 'USD', 'GBP']
 
-function formatCurrency(value: number, currency: string): string {
-  return value.toLocaleString('fr-FR', { style: 'currency', currency })
-}
+function ItemsTable({ analysis, locale }: { analysis: ReceiptAnalysis; locale: string }) {
+  function formatCurrency(value: number, currency: string): string {
+    return value.toLocaleString(locale, { style: 'currency', currency })
+  }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-function ItemsTable({ analysis }: { analysis: ReceiptAnalysis }) {
   return (
     <table className={styles.table}>
       <thead>
@@ -39,7 +30,7 @@ function ItemsTable({ analysis }: { analysis: ReceiptAnalysis }) {
           <tr key={i}>
             <td>{item.name}</td>
             <td className={styles.numericCell}>
-              {item.quantity.toLocaleString('fr-FR')}
+              {item.quantity.toLocaleString(locale)}
             </td>
             <td className={styles.numericCell}>
               {formatCurrency(item.unitPrice, analysis.currency)}
@@ -60,8 +51,22 @@ function ItemsTable({ analysis }: { analysis: ReceiptAnalysis }) {
   )
 }
 
-function HistoryCard({ analysis }: { analysis: ReceiptAnalysis }) {
+function HistoryCard({ analysis, locale }: { analysis: ReceiptAnalysis; locale: string }) {
   const [open, setOpen] = useState(false)
+
+  function formatCurrency(value: number, currency: string): string {
+    return value.toLocaleString(locale, { style: 'currency', currency })
+  }
+
+  function formatDate(iso: string): string {
+    return new Date(iso).toLocaleString(locale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
 
   return (
     <button
@@ -81,7 +86,7 @@ function HistoryCard({ analysis }: { analysis: ReceiptAnalysis }) {
       </div>
       {open && (
         <div className={styles.historyBody}>
-          <ItemsTable analysis={analysis} />
+          <ItemsTable analysis={analysis} locale={locale} />
         </div>
       )}
     </button>
@@ -93,6 +98,7 @@ export function ReceiptAnalyzer({ missionSlug }: Props) {
   const [currency, setCurrency] = useState('EUR')
   const [lastResult, setLastResult] = useState<ReceiptAnalysis | null>(null)
 
+  const { locale } = useFormatCurrency()
   const { data: history = [] } = useReceipts(missionSlug)
   const { mutateAsync: analyze, isPending } = useAnalyzeReceipt(missionSlug)
 
@@ -150,7 +156,7 @@ export function ReceiptAnalyzer({ missionSlug }: Props) {
       {lastResult && lastResult.items.length > 0 && (
         <div className={styles.resultsSection}>
           <p className={styles.resultsTitle}>Résultats</p>
-          <ItemsTable analysis={lastResult} />
+          <ItemsTable analysis={lastResult} locale={locale} />
         </div>
       )}
 
@@ -159,7 +165,7 @@ export function ReceiptAnalyzer({ missionSlug }: Props) {
           <p className={styles.historyTitle}>Historique</p>
           <div className={styles.historyList}>
             {history.map((a) => (
-              <HistoryCard key={a.id} analysis={a} />
+              <HistoryCard key={a.id} analysis={a} locale={locale} />
             ))}
           </div>
         </div>

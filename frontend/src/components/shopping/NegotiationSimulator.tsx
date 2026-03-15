@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNegotiationScript } from '../../hooks/useNegotiationScript'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { ScriptStep } from '../../api/negotiationsim'
 import styles from './NegotiationSimulator.module.css'
 
@@ -14,9 +15,9 @@ const PHASE_LABEL: Record<string, string> = {
   closing: 'Conclusion',
 }
 
-function SavingsBadge({ savings }: { savings: number }) {
+function SavingsBadge({ savings, fmt }: { savings: number; fmt: (n: number) => string }) {
   if (savings <= 0) return null
-  const formatted = savings.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+  const formatted = fmt(savings)
   return (
     <span className={styles.savingsBadge} aria-label={`Économie potentielle : ${formatted}`}>
       -{formatted}
@@ -44,6 +45,7 @@ export function NegotiationSimulator({ missionId, itemId }: NegotiationSimulator
   const [open, setOpen] = useState(false)
 
   const { data, isFetching } = useNegotiationScript(missionId, itemId, enabled)
+  const { fmt } = useFormatCurrency()
 
   function handleToggle() {
     setEnabled(true)
@@ -86,10 +88,10 @@ export function NegotiationSimulator({ missionId, itemId }: NegotiationSimulator
                   <span className={styles.itemName}>{data.itemName}</span>
                   <span className={styles.priceTarget}>
                     Objectif&nbsp;:&nbsp;
-                    {data.targetPrice.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                    {fmt(data.targetPrice)}
                   </span>
                 </div>
-                <SavingsBadge savings={data.potentialSavings} />
+                <SavingsBadge savings={data.potentialSavings} fmt={fmt} />
               </div>
 
               <div className={styles.conversation}>

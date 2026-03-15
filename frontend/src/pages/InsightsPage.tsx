@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { listMissions } from '../api/missions'
 import { analyzeSpending } from '../utils/spendingInsights'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import styles from './InsightsPage.module.css'
 
 function SpendingBar({ pct, label }: { pct: number; label: string }) {
@@ -25,6 +26,7 @@ export default function InsightsPage() {
     queryFn: listMissions,
     staleTime: 60_000,
   })
+  const { currency, locale } = useFormatCurrency()
 
   // Aggregate items from all missions (use budget data only, no per-item fetch needed)
   const report = useMemo(() => {
@@ -34,8 +36,10 @@ export default function InsightsPage() {
       missions.map((m) => ({ name: m.name, category: m.category, budget: m.budget })),
       // empty items — insights based on missions only
       [],
+      currency,
+      locale,
     )
-  }, [missions])
+  }, [missions, currency, locale])
 
   if (isLoading) {
     return (
@@ -57,7 +61,7 @@ export default function InsightsPage() {
     )
   }
 
-  const fmt = (v: number) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(v)
+  const { fmt } = useFormatCurrency()
 
   return (
     <main className={styles.main}>

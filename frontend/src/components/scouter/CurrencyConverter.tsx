@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useCurrencyRates } from '../../hooks/useCurrencyRates'
 import { formatCurrencyLocale, formatDate } from '../../utils/format'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import { SUPPORTED_CURRENCIES } from '../../utils/currencyRates'
 import styles from './CurrencyConverter.module.css'
 
@@ -20,6 +21,7 @@ const CURRENCY_FLAGS: Record<string, string> = {
 
 export function CurrencyConverter() {
   const { rates, isLoading, convert } = useCurrencyRates()
+  const { locale } = useFormatCurrency()
   const [amount, setAmount] = useState<string>('100')
   const [fromCurrency, setFromCurrency] = useState('EUR')
   const [toCurrency, setToCurrency] = useState('USD')
@@ -93,7 +95,7 @@ export function CurrencyConverter() {
       <div className={styles.resultSection}>
         <div className={styles.rateLabel}>Taux du jour</div>
         <div className={styles.resultValue}>
-          {isLoading ? '...' : formatCurrencyLocale(convertedAmount, 'fr-FR', toCurrency)}
+          {isLoading ? '...' : formatCurrencyLocale(convertedAmount, locale, toCurrency)}
         </div>
 
         {rate && !isLoading && (
@@ -107,7 +109,7 @@ export function CurrencyConverter() {
 
         {rates && (
           <div className={styles.lastUpdated}>
-            Mis à jour: {formatDate(new Date(rates.date), 'fr-FR')}
+            Mis à jour: {formatDate(new Date(rates.date), locale)}
           </div>
         )}
       </div>

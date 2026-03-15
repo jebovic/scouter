@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useBudgetAnalysis } from '../../hooks/useBudgetAnalysis'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { BudgetRecommendation } from '../../api/budgetrec'
 import styles from './BudgetRecommendations.module.css'
 
@@ -42,6 +43,7 @@ function Gauge({ score }: { score: number }) {
 
 function RecCard({ rec }: { rec: BudgetRecommendation }) {
   const [expanded, setExpanded] = useState(false)
+  const { fmt } = useFormatCurrency()
   return (
     <div
       className={styles.recItem}
@@ -61,13 +63,13 @@ function RecCard({ rec }: { rec: BudgetRecommendation }) {
       {expanded && (
         <div className={styles.recDetail}>
           <div className={styles.recDetailItem}>
-            Budget actuel&nbsp;: <span>{rec.currentBudget.toFixed(2)} €</span>
+            Budget actuel&nbsp;: <span>{fmt(rec.currentBudget)}</span>
           </div>
           <div className={styles.recDetailItem}>
-            Budget recommandé&nbsp;: <span>{rec.recommendedBudget.toFixed(2)} €</span>
+            Budget recommandé&nbsp;: <span>{fmt(rec.recommendedBudget)}</span>
           </div>
           <div className={styles.recDetailItem}>
-            Économie potentielle&nbsp;: <span>{rec.saveAmount.toFixed(2)} €</span>
+            Économie potentielle&nbsp;: <span>{fmt(rec.saveAmount)}</span>
           </div>
         </div>
       )}
@@ -77,6 +79,7 @@ function RecCard({ rec }: { rec: BudgetRecommendation }) {
 
 export function BudgetRecommendations({ missionId }: Props) {
   const { data, isLoading, isError } = useBudgetAnalysis(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -124,11 +127,11 @@ export function BudgetRecommendations({ missionId }: Props) {
           <div className={styles.totalsRow}>
             <div className={styles.totalItem}>
               <span className={styles.totalKey}>Budget</span>
-              <span className={styles.totalVal}>{data.totalBudget.toFixed(2)} €</span>
+              <span className={styles.totalVal}>{fmt(data.totalBudget)}</span>
             </div>
             <div className={styles.totalItem}>
               <span className={styles.totalKey}>Dépensé</span>
-              <span className={styles.totalVal}>{data.totalSpent.toFixed(2)} €</span>
+              <span className={styles.totalVal}>{fmt(data.totalSpent)}</span>
             </div>
           </div>
         </div>
@@ -138,7 +141,7 @@ export function BudgetRecommendations({ missionId }: Props) {
       {data.potentialSavings > 0 && (
         <div className={styles.savingsRow}>
           <span className={styles.savingsLabel}>Économies potentielles identifiées</span>
-          <span className={styles.savingsAmount}>+{data.potentialSavings.toFixed(2)} €</span>
+          <span className={styles.savingsAmount}>+{fmt(data.potentialSavings)}</span>
         </div>
       )}
 

@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useState, useEffect } from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import { useSettings, useUpdateSettings, useDeleteAllData } from '../hooks'
 import { CurrencyConverter } from '../components/scouter'
+import { syncLanguageFromSettings } from '../i18n'
 import styles from './SettingsPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CAD']
@@ -26,9 +27,25 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteInput, setDeleteInput] = useState('')
   const [deleteSuccess, setDeleteSuccess] = useState(false)
+  const [simpleMode, setSimpleMode] = useState(false)
+
+  useEffect(() => {
+    try { setSimpleMode(localStorage.getItem('simpleMode') === 'true') } catch {}
+  }, [])
+
+  function toggleSimpleMode() {
+    const next = !simpleMode
+    setSimpleMode(next)
+    try { localStorage.setItem('simpleMode', String(next)) } catch {}
+    // Notify NavRail via storage event
+    window.dispatchEvent(new StorageEvent('storage', { key: 'simpleMode', newValue: String(next) }))
+  }
 
   function handleChange(key: string, value: string) {
     updateSettings.mutate({ [key]: value })
+    if (key === 'locale') {
+      syncLanguageFromSettings(value)
+    }
   }
 
   function handleDeleteConfirm() {
@@ -99,6 +116,22 @@ export default function SettingsPage() {
               ))}
             </select>
           </div>
+          <div className={styles.field}>
+            <label className={styles.label}>Mode Simplifié</label>
+            <div className={styles.toggleRow}>
+              <span className={styles.toggleDesc}>
+                Masque les outils avancés dans la barre de navigation.
+              </span>
+              <button
+                className={styles.toggle}
+                data-active={simpleMode}
+                onClick={toggleSimpleMode}
+                aria-pressed={simpleMode}
+              >
+                {simpleMode ? 'Activé' : 'Désactivé'}
+              </button>
+            </div>
+          </div>
           {updateSettings.isSuccess && (
             <p className={styles.success}>{t('settings.saved')}</p>
           )}
@@ -106,7 +139,7 @@ export default function SettingsPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Outils</h2>
+        <h2 className={styles.sectionTitle}>{t('settings.tools')}</h2>
         <div className={styles.card}>
           <CurrencyConverter />
         </div>
@@ -141,7 +174,7 @@ export default function SettingsPage() {
             <h3 className={styles.modalTitle}>⚠️ {t('settings.dangerZone')}</h3>
             <p className={styles.dangerWarning}>{t('settings.confirmWarning')}</p>
             <p className={styles.modalPrompt}>
-              Type <strong>{DELETE_CONFIRM_WORD}</strong> to confirm:
+              <Trans i18nKey="settings.deletePrompt" values={{ word: DELETE_CONFIRM_WORD }} components={{ bold: <strong /> }} />
             </p>
             <input
               className={styles.modalInput}
@@ -149,7 +182,7 @@ export default function SettingsPage() {
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
               autoFocus
-              aria-label="Type DELETE to confirm"
+              aria-label={t('settings.deletePrompt', { word: DELETE_CONFIRM_WORD })}
             />
             <div className={styles.modalActions}>
               <button

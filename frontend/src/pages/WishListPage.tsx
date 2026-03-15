@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import { LoadingPulse } from '../components/scouter'
 import { WishListItem } from '../components/wishlist'
 import { useWishList, useCreateWishListItem, useDeleteWishListItem } from '../hooks/useWishList'
@@ -19,12 +20,14 @@ interface AddFormState {
   notes: string
 }
 
-const emptyForm: AddFormState = {
-  name: '',
-  url: '',
-  targetPrice: '',
-  currency: 'EUR',
-  notes: '',
+function makeEmptyForm(defaultCurrency: string): AddFormState {
+  return {
+    name: '',
+    url: '',
+    targetPrice: '',
+    currency: defaultCurrency,
+    notes: '',
+  }
 }
 
 function WishlistPriorityCard() {
@@ -92,11 +95,12 @@ function WishlistPriorityCard() {
 
 export default function WishListPage() {
   const { t } = useTranslation()
+  const { currency } = useFormatCurrency()
   const { items, isLoading } = useWishList()
   const createMutation = useCreateWishListItem()
   const deleteMutation = useDeleteWishListItem()
 
-  const [form, setForm] = useState<AddFormState>(emptyForm)
+  const [form, setForm] = useState<AddFormState>(() => makeEmptyForm(currency))
   const [formError, setFormError] = useState<string | null>(null)
   const [shareCopied, setShareCopied] = useState(false)
 
@@ -121,7 +125,7 @@ export default function WishListPage() {
 
     const payload: Parameters<typeof createMutation.mutateAsync>[0] = {
       name: trimmedName,
-      currency: form.currency || 'EUR',
+      currency: form.currency || currency,
     }
     if (form.url.trim()) payload.url = form.url.trim()
     if (form.targetPrice.trim()) {
@@ -132,7 +136,7 @@ export default function WishListPage() {
 
     try {
       await createMutation.mutateAsync(payload)
-      setForm(emptyForm)
+      setForm(makeEmptyForm(currency))
       setFormError(null)
     } catch {
       setFormError(t('common.error'))

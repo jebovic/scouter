@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMerchantRecommender } from '../../hooks/useMerchantRecommender'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { MerchantScore } from '../../api/merchantrecommender'
 import styles from './MerchantRecommenderCard.module.css'
 
@@ -9,9 +10,7 @@ interface MerchantRecommenderCardProps {
   itemName?: string
 }
 
-function MerchantRow({ score }: { score: MerchantScore }) {
-  const fmtPrice = (n: number) =>
-    n.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+function MerchantRow({ score, fmt }: { score: MerchantScore; fmt: (n: number) => string }) {
 
   const getScoreClass = (s: number) => {
     if (s >= 80) return 'excellent'
@@ -37,7 +36,7 @@ function MerchantRow({ score }: { score: MerchantScore }) {
         <div className={styles.scoreLabel}>{Math.round(score.score)}</div>
       </div>
       <div className={styles.priceRecommendation}>
-        <div className={styles.price}>{fmtPrice(score.avgPrice)}</div>
+        <div className={styles.price}>{fmt(score.avgPrice)}</div>
         <div className={styles.recommendation}>{score.recommendation}</div>
       </div>
     </div>
@@ -50,6 +49,7 @@ export function MerchantRecommenderCard({
 }: MerchantRecommenderCardProps) {
   const [showAll, setShowAll] = useState(false)
   const { data, isLoading } = useMerchantRecommender(missionId, itemId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -77,7 +77,7 @@ export function MerchantRecommenderCard({
 
       <div className={styles.merchantList}>
         {displayedMerchants.map((score) => (
-          <MerchantRow key={score.merchant} score={score} />
+          <MerchantRow key={score.merchant} score={score} fmt={fmt} />
         ))}
       </div>
 

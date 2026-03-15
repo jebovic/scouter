@@ -6,6 +6,7 @@ import {
   useCreateCashback,
   useDeleteCashback,
 } from '../hooks/useCashback'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import styles from './CashbackPage.module.css'
 
 const COLLABORATOR_KEY = 'scouter_collaborator_id'
@@ -23,12 +24,9 @@ function getUserRef(): string {
 const STATUS_OPTIONS = ['pending', 'confirmed', 'paid'] as const
 type Status = (typeof STATUS_OPTIONS)[number]
 
-function formatEur(amount: number): string {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
-}
-
 export default function CashbackPage() {
   const userRef = getUserRef()
+  const { fmt } = useFormatCurrency()
 
   const { data: entries = [], isLoading: loadingEntries } = useCashbackEntries(userRef)
   const { data: summary } = useCashbackSummary(userRef)
@@ -82,19 +80,19 @@ export default function CashbackPage() {
           <div className={styles.summaryCard}>
             <span className={styles.summaryLabel}>En attente</span>
             <span className={`${styles.summaryAmount} ${styles.pending}`}>
-              {summary ? formatEur(summary.totalPending) : '—'}
+              {summary ? fmt(summary.totalPending) : '—'}
             </span>
           </div>
           <div className={styles.summaryCard}>
             <span className={styles.summaryLabel}>Confirmé</span>
             <span className={`${styles.summaryAmount} ${styles.confirmed}`}>
-              {summary ? formatEur(summary.totalConfirmed) : '—'}
+              {summary ? fmt(summary.totalConfirmed) : '—'}
             </span>
           </div>
           <div className={styles.summaryCard}>
             <span className={styles.summaryLabel}>Reçu</span>
             <span className={`${styles.summaryAmount} ${styles.paid}`}>
-              {summary ? formatEur(summary.totalPaid) : '—'}
+              {summary ? fmt(summary.totalPaid) : '—'}
             </span>
           </div>
         </div>
@@ -221,7 +219,7 @@ export default function CashbackPage() {
                     {entry.notes && ` · ${entry.notes}`}
                   </div>
                 </div>
-                <span className={styles.entryAmount}>{formatEur(entry.amount)}</span>
+                <span className={styles.entryAmount}>{fmt(entry.amount)}</span>
                 <span className={`${styles.statusPill} ${styles[entry.status]}`}>
                   {entry.status === 'pending' ? 'En attente' : entry.status === 'confirmed' ? 'Confirmé' : 'Reçu'}
                 </span>

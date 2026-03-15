@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useForecast, useRunForecast } from '../../hooks/useForecast'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { ForecastResult } from '../../api/forecast'
 import styles from './ForecastPanel.module.css'
 
@@ -20,6 +21,7 @@ export function ForecastPanel({ missionId }: ForecastPanelProps) {
   const { t } = useTranslation()
   const { forecast, isLoading } = useForecast(missionId)
   const { runForecast, isPending } = useRunForecast(missionId)
+  const { fmt } = useFormatCurrency()
 
   return (
     <div className={styles.panel}>
@@ -52,7 +54,7 @@ export function ForecastPanel({ missionId }: ForecastPanelProps) {
           {forecast.estimatedTotal !== null && (
             <div className={styles.totalSection}>
               <div className={styles.totalLabel}>{t('forecast.estimatedTotal').toUpperCase()}</div>
-              <div className={styles.totalValue}>~{forecast.estimatedTotal.toLocaleString()} €</div>
+              <div className={styles.totalValue}>~{fmt(forecast.estimatedTotal)}</div>
             </div>
           )}
 

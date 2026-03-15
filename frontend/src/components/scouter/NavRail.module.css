@@ -1,0 +1,190 @@
+@import '../../styles/theme.css';
+
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--rail-width);
+  background: var(--abyss);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.rail.collapsed {
+  width: var(--rail-collapsed);
+}
+
+/* Hide on mobile */
+@media (max-width: 640px) {
+  .rail {
+    display: none;
+  }
+}
+
+/* ── Logo ─────────────────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoText {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── Sections ─────────────────────────────────────────── */
+.sections {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.section {
+  padding: 4px 0 8px;
+}
+
+.section + .section {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.sectionLabel {
+  display: block;
+  padding: 4px 14px 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ── Nav items ────────────────────────────────────────── */
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  min-height: 44px;
+  width: 100%;
+  text-decoration: none;
+  color: var(--text-mid);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 0;
+  transition: color 0.15s, background 0.15s;
+  box-sizing: border-box;
+  text-align: left;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.navItem:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.navItem.active {
+  color: var(--cyan);
+  border-left-color: var(--cyan);
+  background: var(--cyan-glow);
+  font-weight: 600;
+}
+
+.icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── New mission button ───────────────────────────────── */
+.newMissionBtn {
+  color: var(--gold);
+}
+
+.newMissionBtn:hover {
+  color: var(--gold);
+  background: var(--gold-dim);
+}
+
+.plusIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 300;
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+/* ── Mission items ────────────────────────────────────── */
+.missionItem {
+  position: relative;
+}
+
+.missionName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusDotCollapsed {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.collapseBtn {
+  color: var(--text-dim);
+}
+
+.collapseBtn:hover {
+  color: var(--text-mid);
+}

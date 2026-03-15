@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import { useMissions } from '../hooks/useMission'
 import { useBadges } from '../hooks/useBadges'
 import { useSpendingAnalytics } from '../hooks/useSpendingAnalytics'
@@ -25,17 +26,14 @@ import styles from './StatsPage.module.css'
 // Analytics sub-components (previously in AnalyticsPage.tsx)
 // ---------------------------------------------------------------------------
 
-const fmtEur = (v: number) =>
-  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(v)
-
-function BudgetBar({ spending, budget, pct }: { spending: number; budget: number; pct: number }) {
+function BudgetBar({ spending, budget, pct, fmt }: { spending: number; budget: number; pct: number; fmt: (n: number) => string }) {
   const clampedPct = Math.min(100, pct)
   const isOver = pct > 100
   return (
     <div className={styles.budgetSection}>
       <div className={styles.budgetLabels}>
-        <span>{fmtEur(spending)} dépensé</span>
-        <span>{fmtEur(budget)} budget</span>
+        <span>{fmt(spending)} dépensé</span>
+        <span>{fmt(budget)} budget</span>
       </div>
       <div className={styles.budgetTrack}>
         <div
@@ -48,7 +46,7 @@ function BudgetBar({ spending, budget, pct }: { spending: number; budget: number
   )
 }
 
-function CategoryDonut({ categories }: { categories: CategoryStats[] }) {
+function CategoryDonut({ categories, fmt }: { categories: CategoryStats[]; fmt: (n: number) => string }) {
   if (categories.length === 0) {
     return <div className={styles.analyticsEmpty}>Aucune donnée de catégorie</div>
   }
@@ -95,7 +93,7 @@ function CategoryDonut({ categories }: { categories: CategoryStats[] }) {
           {categories.map((c) => (
             <tr key={c.category}>
               <td>{c.category || 'Sans catégorie'}</td>
-              <td>{fmtEur(c.total)}</td>
+              <td>{fmt(c.total)}</td>
               <td>{c.pct.toFixed(1)}%</td>
             </tr>
           ))}
@@ -109,7 +107,7 @@ function CategoryDonut({ categories }: { categories: CategoryStats[] }) {
               style={{ background: palette[i % palette.length] } as React.CSSProperties}
             />
             <span className={styles.legendLabel}>{c.category || 'Sans catégorie'}</span>
-            <span className={styles.legendValue}>{fmtEur(c.total)}</span>
+            <span className={styles.legendValue}>{fmt(c.total)}</span>
             <span className={styles.legendPct}>{c.pct.toFixed(1)}%</span>
           </li>
         ))}
@@ -118,7 +116,7 @@ function CategoryDonut({ categories }: { categories: CategoryStats[] }) {
   )
 }
 
-function MerchantBars({ merchants }: { merchants: MerchantStats[] }) {
+function MerchantBars({ merchants, fmt }: { merchants: MerchantStats[]; fmt: (n: number) => string }) {
   if (merchants.length === 0) {
     return <div className={styles.analyticsEmpty}>Aucune donnée marchand</div>
   }
@@ -134,14 +132,14 @@ function MerchantBars({ merchants }: { merchants: MerchantStats[] }) {
               style={{ '--w': `${max > 0 ? (m.total / max) * 100 : 0}%` } as React.CSSProperties}
             />
           </div>
-          <span className={styles.merchantTotal}>{fmtEur(m.total)}</span>
+          <span className={styles.merchantTotal}>{fmt(m.total)}</span>
         </li>
       ))}
     </ul>
   )
 }
 
-function TopItemsList({ items }: { items: TopItem[] }) {
+function TopItemsList({ items, fmt }: { items: TopItem[]; fmt: (n: number) => string }) {
   if (items.length === 0) {
     return <div className={styles.analyticsEmpty}>Aucun article</div>
   }
@@ -154,14 +152,14 @@ function TopItemsList({ items }: { items: TopItem[] }) {
             <span className={styles.topName}>{item.itemName}</span>
             <span className={styles.topMission}>{item.missionName}</span>
           </div>
-          <span className={styles.topPrice}>{fmtEur(item.price)}</span>
+          <span className={styles.topPrice}>{fmt(item.price)}</span>
         </li>
       ))}
     </ol>
   )
 }
 
-function MonthlyChart({ months }: { months: MonthStats[] }) {
+function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) => string }) {
   if (months.length === 0) {
     return <div className={styles.analyticsEmpty}>Aucune donnée mensuelle</div>
   }
@@ -184,7 +182,7 @@ function MonthlyChart({ months }: { months: MonthStats[] }) {
           {months.map((m) => (
             <tr key={m.month}>
               <td>{m.month}</td>
-              <td>{fmtEur(m.avgPrice)}</td>
+              <td>{fmt(m.avgPrice)}</td>
             </tr>
           ))}
         </tbody>
@@ -194,7 +192,7 @@ function MonthlyChart({ months }: { months: MonthStats[] }) {
           <div
             className={styles.monthFill}
             style={{ '--h': `${(m.avgPrice / max) * 100}%` } as React.CSSProperties}
-            title={`${m.month}: ${fmtEur(m.avgPrice)} moy.`}
+            title={`${m.month}: ${fmt(m.avgPrice)} moy.`}
           />
           <span className={styles.monthLabel}>{m.month.slice(5)}</span>
         </div>
@@ -211,6 +209,7 @@ function AnalyticsTab() {
   const { data, isLoading, error } = useSpendingAnalytics()
   const { data: heatmapData } = useBudgetHeatmap()
   const { data: crossData } = useCrossMission()
+  const { fmt, locale } = useFormatCurrency()
 
   if (isLoading) {
     return <div className={styles.analyticsLoading}>Chargement des analytics…</div>
@@ -230,11 +229,11 @@ function AnalyticsTab() {
     <div className={styles.analyticsContainer}>
       <div className={styles.kpiRow}>
         <div className={styles.kpi}>
-          <div className={styles.kpiValue}>{fmtEur(data.totalBudget)}</div>
+          <div className={styles.kpiValue}>{fmt(data.totalBudget)}</div>
           <div className={styles.kpiLabel}>Budget total</div>
         </div>
         <div className={styles.kpi}>
-          <div className={styles.kpiValue}>{fmtEur(data.totalSpending)}</div>
+          <div className={styles.kpiValue}>{fmt(data.totalSpending)}</div>
           <div className={styles.kpiLabel}>Dépenses (achetés)</div>
         </div>
         <div className={styles.kpi}>
@@ -253,27 +252,28 @@ function AnalyticsTab() {
           spending={data.totalSpending}
           budget={data.totalBudget}
           pct={data.budgetUsagePct}
+          fmt={fmt}
         />
       </section>
 
       <section className={styles.analyticsCard}>
         <h2 className={styles.analyticsCardTitle}>Répartition par catégorie</h2>
-        <CategoryDonut categories={data.byCategory} />
+        <CategoryDonut categories={data.byCategory} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
         <h2 className={styles.analyticsCardTitle}>Top marchands</h2>
-        <MerchantBars merchants={data.byMerchant} />
+        <MerchantBars merchants={data.byMerchant} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
         <h2 className={styles.analyticsCardTitle}>Articles les plus chers</h2>
-        <TopItemsList items={data.topItems} />
+        <TopItemsList items={data.topItems} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
         <h2 className={styles.analyticsCardTitle}>Tendance mensuelle (6 mois)</h2>
-        <MonthlyChart months={data.monthlySummary} />
+        <MonthlyChart months={data.monthlySummary} fmt={fmt} />
       </section>
 
       {heatmapData && (
@@ -292,7 +292,7 @@ function AnalyticsTab() {
 
       <div className={styles.generatedAt}>
         Données générées le{' '}
-        {new Date(data.generatedAt).toLocaleString('fr-FR', {
+        {new Date(data.generatedAt).toLocaleString(locale, {
           dateStyle: 'medium',
           timeStyle: 'short',
         })}

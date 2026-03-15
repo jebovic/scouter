@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useMissionROI } from '../../hooks/useMissionROI'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './MissionROICard.module.css'
 
 interface Props {
@@ -17,20 +18,13 @@ function scoreColor(score: number): string {
   return 'var(--coral)'
 }
 
-function fmt(v: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 0,
-  }).format(v)
-}
-
 function fmtDecimal(v: number): string {
   return v.toFixed(1)
 }
 
 export function MissionROICard({ missionId }: Props) {
   const { data, isLoading, isError } = useMissionROI(missionId)
+  const { fmt } = useFormatCurrency()
   const [animated, setAnimated] = useState(false)
   const mountedRef = useRef(false)
 

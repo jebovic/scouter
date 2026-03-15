@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useConditionPricing } from '../../hooks/useConditionPricing'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { ConditionPrice } from '../../api/conditionpricing'
 import styles from './ConditionPricingCard.module.css'
 
@@ -35,7 +36,7 @@ function AvailabilityDot({ availability }: { availability: string }) {
   )
 }
 
-function ConditionRow({ cp, isBest }: { cp: ConditionPrice; isBest: boolean }) {
+function ConditionRow({ cp, isBest, fmt }: { cp: ConditionPrice; isBest: boolean; fmt: (n: number) => string }) {
   return (
     <tr className={`${styles.condRow} ${isBest ? styles.bestRow : ''}`}>
       <td className={styles.condCell}>
@@ -49,7 +50,7 @@ function ConditionRow({ cp, isBest }: { cp: ConditionPrice; isBest: boolean }) {
         )}
       </td>
       <td className={styles.priceCell}>
-        {cp.estPrice.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+        {fmt(cp.estPrice)}
       </td>
       <td className={styles.discountCell}>
         <span className={styles.discountBadge}>-{cp.discount.toFixed(0)}%</span>
@@ -76,6 +77,7 @@ export function ConditionPricingCard({ missionId, itemId }: ConditionPricingCard
   const [open, setOpen] = useState(false)
 
   const { data, isFetching } = useConditionPricing(missionId, itemId, enabled)
+  const { fmt } = useFormatCurrency()
 
   function handleToggle() {
     setEnabled(true)
@@ -112,10 +114,7 @@ export function ConditionPricingCard({ missionId, itemId }: ConditionPricingCard
                   <span>
                     Économisez{' '}
                     <strong>
-                      {(data.newPrice - data.bestDeal.estPrice).toLocaleString('fr-FR', {
-                        style: 'currency',
-                        currency: 'EUR',
-                      })}
+                      {fmt(data.newPrice - data.bestDeal.estPrice)}
                     </strong>
                     {' '}en choisissant{' '}
                     <a
@@ -147,6 +146,7 @@ export function ConditionPricingCard({ missionId, itemId }: ConditionPricingCard
                       key={cp.grade}
                       cp={cp}
                       isBest={data.bestDeal?.grade === cp.grade}
+                      fmt={fmt}
                     />
                   ))}
                 </tbody>

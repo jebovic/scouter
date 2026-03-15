@@ -5,7 +5,7 @@ import type { Template } from '../../types'
 
 const templates: Template[] = [
   {
-    slug: 'laptop',
+    slug: 'test-custom-laptop',
     name: 'Laptop Purchase',
     icon: '💻',
     category: 'computing',
@@ -15,7 +15,7 @@ const templates: Template[] = [
     weightProfile: { price: 0.4, quality: 0.4, feature: 0.2 },
   },
   {
-    slug: 'trip',
+    slug: 'test-custom-trip',
     name: 'Trip Planning',
     icon: '✈️',
     category: 'travel',

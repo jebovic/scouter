@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { usePrograms, useCalculatePoints } from '../../hooks/useLoyaltyPoints'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './LoyaltyCalculator.module.css'
 
 interface LoyaltyCalculatorProps {
@@ -11,6 +12,7 @@ interface LoyaltyCalculatorProps {
 export function LoyaltyCalculator({ basePrice, merchant }: LoyaltyCalculatorProps) {
   const { data: programs = [] } = usePrograms()
   const { mutate: calculate, data: result, isPending } = useCalculatePoints()
+  const { fmt } = useFormatCurrency()
 
   // Derive the initial program from the merchant name if a match exists.
   const initialProgram = (): string => {
@@ -70,7 +72,7 @@ export function LoyaltyCalculator({ basePrice, merchant }: LoyaltyCalculatorProp
             : null}
           {result.pointsEarned > 0 && result.estimatedCashback > 0 ? ' · ' : null}
           {result.estimatedCashback > 0
-            ? `≈ ${result.estimatedCashback.toFixed(2)} €`
+            ? `≈ ${fmt(result.estimatedCashback)}`
             : null}
         </span>
       )}

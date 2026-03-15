@@ -1,4 +1,5 @@
 import { usePurchaseAdvice } from '../../hooks/usePurchaseAdvice'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { PurchaseAdvice } from '../../api/purchaseadvisor'
 import styles from './PurchaseAdvisorCard.module.css'
 
@@ -42,6 +43,7 @@ function ConfidenceBar({ value }: { value: number }) {
 
 export function PurchaseAdvisorCard({ itemId, itemName }: PurchaseAdvisorCardProps) {
   const { advice, isPending, getAdvice } = usePurchaseAdvice(itemId)
+  const { fmt } = useFormatCurrency()
 
   return (
     <div className={styles.card}>
@@ -85,7 +87,7 @@ export function PurchaseAdvisorCard({ itemId, itemName }: PurchaseAdvisorCardPro
             <div className={styles.metaRow}>
               <span className={styles.metaLabel}>Économies potentielles</span>
               <span className={styles.metaValue}>
-                {advice.estimatedSavingsByWaiting.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                {fmt(advice.estimatedSavingsByWaiting)}
               </span>
             </div>
           )}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFlightSearch, useTrainSearch } from '../../hooks'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { FlightOffer, TrainOffer } from '../../api/travel'
 import styles from './TravelSearchWidget.module.css'
 
@@ -23,6 +24,7 @@ function durationLabel(departAt: string, arriveAt: string): string {
 }
 
 function FlightRow({ offer }: { offer: FlightOffer }) {
+  const { fmt } = useFormatCurrency()
   return (
     <div className={styles.resultRow}>
       <div className={styles.carrier}>
@@ -40,12 +42,13 @@ function FlightRow({ offer }: { offer: FlightOffer }) {
         {formatTime(offer.departAt)} – {formatTime(offer.arriveAt)}
       </div>
       <div className={styles.duration}>{durationLabel(offer.departAt, offer.arriveAt)}</div>
-      <div className={styles.price}>{offer.priceEur.toFixed(0)} €</div>
+      <div className={styles.price}>{fmt(offer.priceEur)}</div>
     </div>
   )
 }
 
 function TrainRow({ offer }: { offer: TrainOffer }) {
+  const { fmt } = useFormatCurrency()
   const durH = Math.floor(offer.durationMin / 60)
   const durM = offer.durationMin % 60
   const durLabel = durH > 0 ? `${durH}h${durM > 0 ? durM + 'm' : ''}` : `${durM}m`
@@ -66,7 +69,7 @@ function TrainRow({ offer }: { offer: TrainOffer }) {
         {formatTime(offer.departAt)} – {formatTime(offer.arriveAt)}
       </div>
       <div className={styles.duration}>{durLabel}</div>
-      <div className={styles.price}>{offer.priceEur.toFixed(0)} €</div>
+      <div className={styles.price}>{fmt(offer.priceEur)}</div>
     </div>
   )
 }

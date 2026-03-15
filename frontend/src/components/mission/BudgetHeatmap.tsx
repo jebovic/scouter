@@ -1,12 +1,10 @@
 import styles from './BudgetHeatmap.module.css'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { BudgetHeatmap as BudgetHeatmapData, HeatmapCell } from '../../api/budgetheatmap'
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-const fmtEur = (v: number) =>
-  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(v)
 
 /** Map intensity 0-1 → HSL lightness: 0=light (no spend), 1=dark (max spend). */
 function intensityToColor(intensity: number): string {
@@ -56,6 +54,8 @@ interface Props {
 }
 
 export default function BudgetHeatmap({ data }: Props) {
+  const { fmt } = useFormatCurrency()
+
   if (data.cells.length === 0) {
     return (
       <div className={styles.empty}>
@@ -89,7 +89,7 @@ export default function BudgetHeatmap({ data }: Props) {
                 if (!cell) {
                   return <td key={month} className={`${styles.cell} ${styles.emptyCell}`} />
                 }
-                const tip = `${cat || 'Sans catégorie'} / ${month}: ${fmtEur(cell.total)} (${cell.count} entrée${cell.count > 1 ? 's' : ''})`
+                const tip = `${cat || 'Sans catégorie'} / ${month}: ${fmt(cell.total)} (${cell.count} entrée${cell.count > 1 ? 's' : ''})`
                 return (
                   <td
                     key={month}

@@ -1,11 +1,15 @@
 {
   "nav": {
-    "hq": "SCOUTER HQ",
+    "hq": "Accueil",
     "missionControl": "Mission Control",
-    "overview": "Overview",
-    "options": "Options",
-    "shopping": "Shopping",
-    "budget": "Budget"
+    "overview": "Résumé",
+    "options": "Comparatif",
+    "shopping": "Mes achats",
+    "budget": "Budget",
+    "allMissions": "← Toutes mes missions",
+    "resume": "Résumé",
+    "comparatif": "Comparatif",
+    "listeAchats": "Mes achats"
   },
   "common": {
     "loading": "Loading...",
@@ -125,7 +129,7 @@
     "edit": "Edit Purchase",
     "purchaseDate": "Purchase Date",
     "merchant": "Merchant",
-    "finalPrice": "Final Price (€)",
+    "finalPrice": "Final Price",
     "satisfaction": "Satisfaction",
     "review": "Review (optional)",
     "saving": "Saving...",
@@ -195,7 +199,9 @@
     "confirmDelete": "Confirm Delete All",
     "deleteAll": "Delete All Data",
     "allDeleted": "All data deleted.",
-    "confirmWarning": "Click again to confirm. This will permanently delete everything."
+    "confirmWarning": "Click again to confirm. This will permanently delete everything.",
+    "tools": "Tools",
+    "deletePrompt": "Type <bold>{{word}}</bold> to confirm:"
   },
   "stats": {
     "title": "Spending Stats",
@@ -423,5 +429,19 @@
     "remaining": "Remaining",
     "surplus": "Surplus",
     "allocations": "Recommended Allocations"
+  },
+  "templates": {
+    "laptop": { "name": "Laptop / Notebook", "description": "Compare laptops by performance, portability, and value" },
+    "desktop": { "name": "Desktop PC", "description": "Compare desktop PCs by power, expandability, and value" },
+    "tablet": { "name": "Tablet", "description": "Compare tablets for work, entertainment, or creativity" },
+    "smartphone": { "name": "Smartphone", "description": "Compare smartphones by features, camera, and battery life" },
+    "tv": { "name": "TV / Screen", "description": "Compare televisions by size, picture quality, and smart features" },
+    "headphones": { "name": "Headphones", "description": "Compare headphones by sound quality, comfort, and connectivity" },
+    "camera": { "name": "Camera", "description": "Compare cameras by image quality, features, and system" },
+    "gaming-console": { "name": "Gaming Console", "description": "Compare gaming consoles by library, performance, and price" },
+    "trip": { "name": "Vacation / Trip", "description": "Plan a leisure trip — compare destinations, accommodation, and flights" },
+    "road-trip": { "name": "Road Trip", "description": "Compare road trip options by route, cost, and experience" },
+    "kitchen-reno": { "name": "Kitchen Renovation", "description": "Compare kitchen renovation options from cosmetic to full remodel" },
+    "car": { "name": "Car / Vehicle", "description": "Compare vehicles by reliability, running costs, and features" }
   }
 }

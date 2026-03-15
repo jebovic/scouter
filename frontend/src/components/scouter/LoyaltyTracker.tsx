@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { LOYALTY_PROGRAMS, getNextMilestone, getEquivalentValue } from '../../utils/loyaltyPrograms'
 import { useLoyaltyPoints } from '../../hooks/useLoyaltyPoints'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './LoyaltyTracker.module.css'
 
 export function LoyaltyTracker() {
   const { balances, setPoints, clearPoints } = useLoyaltyPoints()
+  const { fmt, locale } = useFormatCurrency()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
 
@@ -39,10 +41,7 @@ export function LoyaltyTracker() {
         <div className={styles.summaryBar}>
           <strong>Valeur totale : </strong>
           <span className={styles.summaryValue}>
-            {new Intl.NumberFormat('fr-FR', {
-              style: 'currency',
-              currency: 'EUR',
-            }).format(totalValue)}
+            {fmt(totalValue)}
           </span>
         </div>
       )}
@@ -91,7 +90,7 @@ export function LoyaltyTracker() {
                       }
                     }}
                   >
-                    {currentPoints.toLocaleString('fr-FR')}
+                    {currentPoints.toLocaleString(locale)}
                   </span>
                 )}
               </div>
@@ -99,10 +98,7 @@ export function LoyaltyTracker() {
               <div className={styles.value}>
                 <span>Valeur :</span>
                 <span className={styles.valueAmount}>
-                  {new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                  }).format(equivalentValue)}
+                  {fmt(equivalentValue)}
                 </span>
               </div>
 

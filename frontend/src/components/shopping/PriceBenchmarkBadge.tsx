@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePriceBenchmark } from '../../hooks/useBenchmark'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './PriceBenchmarkBadge.module.css'
 
 interface PriceBenchmarkBadgeProps {
@@ -30,14 +31,11 @@ function formatDiff(diffPercent: number): string {
   return diffPercent < 0 ? `-${abs}%` : `+${abs}%`
 }
 
-function formatPrice(price: number): string {
-  return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-}
-
 export function PriceBenchmarkBadge({ itemId, itemName: _itemName }: PriceBenchmarkBadgeProps) {
   const [enabled, setEnabled] = useState(false)
   const [open, setOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const { fmt } = useFormatCurrency()
 
   const { data, isFetching } = usePriceBenchmark(itemId, enabled)
 
@@ -105,15 +103,15 @@ export function PriceBenchmarkBadge({ itemId, itemName: _itemName }: PriceBenchm
               <div className={styles.rangeRow}>
                 <div className={styles.rangeItem}>
                   <span className={styles.rangeLabel}>Bas</span>
-                  <span className={styles.rangeValue}>{formatPrice(data.marketRange.low)}</span>
+                  <span className={styles.rangeValue}>{fmt(data.marketRange.low)}</span>
                 </div>
                 <div className={styles.rangeItem}>
                   <span className={styles.rangeLabel}>Moy</span>
-                  <span className={styles.rangeValue}>{formatPrice(data.marketRange.average)}</span>
+                  <span className={styles.rangeValue}>{fmt(data.marketRange.average)}</span>
                 </div>
                 <div className={styles.rangeItem}>
                   <span className={styles.rangeLabel}>Haut</span>
-                  <span className={styles.rangeValue}>{formatPrice(data.marketRange.high)}</span>
+                  <span className={styles.rangeValue}>{fmt(data.marketRange.high)}</span>
                 </div>
               </div>
               <p className={styles.explanation}>{data.explanation}</p>

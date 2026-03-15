@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCoupons } from '../../hooks/useCoupons'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { Coupon, CashbackOffer } from '../../api/couponfinder'
 import styles from './CouponFinderCard.module.css'
 
@@ -64,7 +65,7 @@ function CouponRow({ coupon }: { coupon: Coupon }) {
   )
 }
 
-function CashbackRow({ offer }: { offer: CashbackOffer }) {
+function CashbackRow({ offer, fmt }: { offer: CashbackOffer; fmt: (n: number) => string }) {
   const emoji = PLATFORM_EMOJI[offer.platform] ?? '💰'
   return (
     <div className={styles.cashbackRow}>
@@ -74,7 +75,7 @@ function CashbackRow({ offer }: { offer: CashbackOffer }) {
         <div className={styles.cashbackDesc}>
           {offer.description}
           {offer.minPurchase > 0 && (
-            <> · min. {offer.minPurchase.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</>
+            <> · min. {fmt(offer.minPurchase)}</>
           )}
         </div>
       </div>
@@ -90,6 +91,7 @@ export function CouponFinderCard({ missionId, itemId }: CouponFinderCardProps) {
   const [open, setOpen] = useState(false)
 
   const { data, isFetching } = useCoupons(missionId, itemId, enabled)
+  const { fmt } = useFormatCurrency()
 
   function handleToggle() {
     setEnabled(true)
@@ -135,7 +137,7 @@ export function CouponFinderCard({ missionId, itemId }: CouponFinderCardProps) {
                   <div className={styles.sectionTitle}>Cashback disponible</div>
                   <div className={styles.cashbackList}>
                     {data.cashbackOffers.map((cb) => (
-                      <CashbackRow key={cb.platform} offer={cb} />
+                      <CashbackRow key={cb.platform} offer={cb} fmt={fmt} />
                     ))}
                   </div>
                 </>
@@ -146,10 +148,7 @@ export function CouponFinderCard({ missionId, itemId }: CouponFinderCardProps) {
                   <span aria-hidden="true">💰</span>
                   Économie potentielle totale&nbsp;:&nbsp;
                   <span className={styles.savingsAmt}>
-                    {data.totalPotentialSaving.toLocaleString('fr-FR', {
-                      style: 'currency',
-                      currency: 'EUR',
-                    })}
+                    {fmt(data.totalPotentialSaving)}
                   </span>
                 </div>
               )}

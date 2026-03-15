@@ -17,10 +17,12 @@ import {
 import type { ShoppingItem, ShoppingItemCreateRequest } from '../types'
 import { useFrenchBenchmark } from '../hooks/useFrenchBenchmark'
 import { useTimelinePlanner } from '../hooks/useTimelinePlanner'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import styles from './ShoppingTracker.module.css'
 
 function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
   const { data, isLoading } = useFrenchBenchmark(missionId)
+  const { fmt } = useFormatCurrency()
   if (isLoading) return <div style={{ padding: '10px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>Analyse du marché français…</div>
   if (!data) return null
   const verdictColor = data.verdictCode === 'bon_prix'
@@ -36,11 +38,11 @@ function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)' }}>{data.medianPrice.toFixed(0)} €</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)' }}>{fmt(data.medianPrice)}</div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Médiane marché</div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent)' }}>{data.yourAvgPrice.toFixed(0)} €</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent)' }}>{fmt(data.yourAvgPrice)}</div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Votre moyenne</div>
         </div>
         <div style={{ textAlign: 'center' }}>

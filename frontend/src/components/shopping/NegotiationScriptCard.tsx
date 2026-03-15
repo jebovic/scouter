@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNegotiationScriptContextual } from '../../hooks/useNegotiationScriptContextual'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { ScriptSections } from '../../api/negotiationscript'
 import styles from './NegotiationScriptCard.module.css'
 
@@ -66,6 +67,7 @@ function AccordionSection({ icon, label, text }: AccordionSectionProps) {
 
 export function NegotiationScriptCard({ missionId, itemId }: NegotiationScriptCardProps) {
   const { data, isLoading } = useNegotiationScriptContextual(missionId, itemId)
+  const { fmt } = useFormatCurrency()
   const [allCopied, setAllCopied] = useState(false)
 
   if (isLoading) return null
@@ -84,7 +86,7 @@ export function NegotiationScriptCard({ missionId, itemId }: NegotiationScriptCa
 
   const savingsFormatted =
     data.estimatedSavings > 0
-      ? data.estimatedSavings.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
+      ? fmt(data.estimatedSavings)
       : null
 
   return (

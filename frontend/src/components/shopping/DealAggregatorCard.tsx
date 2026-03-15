@@ -1,4 +1,5 @@
 import { useDealAggregator } from '../../hooks/useDealAggregator'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { Deal } from '../../api/dealaggregator'
 import styles from './DealAggregatorCard.module.css'
 
@@ -8,16 +9,13 @@ interface DealAggregatorCardProps {
   currency?: string
 }
 
-function DealRow({ deal }: { deal: Deal }) {
-  const fmtPrice = (n: number) =>
-    n.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-
+function DealRow({ deal, fmt }: { deal: Deal; fmt: (n: number) => string }) {
   return (
     <div className={styles.deal}>
       <span className={styles.source}>{deal.source}</span>
       <span className={styles.dealTitle} title={deal.title}>{deal.title}</span>
       <span className={styles.discount}>-{deal.discount}%</span>
-      <span className={styles.price}>{fmtPrice(deal.dealPrice)}</span>
+      <span className={styles.price}>{fmt(deal.dealPrice)}</span>
       {deal.hot && <span className={styles.hot} aria-label="Hot deal">🔥</span>}
       <span className={styles.votes}>{deal.votes} votes</span>
       <a
@@ -35,6 +33,7 @@ function DealRow({ deal }: { deal: Deal }) {
 
 export function DealAggregatorCard({ missionId, itemId }: DealAggregatorCardProps) {
   const { data, isLoading } = useDealAggregator(missionId, itemId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -52,9 +51,6 @@ export function DealAggregatorCard({ missionId, itemId }: DealAggregatorCardProp
     )
   }
 
-  const fmtPrice = (n: number) =>
-    n.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-
   return (
     <div className={styles.card}>
       <p className={styles.title}>🏷️ Bons Plans</p>
@@ -70,7 +66,7 @@ export function DealAggregatorCard({ missionId, itemId }: DealAggregatorCardProp
               {data.bestDeal.title}
             </span>
             <span className={styles.discount}>-{data.bestDeal.discount}%</span>
-            <span className={styles.price}>{fmtPrice(data.bestDeal.dealPrice)}</span>
+            <span className={styles.price}>{fmt(data.bestDeal.dealPrice)}</span>
             <span className={styles.votes}>{data.bestDeal.votes} votes</span>
             <a
               href={data.bestDeal.url}
@@ -86,7 +82,7 @@ export function DealAggregatorCard({ missionId, itemId }: DealAggregatorCardProp
       )}
 
       {data.deals.map((deal, i) => (
-        <DealRow key={`${deal.source}-${i}`} deal={deal} />
+        <DealRow key={`${deal.source}-${i}`} deal={deal} fmt={fmt} />
       ))}
     </div>
   )

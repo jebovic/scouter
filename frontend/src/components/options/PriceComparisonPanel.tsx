@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { usePriceComparison, useRefreshPriceComparison } from '../../hooks/usePriceComp'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './PriceComparisonPanel.module.css'
 
 interface Props {
@@ -10,6 +11,7 @@ export function PriceComparisonPanel({ optionId }: Props) {
   const { t } = useTranslation()
   const { comparison, isLoading, error } = usePriceComparison(optionId)
   const { refresh, isPending } = useRefreshPriceComparison(optionId)
+  const { fmt, locale } = useFormatCurrency()
 
   if (isLoading) return null
   if (error) return null
@@ -41,10 +43,7 @@ export function PriceComparisonPanel({ optionId }: Props) {
             <div key={offer.retailer} className={rowClass}>
               <span className={styles.retailerName}>{offer.retailer}</span>
               <span className={`${styles.price} ${isBest ? styles.priceBest : styles.priceNormal}`}>
-                {new Intl.NumberFormat('fr-FR', {
-                  style: 'currency',
-                  currency: offer.currency,
-                }).format(offer.price)}
+                {fmt(offer.price)}
               </span>
               {isBest && offer.available && (
                 <span className={styles.bestBadge}>{t('pricecomp.best')}</span>
@@ -68,7 +67,7 @@ export function PriceComparisonPanel({ optionId }: Props) {
       </div>
 
       <div className={styles.meta}>
-        {t('pricecomp.updated')}: {new Date(comparison.fetchedAt).toLocaleString('fr-FR')}
+        {t('pricecomp.updated')}: {new Date(comparison.fetchedAt).toLocaleString(locale)}
       </div>
     </div>
   )

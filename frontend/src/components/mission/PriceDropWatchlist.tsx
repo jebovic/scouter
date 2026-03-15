@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { usePriceDropWatch } from '../../hooks/usePriceDropWatch'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import { LoadingPulse } from '../scouter'
 import styles from './PriceDropWatchlist.module.css'
 
@@ -9,6 +10,7 @@ interface PriceDropWatchlistProps {
 
 export function PriceDropWatchlist({ missionId }: PriceDropWatchlistProps) {
   const { data, isLoading } = usePriceDropWatch(missionId)
+  const { fmt } = useFormatCurrency()
   const [isExpanded, setIsExpanded] = useState(true)
 
   if (isLoading) {
@@ -52,10 +54,7 @@ export function PriceDropWatchlist({ missionId }: PriceDropWatchlistProps) {
               <div className={styles.itemInfo}>
                 <div className={styles.itemName}>{item.name}</div>
                 <div className={styles.itemPrice}>
-                  {new Intl.NumberFormat('fr-FR', {
-                    style: 'currency',
-                    currency: 'EUR',
-                  }).format(item.currentPrice)}
+                  {fmt(item.currentPrice)}
                 </div>
               </div>
 

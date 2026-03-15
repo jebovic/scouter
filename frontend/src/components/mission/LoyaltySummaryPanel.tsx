@@ -1,16 +1,9 @@
 import { useLoyaltySummary } from '../../hooks/useLoyaltySummary'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { MerchantSummary } from '../../api/loyaltytracker'
 import styles from './LoyaltySummaryPanel.module.css'
 
-function formatEur(value: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(value)
-}
-
-function MerchantRow({ m }: { m: MerchantSummary }) {
+function MerchantRow({ m, fmt, locale }: { m: MerchantSummary; fmt: (n: number) => string; locale: string }) {
   const hasCashback = m.estimatedCashback > 0
   return (
     <tr className={hasCashback ? styles.rowHighlight : undefined}>
@@ -19,12 +12,12 @@ function MerchantRow({ m }: { m: MerchantSummary }) {
         <div className={styles.programName}>{m.program}</div>
         {m.tier && <div className={styles.tierBadge}>{m.tier}</div>}
       </td>
-      <td>{formatEur(m.total)}</td>
+      <td>{fmt(m.total)}</td>
       <td className={hasCashback ? styles.cashbackCell : styles.zeroCell}>
-        {hasCashback ? formatEur(m.estimatedCashback) : '—'}
+        {hasCashback ? fmt(m.estimatedCashback) : '—'}
       </td>
       <td className={hasCashback ? undefined : styles.zeroCell}>
-        {hasCashback ? m.estimatedPoints.toLocaleString('fr-FR') : '—'}
+        {hasCashback ? m.estimatedPoints.toLocaleString(locale) : '—'}
       </td>
     </tr>
   )
@@ -36,6 +29,7 @@ interface Props {
 
 export function LoyaltySummaryPanel({ missionId }: Props) {
   const { summary, isLoading } = useLoyaltySummary(missionId)
+  const { fmt, locale } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -75,7 +69,7 @@ export function LoyaltySummaryPanel({ missionId }: Props) {
       <div className={styles.cashbackHero}>
         <span className={styles.cashbackLabel}>Cashback estimé total</span>
         <span className={styles.cashbackAmount}>
-          {formatEur(summary.totalEstimatedCashback)}
+          {fmt(summary.totalEstimatedCashback)}
         </span>
       </div>
 
@@ -91,7 +85,7 @@ export function LoyaltySummaryPanel({ missionId }: Props) {
           </thead>
           <tbody>
             {summary.merchants.map((m) => (
-              <MerchantRow key={m.merchant} m={m} />
+              <MerchantRow key={m.merchant} m={m} fmt={fmt} locale={locale} />
             ))}
           </tbody>
         </table>

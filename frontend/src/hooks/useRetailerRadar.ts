@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useShopping } from './useShopping'
+import { useSettings } from './useSettings'
 
 export interface RetailerStat {
   merchant: string
@@ -12,6 +13,8 @@ export interface RetailerStat {
 
 export function useRetailerRadar(missionId: string) {
   const { items } = useShopping(missionId)
+  const { data: settings } = useSettings()
+  const currency = settings?.currency ?? 'EUR'
 
   const stats: RetailerStat[] = useMemo(() => {
     const map = new Map<string, RetailerStat>()
@@ -27,7 +30,7 @@ export function useRetailerRadar(missionId: string) {
         map.set(item.merchant, {
           merchant: item.merchant,
           bestPrice: item.price,
-          currency: 'EUR',
+          currency,
           itemName: item.name,
           itemId: item.id,
           inStock: true,

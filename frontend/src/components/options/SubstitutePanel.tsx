@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSubstitutes, useFetchSubstitutes } from '../../hooks/useSubstitutes'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { Substitute } from '../../api/substitutes'
 import styles from './SubstitutePanel.module.css'
 
@@ -23,11 +24,8 @@ const ADVANTAGE_CLASS: Record<Advantage, string> = {
   local: styles.advantageLocal,
 }
 
-function formatPrice(price: number, currency: string): string {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(price)
-}
-
 function SubstituteItem({ sub }: { sub: Substitute }) {
+  const { fmt } = useFormatCurrency()
   return (
     <div className={styles.item}>
       <div className={styles.itemTop}>
@@ -36,7 +34,7 @@ function SubstituteItem({ sub }: { sub: Substitute }) {
           <span className={styles.brand}>{sub.brand}</span>
         </div>
         <div className={styles.priceGroup}>
-          <span className={styles.price}>{formatPrice(sub.price, sub.currency)}</span>
+          <span className={styles.price}>{fmt(sub.price)}</span>
           <span className={`${styles.advantageBadge} ${ADVANTAGE_CLASS[sub.advantage]}`}>
             {ADVANTAGE_LABELS[sub.advantage]}
           </span>

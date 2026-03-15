@@ -1,11 +1,15 @@
 {
   "nav": {
-    "hq": "SCOUTER QG",
+    "hq": "Accueil",
     "missionControl": "Contrôle Mission",
-    "overview": "Vue d'ensemble",
-    "options": "Options",
-    "shopping": "Achats",
-    "budget": "Budget"
+    "overview": "Résumé",
+    "options": "Comparatif",
+    "shopping": "Mes achats",
+    "budget": "Budget",
+    "allMissions": "← Toutes mes missions",
+    "resume": "Résumé",
+    "comparatif": "Comparatif",
+    "listeAchats": "Mes achats"
   },
   "common": {
     "loading": "Chargement...",
@@ -125,7 +129,7 @@
     "edit": "Modifier l'achat",
     "purchaseDate": "Date d'achat",
     "merchant": "Marchand",
-    "finalPrice": "Prix final (€)",
+    "finalPrice": "Prix final",
     "satisfaction": "Satisfaction",
     "review": "Avis (optionnel)",
     "saving": "Enregistrement...",
@@ -195,7 +199,9 @@
     "confirmDelete": "Confirmer la suppression",
     "deleteAll": "Supprimer toutes les données",
     "allDeleted": "Toutes les données supprimées.",
-    "confirmWarning": "Cliquez à nouveau pour confirmer. Cela supprimera définitivement tout."
+    "confirmWarning": "Cliquez à nouveau pour confirmer. Cela supprimera définitivement tout.",
+    "tools": "Outils",
+    "deletePrompt": "Tapez <bold>{{word}}</bold> pour confirmer :"
   },
   "stats": {
     "title": "Statistiques de dépenses",
@@ -430,5 +436,19 @@
     "total": "Total",
     "items": "articles",
     "categories": "catégories"
+  },
+  "templates": {
+    "laptop": { "name": "Laptop / Ordinateur portable", "description": "Comparer les laptops selon leurs performances, portabilité et rapport qualité-prix" },
+    "desktop": { "name": "PC de bureau", "description": "Comparer les PC de bureau selon leur puissance, extensibilité et rapport qualité-prix" },
+    "tablet": { "name": "Tablette", "description": "Comparer les tablettes pour le travail, le divertissement ou la créativité" },
+    "smartphone": { "name": "Smartphone", "description": "Comparer les smartphones selon leurs fonctionnalités, appareil photo et autonomie" },
+    "tv": { "name": "TV / Écran", "description": "Comparer les téléviseurs selon leur taille, qualité d'image et fonctions connectées" },
+    "headphones": { "name": "Casque audio", "description": "Comparer les casques selon leur qualité sonore, confort et connectivité" },
+    "camera": { "name": "Appareil photo", "description": "Comparer les appareils photo selon la qualité d'image, les fonctionnalités et l'écosystème" },
+    "gaming-console": { "name": "Console de jeux", "description": "Comparer les consoles selon leur catalogue, performances et prix" },
+    "trip": { "name": "Vacances / Voyage", "description": "Planifier un voyage — comparer destinations, hébergements et vols" },
+    "road-trip": { "name": "Road Trip", "description": "Comparer les options de road trip selon l'itinéraire, le coût et l'expérience" },
+    "kitchen-reno": { "name": "Rénovation cuisine", "description": "Comparer les options de rénovation cuisine du cosmétique à la réfection complète" },
+    "car": { "name": "Voiture / Véhicule", "description": "Comparer les véhicules selon la fiabilité, les coûts d'usage et les fonctionnalités" }
   }
 }

@@ -23,9 +23,13 @@ export interface SpendingReport {
   savingsEstimate: number
 }
 
+import { formatCurrency } from './currency'
+
 export function analyzeSpending(
   missions: Array<{ name: string; category: string; budget: number }>,
   allItems: Array<{ price: number; costCategory: string; targetPrice?: number | null }>,
+  currency = 'EUR',
+  locale = 'en-US',
 ): SpendingReport {
   const totalSpent = allItems.reduce((s, i) => s + i.price, 0)
   const totalBudget = missions.reduce((s, m) => s + m.budget, 0)
@@ -81,7 +85,7 @@ export function analyzeSpending(
     insights.push({
       type: 'tip',
       title: 'Économies potentielles',
-      description: `Attendez vos prix cibles pour économiser ${savingsEstimate.toFixed(2)} €.`,
+      description: `Attendez vos prix cibles pour économiser ${formatCurrency(savingsEstimate, currency, locale)}.`,
       emoji: '💡',
     })
   }

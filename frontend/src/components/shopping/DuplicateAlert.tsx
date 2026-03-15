@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDuplicates } from '../../hooks/useDuplicates'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { DuplicateGroup } from '../../api/duplicatedetector'
 import styles from './DuplicateAlert.module.css'
 
@@ -15,6 +16,7 @@ function GroupRow({
   onDismiss: () => void
 }) {
   const pct = Math.round(group.similarity * 100)
+  const { fmt } = useFormatCurrency()
   return (
     <div className={styles.group}>
       <div className={styles.groupHeader}>
@@ -44,7 +46,7 @@ function GroupRow({
                 {item.merchant && (
                   <span className={styles.merchant}>{item.merchant}</span>
                 )}
-                <span className={styles.price}>{item.price.toFixed(2)} €</span>
+                <span className={styles.price}>{fmt(item.price)}</span>
               </p>
               <span className={styles.statusBadge} data-status={item.status}>
                 {item.status}

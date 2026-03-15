@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { MissionComparison, CrossMissionResponse } from '../../api/crossmission'
 import styles from './CrossMissionPanel.module.css'
-
-const fmt = (v: number) =>
-  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(v)
 
 function efficiencyClass(e: MissionComparison['efficiency']): string {
   switch (e) {
@@ -28,6 +26,8 @@ interface Props {
 }
 
 export default function CrossMissionPanel({ data }: Props) {
+  const { fmt } = useFormatCurrency()
+
   if (data.missions.length === 0) {
     return <div className={styles.empty}>Aucune mission active pour la comparaison.</div>
   }

@@ -8,6 +8,7 @@ vi.mock('../../hooks/useCurrencyRates', () => ({
   useCurrencyRates: () => ({
     rates: {
       base: 'EUR',
+      date: '2026-03-15',
       rates: {
         EUR: 1.0,
         USD: 1.08,
@@ -20,7 +21,6 @@ vi.mock('../../hooks/useCurrencyRates', () => ({
         DKK: 7.45,
         PLN: 4.35,
       },
-      fetchedAt: Date.now(),
     },
     isLoading: false,
     error: null,

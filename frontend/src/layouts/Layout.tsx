@@ -1,13 +1,23 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Sidebar, OnboardingOverlay } from '../components/scouter'
+import { useState, useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { Sidebar, OnboardingOverlay, NavRail, GlobalBottomNav } from '../components/scouter'
 import { SidebarContext } from '../contexts/sidebar'
 import { useOnboarding, useMissions } from '../hooks'
+import { useSettings } from '../hooks/useSettings'
+import { syncLanguageFromSettings } from '../i18n'
 
 export function Layout() {
   const { show, step, totalSteps, nextStep, prevStep, dismiss } = useOnboarding()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { missions } = useMissions()
+  const { data: settings } = useSettings()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (settings?.locale) {
+      syncLanguageFromSettings(settings.locale)
+    }
+  }, [settings?.locale])
 
   return (
     <SidebarContext.Provider value={{ openSidebar: () => setSidebarOpen(true) }}>
@@ -20,6 +30,8 @@ export function Layout() {
         onPrev={prevStep}
         onDismiss={dismiss}
       />
+      <NavRail missions={missions} onNewMission={() => navigate('/')} />
+      <GlobalBottomNav />
       <Sidebar
         open={sidebarOpen}
         missions={missions}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNegotiationAdvice } from '../../hooks/useNegotiationCoach'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { NegotiationTip } from '../../api/negotiation_coach'
 import styles from './NegotiationCoach.module.css'
 
@@ -17,10 +18,6 @@ const DIFFICULTY_CLASS: Record<string, string> = {
   easy: styles.badgeEasy,
   medium: styles.badgeMedium,
   hard: styles.badgeHard,
-}
-
-function formatPrice(price: number): string {
-  return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
 }
 
 function TipRow({ tip }: { tip: NegotiationTip }) {
@@ -43,6 +40,7 @@ export function NegotiationCoach({ itemId }: NegotiationCoachProps) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const { fmt } = useFormatCurrency()
 
   const { data, isFetching } = useNegotiationAdvice(itemId, enabled)
 
@@ -90,7 +88,7 @@ export function NegotiationCoach({ itemId }: NegotiationCoachProps) {
           ) : data ? (
             <>
               <p className={styles.targetPrice}>
-                Objectif: {formatPrice(data.targetPrice)}
+                Objectif: {fmt(data.targetPrice)}
               </p>
 
               <ul className={styles.tipsList}>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useActivityFeed } from '../../hooks/useActivityFeed'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { Activity } from '../../api/activityfeed'
 import styles from './ActivityFeedPanel.module.css'
 
@@ -65,6 +66,7 @@ function ActivityRow({ activity }: { activity: Activity }) {
 
 export function ActivityFeedPanel() {
   const { feed, isLoading } = useActivityFeed()
+  const { fmt } = useFormatCurrency()
 
   return (
     <div className={styles.panel}>
@@ -83,15 +85,7 @@ export function ActivityFeedPanel() {
             <StatCard label="Alertes actives" value={feed?.activeAlerts ?? 0} />
             <StatCard
               label="Budget total"
-              value={
-                feed
-                  ? new Intl.NumberFormat('fr-FR', {
-                      style: 'currency',
-                      currency: 'EUR',
-                      maximumFractionDigits: 0,
-                    }).format(feed.totalBudget)
-                  : '—'
-              }
+              value={feed ? fmt(feed.totalBudget) : '—'}
             />
           </>
         )}

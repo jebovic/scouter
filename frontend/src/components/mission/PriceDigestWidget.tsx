@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePriceDigest } from '../../hooks/usePriceDigest'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { PriceChange } from '../../api/pricedigest'
 import styles from './PriceDigestWidget.module.css'
 
 const MAX_VISIBLE = 5
-
-function formatPrice(price: number): string {
-  return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
-}
 
 function minutesAgo(isoDate: string): number {
   return Math.floor((Date.now() - new Date(isoDate).getTime()) / 60_000)
@@ -19,6 +16,7 @@ interface ChangeRowProps {
 }
 
 function ChangeRow({ change }: ChangeRowProps) {
+  const { fmt } = useFormatCurrency()
   const pctLabel = `${change.isDropping ? '-' : '+'}${Math.abs(change.changePct).toFixed(1)}%`
 
   return (
@@ -32,10 +30,10 @@ function ChangeRow({ change }: ChangeRowProps) {
       </Link>
       <span className={styles.merchant}>{change.merchant}</span>
       <div className={styles.prices}>
-        <span className={styles.oldPrice}>{formatPrice(change.oldPrice)}</span>
+        <span className={styles.oldPrice}>{fmt(change.oldPrice)}</span>
         <span className={styles.arrow2}>→</span>
         <span className={styles.newPrice} data-dropping={String(change.isDropping)}>
-          {formatPrice(change.newPrice)}
+          {fmt(change.newPrice)}
         </span>
       </div>
       <span className={styles.changePct} data-dropping={String(change.isDropping)}>

@@ -1,20 +1,14 @@
 import { useState } from 'react'
 import { useLocalEnvelopes } from '../hooks/useLocalEnvelopes'
+import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import { PRESET_COLORS, DEFAULT_EMOJIS, type Transaction } from '../utils/envelopes'
 import styles from './EnvelopesPage.module.css'
 
 // ── Formatting helper ─────────────────────────────────────────────────────────
 
-const fmt = new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
-
-function fmtDate(iso: string): string {
+function fmtDate(iso: string, locale: string): string {
   try {
-    return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(
+    return new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short' }).format(
       new Date(iso),
     )
   } catch {
@@ -250,9 +244,10 @@ interface EnvelopeCardProps {
   }
   onDelete: (id: string) => void
   onAddTransaction: (id: string) => void
+  fmt: (amount: number) => string
 }
 
-function EnvelopeCard({ envelope, onDelete, onAddTransaction }: EnvelopeCardProps) {
+function EnvelopeCard({ envelope, onDelete, onAddTransaction, fmt }: EnvelopeCardProps) {
   const remaining = envelope.budgetEur - envelope.spentEur
   const pct = envelope.budgetEur > 0
     ? Math.min(100, (envelope.spentEur / envelope.budgetEur) * 100)
@@ -286,16 +281,16 @@ function EnvelopeCard({ envelope, onDelete, onAddTransaction }: EnvelopeCardProp
         <div>
           <div className={styles.amountLabel}>Dépensé</div>
           <div className={styles.amountValue} style={{ color: barColor }}>
-            {fmt.format(envelope.spentEur)}
+            {fmt(envelope.spentEur)}
           </div>
         </div>
         <div className={styles.amountDivider}>/</div>
         <div>
           <div className={styles.amountLabel}>Budget</div>
-          <div className={styles.amountBudget}>{fmt.format(envelope.budgetEur)}</div>
+          <div className={styles.amountBudget}>{fmt(envelope.budgetEur)}</div>
         </div>
         <div className={styles.remainingBadge} style={{ color: remaining >= 0 ? 'var(--green)' : 'var(--coral)' }}>
-          {remaining >= 0 ? `${fmt.format(remaining)} restant` : `${fmt.format(-remaining)} dépassé`}
+          {remaining >= 0 ? `${fmt(remaining)} restant` : `${fmt(-remaining)} dépassé`}
         </div>
       </div>
 
@@ -324,9 +319,11 @@ interface RecentTxProps {
   transactions: Transaction[]
   envelopeMap: Record<string, { name: string; emoji: string; color: string }>
   onDelete: (id: string) => void
+  fmt: (amount: number) => string
+  locale: string
 }
 
-function RecentTransactions({ transactions, envelopeMap, onDelete }: RecentTxProps) {
+function RecentTransactions({ transactions, envelopeMap, onDelete, fmt, locale }: RecentTxProps) {
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20)
 
   if (sorted.length === 0) return null
@@ -345,12 +342,12 @@ function RecentTransactions({ transactions, envelopeMap, onDelete }: RecentTxPro
                 <span className={styles.txLabel}>{tx.label}</span>
                 <span className={styles.txEnvName}>{env?.name ?? 'Inconnu'}</span>
               </div>
-              <span className={styles.txDate}>{fmtDate(tx.date)}</span>
+              <span className={styles.txDate}>{fmtDate(tx.date, locale)}</span>
               <span
                 className={styles.txAmount}
                 style={{ color: isExpense ? 'var(--coral)' : 'var(--green)' }}
               >
-                {isExpense ? '-' : '+'}{fmt.format(Math.abs(tx.amountEur))}
+                {isExpense ? '-' : '+'}{fmt(Math.abs(tx.amountEur))}
               </span>
               <button
                 type="button"
@@ -379,6 +376,7 @@ export default function EnvelopesPage() {
     addTransaction,
     deleteTransaction,
   } = useLocalEnvelopes()
+  const { fmt, locale } = useFormatCurrency()
 
   const [showNewForm, setShowNewForm] = useState(false)
   const [activeTxEnvId, setActiveTxEnvId] = useState<string | null>(null)
@@ -434,9 +432,9 @@ export default function EnvelopesPage() {
           <div className={styles.healthMeta}>
             <span className={styles.healthLabel}>BUDGET GLOBAL</span>
             <div className={styles.healthAmounts}>
-              <span style={{ color: globalColor }}>{fmt.format(totalSpent)}</span>
+              <span style={{ color: globalColor }}>{fmt(totalSpent)}</span>
               <span className={styles.healthSep}>/</span>
-              <span className={styles.healthBudget}>{fmt.format(totalBudget)}</span>
+              <span className={styles.healthBudget}>{fmt(totalBudget)}</span>
               <span className={styles.healthPct}>{globalPct.toFixed(0)}%</span>
             </div>
           </div>
@@ -484,6 +482,7 @@ export default function EnvelopesPage() {
                 envelope={env}
                 onDelete={deleteEnvelope}
                 onAddTransaction={(id) => setActiveTxEnvId(activeTxEnvId === id ? null : id)}
+                fmt={fmt}
               />
               {activeTxEnvId === env.id && (
                 <div className={styles.txFormWrap}>
@@ -504,6 +503,8 @@ export default function EnvelopesPage() {
         transactions={transactions}
         envelopeMap={envelopeMap}
         onDelete={deleteTransaction}
+        fmt={fmt}
+        locale={locale}
       />
     </main>
   )

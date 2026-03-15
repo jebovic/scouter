@@ -1,5 +1,6 @@
 import React from 'react'
 import { useMissionProgress } from '../../hooks/useMissionProgress'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './MissionProgressWidget.module.css'
 
 interface Props {
@@ -59,8 +60,7 @@ export function MissionProgressWidget({ missionId }: Props) {
   const clampedBudget = Math.min(data.budgetPct, 100)
   const isOverBudget = data.budgetPct > 100
 
-  const fmt = (v: number) =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v)
+  const { fmt } = useFormatCurrency()
 
   return (
     <section className={styles.card} aria-label="Progression de la mission">

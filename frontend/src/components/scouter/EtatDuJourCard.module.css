@@ -1,0 +1,54 @@
+@import '../../styles/theme.css';
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--cyan-glow);
+  border: 1px solid var(--cyan-dim);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+.items {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sep {
+  color: var(--text-dim);
+}
+
+.link {
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.link:hover {
+  color: var(--text);
+}
+
+.link strong {
+  color: var(--text);
+  font-weight: 700;
+}

@@ -1,15 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useBudgetRollup } from '../../hooks/useBudgetRollup'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './BudgetRollupWidget.module.css'
 
 const BUDGET_REFERENCE_CAP = 10_000
-
-const fmt = new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  maximumFractionDigits: 0,
-})
 
 const CATEGORY_COLORS = [
   'var(--accent)',
@@ -42,6 +37,7 @@ function getProgressColorClass(pct: number): string {
 
 export function BudgetRollupWidget() {
   const { rollup } = useBudgetRollup()
+  const { fmt } = useFormatCurrency()
   const [expanded, setExpanded] = useState(true)
 
   if (rollup.entries.length === 0) return null
@@ -67,7 +63,7 @@ export function BudgetRollupWidget() {
       >
         <div className={styles.headerLeft}>
           <span className={styles.headerLabel}>Budget Total Actif</span>
-          <span className={styles.headerTotal}>{fmt.format(rollup.totalBudget)}</span>
+          <span className={styles.headerTotal}>{fmt(rollup.totalBudget)}</span>
         </div>
         <div className={styles.headerRight}>
           <span className={styles.missionCount}>
@@ -85,7 +81,7 @@ export function BudgetRollupWidget() {
           <div className={styles.progressSection}>
             <div className={styles.progressLabel}>
               <span>Exposition totale</span>
-              <span>{fmt.format(BUDGET_REFERENCE_CAP)} de référence</span>
+              <span>{fmt(BUDGET_REFERENCE_CAP)} de référence</span>
             </div>
             <div className={styles.progressTrack}>
               <div
@@ -112,7 +108,7 @@ export function BudgetRollupWidget() {
                         style={{ width: `${barPct}%`, background: color } as React.CSSProperties}
                       />
                     </div>
-                    <span className={styles.categoryAmount}>{fmt.format(amount)}</span>
+                    <span className={styles.categoryAmount}>{fmt(amount)}</span>
                   </div>
                 )
               })}
@@ -131,7 +127,7 @@ export function BudgetRollupWidget() {
                   >
                     {PHASE_LABELS[phase] ?? phase}
                   </span>
-                  <span className={styles.phaseAmount}>{fmt.format(amount)}</span>
+                  <span className={styles.phaseAmount}>{fmt(amount)}</span>
                 </div>
               ))}
             </div>
@@ -155,7 +151,7 @@ export function BudgetRollupWidget() {
                   >
                     {PHASE_LABELS[entry.phase] ?? entry.phase}
                   </span>
-                  <span className={styles.missionBudget}>{fmt.format(entry.budget)}</span>
+                  <span className={styles.missionBudget}>{fmt(entry.budget)}</span>
                 </Link>
               ))}
             </div>

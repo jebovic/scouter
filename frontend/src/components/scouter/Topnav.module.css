@@ -14,20 +14,28 @@
   height: var(--topnav-height, 52px);
 }
 
+/* Mobile-only sidebar toggle — hidden on desktop where NavRail is always visible */
 .menuBtn {
   background: transparent;
   border: none;
   color: var(--text-dim);
   cursor: pointer;
-  font-size: 1rem;
   padding: 0.3rem;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
   transition: color 0.15s;
+  display: flex;
+  align-items: center;
 }
 
 .menuBtn:hover {
   color: var(--text);
+}
+
+@media (min-width: 1025px) {
+  .menuBtn {
+    display: none;
+  }
 }
 
 .logo {
@@ -62,10 +70,10 @@
   transition: color 0.15s;
 }
 
+/* Mission sub-nav (Résumé / Comparatif / Mes achats) */
 .subNav {
   display: flex;
   gap: 0.5rem;
-  margin-left: auto;
   height: 100%;
   align-items: center;
 }
@@ -82,7 +90,6 @@
   transition: all 0.15s;
   text-decoration: none;
   display: inline-block;
-  position: relative;
 }
 
 .navLinkActive {
@@ -91,6 +98,7 @@
   border-color: rgba(0, 229, 255, 0.25);
 }
 
+/* Right-side utility bar */
 .actions {
   margin-left: auto;
   display: flex;
@@ -99,15 +107,21 @@
   flex-shrink: 0;
 }
 
+/* When mission sub-nav is present it takes up space, don't double-push */
+.subNav ~ .actions {
+  margin-left: 0;
+}
+
 .themeBtn {
   background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-dim);
   cursor: pointer;
-  font-size: 0.85rem;
   padding: 0.2rem 0.4rem;
   line-height: 1;
+  display: flex;
+  align-items: center;
   transition: border-color 0.12s, color 0.12s;
 }
 
@@ -116,13 +130,7 @@
   color: var(--cyan);
 }
 
-/* When subNav is present, it sets margin-left: auto — override actions */
-.subNav ~ .actions,
-.subNav + .actions {
-  margin-left: 0;
-}
-
-/* Mobile: stack the sub-nav links below the main nav bar */
+/* Mobile: collapse mission sub-nav to scrollable row */
 @media (max-width: 640px) {
   .nav {
     flex-wrap: wrap;
@@ -137,7 +145,6 @@
 
   .subNav {
     width: 100%;
-    margin-left: 0;
     height: auto;
     padding-bottom: 0.25rem;
     overflow-x: auto;

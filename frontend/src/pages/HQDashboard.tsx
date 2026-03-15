@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid } from '../components/scouter'
+import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid, DaySummaryStrip, EtatDuJourCard, LastVisitCard } from '../components/scouter'
 import { MissionCard, MissionForm, TemplateGallery, TemplatePreview, BudgetRollupWidget, MissionComparison, BudgetAlertBanner, PriceDigestWidget, ActivityFeedPanel, WeeklyDigestPanel, SaleCalendarWidget, HolidayAlertBanner } from '../components/mission'
 import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar, useMissionComparison } from '../hooks'
 import type { MissionCreateRequest, Template } from '../types'
@@ -150,6 +150,12 @@ export default function HQDashboard() {
               onClose={() => setPreviewTemplate(null)}
             />
           )}
+
+          <DaySummaryStrip />
+
+          <EtatDuJourCard />
+
+          <LastVisitCard />
 
           <HolidayAlertBanner />
 

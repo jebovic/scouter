@@ -1,5 +1,6 @@
 import styles from './VoteSummaryPanel.module.css'
 import { useVoteSummary } from '../../hooks/useVoteSummary'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { VotedItem } from '../../api/wishlistvote'
 
 interface Props {
@@ -43,19 +44,20 @@ function HighlightCard({
   item,
   label,
   variant,
+  fmt,
 }: {
   item: VotedItem
   label: string
   variant: 'approved' | 'controversial'
+  fmt: (n: number) => string
 }) {
   const cls = variant === 'approved' ? styles.highlightApproved : styles.highlightControversial
-  const fmt = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
   return (
     <div className={`${styles.highlight} ${cls}`}>
       <div className={styles.highlightLabel}>{label}</div>
       <div className={styles.highlightName} title={item.name}>{item.name}</div>
       <div className={styles.highlightMeta}>
-        {fmt.format(item.price)} · {item.totalVotes} vote{item.totalVotes !== 1 ? 's' : ''} · {Math.round(item.approvalRate * 100)}% approbation
+        {fmt(item.price)} · {item.totalVotes} vote{item.totalVotes !== 1 ? 's' : ''} · {Math.round(item.approvalRate * 100)}% approbation
       </div>
     </div>
   )
@@ -63,6 +65,7 @@ function HighlightCard({
 
 export default function VoteSummaryPanel({ missionId }: Props) {
   const { data, isLoading, error } = useVoteSummary(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -114,6 +117,7 @@ export default function VoteSummaryPanel({ missionId }: Props) {
               item={data.mostApproved}
               label="Le plus approuvé"
               variant="approved"
+              fmt={fmt}
             />
           )}
           {data.mostControversial && (
@@ -121,6 +125,7 @@ export default function VoteSummaryPanel({ missionId }: Props) {
               item={data.mostControversial}
               label="Le plus controversé"
               variant="controversial"
+              fmt={fmt}
             />
           )}
         </div>
@@ -147,7 +152,7 @@ export default function VoteSummaryPanel({ missionId }: Props) {
               <div className={styles.itemInfo}>
                 <div className={styles.itemName} title={item.name}>{item.name}</div>
                 <div className={styles.itemPrice}>
-                  {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(item.price)}
+                  {fmt(item.price)}
                 </div>
               </div>
 

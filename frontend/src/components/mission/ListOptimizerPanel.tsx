@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useListOptimizer } from '../../hooks/useListOptimizer'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import { LoadingPulse } from '../scouter'
 import styles from './ListOptimizerPanel.module.css'
 
@@ -9,6 +10,7 @@ interface ListOptimizerPanelProps {
 
 export function ListOptimizerPanel({ missionId }: ListOptimizerPanelProps) {
   const { data, isLoading } = useListOptimizer(missionId)
+  const { fmt } = useFormatCurrency()
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   if (isLoading) {
@@ -47,9 +49,9 @@ export function ListOptimizerPanel({ missionId }: ListOptimizerPanelProps) {
                   </h4>
                   <div className={styles.merchantStats}>
                     <span className={styles.itemCount}>{group.items.length} article(s)</span>
-                    <span className={styles.price}>{group.totalPrice.toFixed(2)}€</span>
+                    <span className={styles.price}>{fmt(group.totalPrice)}</span>
                     {group.tripSaving > 0 && (
-                      <span className={styles.saving}>Économies : {group.tripSaving.toFixed(2)}€</span>
+                      <span className={styles.saving}>Économies : {fmt(group.tripSaving)}</span>
                     )}
                   </div>
                 </div>
@@ -62,7 +64,7 @@ export function ListOptimizerPanel({ missionId }: ListOptimizerPanelProps) {
                         <span className={styles.itemName}>{item.name}</span>
                         <span className={styles.itemStatus}>{item.status}</span>
                       </div>
-                      <span className={styles.itemPrice}>{item.price.toFixed(2)}€</span>
+                      <span className={styles.itemPrice}>{fmt(item.price)}</span>
                     </div>
                   ))}
                 </div>
@@ -77,7 +79,7 @@ export function ListOptimizerPanel({ missionId }: ListOptimizerPanelProps) {
             </div>
             <div className={styles.totalRow}>
               <span className={styles.label}>Prix total</span>
-              <span className={styles.value}>{data.totalPrice.toFixed(2)}€</span>
+              <span className={styles.value}>{fmt(data.totalPrice)}</span>
             </div>
             <div className={styles.totalRow}>
               <span className={styles.label}>Trajets estimés</span>

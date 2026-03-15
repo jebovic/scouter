@@ -5,7 +5,7 @@ import { TemplateCard } from './TemplateCard'
 import type { Template } from '../../types'
 
 const template: Template = {
-  slug: 'laptop',
+  slug: 'test-custom-slug',
   name: 'Laptop Purchase',
   icon: '💻',
   category: 'computing',

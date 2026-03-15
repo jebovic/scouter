@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useRegretAnalyzer } from '../../hooks/useRegretAnalyzer'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './RegretAnalyzerCard.module.css'
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 export function RegretAnalyzerCard({ missionId }: Props) {
   const { data, isLoading, error } = useRegretAnalyzer(missionId)
+  const { fmt } = useFormatCurrency()
 
   // Calculate arc angles for gauge based on regret score
   const arcDegrees = useMemo(() => {
@@ -119,9 +121,7 @@ export function RegretAnalyzerCard({ missionId }: Props) {
       <div className={styles.totalSpent}>
         <span className={styles.label}>Total dépensé</span>
         <span className={styles.amount}>
-          {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-            data.totalSpent
-          )}
+          {fmt(data.totalSpent)}
         </span>
       </div>
 
@@ -146,7 +146,7 @@ export function RegretAnalyzerCard({ missionId }: Props) {
               <p className={styles.signalDescription}>{signal.description}</p>
               {signal.potentialSaving > 0 && (
                 <span className={styles.savings}>
-                  Économie potentielle: {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(signal.potentialSaving)}
+                  Économie potentielle: {fmt(signal.potentialSaving)}
                 </span>
               )}
             </div>

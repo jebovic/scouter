@@ -1,4 +1,5 @@
 import { useShoppingOptimizer } from '../../hooks/useShoppingOptimizer'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { OptimizedItem, OptimizeResponse } from '../../api/shoppingoptimizer'
 import styles from './ShoppingOptimizerPanel.module.css'
 
@@ -14,6 +15,7 @@ const URGENCY_ICON: Record<string, string> = {
 
 function ItemRow({ item }: { item: OptimizedItem }) {
   const icon = URGENCY_ICON[item.urgencyLevel] ?? '⚪'
+  const { fmt } = useFormatCurrency()
   return (
     <li className={styles.itemRow}>
       <span className={styles.urgencyBadge} aria-label={item.urgencyLevel}>
@@ -23,7 +25,7 @@ function ItemRow({ item }: { item: OptimizedItem }) {
         <p className={styles.itemName}>{item.itemName}</p>
         <div className={styles.itemMeta}>
           {item.merchant && <span className={styles.merchant}>{item.merchant}</span>}
-          <span className={styles.price}>{item.price.toFixed(2)} €</span>
+          <span className={styles.price}>{fmt(item.price)}</span>
         </div>
         {item.reasons.length > 0 && (
           <div className={styles.reasons}>
@@ -35,7 +37,7 @@ function ItemRow({ item }: { item: OptimizedItem }) {
       </div>
       {item.savingsPotential > 0 && (
         <span className={styles.savings}>
-          -{item.savingsPotential.toFixed(0)} € à économiser
+          -{fmt(item.savingsPotential)} à économiser
         </span>
       )}
     </li>

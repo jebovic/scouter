@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EnvelopeDTO } from '../api/envelope'
+import { useSettings } from './useSettings'
 
 export interface VarianceCell {
   month: string // "YYYY-MM"
@@ -47,7 +48,8 @@ export function useBudgetVariance(
   monthsBack: number = 3,
 ): BudgetVarianceData {
   const { i18n } = useTranslation()
-  const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-US'
+  const { data: settings } = useSettings()
+  const locale = settings?.locale ?? (i18n.language === 'fr' ? 'fr-FR' : 'en-US')
 
   return useMemo(() => {
     const months = generateMonths(monthsBack, locale)

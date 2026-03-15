@@ -26,6 +26,7 @@
     justify-content: center;
     gap: 3px;
     padding: 10px 4px 8px;
+    min-height: 44px;
     color: var(--text-dim);
     background: transparent;
     border: none;
@@ -60,5 +61,31 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     line-height: 1;
+  }
+
+  .backLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 8px;
+    min-height: 44px;
+    min-width: 44px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.6rem;
+    transition: color 0.15s;
+    border-right: 1px solid var(--border);
+    margin-right: 4px;
+  }
+
+  .backLink:hover {
+    color: var(--cyan);
+  }
+
+  .backLabel {
+    font-size: 0.55rem;
+    white-space: nowrap;
   }
 }

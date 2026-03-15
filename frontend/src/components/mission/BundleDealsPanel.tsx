@@ -1,4 +1,5 @@
 import { useBundleDeals } from '../../hooks/useBundleDeals'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { BundleDeal } from '../../api/bundledetector'
 import styles from './BundleDealsPanel.module.css'
 
@@ -24,11 +25,7 @@ const CARD_CLASS: Record<string, string> = {
   low: styles.low,
 }
 
-function fmt(n: number): string {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
-}
-
-function BundleCard({ bundle }: { bundle: BundleDeal }) {
+function BundleCard({ bundle, fmt }: { bundle: BundleDeal; fmt: (n: number) => string }) {
   const cardClass = `${styles.bundleCard} ${CARD_CLASS[bundle.confidence] ?? ''}`
   const badgeClass = `${styles.confidenceBadge} ${CONFIDENCE_CLASS[bundle.confidence] ?? ''}`
 
@@ -66,6 +63,7 @@ function BundleCard({ bundle }: { bundle: BundleDeal }) {
 
 export function BundleDealsPanel({ missionId }: Props) {
   const { bundleResponse, isLoading } = useBundleDeals(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) return null
 
@@ -89,7 +87,7 @@ export function BundleDealsPanel({ missionId }: Props) {
           <p className={styles.empty}>{bundleResponse.message}</p>
           <div className={styles.grid}>
             {bundleResponse.bundles.map((bundle, idx) => (
-              <BundleCard key={`${bundle.items[0]?.itemId ?? idx}-${bundle.items[1]?.itemId ?? idx}`} bundle={bundle} />
+              <BundleCard key={`${bundle.items[0]?.itemId ?? idx}-${bundle.items[1]?.itemId ?? idx}`} bundle={bundle} fmt={fmt} />
             ))}
           </div>
         </>

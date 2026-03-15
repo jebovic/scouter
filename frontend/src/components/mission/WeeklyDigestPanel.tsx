@@ -1,15 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useWeeklyDigest } from '../../hooks/useWeeklyDigest'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { DigestAlert } from '../../api/weeklydigest'
 import styles from './WeeklyDigestPanel.module.css'
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    maximumFractionDigits: 2,
-  }).format(price)
-}
 
 function formatDateRange(start: string, end: string): string {
   const fmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' })
@@ -39,6 +32,7 @@ function ChangeBadge({ pct, alertType }: { pct: number; alertType: DigestAlert['
 }
 
 function AlertRow({ alert }: { alert: DigestAlert }) {
+  const { fmt } = useFormatCurrency()
   return (
     <Link to={`/missions/${alert.missionSlug}`} className={styles.alertRow}>
       <div className={styles.alertInfo}>
@@ -46,9 +40,9 @@ function AlertRow({ alert }: { alert: DigestAlert }) {
         <span className={styles.alertMission}>{alert.missionName}</span>
       </div>
       <div className={styles.alertPrices}>
-        <span className={styles.oldPrice}>{formatPrice(alert.oldPrice)}</span>
+        <span className={styles.oldPrice}>{fmt(alert.oldPrice)}</span>
         <span className={styles.priceArrow}>→</span>
-        <span className={styles.newPrice}>{formatPrice(alert.newPrice)}</span>
+        <span className={styles.newPrice}>{fmt(alert.newPrice)}</span>
         <ChangeBadge pct={alert.changePct} alertType={alert.alertType} />
       </div>
     </Link>

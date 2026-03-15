@@ -1,4 +1,5 @@
 import { useNegotiationOutcomes } from '../../hooks/useNegotiationOutcomes'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { NegotiationOutcome } from '../../api/negotiationoutcome'
 import styles from './NegotiationOutcomePanel.module.css'
 
@@ -24,12 +25,9 @@ function verdictLabel(verdict: NegotiationOutcome['verdict']): string {
   }
 }
 
-function fmt(value: number): string {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value)
-}
-
 export function NegotiationOutcomePanel({ missionId }: Props) {
   const { summary, isLoading } = useNegotiationOutcomes(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) return null
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGiftSuggestions } from '../../hooks/useGiftSuggestions'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { GiftSuggestion, GiftSuggestionsParams } from '../../api/giftfinder'
 import styles from './GiftFinderWidget.module.css'
 
@@ -64,6 +65,7 @@ export function GiftFinderWidget({ missionId, budget }: GiftFinderWidgetProps) {
   const [occasion, setOccasion] = useState<string>('')
   const [recipient, setRecipient] = useState<string>('')
   const [maxPrice, setMaxPrice] = useState<number>(budget)
+  const { fmt } = useFormatCurrency()
 
   const params: GiftSuggestionsParams = {
     occasion: occasion || undefined,
@@ -118,7 +120,7 @@ export function GiftFinderWidget({ missionId, budget }: GiftFinderWidgetProps) {
 
         <div className={styles.filterGroup}>
           <label className={styles.filterLabel} htmlFor="gift-max-price">
-            Budget max : <strong>{maxPrice.toFixed(0)} €</strong>
+            Budget max : <strong>{fmt(maxPrice)}</strong>
           </label>
           <input
             id="gift-max-price"

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCompetitorPrices } from '../../hooks/useCompetitorPrices'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { CompetitorOffer } from '../../api/competitorprice'
 import styles from './CompetitorPriceTable.module.css'
 
@@ -32,7 +33,7 @@ function AvailabilityDot({ availability }: { availability: string }) {
   )
 }
 
-function OfferRow({ offer }: { offer: CompetitorOffer }) {
+function OfferRow({ offer, fmt }: { offer: CompetitorOffer; fmt: (n: number) => string }) {
   return (
     <tr className={`${styles.offerRow} ${offer.isBest ? styles.bestRow : ''}`}>
       <td className={styles.platformCell}>
@@ -52,7 +53,7 @@ function OfferRow({ offer }: { offer: CompetitorOffer }) {
         )}
       </td>
       <td className={styles.priceCell}>
-        {offer.price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+        {fmt(offer.price)}
       </td>
       <td className={styles.diffCell}>
         <DiffBadge pct={offer.priceDiffPct} />
@@ -67,6 +68,7 @@ export function CompetitorPriceTable({ missionId, itemId }: CompetitorPriceTable
   const [open, setOpen] = useState(false)
 
   const { data, isFetching } = useCompetitorPrices(missionId, itemId, enabled)
+  const { fmt } = useFormatCurrency()
 
   function handleToggle() {
     setEnabled(true)
@@ -97,7 +99,7 @@ export function CompetitorPriceTable({ missionId, itemId }: CompetitorPriceTable
                   <span>
                     Économie possible&nbsp;:{' '}
                     <strong>
-                      {data.savings.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                      {fmt(data.savings)}
                     </strong>
                     {data.bestOffer && (
                       <> chez <a href={data.bestOffer.url} target="_blank" rel="noopener noreferrer" className={styles.bestLink}>{data.bestOffer.platform}</a></>
@@ -117,7 +119,7 @@ export function CompetitorPriceTable({ missionId, itemId }: CompetitorPriceTable
                 </thead>
                 <tbody>
                   {data.competitors.map((offer) => (
-                    <OfferRow key={offer.platform} offer={offer} />
+                    <OfferRow key={offer.platform} offer={offer} fmt={fmt} />
                   ))}
                 </tbody>
               </table>

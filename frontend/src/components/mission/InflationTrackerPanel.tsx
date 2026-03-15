@@ -1,18 +1,10 @@
 import { useInflationImpact } from '../../hooks/useInflationImpact'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { InflationItem } from '../../api/inflationtracker'
 import styles from './InflationTrackerPanel.module.css'
 
 interface Props {
   missionId: string | undefined
-}
-
-function fmtEur(v: number): string {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(v)
 }
 
 function fmtPct(rate: number): string {
@@ -26,15 +18,15 @@ function rateClass(rate: number, s: typeof styles): string {
   return s.rateRed
 }
 
-function ItemRow({ item, s }: { item: InflationItem; s: typeof styles }) {
+function ItemRow({ item, s, fmt }: { item: InflationItem; s: typeof styles; fmt: (n: number) => string }) {
   return (
     <tr>
       <td>{item.name}</td>
       <td className={rateClass(item.annualInflationRate, s)}>
         {fmtPct(item.annualInflationRate)}
       </td>
-      <td className={s.mono}>{fmtEur(item.inflationPer30Days)}</td>
-      <td className={s.mono}>{fmtEur(item.waitCost3Months)}</td>
+      <td className={s.mono}>{fmt(item.inflationPer30Days)}</td>
+      <td className={s.mono}>{fmt(item.waitCost3Months)}</td>
       <td className={s.rec}>{item.recommendation}</td>
     </tr>
   )
@@ -42,6 +34,7 @@ function ItemRow({ item, s }: { item: InflationItem; s: typeof styles }) {
 
 export function InflationTrackerPanel({ missionId }: Props) {
   const { data, isLoading, isError } = useInflationImpact(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -82,7 +75,7 @@ export function InflationTrackerPanel({ missionId }: Props) {
           className={styles.summaryValue}
           data-positive={isPositiveCost ? 'true' : 'false'}
         >
-          {isPositiveCost ? '+' : ''}{fmtEur(data.totalWaitCost3Months)}
+          {isPositiveCost ? '+' : ''}{fmt(data.totalWaitCost3Months)}
         </span>
         <span className={styles.summaryAvg}>
           Inflation moy.&nbsp;: {fmtPct(data.avgInflationRate)}
@@ -106,7 +99,7 @@ export function InflationTrackerPanel({ missionId }: Props) {
             </thead>
             <tbody>
               {data.items.map((item) => (
-                <ItemRow key={item.itemId} item={item} s={styles} />
+                <ItemRow key={item.itemId} item={item} s={styles} fmt={fmt} />
               ))}
             </tbody>
           </table>

@@ -14,7 +14,7 @@ function getMissionStatus(mission: Mission): MissionStatus {
   }
 
   const now = Date.now()
-  const deadline = mission.timeline.find((e) => e.label.toLowerCase().includes('deadline'))
+  const deadline = (mission.timeline ?? []).find((e) => e.label.toLowerCase().includes('deadline'))
   const hasDeadline = deadline && new Date(deadline.date).getTime() > now
 
   // Heuristic: mission is done if phase is 'done'
@@ -98,7 +98,7 @@ function KanbanColumn({
                   </span>
                 </div>
 
-                {mission.timeline.length > 0 && (
+                {(mission.timeline ?? []).length > 0 && (
                   <div className={styles.deadline}>
                     📅 {new Date(mission.timeline[0].date).toLocaleDateString('fr-FR', {
                       day: 'numeric',
@@ -108,7 +108,7 @@ function KanbanColumn({
                 )}
 
                 <div className={styles.constraintCount}>
-                  {mission.constraints.length} contrainte{mission.constraints.length !== 1 ? 's' : ''}
+                  {(mission.constraints ?? []).length} contrainte{(mission.constraints ?? []).length !== 1 ? 's' : ''}
                 </div>
               </Link>
             ))}

@@ -39,6 +39,21 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock })
 
+// Mock useSettings and useFormatCurrency so components using them don't need QueryClientProvider in tests
+vi.mock('../hooks/useSettings', () => ({
+  useSettings: () => ({ data: { currency: 'EUR', locale: 'fr-FR', llm_provider: 'ollama' }, isLoading: false }),
+  useUpdateSettings: () => ({ mutate: vi.fn(), isSuccess: false, isPending: false }),
+  useDeleteAllData: () => ({ mutate: vi.fn(), isPending: false }),
+}))
+
+vi.mock('../hooks/useFormatCurrency', () => ({
+  useFormatCurrency: () => ({
+    fmt: (amount: number) => `€${amount.toFixed(2)}`,
+    currency: 'EUR',
+    locale: 'fr-FR',
+  }),
+}))
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

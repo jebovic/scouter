@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { usePromoFeed } from '../../hooks/useDealFeed'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { PromoOffer } from '../../api/dealfeed'
 import styles from './PromoFeedPanel.module.css'
 
 interface PromoFeedPanelProps {
   query: string
   category?: string
-}
-
-function formatPrice(price: number): string {
-  return price.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })
 }
 
 function ExpiresLabel({ expiresAt }: { expiresAt: string | null | undefined }) {
@@ -25,6 +22,7 @@ function ExpiresLabel({ expiresAt }: { expiresAt: string | null | undefined }) {
 }
 
 function OfferCard({ offer }: { offer: PromoOffer }) {
+  const { fmt } = useFormatCurrency()
   return (
     <article className={`${styles.card} ${offer.isFlash ? styles.cardFlash : ''}`}>
       <div className={styles.cardHeader}>
@@ -41,8 +39,8 @@ function OfferCard({ offer }: { offer: PromoOffer }) {
       <h3 className={styles.offerTitle}>{offer.title}</h3>
 
       <div className={styles.priceRow}>
-        <span className={styles.originalPrice}>{formatPrice(offer.originalPrice)}</span>
-        <span className={styles.promoPrice}>{formatPrice(offer.promoPrice)}</span>
+        <span className={styles.originalPrice}>{fmt(offer.originalPrice)}</span>
+        <span className={styles.promoPrice}>{fmt(offer.promoPrice)}</span>
       </div>
 
       <div className={styles.cardFooter}>

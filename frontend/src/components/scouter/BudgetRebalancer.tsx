@@ -1,12 +1,7 @@
 import { useBudgetRebalancer } from '../../hooks/useRebalancer'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { EnvelopeAdjustment } from '../../api/rebalancer'
 import styles from './BudgetRebalancer.module.css'
-
-const fmt = new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  maximumFractionDigits: 0,
-})
 
 function DeltaBadge({ delta }: { delta: number }) {
   if (Math.abs(delta) < 0.5) {
@@ -26,7 +21,7 @@ function DeltaBadge({ delta }: { delta: number }) {
   )
 }
 
-function AdjustmentCard({ adj }: { adj: EnvelopeAdjustment }) {
+function AdjustmentCard({ adj, fmt }: { adj: EnvelopeAdjustment; fmt: (n: number) => string }) {
   const isOptimal = Math.abs(adj.deltaPercent) < 0.5
 
   return (
@@ -38,14 +33,14 @@ function AdjustmentCard({ adj }: { adj: EnvelopeAdjustment }) {
 
       {isOptimal ? (
         <div className={styles.amounts}>
-          <span className={styles.amountCurrent}>{fmt.format(adj.currentMonthly)}/mois</span>
+          <span className={styles.amountCurrent}>{fmt(adj.currentMonthly)}/mois</span>
           <span style={{ color: 'var(--green)', fontSize: '0.8rem' }}>Allocation optimale</span>
         </div>
       ) : (
         <div className={styles.amounts}>
-          <span className={styles.amountCurrent}>{fmt.format(adj.currentMonthly)}</span>
+          <span className={styles.amountCurrent}>{fmt(adj.currentMonthly)}</span>
           <span className={styles.arrow}>→</span>
-          <span className={styles.amountSuggested}>{fmt.format(adj.suggestedMonthly)}/mois</span>
+          <span className={styles.amountSuggested}>{fmt(adj.suggestedMonthly)}/mois</span>
         </div>
       )}
 
@@ -56,6 +51,7 @@ function AdjustmentCard({ adj }: { adj: EnvelopeAdjustment }) {
 
 export function BudgetRebalancer() {
   const { plan, isLoading, isError, refetch } = useBudgetRebalancer()
+  const { fmt } = useFormatCurrency()
 
   return (
     <div className={styles.container}>
@@ -96,18 +92,18 @@ export function BudgetRebalancer() {
 
           <div className={styles.adjustmentList}>
             {plan.adjustments.map((adj) => (
-              <AdjustmentCard key={adj.envelopeId} adj={adj} />
+              <AdjustmentCard key={adj.envelopeId} adj={adj} fmt={fmt} />
             ))}
           </div>
 
           <div className={styles.footer}>
             <div className={styles.footerTotal}>
               <span className={styles.footerLabel}>Total actuel :</span>
-              <span className={styles.footerValue}>{fmt.format(plan.totalCurrent)}/mois</span>
+              <span className={styles.footerValue}>{fmt(plan.totalCurrent)}/mois</span>
             </div>
             <div className={styles.footerTotal}>
               <span className={styles.footerLabel}>Total suggéré :</span>
-              <span className={styles.footerValue}>{fmt.format(plan.totalSuggested)}/mois</span>
+              <span className={styles.footerValue}>{fmt(plan.totalSuggested)}/mois</span>
             </div>
           </div>
         </>

@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts } from '../components/scouter'
+import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts, NextActionNudge } from '../components/scouter'
+import { setLastVisitedMission } from '../components/scouter/LastVisitCard'
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { useScorecard } from '../hooks/useScorecard'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard } from '../components/mission'
@@ -126,6 +127,10 @@ export default function MissionOverview() {
     navigate(`/missions/${slug}/shopping`)
   }
 
+  useEffect(() => {
+    if (slug) setLastVisitedMission(slug)
+  }, [slug])
+
   const shortcuts = useMemo(() => ({
     r: () => { if (!researchPending) handleResearch() },
     p: () => { if (!pricingPending) handlePricing() },
@@ -178,6 +183,8 @@ export default function MissionOverview() {
             </div>
           </div>
         </div>
+
+        <NextActionNudge mission={mission} />
 
         {/* Main grid */}
         <div className={styles.cardGrid}>
@@ -290,7 +297,7 @@ export default function MissionOverview() {
 
         {/* Smart Comparison Score (Phase 165) */}
         <div className={styles.section}>
-          <ComparisonScorePanel missionId={mission.id} currency={mission.currency} />
+          <ComparisonScorePanel missionId={mission.id} />
         </div>
 
         {/* Gift Finder Assistant (Phase 122) */}

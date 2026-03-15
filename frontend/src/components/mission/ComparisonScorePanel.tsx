@@ -1,17 +1,12 @@
 import { useState } from 'react'
 import { useComparisonScore } from '../../hooks/useComparisonScore'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import { LoadingPulse } from '../scouter'
 import type { ItemScore } from '../../api/comparisonscore'
 import styles from './ComparisonScorePanel.module.css'
 
 interface Props {
   missionId: string
-  currency: string
-}
-
-function formatCurrency(value: number, currency: string): string {
-  const locale = currency === 'EUR' ? 'fr-FR' : 'en-US'
-  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value)
 }
 
 function getRankClass(rank: number): string {
@@ -36,12 +31,13 @@ function getScoreBarClass(score: number): string {
   return styles.scoreBarFillRed
 }
 
-function ItemScoreRow({ item, currency }: { item: ItemScore; currency: string }) {
+function ItemScoreRow({ item }: { item: ItemScore }) {
+  const { fmt } = useFormatCurrency()
   return (
     <div className={styles.itemRow}>
       <div className={`${styles.rank} ${getRankClass(item.rank)}`}>{item.rank}</div>
       <div className={styles.itemName}>{item.name}</div>
-      <div className={styles.priceValue}>{formatCurrency(item.price, currency)}</div>
+      <div className={styles.priceValue}>{fmt(item.price)}</div>
       <div className={styles.scoreBarContainer}>
         <div className={styles.scoreBar}>
           <div
@@ -56,7 +52,7 @@ function ItemScoreRow({ item, currency }: { item: ItemScore; currency: string })
   )
 }
 
-export function ComparisonScorePanel({ missionId, currency }: Props) {
+export function ComparisonScorePanel({ missionId }: Props) {
   const { data: report, isLoading } = useComparisonScore(missionId)
   const [isExpanded, setIsExpanded] = useState(true)
 
@@ -94,7 +90,7 @@ export function ComparisonScorePanel({ missionId, currency }: Props) {
       {isExpanded && (
         <div className={styles.list}>
           {report.itemScores.map((item) => (
-            <ItemScoreRow key={item.itemId} item={item} currency={currency} />
+            <ItemScoreRow key={item.itemId} item={item} />
           ))}
         </div>
       )}

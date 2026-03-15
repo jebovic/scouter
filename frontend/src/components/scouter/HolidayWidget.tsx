@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { getUpcomingHolidays } from '../../utils/frenchHolidays'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './HolidayWidget.module.css'
 
 interface HolidayWidgetProps {
@@ -8,6 +9,7 @@ interface HolidayWidgetProps {
 }
 
 export function HolidayWidget({ maxItems = 4, compact = false }: HolidayWidgetProps) {
+  const { locale } = useFormatCurrency()
   const holidays = useMemo(() => {
     return getUpcomingHolidays(maxItems)
   }, [maxItems])
@@ -16,7 +18,7 @@ export function HolidayWidget({ maxItems = 4, compact = false }: HolidayWidgetPr
     return null
   }
 
-  const formatter = new Intl.DateTimeFormat('fr-FR', {
+  const formatter = new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

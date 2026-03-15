@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAlertRules } from '../../hooks/useAlertRules'
+import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import type { AlertRule } from '../../api/pricealertrule'
 import styles from './PriceAlertRules.module.css'
 
@@ -14,12 +15,12 @@ const RULE_LABELS: Record<string, string> = {
   weekly_low:   '7j bas',
 }
 
-function ruleSummary(rule: AlertRule): string {
+function ruleSummary(rule: AlertRule, fmt: (n: number) => string): string {
   switch (rule.type) {
     case 'drop_percent':
       return `↓${rule.value}%`
     case 'fixed_below':
-      return `< ${rule.value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`
+      return `< ${fmt(rule.value)}`
     case 'weekly_low':
       return '7j bas'
     default:
@@ -37,6 +38,7 @@ const RULE_TYPES: { value: RuleType; label: string; hasValue: boolean }[] = [
 
 export function PriceAlertRules({ itemId, currentPrice }: PriceAlertRulesProps) {
   const { rules, add, remove } = useAlertRules(itemId)
+  const { fmt } = useFormatCurrency()
   const [showForm, setShowForm] = useState(false)
   const [ruleType, setRuleType] = useState<RuleType>('drop_percent')
   const [value, setValue] = useState('')
@@ -61,14 +63,14 @@ export function PriceAlertRules({ itemId, currentPrice }: PriceAlertRulesProps) 
             <span
               key={rule.id}
               className={`${styles.pill} ${rule.triggered ? styles.pillTriggered : ''}`}
-              title={`${RULE_LABELS[rule.type] ?? rule.type} — ${ruleSummary(rule)}${rule.triggered ? ' — DÉCLENCHÉ' : ''}`}
+              title={`${RULE_LABELS[rule.type] ?? rule.type} — ${ruleSummary(rule, fmt)}${rule.triggered ? ' — DÉCLENCHÉ' : ''}`}
             >
               {rule.triggered && <span className={styles.triggeredDot} aria-label="triggered" />}
-              {ruleSummary(rule)}
+              {ruleSummary(rule, fmt)}
               <button
                 className={styles.deleteBtn}
                 onClick={() => remove.mutate(rule.id)}
-                aria-label={`Supprimer la règle ${ruleSummary(rule)}`}
+                aria-label={`Supprimer la règle ${ruleSummary(rule, fmt)}`}
                 disabled={remove.isPending}
               >
                 ×
