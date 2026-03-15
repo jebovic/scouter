@@ -30,6 +30,7 @@ import { CompetitorPriceTable } from './CompetitorPriceTable'
 import { CouponFinderCard } from './CouponFinderCard'
 import { ItemTagsDisplay } from './ItemTagsDisplay'
 import { PriceStreakBadge } from './PriceStreakBadge'
+import { TimingScoreBadge } from './TimingScoreBadge'
 import { PriceFloorCard } from './PriceFloorCard'
 import { ConditionPricingCard } from './ConditionPricingCard'
 import { TargetSuggestionCard } from './TargetSuggestionCard'
@@ -39,6 +40,7 @@ import { VolatilityCalendar } from './VolatilityCalendar'
 import { ElasticityCard } from './ElasticityCard'
 import { NegotiationScriptCard } from './NegotiationScriptCard'
 import { StockStatusBadge } from './StockStatusBadge'
+import { PriceComparisonTable } from './PriceComparisonTable'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -239,6 +241,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <SeasonalBadge itemName={item.name} category={item.costCategory} />
         <WatchlistButton itemId={item.id} itemName={item.name} currentPrice={item.price} />
         <PriceStreakBadge missionId={missionId} itemId={item.id} />
+        <TimingScoreBadge missionId={missionId} itemId={item.id} />
       </div>
 
       <Badge variant={item.status} />
@@ -315,6 +318,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <NegotiationScriptCard missionId={missionId} itemId={item.id} />
+      )}
+      {showIntel && (
+        <PriceComparisonTable missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

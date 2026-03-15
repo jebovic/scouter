@@ -1277,7 +1277,21 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 - 7 known French merchants (Fnac, Darty, Cdiscount, Boulanger, etc.)
 - frontend: NegotiationScriptCard with copy button in ShoppingItemRow deal intel panel
 
-## Phase 151: Negotiation Outcome Tracker 🔄 In Progress
+## Phase 151: Negotiation Outcome Tracker ✅ COMPLETE
 
-## Phase 152: Smart Bundle Deal Detector 🔄 In Progress
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/negotiationoutcome/: outcome verdicts, savings computation, French merchant tips
+- GET /api/missions/{id}/negotiation-outcomes with 30min cache
+- frontend: NegotiationOutcomePanel (verdict badges, success rate, best merchant)
+
+## Phase 152: Smart Bundle Deal Detector ✅ COMPLETE
+
+**Status**: ✅ Done (2026-03-15)
+- backend/internal/bundledetector/: synergy clustering across 7 French retail categories
+- GET /api/missions/{id}/bundle-deals with 1h cache
+- frontend: BundleDealsPanel (confidence badges, savings estimates per bundle)
+
+## Phase 153: French Price Comparison Widget 📋 Planned
+
+## Phase 154: Smart Purchase Timing Score 📋 Planned
 

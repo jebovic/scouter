@@ -1,0 +1,157 @@
+@import '../../styles/theme.css';
+
+.wrapper {
+  margin-top: 8px;
+}
+
+.title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 8px 0;
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thRetailer { width: 40%; }
+.thPrice    { width: 22%; text-align: right; }
+.thDiff     { width: 20%; text-align: center; }
+.thLink     { width: 18%; text-align: center; }
+
+.row td {
+  padding: 5px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  vertical-align: middle;
+}
+
+.row:last-child td {
+  border-bottom: none;
+}
+
+.bestRow {
+  background: color-mix(in srgb, var(--status-buy) 8%, transparent);
+}
+
+.retailerCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.retailerName {
+  color: var(--text);
+}
+
+.retailerNameBest {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.bestBadge {
+  font-size: 0.62rem;
+  background: var(--status-buy);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priceCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.diffCell {
+  text-align: center;
+}
+
+.diffBadge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.diffCheaper {
+  background: color-mix(in srgb, var(--status-buy) 18%, transparent);
+  color: var(--status-buy);
+}
+
+.diffExpensive {
+  background: color-mix(in srgb, var(--status-crisis) 18%, transparent);
+  color: var(--status-crisis);
+}
+
+.linkCell {
+  text-align: center;
+}
+
+.externalLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.externalLink:hover {
+  text-decoration: underline;
+}
+
+.footer {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.savingAmount {
+  color: var(--status-buy);
+  font-weight: 600;
+}
+
+.disclaimer {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-align: center;
+}

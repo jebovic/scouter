@@ -175,6 +175,11 @@ export default function MissionOverview() {
           <ReorderSuggestionsPanel missionId={mission.id} />
         </div>
 
+        {/* Smart Bundle Deal Detector (Phase 152) */}
+        <div className={styles.section}>
+          <BundleDealsPanel missionId={mission.id} />
+        </div>
+
         {/* Gift Finder Assistant (Phase 122) */}
         <div className={styles.section}>
           <h3 className={styles.cardLabel}>🎁 IDÉES CADEAUX</h3>

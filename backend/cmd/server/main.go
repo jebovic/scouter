@@ -96,6 +96,7 @@ import (
 	"github.com/jibei/scouter/internal/couponfinder"
 	"github.com/jibei/scouter/internal/negotiationoutcome"
 	"github.com/jibei/scouter/internal/negotiationscript"
+	"github.com/jibei/scouter/internal/pricecomparison"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 	"github.com/jibei/scouter/internal/giftfinder"
@@ -124,6 +125,7 @@ import (
 	"github.com/jibei/scouter/internal/reordersuggestion"
 	"github.com/jibei/scouter/internal/stockalert"
 	"github.com/jibei/scouter/internal/bundledetector"
+	"github.com/jibei/scouter/internal/timingrecommender"
 )
 
 func main() {
@@ -679,6 +681,10 @@ func main() {
 	negotiationScriptHandler := negotiationscript.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/negotiation-script", negotiationScriptHandler.GetScript)
 
+	// French Price Comparison Widget (Phase 153)
+	priceComparisonHandler := pricecomparison.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/price-comparison", priceComparisonHandler.GetComparison)
+
 	// Mission Progress Dashboard Widget (Phase 117) — 5min in-memory cache
 	missionProgressHandler := missionprogress.NewHandler(pool)
 	r.Get("/api/missions/{id}/progress", missionProgressHandler.GetProgress)
@@ -807,6 +813,10 @@ func main() {
 	// Smart Bundle Deal Detector (Phase 152)
 	bundleDetectorHandler := bundledetector.NewHandler(pool)
 	r.Get("/api/missions/{id}/bundle-deals", bundleDetectorHandler.GetBundles)
+
+	// Smart Purchase Timing Score (Phase 154)
+	timingRecommenderHandler := timingrecommender.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/timing-score", timingRecommenderHandler.GetScore)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
