@@ -101,13 +101,19 @@
 | 75 | Product Comparison Matrix Export (CSV) | Functional | Medium | ✅ Done |
 | 76 | AI Negotiation Coach (haggling tips) | Agent | Medium | ✅ Done |
 | 77 | Purchase Timeline Gantt (when to buy each item) | Interface | Medium | ✅ Done |
-| 78 | Smart Deal Aggregator (French promo feeds) | Integration | High | 📋 Planned |
+| 78 | Smart Deal Aggregator (French promo feeds) | Integration | High | ✅ Done |
 | 79 | AI Substitution Suggester (cheaper alternatives) | Agent | High | ✅ Done |
-| 80 | Mission Goal Tracker (progress vs deadline) | Interface | Medium | 📋 Planned |
-| 81 | Smart Price History Export (CSV download) | Functional | Low | 📋 Planned |
-| 82 | AI Shopping Persona Insights (spending archetype) | Agent | Medium | 📋 Planned |
-| 83 | French Retailer Promo API Integration (Dealabs feed) | Integration | High | 📋 Planned |
-| 84 | Collaborative Wishlist Voting (multi-user) | Functional | High | 📋 Planned |
+| 80 | Mission Goal Tracker (progress vs deadline) | Interface | Medium | ✅ Done |
+| 81 | Smart Price History Export (CSV download) | Functional | Low | ✅ Done |
+| 82 | AI Shopping Persona Insights (spending archetype) | Agent | Medium | ✅ Done |
+| 83 | French Retailer Promo API Integration (PromoFeedPanel) | Integration | High | ✅ Done |
+| 84 | Collaborative Wishlist Voting (multi-user VoteBar) | Functional | High | ✅ Done |
+| 85 | AI Price Forecast (30-day trajectory + confidence band) | Agent | High | ✅ Done |
+| 86 | Mission Board Kanban View | Interface | Medium | 📋 Planned |
+| 87 | Smart Cashback Tracker | Functional | Medium | 📋 Planned |
+| 88 | AI Carbon Footprint Estimator | Agent | Medium | 📋 Planned |
+| 89 | Smart Wishlist Sharing (public link + QR) | Functional | Low | 📋 Planned |
+| 90 | AI Seasonal Discount Predictor | Agent | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
