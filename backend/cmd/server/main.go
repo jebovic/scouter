@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/agentrun"
+	"github.com/jibei/scouter/internal/coach"
 	"github.com/jibei/scouter/internal/collaborator"
 	"github.com/jibei/scouter/internal/comparison"
 	"github.com/jibei/scouter/internal/config"
@@ -126,6 +127,7 @@ func main() {
 	pricingAgent.SetRecorder(rec)
 	decisionAgent := decision.NewAgent(provider, usageSvc)
 	decisionAgent.SetRecorder(rec)
+	coachAgent := coach.NewAgent(provider)
 
 	// Decision
 	decisionRepo := decision.NewRepository(pool)
@@ -142,6 +144,7 @@ func main() {
 	decisionHandler := decision.NewHandler(decisionSvc)
 	agentRunSvc := agentrun.NewService(agentRunRepo)
 	agentRunHandler := agentrun.NewHandler(agentRunSvc)
+	coachHandler := coach.NewHandler(coachAgent, missionSvc, optionRepo, shoppingRepo)
 
 	// Wish List (Phase 21) + Price Alerts (Phase 24) — declared here so
 	// wishlistPriceChecker is available to the scheduler block below.
@@ -247,6 +250,7 @@ func main() {
 	r.Mount("/api/missions/{missionID}/pricing", pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
+	r.Mount("/api/missions/{slug}/coach", coachHandler.Routes())
 
 	// Purchase lifecycle (Phase 12)
 	r.Mount("/api/missions/{missionID}/purchase", purchaseHandler.Routes())
