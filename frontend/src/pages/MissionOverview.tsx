@@ -181,6 +181,11 @@ export default function MissionOverview() {
           <SmartAlertsPanel missionId={mission.id} />
         </div>
 
+        {/* Price Alert Digest (Phase 166) */}
+        <div className={styles.section}>
+          <PriceAlertDigestPanel missionId={mission.id} currency={mission.currency} />
+        </div>
+
         {/* Smart Reorder & Repurchase Suggestions (Phase 148) */}
         <ReorderSuggestionsPanel missionId={mission.id} currency={mission.currency} />
 
