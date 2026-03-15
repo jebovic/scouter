@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.voteGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.voteBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 150ms ease-in-out;
+  color: var(--text-secondary);
+}
+
+.voteBtn:hover {
+  background: var(--background);
+  border-color: var(--primary);
+}
+
+.voteBtn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.upvoteBtn.active {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.downvoteBtn.active {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 16px;
+  text-align: center;
+  transition: transform 100ms ease-out;
+}
+
+.count.updating {
+  animation: pulse 300ms ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+  font-weight: 500;
+}
+
+.score {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 0 6px;
+  border-left: 1px solid var(--border);
+}

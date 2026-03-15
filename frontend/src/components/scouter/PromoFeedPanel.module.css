@@ -1,0 +1,269 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+/* Header */
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.panelTitle {
+  font-family: var(--font-display);
+  color: var(--gold);
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.triggerBtn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.triggerBtn:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--void);
+}
+
+.triggerBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Offer grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* Offer card */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: var(--gold);
+}
+
+.cardFlash {
+  border-color: var(--coral);
+  animation: flashPulse 2s ease-in-out infinite;
+}
+
+@keyframes flashPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 80, 60, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(220, 80, 60, 0.15); }
+}
+
+/* Card header */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.retailer {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex: 1;
+  min-width: 0;
+}
+
+.flashBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(220, 80, 60, 0.12);
+  border: 1px solid var(--coral);
+  color: var(--coral);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  animation: flashIconPulse 1.4s ease-in-out infinite;
+}
+
+.flashIcon {
+  font-size: 0.75rem;
+}
+
+@keyframes flashIconPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.discountBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Title */
+.offerTitle {
+  font-size: 0.88rem;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.4;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+/* Prices */
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.originalPrice {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.promoPrice {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--green);
+  font-family: var(--font-mono);
+}
+
+/* Footer */
+.cardFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.expiresBadge {
+  font-size: 0.72rem;
+  color: var(--gold);
+  font-family: var(--font-mono);
+}
+
+.expiredBadge {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.link {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+.link:hover {
+  opacity: 0.75;
+}
+
+/* Skeleton */
+.skeletonCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+.skeletonLine {
+  height: 14px;
+  background: var(--border);
+  border-radius: 4px;
+  width: 100%;
+}
+
+.skeletonPriceLine {
+  height: 22px;
+  background: var(--border);
+  border-radius: 4px;
+  width: 55%;
+}
+
+@keyframes shimmer {
+  from { opacity: 0.35; }
+  to { opacity: 0.6; }
+}
+
+/* Error / empty */
+.errorBox,
+.emptyBox {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.errorBox {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+
+/* Disclaimer */
+.disclaimer {
+  margin-top: 0.75rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .panel {
+    padding: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelTitle {
+    font-size: 1rem;
+  }
+}

@@ -47,6 +47,7 @@ import (
 	"github.com/jibei/scouter/internal/persona"
 	"github.com/jibei/scouter/internal/prediction"
 	"github.com/jibei/scouter/internal/pricecomp"
+	"github.com/jibei/scouter/internal/priceforecast"
 	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
@@ -458,6 +459,12 @@ func main() {
 	benchmarkAgent := benchmark.NewAgent(provider)
 	benchmarkHandler := benchmark.NewHandler(shoppingRepo, benchmarkAgent, benchmarkCache)
 	r.Get("/api/shopping-items/{id}/benchmark", benchmarkHandler.Get)
+
+	// AI Price Forecast with Confidence Intervals (Phase 85)
+	priceForecastCache := priceforecast.NewCache(2 * time.Hour)
+	priceForecastAgent := priceforecast.NewAgent(provider)
+	priceForecastHandler := priceforecast.NewHandler(priceForecastAgent, shoppingRepo, shoppingRepo, priceForecastCache)
+	r.Get("/api/missions/{missionID}/shopping/{itemID}/forecast", priceForecastHandler.GetForecast)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)

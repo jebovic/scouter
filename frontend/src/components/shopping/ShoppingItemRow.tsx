@@ -9,6 +9,8 @@ import { PriceAlertBadge } from './PriceAlertBadge'
 import { PriceBenchmarkBadge } from './PriceBenchmarkBadge'
 import { NegotiationCoach } from './NegotiationCoach'
 import { VATCalculator } from './VATCalculator'
+import { VoteBar } from './VoteBar'
+import { PriceForecastCard } from './PriceForecastCard'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
@@ -145,6 +147,8 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
             {item.targetPrice != null ? `↯ ${fmt(item.targetPrice)}` : '+ target'}
           </button>
         )}
+        {/* Collaborative voting bar */}
+        <VoteBar optionId={item.id} />
       </div>
 
       {/* VAT Calculator — only show toggle if item has a price */}
@@ -204,6 +208,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       </div>
       {showVAT && (
         <VATCalculator priceHT={item.price} onClose={() => setShowVAT(false)} />
+      )}
+      {showIntel && (
+        <PriceForecastCard missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

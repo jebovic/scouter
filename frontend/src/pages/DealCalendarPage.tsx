@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Topnav, UpcomingPromoStrip, HolidayWidget, SeasonalCalendar } from '../components/scouter'
+import { Topnav, UpcomingPromoStrip, HolidayWidget, SeasonalCalendar, PromoFeedPanel } from '../components/scouter'
 import { useDealCalendar } from '../hooks/useDealCalendar'
 import type { DealEvent } from '../api/dealCalendar'
 import type { PromoEvent } from '../utils/frenchPromoCalendar'
@@ -111,6 +111,7 @@ function EventCard({ event }: { event: DealEvent }) {
 
 export default function DealCalendarPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [promoQuery, setPromoQuery] = useState('')
   const { events, isLoading } = useDealCalendar()
 
   const filtered = events.filter((e) => matchesCategory(e, selectedCategory))
@@ -133,6 +134,24 @@ export default function DealCalendarPage() {
           <p className={styles.subtitle}>
             Événements promotionnels du marché français
           </p>
+        </div>
+
+        <div className={styles.promoSearchRow}>
+          <input
+            className={styles.promoSearchInput}
+            type="search"
+            placeholder="Rechercher des promos (ex: laptop, TV, vélo...)"
+            value={promoQuery}
+            onChange={(e) => setPromoQuery(e.target.value)}
+            aria-label="Rechercher des promotions françaises"
+          />
+        </div>
+
+        <div className={styles.promoFeedWrapper}>
+          <PromoFeedPanel
+            query={promoQuery}
+            category={selectedCategory !== 'all' ? selectedCategory : undefined}
+          />
         </div>
 
         <div className={styles.filters}>
