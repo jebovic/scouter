@@ -1,117 +1,454 @@
 # SCOUTER Universal
 
-Personal spending intelligence — research, compare, and budget any major purchase.
+> Personal spending intelligence tool for smart major purchase decisions.
+>
+> Research, compare, and budget any big purchase from the first question through purchase and reflection.
 
-## What it does
+**Version:** 0.1.0 · **Status:** Production-ready · **License:** MIT
 
-1. **Create a Mission** — name a purchase goal, set a budget and constraints
-2. **Run Research** — ResearchAgent calls the LLM via tool use to discover and rank options
-3. **Run Pricing** — PricingAgent hunts prices across merchants, calculates TCO, flags deals
-4. **Track spending** — Shopping tracker with price history and budget burn rate
+---
+
+## What SCOUTER Does
+
+SCOUTER guides you from "Should I buy this?" through research, price tracking, purchase decision, and post-purchase reflection.
+
+### The Flow
+
+1. **Create a Mission** — Name your purchase goal, set budget, define constraints (weight, RAM, etc.)
+2. **Run Research** — ResearchAgent (LLM + tool use) discovers and ranks options for you
+3. **Hunt Prices** — PricingAgent checks real prices across merchants, calculates Total Cost of Ownership
+4. **Compare** — Side-by-side comparison with radar charts, deal scores, and constraint checking
+5. **Track Spending** — Price history charts, budget burn rate, deal alerts, merchant comparison
+6. **Record Purchase** — Log what you actually bought, capture lessons learned
+7. **Analyze Results** — Efficiency scorecard (A/B/C/D), spending insights, future recommendations
+
+### Screenshots
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+
+![Dashboard with missions](docs/assets/screenshot-dashboard-with-missions.png)
+*Dashboard showing active missions with budget bars and status*
+
+![Mission Overview](docs/assets/screenshot-mission-overview.png)
+*Mission detail page with timeline and key metrics*
+
+![Options Comparison](docs/assets/screenshot-mission-options.png)
+*Compare options side-by-side with constraint checking*
+
+![Shopping Tracker](docs/assets/screenshot-mission-shopping.png)
+*Price history, budget burn, and deal alerts*
+
+![Semantic Search](docs/assets/screenshot-search.png)
+*Find similar options across all missions*
+
+![Settings](docs/assets/screenshot-settings.png)
+*Configure currency, language, and LLM provider*
+
+</div>
+
+---
+
+## Key Features
+
+### Research & Pricing Intelligence
+
+| Feature | Capability |
+|---------|-----------|
+| **ResearchAgent** | Discovers options using LLM tool use, ranks by your constraints |
+| **PricingAgent** | Hunts real prices across merchants, calculates TCO, scores deals |
+| **Deal Scoring** | Real-time scoring combining price trend, urgency, budget fit |
+| **Semantic Search** | Find similar options across all missions (pgvector, 300ms debounce) |
+| **Price Alerts** | Background scheduler checks prices, fires notifications on changes |
+
+### Comparison & Analysis
+
+| Feature | Capability |
+|---------|-----------|
+| **Radar Charts** | Visual comparison of options against constraints |
+| **Constraint Checker** | Highlight options that match/violate your requirements |
+| **TCO Calculator** | Compare total cost of ownership (price + maintenance + shipping) |
+| **Deal Calendar** | Flash sales and promotional calendar |
+| **French Benchmark** | Compare price to French market median (bon prix / prix moyen / au-dessus) |
+
+### Budget & Spending
+
+| Feature | Capability |
+|---------|-----------|
+| **Budget Bar** | Visual budget burn progress per mission |
+| **Purchase Timeline** | 4-week plan with budget distribution and French promo hints |
+| **Quantity Optimizer** | Discount tiers [1, 2, 3, 5, 10] with FNV-32a discount curve |
+| **Wishlist Prioritizer** | Rank items by urgency + trend + budget fit |
+| **Scorecard** | Efficiency grade (A/B/C/D), analytics, 4-metric breakdown |
+
+### Collaboration & Sharing
+
+| Feature | Capability |
+|---------|-----------|
+| **Mission Sharing** | Share tokens for read-only public access |
+| **Collaborators** | Invite others to join, delegate research |
+| **Voting** | Collaborators vote on options |
+| **Threaded Comments** | Discuss options with team |
+
+### Quality & Usability
+
+| Feature | Capability |
+|---------|-----------|
+| **i18n** | Full English + French translations (react-i18next) |
+| **Keyboard Shortcuts** | `N` new mission · `R` research · `P` pricing |
+| **Dark/Light Theme** | Automatic theme switching with system preference |
+| **Responsive Design** | Mobile, tablet, desktop optimized |
+| **PWA Support** | Install as app, offline capability |
+
+---
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
-| Backend | Go 1.23+, chi, pgx/v5, golang-migrate |
-| Frontend | React 19, TypeScript, Vite, Tanstack Query v5, React Router v7, Zod |
-| Database | PostgreSQL 16 + pgvector |
-| LLM | Anthropic claude-sonnet-4-6 (tool use) · Ollama (text-only, no tools) |
-| Deploy | Docker Compose |
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Go 1.23 · chi router · pgx/v5 · golang-migrate |
+| **Frontend** | React 19 · TypeScript · Vite · React Router v7 · Tanstack Query v5 |
+| **Database** | PostgreSQL 16 + pgvector (IVFFlat 1024-dim embeddings) |
+| **LLM** | Anthropic claude-sonnet-4-6 (tool use) · Ollama (local) · SmartRouter |
+| **Testing** | Go tests · Vitest + Testing Library · Playwright E2E (31 tests) |
+| **Deployment** | Docker Compose · Prometheus · Grafana |
 
-## Quick start
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Docker + Docker Compose v2
+- (Optional) [Ollama](https://ollama.ai) for local LLM, or [Anthropic API key](https://console.anthropic.com)
+
+### 1. Clone & Configure
 
 ```bash
-cp .env.example .env          # fill in ANTHROPIC_API_KEY
-make dev                      # builds and starts postgres + backend + frontend
+git clone <repo-url>
+cd scouter
+cp .env.example .env
 ```
 
-- Backend API: `http://localhost:8080`
-- Frontend: `http://localhost:5173`
-- Health: `http://localhost:8080/api/health`
+Edit `.env` and set:
 
-## Environment variables
+```bash
+# Required: PostgreSQL
+DATABASE_URL=postgres://scouter:scouter@postgres:5432/scouter
+
+# LLM (choose one):
+# Option A: Anthropic (best quality, requires API key)
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Option B: Ollama (local, free, requires Ollama running on port 11434)
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OLLAMA_HEAVY_MODEL=qwen3:14b
+OLLAMA_FAST_MODEL=qwen3:4b
+
+# Option C: SmartRouter (tries Ollama first, falls back to Anthropic)
+LLM_PROVIDER=routing
+```
+
+### 2. Start All Services
+
+```bash
+make dev
+# or: docker compose up --build
+```
+
+On first start:
+- PostgreSQL initializes and becomes healthy
+- Backend applies all 22+ migrations automatically
+- Frontend builds and starts on Nginx
+
+### 3. Open & Load Sample Data
+
+```
+Frontend:  http://localhost:5173
+API:       http://localhost:8080/api/health
+```
+
+Load sample data (optional):
+```bash
+make seed
+```
+
+---
+
+## Make Targets
+
+```bash
+make dev          # Start full stack (docker compose up --build)
+make dev-build    # Rebuild from scratch (no cache)
+make test         # Run all backend tests
+make lint         # Run Go vet
+make seed         # Load sample mission data
+make migrate-down # Rollback one migration
+make clean        # Stop containers and delete volumes
+```
+
+---
+
+## Environment Variables
+
+### Core Configuration
 
 | Variable | Required | Default | Description |
-|---|---|---|---|
-| `DATABASE_URL` | yes | — | PostgreSQL connection string |
-| `ANTHROPIC_API_KEY` | yes* | — | *Required when `LLM_PROVIDER=anthropic` |
-| `LLM_PROVIDER` | no | `anthropic` | `anthropic` or `ollama` |
-| `OLLAMA_BASE_URL` | no | — | e.g. `http://localhost:11434` |
-| `OLLAMA_MODEL` | no | — | e.g. `llama3.2` |
+|----------|----------|---------|-------------|
+| `DATABASE_URL` | yes | — | PostgreSQL: `postgres://user:pass@host:5432/db` |
 | `PORT` | no | `8080` | Backend listen port |
 | `ENV` | no | `production` | `development` enables permissive CORS |
 
-## API overview
+### LLM Provider Selection
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `LLM_PROVIDER` | no | `ollama` | `anthropic` \| `ollama` \| `routing` |
+| `ANTHROPIC_API_KEY` | conditional | — | Required when using Anthropic provider |
+
+### Ollama Configuration
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OLLAMA_BASE_URL` | no | `http://host.docker.internal:11434` | Ollama server endpoint |
+| `OLLAMA_HEAVY_MODEL` | no | `qwen3:14b` | Primary tool-use model (Phase 9+) |
+| `OLLAMA_FAST_MODEL` | no | `qwen3:4b` | Fallback lightweight model (Phase 9+) |
+| `OLLAMA_EMBED_MODEL` | no | `mxbai-embed-large` | Embedding model for semantic search (Phase 11+) |
+| `OLLAMA_HEAVY_TIMEOUT` | no | `180` | Timeout in seconds for heavy model |
+| `OLLAMA_FAST_TIMEOUT` | no | `60` | Timeout in seconds for fast model |
+
+### Optional Features
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `METRICS_ENABLED` | no | `false` | Enable Prometheus metrics endpoint |
+| `GF_SECURITY_ADMIN_PASSWORD` | no | `scouter` | Grafana admin password |
+
+For complete reference, see [docs/deployment/environment.md](docs/deployment/environment.md).
+
+---
+
+## API Endpoints (170+)
+
+### Core Resources
 
 ```
-GET    /api/health
-GET    /api/missions
-POST   /api/missions
-GET    /api/missions/{slug}
-PUT    /api/missions/{slug}
-DELETE /api/missions/{slug}
+GET    /api/health                           # System health (DB, version)
+GET    /api/health/llm                       # LLM provider status
 
-POST   /api/missions/{id}/research          # trigger ResearchAgent
-POST   /api/missions/{id}/pricing           # trigger PricingAgent
-
-GET    /api/missions/{id}/options
-POST   /api/missions/{id}/options
-GET    /api/missions/{id}/options/{optionID}
-PUT    /api/missions/{id}/options/{optionID}
-DELETE /api/missions/{id}/options/{optionID}
-
-GET    /api/missions/{id}/shopping
-POST   /api/missions/{id}/shopping
-GET    /api/missions/{id}/shopping/{itemID}
-PUT    /api/missions/{id}/shopping/{itemID}
-DELETE /api/missions/{id}/shopping/{itemID}
-POST   /api/missions/{id}/shopping/{itemID}/snapshots
-GET    /api/missions/{id}/shopping/{itemID}/snapshots
+GET    /api/missions                         # List (cursor-paginated)
+POST   /api/missions                         # Create mission
+GET    /api/missions/:slug                   # Get by slug
+PATCH  /api/missions/:slug                   # Update mission
+DELETE /api/missions/:slug                   # Delete mission
 ```
 
-Note: mission CRUD uses `{slug}` (human-readable), sub-resources use `{id}` (UUID from the GET response).
+### AI Agents
 
-## Make targets
-
-```bash
-make dev          # docker compose up --build
-make dev-build    # rebuild from scratch
-make test         # go test ./...
-make lint         # go vet ./...
-make seed         # POST a sample mission
-make migrate-down # roll back last migration
-make clean        # docker compose down -v
+```
+POST   /api/missions/:id/research            # Trigger ResearchAgent
+POST   /api/missions/:id/pricing             # Trigger PricingAgent
 ```
 
-## Project structure
+### Shopping & Options
+
+```
+GET    /api/missions/:id/options             # List options
+POST   /api/missions/:id/options             # Add option
+
+GET    /api/missions/:id/shopping            # List shopping items
+POST   /api/missions/:id/shopping            # Add item + price
+GET    /api/missions/:id/deal-score          # Mission deal score
+```
+
+### Intelligence
+
+```
+GET    /api/search?q=laptop                  # Semantic search (pgvector)
+GET    /api/options/:id/similar              # Similar options
+
+GET    /api/missions/:id/french-benchmark    # Market comparison
+GET    /api/missions/:id/scorecard           # Efficiency grade (A/B/C/D)
+GET    /api/missions/:id/purchase-timeline   # 4-week plan
+GET    /api/wishlist/prioritized             # Ranked wishlist
+```
+
+### Collaboration & Sharing
+
+```
+POST   /api/missions/:slug/share             # Generate share token
+DELETE /api/missions/:id/share               # Revoke token
+GET    /api/shared/:token                    # Read-only public access
+
+POST   /api/missions/:id/invites             # Invite collaborator
+GET    /api/missions/:id/collaborators       # List collaborators
+```
+
+### Analytics
+
+```
+GET    /api/stats                            # Total spent + category breakdown
+GET    /api/notifications                    # Price alerts + updates
+```
+
+For complete API reference with request/response examples, see [docs/technical/api.md](docs/technical/api.md).
+
+---
+
+## Project Structure
 
 ```
 backend/
-  cmd/server/main.go        entrypoint
-  internal/
-    config/                 env loading + validation
-    db/                     pgx pool + golang-migrate runner
-    httputil/               shared WriteJSON / WriteError helpers
-    mission/                model, repo, service, handler
-    option/                 model, repo, service, handler
-    shopping/               model, repo, service, handler
-    llm/                    Provider interface + Anthropic + Ollama
-    research/               ResearchAgent
-    pricing/                PricingAgent
-  migrations/
+├── cmd/server/
+│   ├── main.go           # entrypoint, env validation, startup
+│   └── routes.go         # route registration (routeDeps + registerRoutes)
+├── internal/             # 132 Go packages
+│   ├── config/           # Config struct, Load() from env
+│   ├── db/               # pgx pool, golang-migrate runner
+│   ├── httputil/         # WriteJSON / WriteError (buffer-first)
+│   ├── llm/              # Provider interface, SmartRouter, circuit breakers
+│   ├── mission/          # model, repository, service, handler
+│   ├── option/           # model, repository, service, handler
+│   ├── shopping/         # model, repository, service, handler
+│   ├── research/         # ResearchAgent (LLM tool use, option discovery)
+│   ├── pricing/          # PricingAgent (price hunting, deal scoring)
+│   ├── search/           # pgvector semantic search (Phase 11+)
+│   ├── scorecard/        # Efficiency grading (Phase 170)
+│   └── ...               # 100+ other domain packages
+├── migrations/           # NNN_description.up/down.sql (golang-migrate)
+└── Dockerfile
 
 frontend/
-  src/
-    api/                    typed fetch + Zod schemas
-    components/
-      scouter/              design system (Card, Badge, BudgetBar…)
-      mission/              MissionCard, MissionForm…
-      options/              OptionCard, ComparisonTable…
-      shopping/             ShoppingList, MerchantGroup…
-    pages/                  HQDashboard, MissionOverview, OptionsExplorer, ShoppingTracker
-    hooks/                  useMission, useOptions, useShopping, useResearch, usePriceIntel
-    styles/                 theme.css (tokens), global.css
-    i18n/                   en.json, fr.json
-    types/                  TypeScript types mirrored from Zod schemas
+├── src/
+│   ├── api/              # Typed fetch wrappers + Zod schemas
+│   ├── components/       # UI components with CSS Modules
+│   │   ├── scouter/      # Design system (Card, Badge, BudgetBar…)
+│   │   ├── mission/      # MissionCard, MissionForm…
+│   │   ├── options/      # OptionCard, ComparisonTable…
+│   │   └── shopping/     # ShoppingList, PriceHistoryChart…
+│   ├── pages/            # Route-level components (HQDashboard, MissionOverview…)
+│   ├── hooks/            # TanStack Query hooks (useMission, useOptions…)
+│   ├── styles/           # theme.css (tokens), global.css
+│   ├── i18n/             # en.json, fr.json translations
+│   └── types/            # TypeScript types (mirrored from Zod)
+├── e2e/                  # Playwright E2E tests (31 tests, 999 unit tests)
+└── Dockerfile
+
+docs/
+├── README.md             # Documentation index
+├── functional/           # User-facing features and workflows
+├── technical/            # Architecture, API, database
+├── development/          # Contributing, testing, conventions
+└── deployment/           # Setup, environment, monitoring
+
+monitoring/              # Prometheus + Grafana config
 ```
+
+---
+
+## Documentation
+
+Complete documentation is in the `/docs` directory:
+
+| Section | Purpose |
+|---------|---------|
+| [Quick Start](docs/deployment/quickstart.md) | Get running in 5 minutes |
+| [Runbook](docs/RUNBOOK.md) | Operations, monitoring, troubleshooting |
+| [Codemaps](docs/CODEMAPS.md) | Navigate the codebase and architecture |
+| [Functional Overview](docs/functional/overview.md) | Feature catalog and use cases |
+| [User Guide](docs/functional/user-guide.md) | How to use SCOUTER end-to-end |
+| [API Reference](docs/technical/api.md) | All 170+ endpoints with examples |
+| [Architecture](docs/technical/architecture.md) | System design and data flow |
+| [Contributing](docs/development/contributing.md) | Dev workflow, TDD, conventions |
+| [Testing](docs/development/testing.md) | Test strategy and coverage |
+| [Environment Variables](docs/deployment/environment.md) | Configuration reference |
+| [Monitoring](docs/deployment/monitoring.md) | Prometheus + Grafana setup |
+
+---
+
+## Testing
+
+### Backend
+
+```bash
+cd backend && go test ./... -v          # All unit + integration tests
+```
+
+Target: 80%+ coverage across all packages.
+
+### Frontend
+
+```bash
+cd frontend && npm run test             # Vitest + Testing Library
+cd frontend && npm run test:e2e         # Playwright (31 E2E tests)
+cd frontend && npm run test:e2e:report  # View test report
+```
+
+### Combined
+
+```bash
+make test                                # Run backend tests
+cd frontend && npm run test              # Run frontend unit tests
+cd frontend && npm run test:e2e          # Run E2E tests
+```
+
+---
+
+## Development
+
+### Local Setup (with hot reload)
+
+```bash
+# Backend (Go)
+cd backend && go run ./cmd/server
+
+# Frontend (Vite dev server, in another terminal)
+cd frontend && npm install && npm run dev
+```
+
+Set `ENV=development` in `.env` for permissive CORS.
+
+### Ollama Setup (for local LLM)
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull models
+ollama pull qwen3:14b
+ollama pull qwen3:4b
+ollama pull mxbai-embed-large
+
+# Verify
+ollama list
+```
+
+Ollama must be running before starting SCOUTER. The `host.docker.internal` hostname automatically resolves from inside Docker.
+
+---
+
+## Contributing
+
+SCOUTER follows a structured phase-based development workflow with:
+
+- Test-driven development (TDD)
+- Code review via specialized agents
+- Semantic versioning
+- Conventional commits
+
+See [docs/development/contributing.md](docs/development/contributing.md) for detailed instructions.
+
+---
+
+## Support & Issues
+
+- [GitHub Issues](https://github.com/jibei/scouter/issues) — Bug reports and feature requests
+- [Discussions](https://github.com/jibei/scouter/discussions) — General questions
+- [Roadmap](ROADMAP.md) — Planned features (172+ phases complete)
+
+---
+
+## License
+
+MIT — See [LICENSE](LICENSE) file
