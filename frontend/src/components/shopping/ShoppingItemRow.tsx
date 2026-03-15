@@ -28,6 +28,7 @@ import { PriceInsightsCard } from './PriceInsightsCard'
 import { NegotiationSimulator } from './NegotiationSimulator'
 import { CompetitorPriceTable } from './CompetitorPriceTable'
 import { CouponFinderCard } from './CouponFinderCard'
+import { ItemTagsDisplay } from './ItemTagsDisplay'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -125,6 +126,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
             <MarketplaceComparator itemName={item.name} />
           </>
         )}
+        <ItemTagsDisplay missionId={missionId} itemId={item.id} />
       </div>
 
       {/* Price + delta + target */}

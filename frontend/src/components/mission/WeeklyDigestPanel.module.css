@@ -1,0 +1,242 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  gap: 0.75rem;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.headerTitle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.dateRange {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.totalBadge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(0, 255, 200, 0.12);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 255, 200, 0.25);
+  flex-shrink: 0;
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────────── */
+.sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.25rem 0.4rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.sectionCount {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-bottom: 0.5rem;
+}
+
+/* ── Alert row ─────────────────────────────────────────────────────────────── */
+.alertRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.12s;
+}
+
+.alertRow:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.alertInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.alertName {
+  font-size: 0.83rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alertMission {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.alertPrices {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.oldPrice {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.priceArrow {
+  color: var(--text-dim);
+  font-size: 0.7rem;
+}
+
+.newPrice {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.changeBadge {
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── Summary bar ───────────────────────────────────────────────────────────── */
+.summaryBar {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+/* ── Empty ─────────────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.75rem 0;
+}
+
+.emptyIcon {
+  font-size: 1.5rem;
+}
+
+.emptyText {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* ── Skeleton ──────────────────────────────────────────────────────────────── */
+.skeletonBody {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeletonRow {
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--border) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .alertRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .alertPrices {
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .alertRow {
+    padding: 0.45rem 1rem;
+  }
+
+  .sectionHeader {
+    padding: 0.6rem 1rem 0.4rem;
+  }
+
+  .summaryBar {
+    padding: 0.65rem 1rem;
+  }
+}

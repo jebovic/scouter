@@ -95,6 +95,8 @@ import (
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 	"github.com/jibei/scouter/internal/giftfinder"
+	"github.com/jibei/scouter/internal/weeklydigest"
+	"github.com/jibei/scouter/internal/itemtagger"
 )
 
 func main() {
@@ -652,6 +654,10 @@ func main() {
 	giftFinderHandler := giftfinder.NewHandler(pool)
 	r.Get("/api/missions/{id}/gift-suggestions", giftFinderHandler.GetGiftSuggestions)
 
+	// Weekly Price Alert Digest (Phase 124) — 1h in-memory cache
+	weeklyDigestHandler := weeklydigest.NewHandler(pool)
+	r.Get("/api/weekly-digest", weeklyDigestHandler.GetWeeklyDigest)
+
 	// Price History Insights (Phase 118) — 2h in-memory cache
 	priceInsightsHandler := priceinsights.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/price-insights", priceInsightsHandler.GetInsights)
@@ -663,6 +669,10 @@ func main() {
 	// Smart Coupon & Promo Finder (Phase 120) — deterministic FNV hash, 1h in-memory cache
 	couponFinderHandler := couponfinder.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/items/{itemId}/coupons", couponFinderHandler.FindCoupons)
+
+	// Smart Category Auto-tagger & Item Enrichment (Phase 125) — pure Go, 24h in-memory cache
+	itemTaggerHandler := itemtagger.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/tags", itemTaggerHandler.GetTags)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
