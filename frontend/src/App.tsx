@@ -23,6 +23,7 @@ const DigestPage = lazy(() => import('./pages/DigestPage'))
 const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'))
 const KanbanPage = lazy(() => import('./pages/KanbanPage'))
 const CashbackPage = lazy(() => import('./pages/CashbackPage'))
+const InsightsPage = lazy(() => import('./pages/InsightsPage'))
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path="/loyalty" element={<LoyaltyPage />} />
             <Route path="/kanban" element={<KanbanPage />} />
             <Route path="/cashback" element={<CashbackPage />} />
+            <Route path="/insights" element={<InsightsPage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />

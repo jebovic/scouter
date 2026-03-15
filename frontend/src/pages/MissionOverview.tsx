@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
+import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts } from '../components/scouter'
+import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
@@ -27,6 +28,10 @@ export default function MissionOverview() {
   const { mutate: suggestCategory, isPending: isSuggesting, data: categorySuggestion } = useSuggestCategory(slug ?? '')
 
   const spent = items.reduce((sum, i) => sum + i.price, 0)
+
+  const { toasts, addToast, removeToast } = useToasts()
+  const budget = mission?.budget ?? 0
+  useBudgetAlerts(spent, budget, items.length, addToast)
 
   async function handlePhase(phase: MissionPhase) {
     if (!mission || updatePending) return
@@ -305,6 +310,7 @@ export default function MissionOverview() {
         </div>
 
         {/* Quick nav */}
+
         <div className={styles.quickNav}>
           <button
             onClick={() => navigate(`/missions/${slug}/options`)}
@@ -324,6 +330,7 @@ export default function MissionOverview() {
           </button>
         </div>
       </div>
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </main>
   )
 }

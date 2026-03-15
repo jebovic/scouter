@@ -71,6 +71,7 @@ import (
 	"github.com/jibei/scouter/internal/receipt"
 	"github.com/jibei/scouter/internal/seasonal"
 	"github.com/jibei/scouter/internal/vote"
+	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
 )
 
@@ -490,6 +491,11 @@ func main() {
 	// Marketplace
 	mktHandler := marketplace.NewHandler()
 	mktHandler.RegisterRoutes(r)
+
+	// Price Drop Watchlist (Phase 94)
+	watchlistRepo := watchlist.NewRepository()
+	watchlistHandler := watchlist.NewHandler(watchlistRepo)
+	watchlistHandler.RegisterRoutes(r)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)

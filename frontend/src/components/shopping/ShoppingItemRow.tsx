@@ -16,6 +16,7 @@ import { MarketplaceComparator } from './MarketplaceComparator'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
 import { CarbonBadge } from './CarbonBadge'
 import { SeasonalBadge } from './SeasonalBadge'
+import { WatchlistButton } from './WatchlistButton'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -188,6 +189,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <PriceHistoryExportButton missionId={missionId} itemId={item.id} itemName={item.name} />
         <CarbonBadge itemName={item.name} category={item.costCategory} />
         <SeasonalBadge itemName={item.name} category={item.costCategory} />
+        <WatchlistButton itemId={item.id} itemName={item.name} currentPrice={item.price} />
       </div>
 
       <Badge variant={item.status} />

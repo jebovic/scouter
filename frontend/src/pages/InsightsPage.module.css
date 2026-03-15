@@ -1,0 +1,146 @@
+@import '../styles/theme.css';
+
+.main {
+  padding: 24px 0 48px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 64px 0;
+  color: var(--text-dim);
+}
+
+.emptyIcon { font-size: 3rem; margin-bottom: 12px; }
+
+.kpiRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.kpi {
+  flex: 1;
+  min-width: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.kpiValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.kpiLabel {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.insightGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insightCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 4px solid transparent;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.tip    { border-left-color: var(--accent); }
+.warning { border-left-color: #f59e0b; }
+.achievement { border-left-color: #22c55e; }
+
+.insightEmoji { font-size: 1.4rem; }
+.insightTitle { font-weight: 600; font-size: 0.88rem; }
+.insightDesc  { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; }
+
+.barWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.barLabel {
+  width: 120px;
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  flex-shrink: 0;
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  width: var(--w);
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.barPct {
+  width: 48px;
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.missionTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.missionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.missionIcon { font-size: 1.2rem; }
+.missionName { flex: 1; font-weight: 500; font-size: 0.88rem; }
+.missionCat  { font-size: 0.72rem; color: var(--text-dim); }
+.missionBudget { font-size: 0.88rem; font-weight: 600; color: var(--accent); }
