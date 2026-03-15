@@ -104,6 +104,8 @@ import (
 	"github.com/jibei/scouter/internal/pricefloor"
 	"github.com/jibei/scouter/internal/salecalendar"
 	"github.com/jibei/scouter/internal/conditionpricing"
+	"github.com/jibei/scouter/internal/dropreporter"
+	"github.com/jibei/scouter/internal/targetsuggestion"
 )
 
 func main() {
@@ -706,6 +708,15 @@ func main() {
 	// Flash Sale Calendar — French market (Phase 130) — hardcoded, no DB
 	saleCalendarHandler := salecalendar.NewHandler()
 	r.Get("/api/sale-calendar", saleCalendarHandler.GetCalendar)
+
+	// Smart Price Thresholds — Auto-Suggested Target Prices (Phase 133)
+	targetSuggestionHandler := targetsuggestion.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/target-suggestion", targetSuggestionHandler.GetSuggestion)
+	r.Post("/api/missions/{missionId}/items/{itemId}/target-suggestion/apply", targetSuggestionHandler.ApplySuggestion)
+
+	// Price Drop Predictor ML-Style (Phase 134)
+	dropReporterHandler := dropreporter.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/drop-prediction", dropReporterHandler.GetPrediction)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
