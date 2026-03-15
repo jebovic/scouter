@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -35,6 +36,7 @@ func (h *Handler) Routes() chi.Router {
 	r.Post("/{itemID}/snapshots", h.addSnapshot)
 	r.Get("/{itemID}/snapshots", h.listSnapshots)
 	r.Get("/{itemID}/deal-score", h.getDealScore)
+	r.Get("/{itemID}/price-history", h.priceHistory)
 	return r
 }
 
@@ -232,6 +234,33 @@ func (h *Handler) getDealScore(w http.ResponseWriter, r *http.Request) {
 	}
 	// score may be nil when fewer than 3 price history snapshots exist — that is valid
 	httputil.WriteJSON(w, http.StatusOK, score)
+}
+
+func (h *Handler) priceHistory(w http.ResponseWriter, r *http.Request) {
+	itemID, err := uuid.Parse(chi.URLParam(r, "itemID"))
+	if err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid item id")
+		return
+	}
+
+	const defaultLimit = 50
+	const maxLimit = 200
+	limit := defaultLimit
+	if raw := r.URL.Query().Get("limit"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil && n > 0 {
+			limit = n
+		}
+	}
+	if limit > maxLimit {
+		limit = maxLimit
+	}
+
+	pts, err := h.svc.GetPriceHistory(r.Context(), itemID, limit)
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusOK, pts)
 }
 
 func (h *Handler) deletePinned(w http.ResponseWriter, r *http.Request) {

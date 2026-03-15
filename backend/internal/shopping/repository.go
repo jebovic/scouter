@@ -22,6 +22,9 @@ type Repository interface {
 	DeleteByMission(ctx context.Context, missionID uuid.UUID) error
 	AddPriceSnapshot(ctx context.Context, itemID uuid.UUID, req PriceSnapshotRequest) (*PriceSnapshot, error)
 	ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]PriceSnapshot, error)
+	// GetPriceHistory returns the last `limit` price observations for an item, ordered ASC by recorded_at.
+	// It maps the `note` column to PriceHistoryPoint.Source for charting consumers.
+	GetPriceHistory(ctx context.Context, itemID uuid.UUID, limit int) ([]PriceHistoryPoint, error)
 	Pin(ctx context.Context, id uuid.UUID) (*Item, error)
 	DeletePinned(ctx context.Context, missionID uuid.UUID) error
 }
@@ -147,6 +150,33 @@ func (r *pgRepository) AddPriceSnapshot(ctx context.Context, itemID uuid.UUID, r
 		itemID, req.Price, req.Note)
 
 	return scanSnapshot(row)
+}
+
+func (r *pgRepository) GetPriceHistory(ctx context.Context, itemID uuid.UUID, limit int) ([]PriceHistoryPoint, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT price, recorded_at, COALESCE(note, '') AS source
+		FROM (
+			SELECT price, recorded_at, note
+			FROM price_history
+			WHERE item_id = $1
+			ORDER BY recorded_at DESC
+			LIMIT $2
+		) sub
+		ORDER BY recorded_at ASC`, itemID, limit)
+	if err != nil {
+		return nil, fmt.Errorf("get price history: %w", err)
+	}
+	defer rows.Close()
+
+	var pts []PriceHistoryPoint
+	for rows.Next() {
+		var p PriceHistoryPoint
+		if err := rows.Scan(&p.Price, &p.RecordedAt, &p.Source); err != nil {
+			return nil, fmt.Errorf("scan price history point: %w", err)
+		}
+		pts = append(pts, p)
+	}
+	return pts, rows.Err()
 }
 
 func (r *pgRepository) ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]PriceSnapshot, error) {

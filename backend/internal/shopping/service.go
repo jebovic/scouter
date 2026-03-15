@@ -106,6 +106,19 @@ func (s *Service) ListPriceHistory(ctx context.Context, itemID uuid.UUID) ([]Pri
 	return snapshots, nil
 }
 
+// GetPriceHistory returns the last `limit` price observations for an item as charting points.
+// The result is always a non-nil slice.
+func (s *Service) GetPriceHistory(ctx context.Context, itemID uuid.UUID, limit int) ([]PriceHistoryPoint, error) {
+	pts, err := s.repo.GetPriceHistory(ctx, itemID, limit)
+	if err != nil {
+		return nil, err
+	}
+	if pts == nil {
+		pts = []PriceHistoryPoint{}
+	}
+	return pts, nil
+}
+
 func (s *Service) Pin(ctx context.Context, id uuid.UUID) (*Item, error) {
 	return s.repo.Pin(ctx, id)
 }

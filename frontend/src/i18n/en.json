@@ -304,6 +304,16 @@
     "confidence_medium": "Medium",
     "confidence_high": "High"
   },
+  "persona": {
+    "title": "Spending Persona",
+    "runAnalysis": "Run Analysis",
+    "analyzing": "Analyzing...",
+    "noPersona": "No persona yet",
+    "noPersonaDesc": "Run the analysis to discover your spending archetype.",
+    "traits": "Traits",
+    "tips": "Tips",
+    "lastAnalyzed": "Last analyzed"
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",

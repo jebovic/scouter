@@ -5,6 +5,7 @@ import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
 import { BudgetVsActualChart } from '../components/charts/BudgetVsActualChart'
+import { PersonaCard } from '../components/persona'
 import { formatCurrencyLocale } from '../utils/format'
 import styles from './StatsPage.module.css'
 
@@ -124,6 +125,10 @@ export default function StatsPage() {
           </div>
         </section>
       )}
+
+      <section className={styles.section}>
+        <PersonaCard />
+      </section>
     </main>
   )
 }

@@ -304,6 +304,16 @@
     "confidence_medium": "Moyen",
     "confidence_high": "Élevé"
   },
+  "persona": {
+    "title": "Profil d'acheteur",
+    "runAnalysis": "Analyser",
+    "analyzing": "Analyse en cours...",
+    "noPersona": "Aucun profil",
+    "noPersonaDesc": "Lancez l'analyse pour découvrir votre archétype d'acheteur.",
+    "traits": "Traits",
+    "tips": "Conseils",
+    "lastAnalyzed": "Dernière analyse"
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

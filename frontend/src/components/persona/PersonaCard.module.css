@@ -1,0 +1,268 @@
+@import '../../styles/theme.css';
+
+/* ── Card shell ──────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ── Run button ──────────────────────────────────────────────────────────── */
+
+.runBtn {
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  color: var(--gold);
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.runBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+}
+
+.runBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  border-color: var(--border);
+  color: var(--text-dim);
+  background: transparent;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Archetype ───────────────────────────────────────────────────────────── */
+
+.archetype {
+  font-size: 1.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+/* ── Summary ─────────────────────────────────────────────────────────────── */
+
+.summary {
+  font-size: 0.9rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionLabel {
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+/* ── Traits ──────────────────────────────────────────────────────────────── */
+
+.traitsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.traitBadge {
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+/* ── Tips ────────────────────────────────────────────────────────────────── */
+
+.tipsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tipItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.4;
+}
+
+.tipBullet {
+  color: var(--cyan);
+  font-size: 1rem;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+/* ── Meta ────────────────────────────────────────────────────────────────── */
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.metaLabel {
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.metaValue {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-mid);
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: 0.9rem;
+  font-family: var(--font-display);
+  color: var(--text-dim);
+}
+
+.emptyDesc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Loading skeleton ────────────────────────────────────────────────────── */
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonArchetype {
+  height: 2rem;
+  width: 60%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeletonLine {
+  height: 0.85rem;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+.skeletonBadgesRow {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.skeletonBadge {
+  height: 1.5rem;
+  width: 70px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .card {
+    padding: 1rem;
+  }
+
+  .archetype {
+    font-size: 1.4rem;
+  }
+}

@@ -32,6 +32,14 @@ type PriceSnapshot struct {
 	Note       string    `json:"note,omitempty"`
 }
 
+// PriceHistoryPoint is a compact charting-friendly snapshot of a price observation.
+// It omits the internal UUID to reduce payload size.
+type PriceHistoryPoint struct {
+	RecordedAt time.Time `json:"recordedAt"`
+	Price      float64   `json:"price"`
+	Source     string    `json:"source"`
+}
+
 // CreateRequest is the payload for adding a shopping item.
 type CreateRequest struct {
 	Name             string   `json:"name"                          validate:"required,min=1"`
