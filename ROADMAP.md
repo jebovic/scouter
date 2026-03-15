@@ -1,7 +1,7 @@
 # SCOUTER — Release Roadmap
 
 > **Active plan for the first journey.** Read this at the start of every session.
-> Current status: Phases 1–95 complete. Auto-improvement loop v4 active — phases 96+97 in progress (budget recommendations + price analytics).
+> Current status: Phases 1–167 complete. Phase 168+ planned.
 
 ## Phase Implementation Workflow (repeat for every phase)
 
@@ -1316,4 +1316,73 @@ Priority-scored buy order, merchant batch grouping, delivery savings notes.
 **Goal:** Analyze past purchases to detect potential regret signals (overpaid vs market, impulse buys)
 - Backend: `internal/regretanalyzer/` — compare purchase price vs market min/avg, flag high-risk purchases
 - Frontend: `RegretAnalyzerCard` component with risk badges
+
+## Phase 159: Smart Shopping List Optimizer ✅ COMPLETE
+**Goal:** Optimize shopping list by grouping items by merchant and ranking by priority to minimize trips
+- Backend: `internal/listoptimizer/` — merchant grouping + priority ranking + trip savings (5%), 15min cache
+- Frontend: `ListOptimizerPanel` component with collapsible merchant groups
+- GET /api/missions/{missionId}/optimized-list
+
+## Phase 160: French Cashback & Reward Tracker ✅ COMPLETE
+**Goal:** Track estimated cashback and rewards from French platforms (iGraal, Poulpeo, Widilo) for shopping items
+- Backend: `internal/cashbacktracker/` — hardcoded French cashback rates, 1h cache
+- Frontend: `CashbackSummaryPanel` component with platform badges and total estimated cashback
+- GET /api/missions/{missionId}/cashback
+
+## Phase 161: Smart Price Drop Watchlist ✅ COMPLETE
+**Goal:** Identify items most likely to drop in price using STDDEV-based volatility analysis
+- Backend: `internal/pricedropwatch/` — STDDEV volatility detection, FNV-32a probability seeding, 20min cache
+- Frontend: `PriceDropWatchlist` component with probability bars (green/orange/red)
+- GET /api/missions/{missionId}/price-drop-watchlist
+
+## Phase 162: Seasonal Buying Calendar ✅ COMPLETE
+**Goal:** Show French retail event calendar (Soldes d'hiver Jan, Soldes d'été Jun, Black Friday Nov) aligned to mission category
+- Backend: `internal/seasonalcalendar/` — French retail event calendar, 24h cache
+- Frontend: `SeasonalCalendarPanel` component with responsive 6x2 month grid
+- GET /api/missions/{missionId}/seasonal-calendar
+
+## Phase 163: Budget Allocation Advisor ✅ COMPLETE
+**Goal:** Priority-ranked allocation of remaining budget across non-purchased items with feasibility tracking
+- Backend: `internal/budgetadvisor/` — priority ranking (flash-sale→watch→preorder→crisis), feasibility tracking
+- Frontend: `BudgetAdvisorPanel` component with summary grid and priority-ordered allocations
+- GET /api/missions/{missionId}/budget-advice
+
+## Phase 164: Smart Expense Categorizer ✅ COMPLETE
+**Goal:** Automatically categorize shopping items into 9 French expense types with spending breakdown
+- Backend: `internal/expensecategorizer/` — keyword-based categorization (electronique, alimentaire, mode, sport, voyage, maison, beaute, loisirs, autre)
+- Frontend: `ExpenseCategoryPanel` component with horizontal donut bar visualization
+- GET /api/missions/{missionId}/expense-summary
+
+## Phase 165: Smart Comparison Score ✅ COMPLETE
+**Goal:** Composite ranking of shopping items across price, urgency, and target-price gap
+- Backend: `internal/comparisonscore/` — weighted composite score (price 40%, urgency 30%, gap 30%)
+- Frontend: `ComparisonScorePanel` component with ranked list and score bars
+- GET /api/missions/{missionId}/comparison-score
+
+## Phase 166: Price Alert Digest ✅ COMPLETE
+**Goal:** Aggregate all price alerts (target hit, below average, trending down) into a single French digest
+- Backend: `internal/pricealertdigest/` — multi-signal alert detection with 5min cache
+- Frontend: `PriceAlertDigestPanel` component with color-coded alerts by type
+- GET /api/missions/{missionId}/price-alert-digest
+
+## Phase 167: Smart Spending Velocity ✅ COMPLETE
+**Goal:** Track budget consumption speed, project budget exhaustion date, advise on spending pace
+- Backend: `internal/spendingvelocity/` — daily velocity calculation, pace status (fast/moderate/on_track/slow)
+- Frontend: `SpendingVelocityCard` component with pace badge and progress bar
+- GET /api/missions/{missionId}/spending-velocity
+
+## Phase 168: Smart Wishlist Prioritizer 📋 PLANNED
+**Goal:** AI-powered prioritization of wishlist items based on urgency, price trends, and budget fit
+
+## Phase 169: French Market Price Benchmark 📊 PLANNED
+**Goal:** Benchmark item prices against French market medians using category-specific heuristics
+
+## Phase 170: Mission Completion Scorecard 🏆 PLANNED
+**Goal:** End-of-mission scorecard with savings achieved, decisions made, lessons learned summary
+
+## Phase 171: Smart Quantity Optimizer 📦 PLANNED
+**Goal:** Recommend optimal purchase quantities for bulk items considering storage and budget
+
+## Phase 172: Purchase Timeline Planner 📅 PLANNED
+**Goal:** Plan purchase timing across weeks to spread costs and catch promotional windows
 
