@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/missionprogress"
+	"github.com/jibei/scouter/internal/priceinsights"
 	"github.com/jibei/scouter/internal/budgetplanner"
 	"github.com/jibei/scouter/internal/pricedigest"
 	"github.com/jibei/scouter/internal/purchaseadvisor"
@@ -87,6 +88,7 @@ import (
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/watchlist"
 	"github.com/jibei/scouter/internal/wishlist"
+	"github.com/jibei/scouter/internal/competitorprice"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
 )
@@ -633,6 +635,14 @@ func main() {
 	// Mission Progress Dashboard Widget (Phase 117) — 5min in-memory cache
 	missionProgressHandler := missionprogress.NewHandler(pool)
 	r.Get("/api/missions/{id}/progress", missionProgressHandler.GetProgress)
+
+	// Price History Insights (Phase 118) — 2h in-memory cache
+	priceInsightsHandler := priceinsights.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/price-insights", priceInsightsHandler.GetInsights)
+
+	// Competitor Price Monitor (Phase 119) — deterministic FNV hash, 30min in-memory cache
+	competitorPriceHandler := competitorprice.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/competitor-prices", competitorPriceHandler.GetCompetitorPrices)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

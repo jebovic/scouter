@@ -1,0 +1,214 @@
+@import '../../styles/theme.css';
+
+.wrapper {
+  display: inline-block;
+}
+
+.triggerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.triggerBtn:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+}
+
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.panel {
+  margin-top: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 340px;
+  max-width: 560px;
+}
+
+.loading {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.savingsBanner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--status-buy) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--status-buy) 40%, transparent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.savingsIcon {
+  font-size: 1rem;
+}
+
+.bestLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bestLink:hover {
+  text-decoration: underline;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thPlatform { width: 45%; }
+.thPrice    { width: 20%; text-align: right; }
+.thDiff     { width: 20%; text-align: center; }
+.thAvail    { width: 15%; text-align: center; }
+
+.offerRow td {
+  padding: 6px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  vertical-align: middle;
+}
+
+.offerRow:last-child td {
+  border-bottom: none;
+}
+
+.bestRow {
+  background: color-mix(in srgb, var(--status-buy) 8%, transparent);
+}
+
+.platformCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.platformLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.platformLink:hover {
+  text-decoration: underline;
+}
+
+.bestBadge {
+  font-size: 0.65rem;
+  background: var(--status-buy);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priceCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.diffCell {
+  text-align: center;
+}
+
+.diffBadge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.diffCheaper {
+  background: color-mix(in srgb, var(--status-buy) 18%, transparent);
+  color: var(--status-buy);
+}
+
+.diffExpensive {
+  background: color-mix(in srgb, var(--status-crisis) 18%, transparent);
+  color: var(--status-crisis);
+}
+
+.availCell {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.availDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.availInStock {
+  background: var(--status-buy);
+}
+
+.availOrder {
+  background: var(--status-watch);
+}
+
+.disclaimer {
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.closeBtn {
+  display: block;
+  margin: 8px auto 0;
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: var(--surface-raised);
+}

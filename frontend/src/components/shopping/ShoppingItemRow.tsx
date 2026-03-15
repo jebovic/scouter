@@ -24,7 +24,9 @@ import { WatchlistButton } from './WatchlistButton'
 import { CurrencyConverter } from './CurrencyConverter'
 import { LoyaltyCalculator } from './LoyaltyCalculator'
 import { FrenchMarketInsight } from './FrenchMarketInsight'
+import { PriceInsightsCard } from './PriceInsightsCard'
 import { NegotiationSimulator } from './NegotiationSimulator'
+import { CompetitorPriceTable } from './CompetitorPriceTable'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -251,6 +253,12 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <FrenchMarketInsight itemName={item.name} category={item.costCategory} />
+      )}
+      {showIntel && (
+        <PriceInsightsCard missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <CompetitorPriceTable missionId={missionId} itemId={item.id} />
       )}
     </>
   )

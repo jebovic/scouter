@@ -1,0 +1,175 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.confidenceBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised, var(--surface));
+}
+
+.confidenceBadge.low {
+  color: var(--text-dim);
+  border-color: var(--border);
+}
+
+.confidenceBadge.medium {
+  color: var(--warning, #f59e0b);
+  border-color: var(--warning, #f59e0b);
+}
+
+.confidenceBadge.high {
+  color: var(--success, #22c55e);
+  border-color: var(--success, #22c55e);
+}
+
+.highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 90px;
+}
+
+.highlightLabel {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.highlightValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.highlightValue.best {
+  color: var(--success, #22c55e);
+}
+
+.highlightValue.worst {
+  color: var(--danger, #ef4444);
+}
+
+.chartSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chartLabel {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.barDay {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  width: 62px;
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  background: var(--surface-raised, rgba(255,255,255,0.05));
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent, #6366f1);
+  transition: width 0.3s ease;
+}
+
+.barFill.best {
+  background: var(--success, #22c55e);
+}
+
+.barFill.worst {
+  background: var(--danger, #ef4444);
+}
+
+.barPrice {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  width: 64px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.recommendation {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.4;
+  padding: 8px 10px;
+  background: var(--surface-raised, rgba(255,255,255,0.03));
+  border-radius: 6px;
+  border-left: 3px solid var(--accent, #6366f1);
+}
+
+.noData {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .highlights {
+    gap: 6px;
+  }
+
+  .highlight {
+    min-width: 70px;
+  }
+}
