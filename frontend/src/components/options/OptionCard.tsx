@@ -106,7 +106,7 @@ export function OptionCard({ option, currency = 'USD', score, onBadgeChange, onP
         ))}
       </div>
 
-      <RetailerLinks query={option.name} category={option.category} />
+      <RetailerLinks query={option.name} category={option.category} showStock={true} />
 
       {option.warnings.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

@@ -5,6 +5,13 @@
   padding-top: 8px;
 }
 
+.pillWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;

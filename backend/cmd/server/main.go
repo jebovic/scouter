@@ -46,6 +46,8 @@ import (
 	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/settings"
 	"github.com/jibei/scouter/internal/shopping"
+	"github.com/jibei/scouter/internal/stockcheck"
+	"github.com/jibei/scouter/internal/summary"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/travel"
 	"github.com/jibei/scouter/internal/usage"
@@ -372,6 +374,18 @@ func main() {
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)
 	r.Mount("/api/options/{optionID}", negotiationHandler.Routes())
+
+	// Stock availability heuristic (Phase 42)
+	stockCache := stockcheck.NewCache(5 * time.Minute)
+	stockHandler := stockcheck.NewHandler(stockCache)
+	r.Get("/api/stock-check", stockHandler.Check)
+
+	// AI Shopping Summary Report (Phase 43)
+	summaryCache := summary.NewCache(24 * time.Hour)
+	summaryAgent := summary.NewAgent(provider)
+	summaryHandler := summary.NewHandler(summaryAgent, missionRepo, optionRepo, shoppingRepo, summaryCache)
+	r.Post("/api/missions/{missionID}/summary", summaryHandler.Generate)
+	r.Get("/api/missions/{missionID}/summary", summaryHandler.Get)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
