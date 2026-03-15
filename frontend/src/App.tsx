@@ -17,6 +17,7 @@ const WishListPage = lazy(() => import('./pages/WishListPage'))
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 const EnvelopesPage = lazy(() => import('./pages/EnvelopesPage'))
 const DealCalendarPage = lazy(() => import('./pages/DealCalendarPage'))
+const PerformancePage = lazy(() => import('./pages/PerformancePage'))
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/envelopes" element={<EnvelopesPage />} />
             <Route path="/deal-calendar" element={<DealCalendarPage />} />
+            <Route path="/performance" element={<PerformancePage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />

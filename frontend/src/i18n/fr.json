@@ -394,5 +394,10 @@
     "health": "Santé budgétaire",
     "empty": "Aucune enveloppe",
     "emptyDesc": "Créez des enveloppes budgétaires pour allouer vos dépenses mensuelles."
+  },
+  "performance": {
+    "title": "Perfs",
+    "disclaimer": "Métriques mesurées en temps réel dans votre navigateur",
+    "note": "Les métriques de performance varient selon votre connexion, votre appareil et votre navigateur. Utilise Navigation Timing API, Memory API (Chrome/Edge) et Network Information API."
   }
 }
