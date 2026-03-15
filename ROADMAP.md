@@ -116,6 +116,8 @@
 | 90 | AI Seasonal Discount Predictor | Agent | High | 📋 Planned |
 | 91 | Smart Receipt OCR + Auto-categorization | Functional | High | 📋 Planned |
 | 92 | Live French Supermarket Price API Integration | Functional | High | 📋 Planned |
+| 93 | EAN/Barcode Scanner + Open Food Facts Enrichment | Functional | High | 📋 Planned |
+| 94 | French Retailer Price Comparison Feed (Fnac, Darty, Amazon.fr, Cdiscount) | Functional | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
