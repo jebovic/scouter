@@ -10,6 +10,21 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// LLMRecorder is a subset of metrics.LLMRecorder used by SmartRouter,
+// defined here to avoid an import cycle between llm and metrics.
+type LLMRecorder interface {
+	RecordLLMCall(model, label, result string, duration time.Duration)
+	RecordLLMTokens(model, direction string, count int)
+	RecordLLMFallback(model string)
+}
+
+// noopLLMRecorder is used when no recorder is provided.
+type noopLLMRecorder struct{}
+
+func (noopLLMRecorder) RecordLLMCall(_, _, _ string, _ time.Duration) {}
+func (noopLLMRecorder) RecordLLMTokens(_, _ string, _ int)            {}
+func (noopLLMRecorder) RecordLLMFallback(_ string)                    {}
+
 // ErrAllModelsUnavailable is returned when every model in the pool either has an
 // open circuit breaker or failed with an infrastructure error.
 var ErrAllModelsUnavailable = errors.New("llm: all models unavailable")
@@ -26,6 +41,7 @@ type SmartRouter struct {
 	breakers map[string]*circuitBreaker
 	limiters map[string]*rate.Limiter
 	log      *slog.Logger
+	recorder LLMRecorder
 }
 
 // SmartRouterOption is a functional option for NewSmartRouter.
@@ -42,6 +58,15 @@ func WithModelRateLimit(modelName string, rpm int) SmartRouterOption {
 	}
 }
 
+// WithRecorder sets the LLMRecorder for the SmartRouter to instrument calls.
+func WithRecorder(rec LLMRecorder) SmartRouterOption {
+	return func(r *SmartRouter) {
+		if rec != nil {
+			r.recorder = rec
+		}
+	}
+}
+
 // NewSmartRouter creates a SmartRouter with one circuit breaker per pool entry.
 func NewSmartRouter(pool ModelPool, log *slog.Logger, opts ...SmartRouterOption) *SmartRouter {
 	breakers := make(map[string]*circuitBreaker, len(pool))
@@ -53,6 +78,7 @@ func NewSmartRouter(pool ModelPool, log *slog.Logger, opts ...SmartRouterOption)
 		breakers: breakers,
 		limiters: make(map[string]*rate.Limiter),
 		log:      log,
+		recorder: noopLLMRecorder{},
 	}
 	for _, opt := range opts {
 		opt(sr)
@@ -140,6 +166,13 @@ func (r *SmartRouter) Complete(ctx context.Context, req CompletionRequest) (Comp
 				"attempts", attempts,
 				"degraded", resp.Degraded,
 				"label", opts.Label)
+			r.recorder.RecordLLMCall(entry.Name, opts.Label, "success", latency)
+			if resp.Usage.InputTokens > 0 {
+				r.recorder.RecordLLMTokens(entry.Name, "input", resp.Usage.InputTokens)
+			}
+			if resp.Usage.OutputTokens > 0 {
+				r.recorder.RecordLLMTokens(entry.Name, "output", resp.Usage.OutputTokens)
+			}
 			return resp, nil
 		}
 
@@ -149,6 +182,7 @@ func (r *SmartRouter) Complete(ctx context.Context, req CompletionRequest) (Comp
 				"model", entry.Name,
 				"err", err,
 				"label", opts.Label)
+			r.recorder.RecordLLMCall(entry.Name, opts.Label, "error", latency)
 			return CompletionResponse{}, err
 		}
 
@@ -161,6 +195,8 @@ func (r *SmartRouter) Complete(ctx context.Context, req CompletionRequest) (Comp
 			"latency_ms", latency.Milliseconds(),
 			"err", err,
 			"label", opts.Label)
+		r.recorder.RecordLLMCall(entry.Name, opts.Label, "infra_error", latency)
+		r.recorder.RecordLLMFallback(entry.Name)
 	}
 
 	if attempts == 0 {

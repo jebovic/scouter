@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jibei/scouter/internal/llm"
+	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/usage"
 )
@@ -16,15 +17,31 @@ import (
 type Agent struct {
 	provider llm.Provider
 	usageSvc *usage.Service
+	recorder metrics.AgentRecorder
 }
 
 // NewAgent creates a new DecisionAgent.
 func NewAgent(provider llm.Provider, usageSvc *usage.Service) *Agent {
-	return &Agent{provider: provider, usageSvc: usageSvc}
+	return &Agent{provider: provider, usageSvc: usageSvc, recorder: metrics.NoopRecorder{}}
+}
+
+// SetRecorder attaches an AgentRecorder for metrics instrumentation.
+func (a *Agent) SetRecorder(r metrics.AgentRecorder) {
+	a.recorder = r
 }
 
 // Summarize asks the LLM to produce a decision summary given the scored options.
 func (a *Agent) Summarize(ctx context.Context, m mission.Mission, scores []ScoreResult) (string, error) {
+	summary, err := a.summarize(ctx, m, scores)
+	label := "success"
+	if err != nil {
+		label = "error"
+	}
+	a.recorder.RecordAgentRun("decision", label)
+	return summary, err
+}
+
+func (a *Agent) summarize(ctx context.Context, m mission.Mission, scores []ScoreResult) (string, error) {
 	req := a.buildRequest(m, scores)
 
 	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)

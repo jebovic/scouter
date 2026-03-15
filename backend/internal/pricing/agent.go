@@ -14,6 +14,7 @@ import (
 
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/llm"
+	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/shopping"
@@ -36,16 +37,38 @@ type Agent struct {
 	shoppingRepo shopping.Repository
 	agentRunRepo agentrun.Repository
 	usageSvc     *usage.Service
+	recorder     metrics.AgentRecorder
 }
 
 // NewAgent creates a new PricingAgent.
 func NewAgent(provider llm.Provider, shoppingRepo shopping.Repository, agentRunRepo agentrun.Repository, usageSvc *usage.Service) *Agent {
-	return &Agent{provider: provider, shoppingRepo: shoppingRepo, agentRunRepo: agentRunRepo, usageSvc: usageSvc}
+	return &Agent{
+		provider:     provider,
+		shoppingRepo: shoppingRepo,
+		agentRunRepo: agentRunRepo,
+		usageSvc:     usageSvc,
+		recorder:     metrics.NoopRecorder{},
+	}
+}
+
+// SetRecorder attaches an AgentRecorder for metrics instrumentation.
+func (a *Agent) SetRecorder(r metrics.AgentRecorder) {
+	a.recorder = r
 }
 
 // Run performs LLM-based price research for the given options, persists shopping items, and returns them.
 // Clears existing non-pinned shopping items before persisting new ones.
 func (a *Agent) Run(ctx context.Context, m mission.Mission, options []option.Option, fb *FeedbackInput) ([]shopping.Item, error) {
+	items, err := a.run(ctx, m, options, fb)
+	label := "success"
+	if err != nil {
+		label = "error"
+	}
+	a.recorder.RecordAgentRun("pricing", label)
+	return items, err
+}
+
+func (a *Agent) run(ctx context.Context, m mission.Mission, options []option.Option, fb *FeedbackInput) ([]shopping.Item, error) {
 	if len(options) == 0 {
 		return []shopping.Item{}, nil
 	}

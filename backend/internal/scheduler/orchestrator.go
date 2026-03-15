@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jibei/scouter/internal/dealintel"
+	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
@@ -32,6 +33,7 @@ type Orchestrator struct {
 	pricingAgent pricingRunner
 	maxMissions  int
 	log          *slog.Logger
+	recorder     metrics.SchedulerRecorder
 }
 
 // NewOrchestrator creates a new price-check orchestrator.
@@ -52,7 +54,13 @@ func NewOrchestrator(
 		pricingAgent: pricingAgent,
 		maxMissions:  maxMissions,
 		log:          log,
+		recorder:     metrics.NoopRecorder{},
 	}
+}
+
+// SetRecorder attaches a SchedulerRecorder for metrics instrumentation.
+func (o *Orchestrator) SetRecorder(r metrics.SchedulerRecorder) {
+	o.recorder = r
 }
 
 // RunPriceChecks lists active missions and runs a price check for each.
@@ -86,6 +94,7 @@ func (o *Orchestrator) RunPriceChecks(ctx context.Context) {
 
 	o.log.Info("price check run complete",
 		"missions_checked", checked, "missions_total", limit, "duration", time.Since(start))
+	o.recorder.RecordSchedulerRun("price_check", "success")
 }
 
 func (o *Orchestrator) checkMission(ctx context.Context, m mission.Mission) error {
@@ -139,6 +148,7 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 		if err != nil {
 			return fmt.Errorf("create target_hit notification: %w", err)
 		}
+		o.recorder.RecordAlertTriggered()
 		return nil
 	}
 
@@ -154,6 +164,7 @@ func (o *Orchestrator) maybeNotify(ctx context.Context, m mission.Mission, item 
 		if err != nil {
 			return fmt.Errorf("create price_drop notification: %w", err)
 		}
+		o.recorder.RecordAlertTriggered()
 	}
 
 	return nil

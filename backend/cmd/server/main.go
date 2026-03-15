@@ -13,10 +13,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/agentrun"
-	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
@@ -24,10 +24,12 @@ import (
 	"github.com/jibei/scouter/internal/export"
 	"github.com/jibei/scouter/internal/httputil"
 	"github.com/jibei/scouter/internal/llm"
+	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/pricing"
+	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
@@ -65,8 +67,18 @@ func main() {
 	}
 	log.Info("database connected")
 
+	// Build metrics recorder (Phase 14)
+	var rec metrics.Recorder = metrics.NoopRecorder{}
+	var metricsHandler http.Handler
+	if cfg.MetricsEnabled {
+		promRec, promReg := metrics.NewPrometheusRecorder(pool)
+		rec = promRec
+		metricsHandler = promhttp.HandlerFor(promReg, promhttp.HandlerOpts{})
+		log.Info("metrics enabled", "endpoint", "/metrics")
+	}
+
 	// Build LLM provider
-	provider, smartRouter := buildSmartRouter(cfg, log)
+	provider, smartRouter := buildSmartRouter(cfg, log, rec)
 
 	// Repositories
 	missionRepo := mission.NewRepository(pool)
@@ -93,8 +105,11 @@ func main() {
 	// Agents
 	researchAgent := research.NewAgent(provider, optionRepo, agentRunRepo, usageSvc)
 	researchAgent.SetEmbedChannel(embedWorker.Jobs())
+	researchAgent.SetRecorder(rec)
 	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
+	pricingAgent.SetRecorder(rec)
 	decisionAgent := decision.NewAgent(provider, usageSvc)
+	decisionAgent.SetRecorder(rec)
 
 	// Decision
 	decisionRepo := decision.NewRepository(pool)
@@ -119,6 +134,7 @@ func main() {
 			missionRepo, optionRepo, shoppingRepo, notifRepo,
 			pricingAgent, cfg.PriceCheckMaxMissions, log,
 		)
+		orch.SetRecorder(rec)
 		var schedErr error
 		sched, schedErr = scheduler.New(cfg.PriceCheckCron, orch, log)
 		if schedErr != nil {
@@ -159,6 +175,7 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestSize(1 << 20)) // 1 MiB max request body
+	r.Use(metrics.Middleware(rec))
 
 	if cfg.Env == "development" {
 		r.Use(corsMiddleware)
@@ -254,6 +271,11 @@ func main() {
 		r.Get("/api/health/llm", llm.HealthHandler(checker))
 	}
 
+	// Prometheus metrics endpoint (Phase 14)
+	if metricsHandler != nil {
+		r.Get("/metrics", metricsHandler.ServeHTTP)
+	}
+
 	addr := ":" + cfg.Port
 	srv := &http.Server{Addr: addr, Handler: r}
 
@@ -306,7 +328,7 @@ func main() {
 //   - "ollama"     → SmartRouter with heavy + fast Ollama models
 //   - "routing"    → SmartRouter: heavy Ollama → fast Ollama → Anthropic fallback
 //   - default      → same as "routing" when ANTHROPIC_API_KEY is set, else "ollama"
-func buildSmartRouter(cfg *config.Config, log *slog.Logger) (llm.Provider, *llm.SmartRouter) {
+func buildSmartRouter(cfg *config.Config, log *slog.Logger, rec llm.LLMRecorder) (llm.Provider, *llm.SmartRouter) {
 	mode := strings.ToLower(cfg.LLMProvider)
 
 	if mode == "anthropic" {
@@ -341,7 +363,7 @@ func buildSmartRouter(cfg *config.Config, log *slog.Logger) (llm.Provider, *llm.
 	}
 
 	// Optional cloud Ollama model.
-	var routerOpts []llm.SmartRouterOption
+	routerOpts := []llm.SmartRouterOption{llm.WithRecorder(rec)}
 	if cfg.OllamaCloudURL != "" && cfg.OllamaCloudModel != "" {
 		cloudOpts := []llm.OllamaOption{
 			llm.WithAPIKey(cfg.OllamaCloudAPIKey),

@@ -1,0 +1,114 @@
+{
+  "id": null,
+  "uid": "scouter-app",
+  "title": "Scouter Application",
+  "tags": ["scouter"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "LLM Calls Total Rate",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "rate(scouter_llm_calls_total[5m])",
+          "legendFormat": "{{model}} {{result}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "LLM p95 Latency",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(scouter_llm_call_duration_seconds_bucket[5m]))",
+          "legendFormat": "{{model}} p95",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "LLM Error Rate",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {
+          "expr": "rate(scouter_llm_calls_total{result=\"error\"}[5m]) / rate(scouter_llm_calls_total[5m])",
+          "legendFormat": "{{model}} error rate",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Agent Runs",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {
+          "expr": "rate(scouter_agent_runs_total[5m])",
+          "legendFormat": "{{agent_type}} {{result}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "HTTP Request Rate",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "targets": [
+        {
+          "expr": "rate(scouter_http_requests_total[5m])",
+          "legendFormat": "{{method}} {{route}} {{status}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Active Missions",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+      "targets": [
+        {
+          "expr": "scouter_active_missions",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Unread Notifications",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+      "targets": [
+        {
+          "expr": "scouter_unread_notifications",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "LLM Fallback Rate",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+      "targets": [
+        {
+          "expr": "rate(scouter_llm_fallbacks_total[5m])",
+          "legendFormat": "{{model}} fallbacks",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

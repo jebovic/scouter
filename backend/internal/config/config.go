@@ -32,6 +32,9 @@ type Config struct {
 	OllamaCloudAPIKey  string
 	OllamaCloudRPM     int
 	OllamaEmbedModel   string
+
+	// Phase 14: Observability
+	MetricsEnabled bool
 }
 
 // Load reads required environment variables, returning an error if any are missing.
@@ -132,6 +135,9 @@ func Load() (*Config, error) {
 	if cfg.OllamaEmbedModel == "" {
 		cfg.OllamaEmbedModel = "mxbai-embed-large"
 	}
+
+	// Phase 14: Metrics
+	cfg.MetricsEnabled = os.Getenv("METRICS_ENABLED") == "true"
 
 	return cfg, nil
 }

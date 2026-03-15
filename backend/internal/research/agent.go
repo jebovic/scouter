@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/llm"
+	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/usage"
@@ -37,11 +38,23 @@ type Agent struct {
 	agentRunRepo agentrun.Repository
 	usageSvc     *usage.Service
 	embedCh      chan<- uuid.UUID // optional; nil disables embedding
+	recorder     metrics.AgentRecorder
 }
 
 // NewAgent creates a new ResearchAgent.
 func NewAgent(provider llm.Provider, optRepo option.Repository, agentRunRepo agentrun.Repository, usageSvc *usage.Service) *Agent {
-	return &Agent{provider: provider, optRepo: optRepo, agentRunRepo: agentRunRepo, usageSvc: usageSvc}
+	return &Agent{
+		provider:     provider,
+		optRepo:      optRepo,
+		agentRunRepo: agentRunRepo,
+		usageSvc:     usageSvc,
+		recorder:     metrics.NoopRecorder{},
+	}
+}
+
+// SetRecorder attaches an AgentRecorder for metrics instrumentation.
+func (a *Agent) SetRecorder(r metrics.AgentRecorder) {
+	a.recorder = r
 }
 
 // SetEmbedChannel attaches an embed job channel so that each newly persisted option
@@ -53,6 +66,16 @@ func (a *Agent) SetEmbedChannel(ch chan<- uuid.UUID) {
 // Run performs LLM-based research for the mission, persists results, and returns them.
 // Clears existing non-pinned, non-rejected options before persisting new ones.
 func (a *Agent) Run(ctx context.Context, m mission.Mission, fb *FeedbackInput) ([]option.Option, error) {
+	opts, err := a.run(ctx, m, fb)
+	label := "success"
+	if err != nil {
+		label = "error"
+	}
+	a.recorder.RecordAgentRun("research", label)
+	return opts, err
+}
+
+func (a *Agent) run(ctx context.Context, m mission.Mission, fb *FeedbackInput) ([]option.Option, error) {
 	// Load current pinned/rejected options as feedback context.
 	existing, err := a.optRepo.ListByMission(ctx, m.ID)
 	if err != nil {
