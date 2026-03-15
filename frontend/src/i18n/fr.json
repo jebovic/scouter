@@ -277,6 +277,22 @@
       "availability": "Disponibilité"
     }
   },
+  "forecast": {
+    "title": "Prévision Budgétaire Intelligente",
+    "run": "Lancer la prévision",
+    "running": "Prévision en cours...",
+    "empty": "Aucune prévision",
+    "emptyDesc": "Lancez le prévisionneur IA pour obtenir des insights budgétaires",
+    "estimatedTotal": "Total estimé",
+    "confidence": "Confiance",
+    "recommendations": "Recommandations",
+    "riskFactors": "Facteurs de risque",
+    "monthsToSave": "Mois d'épargne",
+    "optimalBuyTime": "Meilleur moment d'achat",
+    "confidence_low": "Faible",
+    "confidence_medium": "Moyen",
+    "confidence_high": "Élevé"
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

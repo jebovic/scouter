@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel } from '../components/mission'
+import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
 import type { MissionPhase } from '../types'
 import styles from './MissionOverview.module.css'
@@ -158,6 +159,11 @@ export default function MissionOverview() {
         {/* Decision Engine */}
         <div className={styles.section}>
           <DecisionPanel mission={mission} />
+        </div>
+
+        {/* Smart Budget Forecast */}
+        <div className={styles.section}>
+          <ForecastPanel missionId={mission.id} />
         </div>
 
         {/* Mission Timeline */}

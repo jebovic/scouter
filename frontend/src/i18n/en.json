@@ -277,6 +277,22 @@
       "availability": "Availability"
     }
   },
+  "forecast": {
+    "title": "Smart Budget Forecast",
+    "run": "Run Forecast",
+    "running": "Forecasting...",
+    "empty": "No forecast yet",
+    "emptyDesc": "Run the AI forecaster to get budget insights",
+    "estimatedTotal": "Estimated Total",
+    "confidence": "Confidence",
+    "recommendations": "Recommendations",
+    "riskFactors": "Risk Factors",
+    "monthsToSave": "Months to save",
+    "optimalBuyTime": "Best time to buy",
+    "confidence_low": "Low",
+    "confidence_medium": "Medium",
+    "confidence_high": "High"
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",
