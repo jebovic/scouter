@@ -6,6 +6,7 @@ import { DealExplainerPopover } from './DealExplainerPopover'
 import { PriceSparkline } from './PriceSparkline'
 import { PricePredictionBadge } from './PricePredictionBadge'
 import { PriceAlertBadge } from './PriceAlertBadge'
+import { PriceBenchmarkBadge } from './PriceBenchmarkBadge'
 import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
@@ -170,6 +171,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         </button>
         {showIntel && <DealIntelPanel missionId={missionId} itemId={item.id} />}
         <PricePredictionBadge itemId={item.id} />
+        <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
       </div>
 
       <Badge variant={item.status} />

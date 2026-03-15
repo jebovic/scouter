@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/autotag"
+	"github.com/jibei/scouter/internal/benchmark"
 	"github.com/jibei/scouter/internal/dealexplain"
 	"github.com/jibei/scouter/internal/optimizer"
 	"github.com/jibei/scouter/internal/digest"
@@ -60,6 +61,7 @@ import (
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/travel"
 	"github.com/jibei/scouter/internal/usage"
+	"github.com/jibei/scouter/internal/receipt"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/wishlist"
 )
@@ -401,11 +403,24 @@ func main() {
 	optimizerHandler := optimizer.NewHandler(pool, provider)
 	r.Post("/api/missions/{slug}/optimize", optimizerHandler.Optimize)
 
+	// Smart Receipt Analyzer (Phase 69)
+	receiptRepo := receipt.NewRepository(pool)
+	receiptAgent := receipt.NewAgent(provider)
+	receiptHandler := receipt.NewHandler(receiptRepo, receiptAgent)
+	r.Post("/api/missions/{slug}/receipts", receiptHandler.Analyze)
+	r.Get("/api/missions/{slug}/receipts", receiptHandler.List)
+
 	// AI Deal Explainer (Phase 60)
 	dealExplainCache := dealexplain.NewCache(1 * time.Hour)
 	dealExplainAgent := dealexplain.NewAgent(provider)
 	dealExplainHandler := dealexplain.NewHandler(shoppingRepo, dealExplainAgent, dealExplainCache)
 	r.Get("/api/shopping-items/{id}/explain", dealExplainHandler.Explain)
+
+	// Price Benchmark vs Market Average (Phase 70)
+	benchmarkCache := benchmark.NewCache(2 * time.Hour)
+	benchmarkAgent := benchmark.NewAgent(provider)
+	benchmarkHandler := benchmark.NewHandler(shoppingRepo, benchmarkAgent, benchmarkCache)
+	r.Get("/api/shopping-items/{id}/benchmark", benchmarkHandler.Get)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)

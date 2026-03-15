@@ -1,0 +1,158 @@
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Trigger icon button */
+.triggerBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 5px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  transition: border-color 0.15s, color 0.15s;
+  line-height: 1.2;
+}
+
+.triggerBtn:hover,
+.triggerBtn[aria-expanded='true'] {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+/* Verdict chip — shown inline once loaded */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+}
+
+.chipGoodDeal {
+  background: color-mix(in srgb, var(--status-buy) 12%, transparent);
+  color: var(--status-buy);
+  border-color: color-mix(in srgb, var(--status-buy) 25%, transparent);
+}
+
+.chipAverage {
+  background: color-mix(in srgb, var(--status-watch) 12%, transparent);
+  color: var(--status-watch);
+  border-color: color-mix(in srgb, var(--status-watch) 25%, transparent);
+}
+
+.chipOverpriced {
+  background: color-mix(in srgb, var(--status-crisis) 12%, transparent);
+  color: var(--status-crisis);
+  border-color: color-mix(in srgb, var(--status-crisis) 25%, transparent);
+}
+
+.diff {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.diffNeg {
+  color: var(--status-buy);
+}
+
+.diffPos {
+  color: var(--status-crisis);
+}
+
+/* Loading pulse inside chip */
+.loadingDot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Popover */
+.popover {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  z-index: 110;
+  min-width: 260px;
+  max-width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.popover::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  border: 6px solid transparent;
+  border-top-color: var(--border);
+}
+
+.popoverTitle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rangeRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rangeItem {
+  flex: 1;
+  text-align: center;
+}
+
+.rangeLabel {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.rangeValue {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+
+.explanation {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  line-height: 1.5;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
