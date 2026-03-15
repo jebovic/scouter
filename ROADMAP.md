@@ -74,11 +74,14 @@
 | 48 | French VAT Calculator (TVA 20%/5.5% per category) | Functional | Medium | ✅ Done |
 | 49 | Gamification: Scouter Badges & Saving Milestones | Interface | Low | ✅ Done |
 | 50 | Multi-Mission Budget Rollup Dashboard | Interface | High | ✅ Done |
-| 51 | Mission Timeline & Activity Feed | Interface | Medium | 📋 Planned |
-| 52 | Smart Price Prediction (trending extrapolation) | Agent | High | 📋 Planned |
-| 53 | Collaborative Wishlist Sharing (invite link) | Functional | Medium | 📋 Planned |
-| 54 | AI Product Substitute Finder (French market) | Agent | High | 📋 Planned |
+| 51 | Mission Timeline & Activity Feed | Interface | Medium | ✅ Done |
+| 52 | Smart Price Prediction (trending extrapolation) | Agent | High | ✅ Done |
+| 53 | Collaborative Wishlist Sharing (invite link) | Functional | Medium | ✅ Done |
+| 54 | AI Product Substitute Finder (French market) | Agent | High | ✅ Done |
 | 55 | Seasonal Savings Calendar (French promotions) | Interface | Medium | 📋 Planned |
+| 56 | Quick Note / Annotation on Options | Interface | Low | 📋 Planned |
+| 57 | Mission Health Score (AI composite rating) | Agent | High | 📋 Planned |
+| 58 | Price Drop Email Digest (weekly summary) | Functional | Medium | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
