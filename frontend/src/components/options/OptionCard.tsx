@@ -5,6 +5,7 @@ import { ReviewSummaryCard } from './ReviewSummaryCard'
 import { PriceComparisonPanel } from './PriceComparisonPanel'
 import { RetailerLinks } from './RetailerLinks'
 import { SubstitutePanel } from './SubstitutePanel'
+import { OptionNote } from './OptionNote'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
@@ -134,6 +135,8 @@ export function OptionCard({
           <Badge variant={option.badge} />
         </div>
       </div>
+
+      <OptionNote optionId={option.id} />
 
       {option.priceRange && (
         <div

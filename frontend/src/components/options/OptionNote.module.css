@@ -1,0 +1,125 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collapseButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  transition: all 0.15s;
+  position: relative;
+}
+
+.collapseButton:hover {
+  background: var(--raised);
+  border-color: var(--border-glow);
+  color: var(--text);
+}
+
+.notePreview {
+  flex: 1;
+  text-align: left;
+  color: var(--text);
+}
+
+.indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.expandedContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: var(--raised);
+  border-radius: 4px;
+  border: 1px solid var(--border-glow);
+}
+
+.textarea {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+  resize: none;
+  transition: border-color 0.15s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px var(--cyan-dim);
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.charCount {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.clearButton {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--coral);
+  background: transparent;
+  color: var(--coral);
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.15s;
+}
+
+.clearButton:hover {
+  background: var(--coral-dim);
+  border-color: var(--coral);
+}
+
+@media (max-width: 640px) {
+  .collapseButton {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  .textarea {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+
+  .actionsRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .clearButton {
+    width: 100%;
+  }
+}

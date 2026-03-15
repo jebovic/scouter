@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Topnav } from '../components/scouter/Topnav'
+import { Topnav, UpcomingPromoStrip } from '../components/scouter'
 import { useDealCalendar } from '../hooks/useDealCalendar'
 import type { DealEvent } from '../api/dealCalendar'
+import type { PromoEvent } from '../utils/frenchPromoCalendar'
 import styles from './DealCalendarPage.module.css'
 
 const CATEGORY_FILTERS: { label: string; value: string }[] = [
@@ -114,10 +115,17 @@ export default function DealCalendarPage() {
 
   const filtered = events.filter((e) => matchesCategory(e, selectedCategory))
 
+  const handlePromoEventClick = (event: PromoEvent) => {
+    // Handle promo event click - could scroll to relevant deals or filter
+    console.log('Promo event clicked:', event)
+  }
+
   return (
     <>
       <Topnav />
       <main className={styles.page}>
+        <UpcomingPromoStrip onEventClick={handlePromoEventClick} />
+
         <div className={styles.header}>
           <h1 className={styles.title}>Calendrier des bons plans</h1>
           <p className={styles.subtitle}>

@@ -1,0 +1,44 @@
+@import '../../styles/theme.css';
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--badge-color);
+  background: transparent;
+  color: var(--badge-color);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge:hover {
+  background: color-mix(in srgb, var(--badge-color) 10%, transparent);
+  border-color: color-mix(in srgb, var(--badge-color) 80%, transparent);
+}
+
+.badge:active {
+  transform: scale(0.98);
+}
+
+.icon {
+  display: inline-block;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.name {
+  flex-shrink: 0;
+}
+
+.discount {
+  flex-shrink: 0;
+  font-weight: 600;
+}
