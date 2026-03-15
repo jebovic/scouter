@@ -1,0 +1,171 @@
+.converter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  padding: var(--gap-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 400px;
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.inputGroup {
+  display: flex;
+  gap: var(--gap-md);
+  align-items: center;
+}
+
+.amountInput {
+  flex: 1;
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--text-main);
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+
+.amountInput:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-dim);
+}
+
+.currencySelect {
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.currencySelect:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-dim);
+}
+
+.swapButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--text-main);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.swapButton:hover {
+  border-color: var(--cyan);
+  background: var(--surface);
+  transform: scale(1.05);
+}
+
+.swapButton:active {
+  transform: scale(0.95);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--gap-sm) 0;
+}
+
+.resultSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  padding: var(--gap-md);
+  background: var(--surface-alt);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.rateLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.resultValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  word-break: break-word;
+}
+
+.rateInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: var(--gap-sm);
+  padding-top: var(--gap-sm);
+  border-top: 1px solid var(--border);
+}
+
+.rateValue {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.sourceCredit {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: var(--gap-sm);
+}
+
+.lastUpdated {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-align: right;
+  margin-top: var(--gap-xs);
+}
+
+@media (max-width: 640px) {
+  .converter {
+    max-width: 100%;
+  }
+
+  .resultValue {
+    font-size: 1.5rem;
+  }
+
+  .inputGroup {
+    flex-direction: column;
+    gap: var(--gap-sm);
+  }
+
+  .amountInput,
+  .currencySelect {
+    width: 100%;
+  }
+
+  .swapButton {
+    width: 100%;
+  }
+}

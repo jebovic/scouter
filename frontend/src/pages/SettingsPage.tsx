@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSettings, useUpdateSettings, useDeleteAllData } from '../hooks'
+import { CurrencyConverter } from '../components/scouter'
 import styles from './SettingsPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CAD']
@@ -101,6 +102,13 @@ export default function SettingsPage() {
           {updateSettings.isSuccess && (
             <p className={styles.success}>{t('settings.saved')}</p>
           )}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Outils</h2>
+        <div className={styles.card}>
+          <CurrencyConverter />
         </div>
       </section>
 

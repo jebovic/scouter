@@ -1,0 +1,196 @@
+@import '../../styles/theme.css';
+
+.container {
+  margin-top: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.refetchBtn {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.refetchBtn:hover:not(:disabled) {
+  background: var(--cyan-glow);
+}
+
+.refetchBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  gap: 0.5rem;
+}
+
+.spinnerDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.empty {
+  color: var(--text-mid);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1.5rem 0;
+  line-height: 1.6;
+}
+
+.summary {
+  font-size: 0.875rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--cyan);
+}
+
+.adjustmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.envelopeName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.deltaBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.deltaIncrease {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.deltaDecrease {
+  background: var(--coral-dim);
+  color: var(--coral);
+}
+
+.deltaOptimal {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.amounts {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  margin-bottom: 0.4rem;
+}
+
+.arrow {
+  color: var(--text-dim);
+}
+
+.amountCurrent {
+  color: var(--text-mid);
+}
+
+.amountSuggested {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reason {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footerTotal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footerLabel {
+  color: var(--text-dim);
+}
+
+.footerValue {
+  font-weight: 600;
+  color: var(--text);
+}

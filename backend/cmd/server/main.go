@@ -61,6 +61,7 @@ import (
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/travel"
 	"github.com/jibei/scouter/internal/usage"
+	"github.com/jibei/scouter/internal/rebalancer"
 	"github.com/jibei/scouter/internal/receipt"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/wishlist"
@@ -460,6 +461,11 @@ func main() {
 	healthAgent := health.NewAgent(provider)
 	healthHandler := health.NewHandler(missionRepo, optionRepo, shoppingRepo, healthAgent, healthCache)
 	r.Get("/api/missions/{slug}/health", healthHandler.GetHealth)
+
+	// Smart Budget Rebalancer (Phase 74)
+	rebalancerAgent := rebalancer.NewAgent(provider)
+	rebalancerHandler := rebalancer.NewHandler(envelopeRepo, missionRepo, rebalancerAgent)
+	r.Get("/api/budget/rebalance", rebalancerHandler.Get)
 
 	// Price Drop Weekly Digest (Phase 58)
 	digestRepo := digest.NewRepository(pool)

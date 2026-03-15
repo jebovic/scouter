@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Topnav } from '../components/scouter/Topnav'
+import { BudgetRebalancer } from '../components/scouter/BudgetRebalancer'
 import { useEnvelopes, useCreateEnvelope, useUpdateEnvelope, useDeleteEnvelope, useEnvelopeSummary } from '../hooks'
 import type { EnvelopeDTO } from '../api/envelope'
 import styles from './EnvelopesPage.module.css'
@@ -302,6 +303,8 @@ export default function EnvelopesPage() {
             )}
           </div>
         )}
+
+        <BudgetRebalancer />
       </main>
     </>
   )

@@ -94,10 +94,14 @@
 | 68 | AI Shopping List Optimizer (best order to buy) | Agent | High | ✅ Done |
 | 69 | Smart Receipt Analyzer (AI itemization) | Agent | Medium | ✅ Done |
 | 70 | Price Benchmark vs Market Average (AI) | Agent | High | ✅ Done |
-| 71 | Seasonal Price Calendar (buy at the right time) | Interface | Medium | 📋 Planned |
-| 72 | AI Mission Summary Card (executive brief) | Agent | Medium | 📋 Planned |
+| 71 | Seasonal Price Calendar (buy at the right time) | Interface | Medium | ✅ Done |
+| 72 | AI Mission Summary Card (executive brief) | Agent | Medium | ✅ Done |
 | 73 | Multi-Currency Live Converter (ECB rates) | Functional | Medium | 📋 Planned |
 | 74 | Smart Budget Rebalancer (AI envelope optimizer) | Agent | High | 📋 Planned |
+| 75 | Product Comparison Matrix Export (PDF/CSV) | Functional | Medium | 📋 Planned |
+| 76 | AI Negotiation Coach (haggling tips) | Agent | Medium | 📋 Planned |
+| 77 | Purchase Timeline Gantt (when to buy each item) | Interface | Medium | 📋 Planned |
+| 78 | Smart Deal Aggregator (French e-commerce feeds) | Integration | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 
