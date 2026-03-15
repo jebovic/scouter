@@ -421,5 +421,12 @@
     "remaining": "Restant",
     "surplus": "Excédent",
     "allocations": "Allocations Recommandées"
+  },
+  "expenseBreakdown": {
+    "title": "Répartition des Dépenses",
+    "empty": "Aucun article encore",
+    "total": "Total",
+    "items": "articles",
+    "categories": "catégories"
   }
 }
