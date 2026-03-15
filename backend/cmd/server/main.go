@@ -28,6 +28,7 @@ import (
 	"github.com/jibei/scouter/internal/pricealertrule"
 	"github.com/jibei/scouter/internal/currency"
 	"github.com/jibei/scouter/internal/priceanalytics"
+	"github.com/jibei/scouter/internal/spendinganalytics"
 	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/budgetrec"
 	"github.com/jibei/scouter/internal/carbon"
@@ -93,6 +94,7 @@ import (
 	"github.com/jibei/scouter/internal/couponfinder"
 	"github.com/jibei/scouter/internal/negotiationsim"
 	"github.com/jibei/scouter/internal/wishlistshare"
+	"github.com/jibei/scouter/internal/giftfinder"
 )
 
 func main() {
@@ -576,6 +578,10 @@ func main() {
 	priceAnalyticsHandler := priceanalytics.NewHandler(pool)
 	r.Get("/api/missions/{missionID}/items/{itemID}/price-stats", priceAnalyticsHandler.GetStats)
 
+	// Spending Analytics Dashboard (Phase 123)
+	spendingAnalyticsHandler := spendinganalytics.NewHandler(pool)
+	r.Get("/api/analytics/spending", spendingAnalyticsHandler.GetAnalytics)
+
 	// Smart Budget Recommendations (Phase 96)
 	budgetrecHandler := budgetrec.NewHandler(shoppingSvc)
 	r.Get("/api/missions/{missionID}/budget-analysis", budgetrecHandler.GetAnalysis)
@@ -641,6 +647,10 @@ func main() {
 	// Activity Feed (Phase 121)
 	activityFeedHandler := activityfeed.NewHandler(pool)
 	r.Get("/api/activity-feed", activityFeedHandler.GetFeed)
+
+	// Gift Finder Assistant (Phase 122) — French market catalog, 30min in-memory cache
+	giftFinderHandler := giftfinder.NewHandler(pool)
+	r.Get("/api/missions/{id}/gift-suggestions", giftFinderHandler.GetGiftSuggestions)
 
 	// Price History Insights (Phase 118) — 2h in-memory cache
 	priceInsightsHandler := priceinsights.NewHandler(pool)
