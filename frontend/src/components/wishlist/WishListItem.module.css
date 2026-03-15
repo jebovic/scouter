@@ -1,0 +1,88 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--border-glow);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link {
+  font-size: 13px;
+  color: var(--cyan);
+  text-decoration: none;
+  flex-shrink: 0;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.link:hover {
+  opacity: 1;
+}
+
+.deleteBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.deleteBtn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+  background: var(--coral-dim);
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cyan);
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+}
+
+.notes {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}

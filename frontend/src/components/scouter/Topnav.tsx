@@ -38,6 +38,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       {!missionSlug && (
         <div className={styles.subNav}>
           {[
+            { label: 'Wishlist', path: '/wishlist' },
             { label: 'History', path: '/history' },
             { label: 'Stats', path: '/stats' },
             { label: 'Settings', path: '/settings' },

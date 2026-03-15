@@ -245,6 +245,20 @@
     "shoppingTracker": "Suivi des achats",
     "shoppingDesc": "Suivre les prix et les marchands"
   },
+  "wishlist": {
+    "title": "Liste de Souhaits",
+    "subtitle": "Suivez les articles que vous souhaitez acheter plus tard",
+    "addItem": "Ajouter un article",
+    "name": "Nom de l'article",
+    "url": "URL du produit (optionnel)",
+    "targetPrice": "Prix cible (optionnel)",
+    "currency": "Devise",
+    "notes": "Notes (optionnel)",
+    "empty": "Aucun article dans votre liste de souhaits",
+    "emptyDesc": "Ajoutez des articles que vous souhaitez suivre pour les baisses de prix",
+    "delete": "Supprimer",
+    "loading": "Chargement de la liste de souhaits..."
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

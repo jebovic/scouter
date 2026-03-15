@@ -40,6 +40,7 @@ import (
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
 	"github.com/jibei/scouter/internal/vote"
+	"github.com/jibei/scouter/internal/wishlist"
 )
 
 func main() {
@@ -283,6 +284,10 @@ func main() {
 	r.Get("/api/invites/{token}", collaboratorHandler.GetInvite)
 	r.Post("/api/invites/{token}/join", collaboratorHandler.JoinMission)
 	r.Mount("/api/options/{optionID}/votes", voteHandler.Routes())
+
+	// Wish List (Phase 21)
+	wishlistRepo := wishlist.NewRepository(pool)
+	r.Route("/api/wishlist", wishlist.Routes(wishlistRepo))
 
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)

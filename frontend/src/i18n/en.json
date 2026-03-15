@@ -245,6 +245,20 @@
     "shoppingTracker": "Shopping Tracker",
     "shoppingDesc": "Track prices and merchants"
   },
+  "wishlist": {
+    "title": "Wish List",
+    "subtitle": "Track items you want to buy later",
+    "addItem": "Add Item",
+    "name": "Item name",
+    "url": "Product URL (optional)",
+    "targetPrice": "Target price (optional)",
+    "currency": "Currency",
+    "notes": "Notes (optional)",
+    "empty": "No items in your wish list yet",
+    "emptyDesc": "Add items you want to track for price drops",
+    "delete": "Delete",
+    "loading": "Loading wish list..."
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",

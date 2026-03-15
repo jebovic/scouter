@@ -1,0 +1,199 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+/* ── Add form ────────────────────────────────────────────────────────────── */
+
+.form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notesGroup {
+  grid-column: 1 / 2;
+}
+
+.submitGroup {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  grid-column: 2 / 3;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.required {
+  color: var(--coral);
+}
+
+.input,
+.select {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font-body);
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.select:focus {
+  border-color: var(--cyan);
+}
+
+.input::placeholder {
+  color: var(--text-dim);
+}
+
+.addBtn {
+  background: var(--cyan);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--void);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 9px 20px;
+  text-transform: uppercase;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.addBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.addBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--coral);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+/* ── List ────────────────────────────────────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .page {
+    padding: 20px 16px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .notesGroup {
+    grid-column: 1 / 2;
+  }
+
+  .submitGroup {
+    grid-column: 1 / 2;
+    justify-content: stretch;
+  }
+
+  .addBtn {
+    width: 100%;
+  }
+}
