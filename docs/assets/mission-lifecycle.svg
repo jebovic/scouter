@@ -1,0 +1,198 @@
+<svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <style>
+      @keyframes move-right {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: -40; }
+      }
+      @keyframes glow {
+        0%, 100% { filter: drop-shadow(0 0 4px rgba(96,165,250,0.6)); }
+        50% { filter: drop-shadow(0 0 12px rgba(96,165,250,1)); }
+      }
+      @keyframes bounce-in {
+        0% { transform: scale(0.9); opacity: 0.6; }
+        50% { transform: scale(1.04); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes slide-label {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+      }
+      .anim-arrow { animation: move-right 1.2s linear infinite; stroke-dasharray: 10 6; }
+      .anim-glow { animation: glow 2s ease-in-out infinite; }
+      .step-circle { cursor: default; }
+      .step-label { font-size: 11px; fill: #94a3b8; text-anchor: middle; }
+      .step-title { font-size: 13px; font-weight: 700; fill: #f8fafc; text-anchor: middle; }
+      .step-num { font-size: 18px; font-weight: 800; fill: #f8fafc; text-anchor: middle; dominant-baseline: central; }
+      .badge { font-size: 9px; fill: #1e293b; font-weight: 700; text-anchor: middle; }
+    </style>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <marker id="arr2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+    <filter id="glow-filter">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="900" height="500" fill="url(#bg2)" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="800" fill="#f8fafc">Mission Lifecycle</text>
+  <text x="450" y="58" text-anchor="middle" font-size="12" fill="#64748b">From idea to purchase — SCOUTER's core user journey</text>
+
+  <!-- Step positions: y=140 for circles, varying x -->
+  <!-- Step 1: Create -->
+  <circle cx="80" cy="160" r="36" fill="#1e40af" class="anim-glow" filter="url(#glow-filter)"/>
+  <text x="80" y="160" class="step-num">1</text>
+  <text x="80" y="210" class="step-title">Create</text>
+  <text x="80" y="228" class="step-label">Mission</text>
+  <text x="80" y="246" class="step-label">Budget · Category</text>
+  <text x="80" y="262" class="step-label">Constraints</text>
+  <!-- Badge -->
+  <rect x="52" y="186" width="56" height="14" rx="7" fill="#60a5fa"/>
+  <text x="80" y="196" class="badge">POST /missions</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="118" y1="160" x2="172" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 2: Research -->
+  <circle cx="210" cy="160" r="36" fill="#5b21b6"/>
+  <text x="210" y="160" class="step-num">2</text>
+  <text x="210" y="210" class="step-title">Research</text>
+  <text x="210" y="228" class="step-label">ResearchAgent</text>
+  <text x="210" y="246" class="step-label">LLM discovers</text>
+  <text x="210" y="262" class="step-label">options &amp; ranks</text>
+  <rect x="175" y="186" width="70" height="14" rx="7" fill="#8b5cf6"/>
+  <text x="210" y="196" class="badge">POST /research</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="248" y1="160" x2="302" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 3: Pricing -->
+  <circle cx="340" cy="160" r="36" fill="#0f5132"/>
+  <text x="340" y="160" class="step-num">3</text>
+  <text x="340" y="210" class="step-title">Pricing</text>
+  <text x="340" y="228" class="step-label">PricingAgent</text>
+  <text x="340" y="246" class="step-label">Price hunt · TCO</text>
+  <text x="340" y="262" class="step-label">Deal scoring</text>
+  <rect x="308" y="186" width="64" height="14" rx="7" fill="#059669"/>
+  <text x="340" y="196" class="badge">POST /pricing</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="378" y1="160" x2="432" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 4: Compare -->
+  <circle cx="470" cy="160" r="36" fill="#92400e"/>
+  <text x="470" y="160" class="step-num">4</text>
+  <text x="470" y="210" class="step-title">Compare</text>
+  <text x="470" y="228" class="step-label">Options Explorer</text>
+  <text x="470" y="246" class="step-label">Radar charts</text>
+  <text x="470" y="262" class="step-label">Constraint check</text>
+  <rect x="438" y="186" width="64" height="14" rx="7" fill="#f59e0b"/>
+  <text x="470" y="196" class="badge">GET /options</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="508" y1="160" x2="562" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 5: Track -->
+  <circle cx="600" cy="160" r="36" fill="#164e63"/>
+  <text x="600" y="160" class="step-num">5</text>
+  <text x="600" y="210" class="step-title">Track</text>
+  <text x="600" y="228" class="step-label">Shopping Tracker</text>
+  <text x="600" y="246" class="step-label">Price alerts</text>
+  <text x="600" y="262" class="step-label">Budget burn</text>
+  <rect x="566" y="186" width="68" height="14" rx="7" fill="#0891b2"/>
+  <text x="600" y="196" class="badge">GET /shopping</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="638" y1="160" x2="692" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 6: Purchase -->
+  <circle cx="730" cy="160" r="36" fill="#365314"/>
+  <text x="730" y="160" class="step-num">6</text>
+  <text x="730" y="210" class="step-title">Purchase</text>
+  <text x="730" y="228" class="step-label">Record buy</text>
+  <text x="730" y="246" class="step-label">Lesson capture</text>
+  <text x="730" y="262" class="step-label">Mission → done</text>
+  <rect x="696" y="186" width="68" height="14" rx="7" fill="#65a30d"/>
+  <text x="730" y="196" class="badge">POST /purchase</text>
+
+  <!-- Arrow 6→7 -->
+  <line x1="768" y1="160" x2="822" y2="160" stroke="#60a5fa" stroke-width="2.5" class="anim-arrow" marker-end="url(#arr2)"/>
+
+  <!-- Step 7: Scorecard -->
+  <circle cx="858" cy="160" r="36" fill="#4c1d95"/>
+  <text x="858" y="160" class="step-num">✓</text>
+  <text x="858" y="210" class="step-title">Scorecard</text>
+  <text x="858" y="228" class="step-label">Grade A/B/C/D</text>
+  <text x="858" y="246" class="step-label">Stats · History</text>
+  <text x="858" y="262" class="step-label">Analytics</text>
+  <rect x="822" y="186" width="72" height="14" rx="7" fill="#8b5cf6"/>
+  <text x="858" y="196" class="badge">GET /scorecard</text>
+
+  <!-- Bottom section: AI features -->
+  <rect x="30" y="295" width="840" height="155" rx="12" fill="#0f172a" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="450" y="322" text-anchor="middle" font-size="13" font-weight="700" fill="#f8fafc">AI Intelligence Layer — Active Throughout the Lifecycle</text>
+
+  <!-- Feature pills row 1 -->
+  <rect x="50" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#a78bfa" stroke-width="1"/>
+  <text x="105" y="353" text-anchor="middle" font-size="10" fill="#c4b5fd">French Benchmark</text>
+
+  <rect x="170" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#60a5fa" stroke-width="1"/>
+  <text x="225" y="353" text-anchor="middle" font-size="10" fill="#93c5fd">Wishlist Prioritizer</text>
+
+  <rect x="290" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#34d399" stroke-width="1"/>
+  <text x="345" y="353" text-anchor="middle" font-size="10" fill="#6ee7b7">Qty Optimizer</text>
+
+  <rect x="410" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+  <text x="465" y="353" text-anchor="middle" font-size="10" fill="#fcd34d">Timeline Planner</text>
+
+  <rect x="530" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#f43f5e" stroke-width="1"/>
+  <text x="585" y="353" text-anchor="middle" font-size="10" fill="#fda4af">Deal Aggregator</text>
+
+  <rect x="650" y="335" width="110" height="28" rx="14" fill="#1e293b" stroke="#fb923c" stroke-width="1"/>
+  <text x="705" y="353" text-anchor="middle" font-size="10" fill="#fdba74">Carbon Tracker</text>
+
+  <rect x="770" y="335" width="80" height="28" rx="14" fill="#1e293b" stroke="#94a3b8" stroke-width="1"/>
+  <text x="810" y="353" text-anchor="middle" font-size="10" fill="#cbd5e1">+134 more</text>
+
+  <!-- Feature pills row 2 -->
+  <rect x="50" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#818cf8" stroke-width="1"/>
+  <text x="105" y="391" text-anchor="middle" font-size="10" fill="#c7d2fe">Semantic Search</text>
+
+  <rect x="170" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#34d399" stroke-width="1"/>
+  <text x="225" y="391" text-anchor="middle" font-size="10" fill="#6ee7b7">Price Forecast</text>
+
+  <rect x="290" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#60a5fa" stroke-width="1"/>
+  <text x="345" y="391" text-anchor="middle" font-size="10" fill="#93c5fd">Coupon Finder</text>
+
+  <rect x="410" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+  <text x="465" y="391" text-anchor="middle" font-size="10" fill="#fcd34d">Negotiation Tips</text>
+
+  <rect x="530" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#a78bfa" stroke-width="1"/>
+  <text x="585" y="391" text-anchor="middle" font-size="10" fill="#c4b5fd">ROI Calculator</text>
+
+  <rect x="650" y="373" width="110" height="28" rx="14" fill="#1e293b" stroke="#fb923c" stroke-width="1"/>
+  <text x="705" y="391" text-anchor="middle" font-size="10" fill="#fdba74">Cash-Back Tracker</text>
+
+  <rect x="770" y="373" width="80" height="28" rx="14" fill="#1e293b" stroke="#94a3b8" stroke-width="1"/>
+  <text x="810" y="391" text-anchor="middle" font-size="10" fill="#cbd5e1">Loyalty</text>
+
+  <!-- SmartRouter summary -->
+  <text x="450" y="428" text-anchor="middle" font-size="11" fill="#64748b">All agents routed through SmartRouter → Ollama Heavy/Fast/Cloud → Anthropic claude-sonnet-4-6</text>
+  <text x="450" y="444" text-anchor="middle" font-size="11" fill="#64748b">Tool use · Structured output · Circuit breakers · Rate limiting · RetryAsJSON fallback</text>
+
+  <!-- Footer -->
+  <text x="450" y="488" text-anchor="middle" font-size="10" fill="#334155">
+    Collaboration · Voting · Comments · Share tokens · Public wishlist — available at every step
+  </text>
+</svg>

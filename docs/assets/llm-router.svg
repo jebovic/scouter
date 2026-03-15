@@ -1,0 +1,150 @@
+<svg viewBox="0 0 820 480" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <style>
+      @keyframes cascade {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: -30; }
+      }
+      @keyframes blink-ok { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+      @keyframes blink-fail { 0%, 100% { fill: #dc2626; } 50% { fill: #7f1d1d; } }
+      .flow-line { animation: cascade 1.5s linear infinite; stroke-dasharray: 8 5; }
+      .flow-line-slow { animation: cascade 2.5s linear infinite; stroke-dasharray: 8 5; }
+      .dot-ok { animation: blink-ok 1.8s ease-in-out infinite; }
+      .dot-fail { animation: blink-fail 1.2s ease-in-out infinite; }
+      .label { font-size: 11px; fill: #94a3b8; }
+      .title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+      .small { font-size: 10px; fill: #64748b; }
+    </style>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <marker id="arr3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+    <marker id="arr3-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+    <marker id="arr3-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f87171"/>
+    </marker>
+    <marker id="arr3-yellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <rect width="820" height="480" fill="url(#bg3)" rx="12"/>
+
+  <!-- Title -->
+  <text x="410" y="36" text-anchor="middle" font-size="19" font-weight="800" fill="#f8fafc">SmartRouter — LLM Cascade Routing</text>
+  <text x="410" y="56" text-anchor="middle" font-size="11" fill="#64748b">Phase 9 · Capability-matched · Circuit breakers · Rate limiting</text>
+
+  <!-- Agent Request box -->
+  <rect x="30" y="80" width="160" height="60" rx="10" fill="#1e293b" stroke="#a78bfa" stroke-width="2"/>
+  <text x="110" y="106" text-anchor="middle" class="title">Agent Request</text>
+  <text x="110" y="124" text-anchor="middle" class="label">ResearchAgent / PricingAgent</text>
+  <text x="110" y="138" text-anchor="middle" class="label">+ 140 specialized agents</text>
+
+  <!-- Arrow to SmartRouter -->
+  <line x1="192" y1="110" x2="260" y2="110" stroke="#a78bfa" stroke-width="2" class="flow-line" marker-end="url(#arr3)"/>
+  <text x="226" y="104" text-anchor="middle" font-size="9" fill="#7c3aed">WithRequestOpts</text>
+
+  <!-- SmartRouter box (center) -->
+  <rect x="262" y="68" width="200" height="200" rx="12" fill="#1e293b" stroke="#7c3aed" stroke-width="2.5"/>
+  <text x="362" y="92" text-anchor="middle" font-size="14" font-weight="800" fill="#c4b5fd">SmartRouter</text>
+  <text x="362" y="110" text-anchor="middle" class="small">Capability matching</text>
+
+  <!-- Router internals -->
+  <rect x="278" y="120" width="168" height="22" rx="6" fill="#312e81" opacity="0.8"/>
+  <text x="362" y="135" text-anchor="middle" font-size="10" fill="#a5b4fc">Circuit Breakers (per-model)</text>
+
+  <rect x="278" y="148" width="168" height="22" rx="6" fill="#312e81" opacity="0.8"/>
+  <text x="362" y="163" text-anchor="middle" font-size="10" fill="#a5b4fc">Rate Limiters (per-model)</text>
+
+  <rect x="278" y="176" width="168" height="22" rx="6" fill="#312e81" opacity="0.8"/>
+  <text x="362" y="191" text-anchor="middle" font-size="10" fill="#a5b4fc">ModelPool.ForCapabilities</text>
+
+  <rect x="278" y="204" width="168" height="22" rx="6" fill="#312e81" opacity="0.8"/>
+  <text x="362" y="219" text-anchor="middle" font-size="10" fill="#a5b4fc">HasRequestOpts(ctx)</text>
+
+  <rect x="278" y="232" width="168" height="22" rx="6" fill="#7f1d1d" opacity="0.8"/>
+  <text x="362" y="247" text-anchor="middle" font-size="10" fill="#fca5a5">RetryAsJSON fallback</text>
+
+  <!-- Cascade label -->
+  <text x="490" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">CASCADE ORDER</text>
+
+  <!-- Provider 1: Ollama Heavy -->
+  <rect x="480" y="92" width="160" height="72" rx="8" fill="#0f172a" stroke="#f97316" stroke-width="2"/>
+  <circle cx="500" cy="108" r="7" fill="#16a34a" class="dot-ok"/>
+  <text x="515" y="112" class="label" font-size="10">Priority 1</text>
+  <text x="560" y="130" text-anchor="middle" class="title" font-size="12">Ollama Heavy</text>
+  <text x="560" y="148" text-anchor="middle" class="label">qwen3:14b local</text>
+  <text x="560" y="163" text-anchor="middle" class="small">http://host.docker.internal:11434</text>
+
+  <!-- Provider 2: Ollama Fast -->
+  <rect x="480" y="178" width="160" height="72" rx="8" fill="#0f172a" stroke="#f97316" stroke-width="1.5"/>
+  <circle cx="500" cy="194" r="7" fill="#ca8a04" class="dot-ok"/>
+  <text x="515" y="198" class="label" font-size="10">Priority 2</text>
+  <text x="560" y="216" text-anchor="middle" class="title" font-size="12">Ollama Fast</text>
+  <text x="560" y="234" text-anchor="middle" class="label">qwen3:4b local</text>
+  <text x="560" y="249" text-anchor="middle" class="small">lightweight fallback</text>
+
+  <!-- Provider 3: Ollama Cloud -->
+  <rect x="480" y="264" width="160" height="72" rx="8" fill="#0f172a" stroke="#6366f1" stroke-width="1.5"/>
+  <circle cx="500" cy="280" r="7" fill="#6366f1" class="dot-ok"/>
+  <text x="515" y="284" class="label" font-size="10">Priority 3</text>
+  <text x="560" y="302" text-anchor="middle" class="title" font-size="12">Ollama Cloud</text>
+  <text x="560" y="320" text-anchor="middle" class="label">ollama.com · Bearer token</text>
+  <text x="560" y="335" text-anchor="middle" class="small">deepseek-v3.2:cloud</text>
+
+  <!-- Provider 4: Anthropic -->
+  <rect x="480" y="350" width="160" height="72" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+  <circle cx="500" cy="366" r="7" fill="#f59e0b" class="dot-ok"/>
+  <text x="515" y="370" class="label" font-size="10">Priority 4</text>
+  <text x="560" y="388" text-anchor="middle" class="title" font-size="12">Anthropic</text>
+  <text x="560" y="406" text-anchor="middle" class="label">claude-sonnet-4-6</text>
+  <text x="560" y="421" text-anchor="middle" class="small">Tool use · Structured output</text>
+
+  <!-- Arrows from SmartRouter to providers -->
+  <line x1="464" y1="128" x2="477" y2="128" stroke="#f97316" stroke-width="2" class="flow-line" marker-end="url(#arr3)"/>
+  <line x1="464" y1="214" x2="477" y2="214" stroke="#f97316" stroke-width="2" class="flow-line-slow" marker-end="url(#arr3)"/>
+  <line x1="464" y1="300" x2="477" y2="300" stroke="#6366f1" stroke-width="2" class="flow-line-slow" marker-end="url(#arr3)"/>
+  <line x1="464" y1="386" x2="477" y2="386" stroke="#f59e0b" stroke-width="2" class="flow-line-slow" marker-end="url(#arr3)"/>
+
+  <!-- Failure arrows (cascade labels) -->
+  <text x="472" y="172" text-anchor="middle" font-size="9" fill="#dc2626">⚡ infra error</text>
+  <text x="472" y="258" text-anchor="middle" font-size="9" fill="#dc2626">⚡ infra error</text>
+  <text x="472" y="344" text-anchor="middle" font-size="9" fill="#dc2626">⚡ infra error</text>
+
+  <!-- Response box -->
+  <rect x="660" y="200" width="130" height="60" rx="10" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+  <text x="725" y="226" text-anchor="middle" class="title">Response</text>
+  <text x="725" y="244" text-anchor="middle" class="label">CompletionResponse</text>
+  <text x="725" y="258" text-anchor="middle" class="small">Parsed · Validated</text>
+
+  <!-- Arrow: successful provider → response -->
+  <line x1="642" y1="214" x2="658" y2="230" stroke="#34d399" stroke-width="2" class="flow-line" marker-end="url(#arr3-green)"/>
+
+  <!-- Health endpoint -->
+  <rect x="660" y="320" width="130" height="50" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1"/>
+  <text x="725" y="342" text-anchor="middle" class="label">Health Status</text>
+  <text x="725" y="358" text-anchor="middle" class="small">GET /api/health/llm</text>
+  <text x="725" y="370" text-anchor="middle" class="small">60s Topnav poll</text>
+
+  <!-- Embed sub-service -->
+  <rect x="30" y="320" width="200" height="80" rx="10" fill="#1e293b" stroke="#34d399" stroke-width="1.5"/>
+  <text x="130" y="344" text-anchor="middle" class="title">OllamaEmbedder</text>
+  <text x="130" y="362" text-anchor="middle" class="label">POST /api/embed</text>
+  <text x="130" y="378" text-anchor="middle" class="label">mxbai-embed-large · 1024-dim</text>
+  <text x="130" y="394" text-anchor="middle" class="small">Voyage AI v3 compatible · pgvector</text>
+
+  <!-- Scheduler -->
+  <rect x="30" y="415" width="200" height="50" rx="10" fill="#1e293b" stroke="#fb923c" stroke-width="1.5"/>
+  <text x="130" y="438" text-anchor="middle" class="title">Background Scheduler</text>
+  <text x="130" y="455" text-anchor="middle" class="small">robfig/cron · price-check alerts · async embed (2 goroutines)</text>
+
+  <!-- Footer -->
+  <text x="410" y="468" text-anchor="middle" font-size="10" fill="#334155">
+    All agent calls use WithRequestOpts context hint · RetryAsJSON ensures valid JSON output even from non-compliant models
+  </text>
+</svg>

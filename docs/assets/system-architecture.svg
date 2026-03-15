@@ -1,0 +1,260 @@
+<svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <style>
+      .layer-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: #94a3b8; }
+      .box-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+      .box-sub { font-size: 10px; fill: #94a3b8; }
+      .arrow { stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .arrow-blue { stroke: #60a5fa; }
+      .arrow-purple { stroke: #a78bfa; }
+      .arrow-green { stroke: #34d399; }
+      .arrow-orange { stroke: #fb923c; }
+
+      @keyframes dash {
+        to { stroke-dashoffset: -20; }
+      }
+      @keyframes pulse-box {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      @keyframes flow-blue {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: -200; }
+      }
+      @keyframes flow-purple {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: -200; }
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
+
+      .animated-arrow-blue { animation: flow-blue 2s linear infinite; stroke-dasharray: 8 6; }
+      .animated-arrow-purple { animation: flow-purple 2.5s linear infinite; stroke-dasharray: 8 6; }
+      .animated-arrow-green { animation: flow-blue 3s linear infinite; stroke-dasharray: 8 6; }
+      .animated-arrow-orange { animation: flow-purple 2s linear infinite reverse; stroke-dasharray: 8 6; }
+      .float-box { animation: float 3s ease-in-out infinite; }
+      .float-box-2 { animation: float 3.5s ease-in-out infinite 0.5s; }
+      .float-box-3 { animation: float 4s ease-in-out infinite 1s; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrowhead-purple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#34d399"/>
+    </marker>
+    <marker id="arrowhead-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#fb923c"/>
+    </marker>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6d28d9"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="green-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#065f46"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="orange-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9a3412"/>
+      <stop offset="100%" style="stop-color:#ea580c"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="620" fill="url(#bg-grad)" rx="12"/>
+
+  <!-- Title -->
+  <text x="480" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#f8fafc">SCOUTER Universal — System Architecture</text>
+  <text x="480" y="56" text-anchor="middle" font-size="12" fill="#64748b">v0.1.0 · 172 phases · Full-stack spending intelligence</text>
+
+  <!-- LAYER: CLIENT -->
+  <text x="30" y="100" class="layer-label">Client Layer</text>
+  <rect x="30" y="108" width="200" height="100" rx="10" fill="url(#blue-grad)" filter="url(#shadow)" class="float-box"/>
+  <text x="130" y="130" text-anchor="middle" class="box-title">React 19 Frontend</text>
+  <text x="130" y="148" text-anchor="middle" class="box-sub">Vite · TypeScript · Router v7</text>
+  <text x="130" y="163" text-anchor="middle" class="box-sub">Tanstack Query v5 · Zod</text>
+  <text x="130" y="178" text-anchor="middle" class="box-sub">i18n EN/FR · PWA · CSS Modules</text>
+  <text x="130" y="195" text-anchor="middle" class="box-sub">22 pages · 71+ tests</text>
+
+  <!-- PWA badge -->
+  <rect x="40" y="215" width="40" height="18" rx="4" fill="#1d4ed8" opacity="0.8"/>
+  <text x="60" y="227" text-anchor="middle" font-size="9" fill="#93c5fd">PWA</text>
+  <rect x="86" y="215" width="40" height="18" rx="4" fill="#4c1d95" opacity="0.8"/>
+  <text x="106" y="227" text-anchor="middle" font-size="9" fill="#c4b5fd">i18n</text>
+  <rect x="132" y="215" width="55" height="18" rx="4" fill="#064e3b" opacity="0.8"/>
+  <text x="159" y="227" text-anchor="middle" font-size="9" fill="#6ee7b7">Vitest 71+</text>
+
+  <!-- LAYER: API Gateway -->
+  <text x="30" y="260" class="layer-label">API Gateway</text>
+  <rect x="30" y="268" width="200" height="70" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1.5" filter="url(#shadow)" class="float-box-2"/>
+  <text x="130" y="292" text-anchor="middle" class="box-title">chi Router</text>
+  <text x="130" y="310" text-anchor="middle" class="box-sub">170+ routes · CORS (dev) · 1MiB body cap</text>
+  <text x="130" y="326" text-anchor="middle" class="box-sub">Middleware: metrics · auth · size-limit</text>
+
+  <!-- Arrow: Frontend → API -->
+  <line x1="130" y1="208" x2="130" y2="265" class="arrow arrow-blue animated-arrow-blue" marker-end="url(#arrowhead)"/>
+
+  <!-- LAYER: Core Services -->
+  <text x="30" y="360" class="layer-label">Core Services</text>
+
+  <!-- Mission Service -->
+  <rect x="30" y="368" width="120" height="80" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="388" text-anchor="middle" class="box-title">Mission</text>
+  <text x="90" y="404" text-anchor="middle" class="box-sub">CRUD · Lifecycle</text>
+  <text x="90" y="418" text-anchor="middle" class="box-sub">Slug routing</text>
+  <text x="90" y="434" text-anchor="middle" class="box-sub">Archive · Share</text>
+
+  <!-- Option Service -->
+  <rect x="164" y="368" width="120" height="80" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="224" y="388" text-anchor="middle" class="box-title">Options</text>
+  <text x="224" y="404" text-anchor="middle" class="box-sub">Research results</text>
+  <text x="224" y="418" text-anchor="middle" class="box-sub">Compare · Vote</text>
+  <text x="224" y="434" text-anchor="middle" class="box-sub">Similar (pgvector)</text>
+
+  <!-- Shopping Service -->
+  <rect x="30" y="460" width="120" height="80" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="90" y="480" text-anchor="middle" class="box-title">Shopping</text>
+  <text x="90" y="496" text-anchor="middle" class="box-sub">Price tracking</text>
+  <text x="90" y="510" text-anchor="middle" class="box-sub">Deal intel · TCO</text>
+  <text x="90" y="525" text-anchor="middle" class="box-sub">Alerts · History</text>
+
+  <!-- Notification Service -->
+  <rect x="164" y="460" width="120" height="80" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="224" y="480" text-anchor="middle" class="box-title">Notifications</text>
+  <text x="224" y="496" text-anchor="middle" class="box-sub">CRUD · Mark-read</text>
+  <text x="224" y="510" text-anchor="middle" class="box-sub">Unread count</text>
+  <text x="224" y="525" text-anchor="middle" class="box-sub">60s poll</text>
+
+  <!-- Arrow: API → Services -->
+  <line x1="130" y1="338" x2="90" y2="365" class="arrow arrow-blue animated-arrow-blue" marker-end="url(#arrowhead)"/>
+  <line x1="130" y1="338" x2="224" y2="365" class="arrow arrow-blue animated-arrow-blue" marker-end="url(#arrowhead)"/>
+
+  <!-- LAYER: AI Agents (center) -->
+  <text x="310" y="100" class="layer-label">AI Agent Layer</text>
+
+  <!-- Research Agent -->
+  <rect x="310" y="108" width="150" height="90" rx="10" fill="url(#purple-grad)" filter="url(#shadow)" class="float-box"/>
+  <text x="385" y="130" text-anchor="middle" class="box-title">ResearchAgent</text>
+  <text x="385" y="148" text-anchor="middle" class="box-sub">Tool schema builder</text>
+  <text x="385" y="163" text-anchor="middle" class="box-sub">Prompt constructor</text>
+  <text x="385" y="178" text-anchor="middle" class="box-sub">Option parser · DB persist</text>
+  <text x="385" y="193" text-anchor="middle" class="box-sub">Async embed worker</text>
+
+  <!-- Pricing Agent -->
+  <rect x="474" y="108" width="150" height="90" rx="10" fill="url(#purple-grad)" filter="url(#shadow)" class="float-box-2"/>
+  <text x="549" y="130" text-anchor="middle" class="box-title">PricingAgent</text>
+  <text x="549" y="148" text-anchor="middle" class="box-sub">Price hunter</text>
+  <text x="549" y="163" text-anchor="middle" class="box-sub">TCO calculator</text>
+  <text x="549" y="178" text-anchor="middle" class="box-sub">Deal scorer</text>
+  <text x="549" y="193" text-anchor="middle" class="box-sub">Merchant ranker</text>
+
+  <!-- Specialized Agents box -->
+  <rect x="310" y="215" width="314" height="110" rx="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 3" filter="url(#shadow)"/>
+  <text x="467" y="237" text-anchor="middle" class="box-title">140+ Specialized Agents</text>
+  <text x="467" y="255" text-anchor="middle" class="box-sub">Wishlist Prioritizer · French Benchmark · Scorecard · Quantity Optimizer</text>
+  <text x="467" y="271" text-anchor="middle" class="box-sub">Timeline Planner · Coach · Deal Aggregator · Coupon · Carbon · Forecast</text>
+  <text x="467" y="287" text-anchor="middle" class="box-sub">Negotiation · ROI · Persona · Seasonal · Inflation · Cash-Back · Loyalty</text>
+  <text x="467" y="303" text-anchor="middle" class="box-sub">Receipt Analyzer · Review Aggregator · Substitute Finder · 100+ more…</text>
+  <text x="467" y="317" text-anchor="middle" font-size="9" fill="#6d28d9">GET /api/missions/:id/[capability]</text>
+
+  <!-- LLM SmartRouter -->
+  <text x="310" y="352" class="layer-label">LLM Routing</text>
+  <rect x="310" y="360" width="314" height="100" rx="10" fill="#1e293b" stroke="#a78bfa" stroke-width="2" filter="url(#shadow)" class="float-box-3"/>
+  <text x="467" y="382" text-anchor="middle" class="box-title">SmartRouter (Phase 9)</text>
+  <text x="467" y="400" text-anchor="middle" class="box-sub">Capability-matched pool · Per-model circuit breakers · Rate limiters</text>
+  <text x="467" y="416" text-anchor="middle" class="box-sub">Cascade: Ollama Heavy → Fast → Cloud → Anthropic</text>
+  <text x="467" y="432" text-anchor="middle" class="box-sub">RetryAsJSON fallback · HasRequestOpts context routing</text>
+  <text x="467" y="448" text-anchor="middle" class="box-sub">GET /api/health/llm · 60s status poll in Topnav</text>
+
+  <!-- LLM Providers -->
+  <rect x="310" y="477" width="145" height="70" rx="8" fill="url(#orange-grad)" filter="url(#shadow)"/>
+  <text x="382" y="498" text-anchor="middle" class="box-title">Ollama</text>
+  <text x="382" y="514" text-anchor="middle" class="box-sub">Local · Heavy/Fast/Embed</text>
+  <text x="382" y="530" text-anchor="middle" class="box-sub">qwen3:14b / qwen3:4b</text>
+  <text x="382" y="545" text-anchor="middle" class="box-sub">mxbai-embed-large</text>
+
+  <rect x="479" y="477" width="145" height="70" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="551" y="498" text-anchor="middle" class="box-title">Anthropic</text>
+  <text x="551" y="514" text-anchor="middle" class="box-sub">claude-sonnet-4-6</text>
+  <text x="551" y="530" text-anchor="middle" class="box-sub">Tool use · Structured output</text>
+  <text x="551" y="545" text-anchor="middle" class="box-sub">API key gated</text>
+
+  <!-- Arrows: API → Agents -->
+  <line x1="240" y1="338" x2="385" y2="215" class="arrow arrow-purple animated-arrow-purple" marker-end="url(#arrowhead-purple)"/>
+  <line x1="240" y1="338" x2="549" y2="200" class="arrow arrow-purple animated-arrow-purple" marker-end="url(#arrowhead-purple)"/>
+
+  <!-- Arrows: Agents → SmartRouter -->
+  <line x1="467" y1="325" x2="467" y2="357" class="arrow arrow-purple animated-arrow-purple" marker-end="url(#arrowhead-purple)"/>
+
+  <!-- Arrows: SmartRouter → LLM Providers -->
+  <line x1="382" y1="460" x2="382" y2="474" class="arrow arrow-orange animated-arrow-orange" marker-end="url(#arrowhead-orange)"/>
+  <line x1="551" y1="460" x2="551" y2="474" class="arrow arrow-orange animated-arrow-orange" marker-end="url(#arrowhead-orange)"/>
+
+  <!-- LAYER: Data (right) -->
+  <text x="660" y="100" class="layer-label">Data Layer</text>
+
+  <!-- PostgreSQL -->
+  <rect x="660" y="108" width="270" height="130" rx="10" fill="url(#green-grad)" filter="url(#shadow)" class="float-box"/>
+  <text x="795" y="130" text-anchor="middle" class="box-title">PostgreSQL 16 + pgvector</text>
+  <text x="795" y="150" text-anchor="middle" class="box-sub">golang-migrate (auto-run on start) · 22+ migrations</text>
+  <text x="795" y="168" text-anchor="middle" class="box-sub">missions · options · shopping_items · notifications</text>
+  <text x="795" y="184" text-anchor="middle" class="box-sub">purchase_records · settings · collaborators · votes</text>
+  <text x="795" y="200" text-anchor="middle" class="box-sub">wishlist_items · embeddings (vector 1024-dim)</text>
+  <text x="795" y="216" text-anchor="middle" class="box-sub">forecasts · envelopes · persona · agents</text>
+  <text x="795" y="232" text-anchor="middle" class="box-sub">IVFFlat index lists=10 · UUID primary keys · JSONB</text>
+
+  <!-- Scheduler -->
+  <rect x="660" y="255" width="270" height="70" rx="10" fill="#1e293b" stroke="#34d399" stroke-width="1.5" filter="url(#shadow)" class="float-box-2"/>
+  <text x="795" y="278" text-anchor="middle" class="box-title">Background Scheduler</text>
+  <text x="795" y="296" text-anchor="middle" class="box-sub">robfig/cron · Price-check alerts on active missions</text>
+  <text x="795" y="312" text-anchor="middle" class="box-sub">Async embedding worker (2 goroutines)</text>
+
+  <!-- Export + Search -->
+  <rect x="660" y="340" width="130" height="70" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="725" y="363" text-anchor="middle" class="box-title">Export</text>
+  <text x="725" y="380" text-anchor="middle" class="box-sub">JSON · Share token</text>
+  <text x="725" y="395" text-anchor="middle" class="box-sub">GET /api/shared/:token</text>
+  <text x="725" y="408" text-anchor="middle" class="box-sub">CORS-open</text>
+
+  <rect x="800" y="340" width="130" height="70" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="865" y="363" text-anchor="middle" class="box-title">Semantic Search</text>
+  <text x="865" y="380" text-anchor="middle" class="box-sub">cosine ANN &lt;=&gt;</text>
+  <text x="865" y="395" text-anchor="middle" class="box-sub">CTE similar query</text>
+  <text x="865" y="408" text-anchor="middle" class="box-sub">300ms debounce</text>
+
+  <!-- Templates -->
+  <rect x="660" y="425" width="270" height="60" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="795" y="448" text-anchor="middle" class="box-title">Template Registry</text>
+  <text x="795" y="465" text-anchor="middle" class="box-sub">15 built-in templates · Compiled in binary · GET /api/templates</text>
+  <text x="795" y="480" text-anchor="middle" class="box-sub">Electronics · Travel · Home · Finance · Health · Vehicles…</text>
+
+  <!-- Monitoring -->
+  <rect x="660" y="500" width="270" height="60" rx="8" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="795" y="523" text-anchor="middle" class="box-title">Observability (Phase 14)</text>
+  <text x="795" y="540" text-anchor="middle" class="box-sub">Prometheus metrics · Grafana dashboards · cAdvisor</text>
+  <text x="795" y="555" text-anchor="middle" class="box-sub">GET /metrics · docker-compose profile: monitoring</text>
+
+  <!-- Arrow: Backend → DB -->
+  <line x1="290" y1="408" x2="658" y2="200" class="arrow arrow-green animated-arrow-green" marker-end="url(#arrowhead-green)"/>
+  <line x1="624" y1="360" x2="658" y2="360" class="arrow arrow-green animated-arrow-green" marker-end="url(#arrowhead-green)"/>
+
+  <!-- Footer -->
+  <text x="480" y="605" text-anchor="middle" font-size="10" fill="#475569">
+    Go 1.23 backend · React 19 frontend · PostgreSQL 16 + pgvector · Docker Compose · 132 internal packages
+  </text>
+</svg>

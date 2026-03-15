@@ -1,0 +1,194 @@
+<svg viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <style>
+      @keyframes flow {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: -24; }
+      }
+      @keyframes flow-back {
+        0% { stroke-dashoffset: 0; }
+        100% { stroke-dashoffset: 24; }
+      }
+      @keyframes glow-box {
+        0%, 100% { box-shadow: none; filter: none; }
+        50% { filter: drop-shadow(0 0 6px rgba(96,165,250,0.5)); }
+      }
+      .fl { animation: flow 1.4s linear infinite; stroke-dasharray: 6 4; }
+      .fl-back { animation: flow-back 1.4s linear infinite; stroke-dasharray: 6 4; }
+      .fl-slow { animation: flow 2.2s linear infinite; stroke-dasharray: 6 4; }
+      .t { font-size: 12px; font-weight: 700; fill: #f8fafc; text-anchor: middle; }
+      .s { font-size: 10px; fill: #94a3b8; text-anchor: middle; }
+      .xs { font-size: 9px; fill: #64748b; text-anchor: middle; }
+      .seq { font-size: 10px; fill: #fcd34d; text-anchor: middle; }
+    </style>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1a2540"/>
+    </linearGradient>
+    <marker id="a5b" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#60a5fa"/>
+    </marker>
+    <marker id="a5g" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#34d399"/>
+    </marker>
+    <marker id="a5p" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#a78bfa"/>
+    </marker>
+    <marker id="a5o" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#fb923c"/>
+    </marker>
+  </defs>
+
+  <rect width="860" height="520" fill="url(#bg5)" rx="12"/>
+
+  <text x="430" y="34" text-anchor="middle" font-size="19" font-weight="800" fill="#f8fafc">Request / Response Data Flow</text>
+  <text x="430" y="52" text-anchor="middle" font-size="11" fill="#64748b">POST /api/missions/:id/research — end-to-end call trace</text>
+
+  <!-- STEP BOXES: horizontal sequence -->
+  <!-- Step 1: Browser -->
+  <rect x="20" y="80" width="110" height="80" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+  <text x="75" y="105" class="t">Browser</text>
+  <text x="75" y="122" class="s">React Page</text>
+  <text x="75" y="136" class="s">useResearch()</text>
+  <text x="75" y="150" class="xs">Tanstack Query</text>
+  <rect x="30" y="154" width="90" height="14" rx="7" fill="#1d4ed8"/>
+  <text x="75" y="164" class="seq">① POST /research</text>
+
+  <!-- Arrow 1 -->
+  <line x1="132" y1="120" x2="168" y2="120" stroke="#60a5fa" stroke-width="2" class="fl" marker-end="url(#a5b)"/>
+
+  <!-- Step 2: chi Router -->
+  <rect x="170" y="80" width="110" height="80" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="225" y="105" class="t">chi Router</text>
+  <text x="225" y="122" class="s">Middleware chain</text>
+  <text x="225" y="136" class="s">CORS · 1MiB cap</text>
+  <text x="225" y="150" class="xs">Prometheus metrics</text>
+  <rect x="178" y="154" width="94" height="14" rx="7" fill="#1e40af"/>
+  <text x="225" y="164" class="seq">② route → handler</text>
+
+  <!-- Arrow 2 -->
+  <line x1="282" y1="120" x2="318" y2="120" stroke="#60a5fa" stroke-width="2" class="fl" marker-end="url(#a5b)"/>
+
+  <!-- Step 3: Handler -->
+  <rect x="320" y="80" width="110" height="80" rx="8" fill="#1e293b" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="375" y="105" class="t">Handler</text>
+  <text x="375" y="122" class="s">Decode body</text>
+  <text x="375" y="136" class="s">Validate input</text>
+  <text x="375" y="150" class="xs">WriteJSON / WriteError</text>
+  <rect x="328" y="154" width="94" height="14" rx="7" fill="#5b21b6"/>
+  <text x="375" y="164" class="seq">③ call service</text>
+
+  <!-- Arrow 3 -->
+  <line x1="432" y1="120" x2="468" y2="120" stroke="#a78bfa" stroke-width="2" class="fl" marker-end="url(#a5p)"/>
+
+  <!-- Step 4: Service -->
+  <rect x="470" y="80" width="110" height="80" rx="8" fill="#1e293b" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="525" y="105" class="t">Service</text>
+  <text x="525" y="122" class="s">Business logic</text>
+  <text x="525" y="136" class="s">Orchestrate agents</text>
+  <text x="525" y="150" class="xs">Transaction scope</text>
+  <rect x="478" y="154" width="94" height="14" rx="7" fill="#5b21b6"/>
+  <text x="525" y="164" class="seq">④ ResearchAgent</text>
+
+  <!-- Arrow 4 -->
+  <line x1="582" y1="120" x2="618" y2="120" stroke="#a78bfa" stroke-width="2" class="fl" marker-end="url(#a5p)"/>
+
+  <!-- Step 5: ResearchAgent -->
+  <rect x="620" y="80" width="110" height="80" rx="8" fill="#1e293b" stroke="#7c3aed" stroke-width="2"/>
+  <text x="675" y="100" class="t">ResearchAgent</text>
+  <text x="675" y="117" class="s">Build prompt + tools</text>
+  <text x="675" y="131" class="s">WithRequestOpts</text>
+  <text x="675" y="145" class="s">Parse tool_calls</text>
+  <text x="675" y="159" class="xs">Persist options to DB</text>
+  <rect x="628" y="154" width="94" height="14" rx="7" fill="#4c1d95"/>
+  <text x="675" y="164" class="seq">⑤ SmartRouter</text>
+
+  <!-- Arrow 5: down to SmartRouter -->
+  <line x1="675" y1="162" x2="675" y2="198" stroke="#a78bfa" stroke-width="2" class="fl" marker-end="url(#a5p)"/>
+
+  <!-- SmartRouter below ResearchAgent -->
+  <rect x="620" y="200" width="110" height="65" rx="8" fill="#1e293b" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="675" y="220" class="t">SmartRouter</text>
+  <text x="675" y="236" class="s">Match capabilities</text>
+  <text x="675" y="250" class="s">Circuit break check</text>
+  <text x="675" y="264" class="xs">Rate limit check</text>
+
+  <!-- Arrow SmartRouter → LLM -->
+  <line x1="675" y1="267" x2="675" y2="303" stroke="#f97316" stroke-width="2" class="fl" marker-end="url(#a5o)"/>
+
+  <!-- LLM box -->
+  <rect x="620" y="305" width="110" height="65" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+  <text x="675" y="325" class="t" style="fill:#fcd34d">LLM Provider</text>
+  <text x="675" y="341" class="s">claude-sonnet-4-6</text>
+  <text x="675" y="355" class="s">Tool use response</text>
+  <text x="675" y="369" class="xs">JSON structured output</text>
+
+  <!-- Arrow LLM → SmartRouter (response back) -->
+  <line x1="652" y1="305" x2="652" y2="268" stroke="#34d399" stroke-width="2" class="fl-back" marker-end="url(#a5g)"/>
+
+  <!-- Arrow SmartRouter → ResearchAgent (response back) -->
+  <line x1="652" y1="200" x2="652" y2="165" stroke="#34d399" stroke-width="2" class="fl-back" marker-end="url(#a5g)"/>
+
+  <!-- BELOW: DB write path -->
+  <!-- Arrow: ResearchAgent → pgx Repository -->
+  <line x1="620" y1="140" x2="480" y2="280" stroke="#34d399" stroke-width="1.5" class="fl-slow" marker-end="url(#a5g)"/>
+  <text x="555" y="208" class="xs" style="fill:#34d399">persist options</text>
+
+  <!-- pgx Repository -->
+  <rect x="320" y="270" width="150" height="70" rx="8" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+  <text x="395" y="293" class="t">pgx Repository</text>
+  <text x="395" y="310" class="s">INSERT options · Batch</text>
+  <text x="395" y="324" class="s">errors.Is(pgx.ErrNoRows)</text>
+  <text x="395" y="338" class="xs">UUID PK · cursor pagination</text>
+
+  <!-- Arrow: Repository → PostgreSQL -->
+  <line x1="395" y1="342" x2="395" y2="378" stroke="#34d399" stroke-width="1.5" class="fl" marker-end="url(#a5g)"/>
+
+  <!-- PostgreSQL -->
+  <rect x="270" y="380" width="250" height="65" rx="8" fill="#0f172a" stroke="#059669" stroke-width="2"/>
+  <text x="395" y="403" class="t">PostgreSQL 16 + pgvector</text>
+  <text x="395" y="419" class="s">missions · options · embeddings</text>
+  <text x="395" y="433" class="s">golang-migrate auto-run · IVFFlat index</text>
+  <text x="395" y="445" class="xs">22+ migrations · UUID PKs · JSONB</text>
+
+  <!-- Embed worker side path -->
+  <rect x="30" y="270" width="160" height="70" rx="8" fill="#1e293b" stroke="#0891b2" stroke-width="1.5"/>
+  <text x="110" y="293" class="t">Embed Worker</text>
+  <text x="110" y="310" class="s">OllamaEmbedder async</text>
+  <text x="110" y="324" class="s">mxbai-embed-large</text>
+  <text x="110" y="338" class="xs">2 goroutines · 1024-dim vector</text>
+
+  <line x1="320" y1="305" x2="192" y2="305" stroke="#0891b2" stroke-width="1.5" class="fl-slow" marker-end="url(#a5b)"/>
+  <text x="256" y="298" class="xs" style="fill:#0891b2">option text</text>
+
+  <line x1="110" y1="342" x2="270" y2="410" stroke="#0891b2" stroke-width="1.5" class="fl-slow" marker-end="url(#a5b)"/>
+  <text x="170" y="390" class="xs" style="fill:#0891b2">vector(1024)</text>
+
+  <!-- Response path back: DB → Repository → Service → Handler → Router → Browser -->
+  <line x1="395" y1="380" x2="375" y2="342" stroke="#60a5fa" stroke-width="1.5" class="fl-back" marker-end="url(#a5b)"/>
+  <line x1="320" y1="305" x2="470" y2="140" stroke="#60a5fa" stroke-width="1.5" class="fl-back" marker-end="url(#a5b)"/>
+  <text x="385" y="220" class="xs" style="fill:#60a5fa">200 OK + options JSON</text>
+
+  <!-- Zod validation note -->
+  <rect x="20" y="395" width="240" height="55" rx="8" fill="#1e293b" stroke="#a78bfa" stroke-width="1"/>
+  <text x="140" y="415" text-anchor="middle" class="t" style="font-size:11px">Zod Validation (frontend)</text>
+  <text x="140" y="431" class="s">src/api/options.ts schema</text>
+  <text x="140" y="445" class="xs">Validates response before React state · Throws on schema mismatch</text>
+
+  <line x1="130" y1="220" x2="140" y2="392" stroke="#a78bfa" stroke-width="1.5" class="fl-back" stroke-dasharray="4 3" marker-end="url(#a5p)"/>
+
+  <!-- Legend -->
+  <rect x="620" y="395" width="220" height="90" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+  <text x="730" y="414" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">Legend</text>
+  <line x1="635" y1="430" x2="670" y2="430" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="710" y="434" text-anchor="middle" class="xs" style="fill:#93c5fd">request flow</text>
+  <line x1="635" y1="450" x2="670" y2="450" stroke="#34d399" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="710" y="454" text-anchor="middle" class="xs" style="fill:#6ee7b7">response / write</text>
+  <line x1="635" y1="470" x2="670" y2="470" stroke="#0891b2" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="710" y="474" text-anchor="middle" class="xs" style="fill:#67e8f9">embed async</text>
+
+  <!-- Footer -->
+  <text x="430" y="508" text-anchor="middle" font-size="10" fill="#334155">
+    Graceful shutdown: 65s timeout · httputil.WriteJSON (buffered, no header split) · All errors: errors.Is(pgx.ErrNoRows)
+  </text>
+</svg>
