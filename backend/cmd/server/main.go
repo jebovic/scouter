@@ -32,6 +32,7 @@ import (
 	"github.com/jibei/scouter/internal/negotiation"
 	"github.com/jibei/scouter/internal/notification"
 	"github.com/jibei/scouter/internal/option"
+	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
@@ -133,6 +134,11 @@ func main() {
 	agentRunSvc := agentrun.NewService(agentRunRepo)
 	agentRunHandler := agentrun.NewHandler(agentRunSvc)
 
+	// Wish List (Phase 21) + Price Alerts (Phase 24) — declared here so
+	// wishlistPriceChecker is available to the scheduler block below.
+	wishlistRepo := wishlist.NewRepository(pool)
+	wishlistPriceChecker := wishlist.NewPriceChecker(wishlistRepo, notifRepo, provider)
+
 	// Price check scheduler (opt-in via PRICE_CHECK_ENABLED=true)
 	var sched *scheduler.Scheduler
 	if cfg.PriceCheckEnabled {
@@ -142,7 +148,7 @@ func main() {
 		)
 		orch.SetRecorder(rec)
 		var schedErr error
-		sched, schedErr = scheduler.New(cfg.PriceCheckCron, orch, log)
+		sched, schedErr = scheduler.New(cfg.PriceCheckCron, orch, log, wishlistPriceChecker)
 		if schedErr != nil {
 			log.Error("scheduler init failed", "err", schedErr)
 			os.Exit(1)
@@ -293,9 +299,12 @@ func main() {
 	forecastHandler := forecast.NewHandler(forecastAgent, forecastRepo)
 	r.Route("/api/missions/{missionID}/forecast", forecastHandler.Routes())
 
-	// Wish List (Phase 21)
-	wishlistRepo := wishlist.NewRepository(pool)
+	// Wish List route (repo+checker declared above, before the scheduler block)
 	r.Route("/api/wishlist", wishlist.Routes(wishlistRepo))
+
+	// Product barcode lookup (Phase 25)
+	productLooker := product.NewLooker()
+	r.Route("/api/products", product.Routes(productLooker))
 
 	// Weighted Comparison Matrix (Phase 22)
 	comparisonRepo := comparison.NewRepository(pool)

@@ -24,6 +24,7 @@ func Routes(repo *Repository) func(chi.Router) {
 		r.Get("/", h.List)
 		r.Post("/", h.Create)
 		r.Delete("/{id}", h.Delete)
+		r.Patch("/{id}/alert", h.UpdateAlert)
 	}
 }
 
@@ -55,6 +56,29 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httputil.WriteJSON(w, http.StatusCreated, item)
+}
+
+func (h *Handler) UpdateAlert(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	var req UpdateWishListItemRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		httputil.WriteError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.AlertEnabled == nil {
+		httputil.WriteError(w, http.StatusBadRequest, "alertEnabled is required")
+		return
+	}
+	err := h.repo.UpdateAlertEnabled(r.Context(), id, *req.AlertEnabled)
+	if errors.Is(err, pgx.ErrNoRows) {
+		httputil.WriteError(w, http.StatusNotFound, "wish list item not found")
+		return
+	}
+	if err != nil {
+		httputil.WriteError(w, http.StatusInternalServerError, "failed to update alert")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {

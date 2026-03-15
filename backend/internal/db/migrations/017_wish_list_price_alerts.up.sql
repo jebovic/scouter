@@ -1,0 +1,4 @@
+ALTER TABLE wish_list_items
+  ADD COLUMN IF NOT EXISTS last_checked_at    TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS last_checked_price NUMERIC(12,2),
+  ADD COLUMN IF NOT EXISTS alert_enabled      BOOLEAN NOT NULL DEFAULT TRUE;

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/jibei/scouter/internal/wishlist"
 	"github.com/robfig/cron/v3"
 )
 
@@ -16,7 +17,8 @@ type Scheduler struct {
 }
 
 // New creates a new Scheduler. Call Start to begin scheduling.
-func New(cronExpr string, o *Orchestrator, log *slog.Logger) (*Scheduler, error) {
+// wishlistChecker may be nil — when nil, the wish-list price-alert job is skipped.
+func New(cronExpr string, o *Orchestrator, log *slog.Logger, wishlistChecker *wishlist.PriceChecker) (*Scheduler, error) {
 	c := cron.New(cron.WithLocation(time.UTC))
 	s := &Scheduler{cron: c, orchestrator: o, log: log}
 
@@ -29,6 +31,19 @@ func New(cronExpr string, o *Orchestrator, log *slog.Logger) (*Scheduler, error)
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	if wishlistChecker != nil {
+		_, err = c.AddFunc("@daily", func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
+			defer cancel()
+			if err := wishlistChecker.CheckAll(ctx); err != nil {
+				log.Error("wishlist price checker failed", "err", err)
+			}
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return s, nil
