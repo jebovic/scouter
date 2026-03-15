@@ -40,6 +40,8 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       {!missionSlug && (
         <div className={styles.subNav}>
           {[
+            { label: 'Kanban', path: '/kanban' },
+            { label: 'Cashback', path: '/cashback' },
             { label: 'Wishlist', path: '/wishlist' },
             { label: 'Envelopes', path: '/envelopes' },
             { label: 'Bons Plans', path: '/deal-calendar' },

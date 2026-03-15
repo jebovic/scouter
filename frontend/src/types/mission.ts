@@ -37,6 +37,7 @@ export interface Mission {
   weightProfile: WeightProfile
   lessons?: string | null
   envelopeId?: string | null
+  archivedAt?: string | null
   createdAt: string
   updatedAt: string
 }

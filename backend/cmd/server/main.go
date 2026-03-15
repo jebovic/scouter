@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/autotag"
+	"github.com/jibei/scouter/internal/cashback"
 	"github.com/jibei/scouter/internal/dealfeed"
 	"github.com/jibei/scouter/internal/benchmark"
 	"github.com/jibei/scouter/internal/dealexplain"
@@ -332,6 +333,11 @@ func main() {
 
 	// Deal Calendar
 	r.Get("/api/deal-calendar", dealCalHandler.List)
+
+	// Smart Cashback Tracker (Phase 87)
+	cashbackRepo := cashback.NewRepository()
+	cashbackHandler := cashback.NewHandler(cashbackRepo)
+	r.Mount("/api/cashback", cashbackHandler.Routes())
 
 	// French Promo Feed (Phase 83)
 	dealFeedHandler := dealfeed.NewHandler(smartRouter, log)

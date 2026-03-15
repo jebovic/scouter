@@ -44,6 +44,7 @@ export const MissionSchema = z.object({
   weightProfile: WeightProfileSchema.default({ price: 0, quality: 0, feature: 0 }),
   lessons: z.string().nullish().transform(v => v ?? undefined),
   envelopeId: z.string().uuid().nullish(),
+  archivedAt: z.string().nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })
