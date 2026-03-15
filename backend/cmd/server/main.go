@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -15,6 +14,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/config"
@@ -31,6 +31,7 @@ import (
 	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
+	"github.com/jibei/scouter/internal/settings"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
 	"github.com/jibei/scouter/internal/usage"
@@ -137,6 +138,13 @@ func main() {
 	purchaseHandler := purchase.NewHandler(purchaseSvc)
 	statsHandler := purchase.NewStatsHandler(pool)
 
+	// Settings (Phase 13)
+	settingsRepo := settings.NewRepository(pool)
+	settingsHandler := settings.NewHandler(settingsRepo)
+
+	// Admin data management (Phase 13)
+	adminHandler := admin.NewHandler(pool)
+
 	// Export
 	exportGatherer := export.NewGatherer(missionRepo, optionRepo, shoppingRepo, decisionRepo)
 	exportHandler := export.NewHandler(exportGatherer)
@@ -156,9 +164,21 @@ func main() {
 		r.Use(corsMiddleware)
 	}
 
-	r.Get("/api/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, `{"status":"ok"}`)
+	r.Get("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		dbStatus := "ok"
+		pingCtx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+		if err := pool.Ping(pingCtx); err != nil {
+			dbStatus = "error"
+		}
+		overall := "ok"
+		if dbStatus != "ok" {
+			overall = "degraded"
+		}
+		httputil.WriteJSON(w, http.StatusOK, map[string]string{
+			"status": overall,
+			"db":     dbStatus,
+		})
 	})
 
 	r.Get("/api/usage", usageHandler.GetSummary)
@@ -220,6 +240,13 @@ func main() {
 	// Templates
 	r.Get("/api/templates", templateHandler.List)
 	r.Get("/api/templates/{slug}", templateHandler.Get)
+
+	// Settings (Phase 13)
+	r.Get("/api/settings", settingsHandler.GetAll)
+	r.Patch("/api/settings", settingsHandler.Update)
+
+	// Data management (Phase 13)
+	r.Delete("/api/data", adminHandler.DeleteAllData)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

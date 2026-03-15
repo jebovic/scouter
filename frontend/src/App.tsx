@@ -11,6 +11,7 @@ const ShoppingTracker = lazy(() => import('./pages/ShoppingTracker'))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const StatsPage = lazy(() => import('./pages/StatsPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/history" element={<HistoryPage />} />
             <Route path="/stats" element={<StatsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />

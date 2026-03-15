@@ -1,0 +1,167 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 32px;
+  color: var(--text);
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px;
+}
+
+.dangerTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--coral);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dangerCard {
+  border-color: rgba(255, 61, 113, 0.3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.select {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.success {
+  font-size: 13px;
+  color: var(--green);
+  margin: 0;
+}
+
+.dangerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dangerLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+
+.dangerDesc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0;
+  max-width: 360px;
+}
+
+.dangerBtn {
+  background: transparent;
+  border: 1px solid var(--coral);
+  color: var(--coral);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  font-family: var(--font-body);
+}
+
+.dangerBtn:hover {
+  background: rgba(255, 61, 113, 0.1);
+}
+
+.dangerBtnConfirm {
+  background: var(--coral);
+  color: white;
+}
+
+.dangerBtnConfirm:hover {
+  background: #cc4444;
+}
+
+.dangerWarning {
+  font-size: 13px;
+  color: var(--gold);
+  margin: 0;
+}
+
+.loading {
+  color: var(--text-dim);
+  padding: 40px 0;
+  text-align: center;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .page {
+    padding: 24px 16px;
+  }
+
+  .heading {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .dangerRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dangerBtn {
+    width: 100%;
+  }
+}

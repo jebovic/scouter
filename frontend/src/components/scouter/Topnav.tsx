@@ -40,6 +40,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
           {[
             { label: 'History', path: '/history' },
             { label: 'Stats', path: '/stats' },
+            { label: 'Settings', path: '/settings' },
           ].map(({ label, path }) => (
             <Link
               key={path}
