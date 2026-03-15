@@ -259,6 +259,24 @@
     "delete": "Delete",
     "loading": "Loading wish list..."
   },
+  "comparison": {
+    "title": "Weighted Comparison Matrix",
+    "criteria": "Criteria",
+    "weight": "Weight",
+    "score": "Score",
+    "rank": "Rank",
+    "option": "Option",
+    "refresh": "Refresh Matrix",
+    "noScores": "Add options and set weights to see rankings",
+    "addCriteria": "Add criteria",
+    "predefined": {
+      "price": "Price",
+      "quality": "Quality",
+      "warranty": "Warranty",
+      "brand": "Brand",
+      "availability": "Availability"
+    }
+  },
   "feedbackModal": {
     "rerunResearch": "Re-Run Research",
     "rerunResearchPlaceholder": "Optional: guide the agent (e.g. \"focus on options under $800 with good warranty\")",

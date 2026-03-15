@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ScouterGrid, EmptyState, SkeletonGrid, FeedbackModal } from '../components/scouter'
 import { OptionCard, ComparisonTable, RadarChart, ConstraintChecker, LivePricesPanel } from '../components/options'
+import { ComparisonMatrix } from '../components/comparison'
 import { AgentRunHistory } from '../components/agentrun'
 import {
   useMission,
@@ -181,6 +182,13 @@ export default function OptionsExplorer() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Weighted Comparison Matrix — always shown when mission is loaded */}
+          {mission && (
+            <div className={styles.matrixSection}>
+              <ComparisonMatrix missionId={mission.id} />
             </div>
           )}
         </div>

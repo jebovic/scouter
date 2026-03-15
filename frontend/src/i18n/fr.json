@@ -259,6 +259,24 @@
     "delete": "Supprimer",
     "loading": "Chargement de la liste de souhaits..."
   },
+  "comparison": {
+    "title": "Matrice de Comparaison Pondérée",
+    "criteria": "Critères",
+    "weight": "Poids",
+    "score": "Score",
+    "rank": "Rang",
+    "option": "Option",
+    "refresh": "Actualiser la Matrice",
+    "noScores": "Ajoutez des options et définissez des poids pour voir les classements",
+    "addCriteria": "Ajouter un critère",
+    "predefined": {
+      "price": "Prix",
+      "quality": "Qualité",
+      "warranty": "Garantie",
+      "brand": "Marque",
+      "availability": "Disponibilité"
+    }
+  },
   "feedbackModal": {
     "rerunResearch": "Relancer la Recherche",
     "rerunResearchPlaceholder": "Optionnel : guidez l'agent (ex. « concentrez-vous sur les options de moins de 800 € avec une bonne garantie »)",

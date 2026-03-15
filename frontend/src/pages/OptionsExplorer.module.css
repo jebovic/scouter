@@ -155,6 +155,10 @@
   margin-bottom: 1.5rem;
 }
 
+.matrixSection {
+  margin-top: 2rem;
+}
+
 .loadingCenter {
   flex: 1;
   padding: 2rem;

@@ -18,11 +18,13 @@ import (
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/collaborator"
+	"github.com/jibei/scouter/internal/comparison"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
 	"github.com/jibei/scouter/internal/embedding"
 	"github.com/jibei/scouter/internal/export"
+	"github.com/jibei/scouter/internal/forecast"
 	"github.com/jibei/scouter/internal/httputil"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/metrics"
@@ -285,9 +287,20 @@ func main() {
 	r.Post("/api/invites/{token}/join", collaboratorHandler.JoinMission)
 	r.Mount("/api/options/{optionID}/votes", voteHandler.Routes())
 
+	// Smart Budget Forecaster (Phase 23)
+	forecastRepo := forecast.NewRepository(pool)
+	forecastAgent := forecast.NewForecastAgent(provider, forecastRepo, pool)
+	forecastHandler := forecast.NewHandler(forecastAgent, forecastRepo)
+	r.Route("/api/missions/{missionID}/forecast", forecastHandler.Routes())
+
 	// Wish List (Phase 21)
 	wishlistRepo := wishlist.NewRepository(pool)
 	r.Route("/api/wishlist", wishlist.Routes(wishlistRepo))
+
+	// Weighted Comparison Matrix (Phase 22)
+	comparisonRepo := comparison.NewRepository(pool)
+	r.Route("/api/missions/{missionID}/comparison-weights", comparison.WeightRoutes(comparisonRepo, pool))
+	r.Get("/api/missions/{missionID}/matrix", comparison.NewHandler(comparisonRepo, pool).Matrix)
 
 	// AI Negotiation Coach (Phase 17)
 	negotiationHandler := negotiation.NewHandler(pool, provider)
