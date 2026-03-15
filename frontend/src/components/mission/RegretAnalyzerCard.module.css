@@ -1,0 +1,278 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface-dim) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeletonCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeletonLine {
+  height: 12px;
+  width: 100%;
+  flex: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.errorState {
+  color: var(--text-dim);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* Gauge */
+.gaugeContainer {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.gauge {
+  position: relative;
+  width: 200px;
+  height: 120px;
+}
+
+.gaugeTrack,
+.gaugeFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gaugeTrack {
+  opacity: 0.2;
+}
+
+.gaugeFill {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.gaugeFill.scoreGood {
+  stroke: var(--green, #10b981);
+}
+
+.gaugeFill.scoreWarning {
+  stroke: var(--orange, #f59e0b);
+}
+
+.gaugeFill.scoreBad {
+  stroke: var(--red, #ef4444);
+}
+
+.scoreText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.scoreValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scoreLabel {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* Summary */
+.summary {
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--surface-dim);
+  padding: 12px;
+  border-radius: 8px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Total Spent */
+.totalSpent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--surface-dim);
+  border-radius: 8px;
+}
+
+.label {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Signals */
+.signals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.signalsTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.signal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-dim);
+  border-left: 4px solid var(--border);
+}
+
+.signalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.signalType {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.severityBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.severityHigh {
+  background: var(--red, #fee2e2);
+  color: var(--red, #991b1b);
+}
+
+.severityMedium {
+  background: var(--orange, #fef3c7);
+  color: var(--orange, #92400e);
+}
+
+.severityLow {
+  background: var(--yellow, #fef9e7);
+  color: var(--yellow, #78350f);
+}
+
+.severityNone {
+  background: var(--green, #dcfce7);
+  color: var(--green, #166534);
+}
+
+.signalDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.savings {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green, #10b981);
+}
+
+/* No signals */
+.noSignals {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--surface-dim);
+  border-radius: 8px;
+}
+
+.noSignals p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .gauge {
+    width: 160px;
+    height: 100px;
+  }
+
+  .scoreValue {
+    font-size: 28px;
+  }
+
+  .summary {
+    font-size: 13px;
+  }
+}

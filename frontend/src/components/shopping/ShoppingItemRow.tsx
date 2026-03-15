@@ -42,6 +42,7 @@ import { NegotiationScriptCard } from './NegotiationScriptCard'
 import { StockStatusBadge } from './StockStatusBadge'
 import { PriceComparisonTable } from './PriceComparisonTable'
 import { DealAggregatorCard } from './DealAggregatorCard'
+import { MerchantRecommenderCard } from './MerchantRecommenderCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -325,6 +326,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <DealAggregatorCard missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <MerchantRecommenderCard missionId={missionId} itemId={item.id} />
       )}
     </>
   )

@@ -128,6 +128,8 @@ import (
 	"github.com/jibei/scouter/internal/timingrecommender"
 	"github.com/jibei/scouter/internal/dealaggregator"
 	"github.com/jibei/scouter/internal/burnrate"
+	"github.com/jibei/scouter/internal/merchantrecommender"
+	"github.com/jibei/scouter/internal/regretanalyzer"
 )
 
 func main() {
@@ -359,6 +361,10 @@ func main() {
 	r.Delete("/api/missions/{missionID}/share", missionHandler.RevokeShare)
 	r.Post("/api/missions/{missionID}/archive", missionHandler.Archive)
 	r.Post("/api/missions/{missionID}/unarchive", missionHandler.Unarchive)
+
+	// Regret Analyzer (Phase 158)
+	regretHandler := regretanalyzer.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/regret-analysis", regretHandler.GetAnalysis)
 
 	// Public shared mission (accessible without auth, always CORS-open)
 	r.With(corsMiddleware).Get("/api/shared/{token}", func(w http.ResponseWriter, r *http.Request) {
@@ -827,6 +833,10 @@ func main() {
 	// Budget Burn Rate Tracker (Phase 156)
 	burnRateHandler := burnrate.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/burn-rate", burnRateHandler.GetBurnRate)
+
+	// Smart Merchant Recommender (Phase 157)
+	merchantRecHandler := merchantrecommender.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/merchant-recommendations", merchantRecHandler.GetRecommendations)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
