@@ -1,0 +1,235 @@
+@import '../../styles/theme.css';
+
+.wrapper {
+  margin-top: 1.25rem;
+  animation: fade-in 0.2s ease;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  background: var(--surface);
+}
+
+.table thead tr {
+  border-bottom: 1px solid var(--border-glow);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--raised);
+}
+
+.rowHeader {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+.missionHeader {
+  padding: 0.875rem 1.25rem;
+  text-align: left;
+  min-width: 200px;
+  vertical-align: top;
+}
+
+.missionHeaderContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.missionIcon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.missionName {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.loadingDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: glow-pulse 1.2s ease infinite;
+  margin-top: 0.25rem;
+}
+
+.rowLabel {
+  padding: 0.75rem 1rem;
+  color: var(--text-mid);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.cell {
+  padding: 0.75rem 1.25rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+/* Phase chip */
+.phaseChip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--phase-color, var(--text-dim));
+  color: var(--phase-color, var(--text-dim));
+  text-transform: uppercase;
+}
+
+/* Spent bar */
+.spentBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spentBar > .spentBar:first-child {
+  flex: 1;
+}
+
+.spentBarFill {
+  height: 6px;
+  border-radius: 3px;
+  width: var(--fill, 0%);
+  background: var(--color, var(--green));
+  transition: width 0.4s ease;
+  min-width: 4px;
+  max-width: 120px;
+  flex-shrink: 0;
+}
+
+.spentBarPct {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-mid);
+  flex-shrink: 0;
+}
+
+/* Completion */
+.completionPct {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--pct-color, var(--text-mid));
+}
+
+/* Status dots */
+.statusDots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.statusDot {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--dot-color, var(--text-mid));
+  background: color-mix(in srgb, var(--dot-color, var(--text-dim)) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dot-color, var(--text-dim)) 30%, transparent);
+  white-space: nowrap;
+}
+
+/* Skeleton */
+.skeletonCol {
+  padding: 0.75rem 1.25rem;
+  vertical-align: top;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 0%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  margin-bottom: 0.5rem;
+  max-width: 120px;
+}
+
+/* Empty state */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--text-mid);
+  margin: 0 0 0.5rem;
+}
+
+.emptyDesc {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .missionHeader {
+    min-width: 160px;
+  }
+
+  .rowHeader {
+    min-width: 110px;
+  }
+
+  .cell {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.82rem;
+  }
+}

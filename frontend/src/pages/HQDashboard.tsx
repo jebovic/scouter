@@ -2,8 +2,8 @@ import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid } from '../components/scouter'
-import { MissionCard, MissionForm, TemplateGallery, TemplatePreview, BudgetRollupWidget } from '../components/mission'
-import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar } from '../hooks'
+import { MissionCard, MissionForm, TemplateGallery, TemplatePreview, BudgetRollupWidget, MissionComparison } from '../components/mission'
+import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar, useMissionComparison } from '../hooks'
 import type { MissionCreateRequest, Template } from '../types'
 import type { DealEvent } from '../api/dealCalendar'
 import styles from './HQDashboard.module.css'
@@ -77,6 +77,8 @@ export default function HQDashboard() {
   const [createError, setCreateError] = useState<string | null>(null)
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
   const [formInitialValues, setFormInitialValues] = useState<Partial<MissionCreateRequest> | undefined>()
+
+  const { selectedIds: compareIds, toggle: toggleCompare, clear: clearCompare, isSelected: isCompareSelected, canAdd: canAddToCompare } = useMissionComparison()
 
   const shortcuts = useMemo(() => ({
     n: () => setShowForm(true),
@@ -175,6 +177,48 @@ export default function HQDashboard() {
                 <MissionCard key={mission.id} mission={mission} />
               ))}
             </ScouterGrid>
+          )}
+
+          {missions.length >= 2 && (
+            <div className={styles.compareSection}>
+              <div className={styles.compareHeader}>
+                <div>
+                  <h2 className={styles.compareTitle}>COMPARER DES MISSIONS</h2>
+                  <p className={styles.compareSubtitle}>
+                    Sélectionnez 2 à 4 missions pour une analyse côte à côte
+                  </p>
+                </div>
+                {compareIds.length > 0 && (
+                  <button className={styles.clearBtn} onClick={clearCompare}>
+                    Effacer
+                  </button>
+                )}
+              </div>
+              <div className={styles.compareChips}>
+                {missions.map((mission) => {
+                  const selected = isCompareSelected(mission.id)
+                  const disabled = !canAddToCompare(mission.id)
+                  return (
+                    <button
+                      key={mission.id}
+                      className={styles.compareChip}
+                      data-selected={selected}
+                      data-disabled={disabled}
+                      onClick={() => toggleCompare(mission.id)}
+                      disabled={disabled}
+                      title={disabled ? 'Maximum 4 missions sélectionnées' : undefined}
+                    >
+                      <span>{mission.icon}</span>
+                      <span>{mission.name}</span>
+                      {selected && <span className={styles.chipCheck}>✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
+              {compareIds.length >= 2 && (
+                <MissionComparison missionIds={compareIds} />
+              )}
+            </div>
           )}
 
           <div className={styles.templatesSection}>

@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/pricealertrule"
 	"github.com/jibei/scouter/internal/currency"
 	"github.com/jibei/scouter/internal/priceanalytics"
 	"github.com/jibei/scouter/internal/autotag"
@@ -562,6 +563,14 @@ func main() {
 	// Smart Budget Recommendations (Phase 96)
 	budgetrecHandler := budgetrec.NewHandler(shoppingSvc)
 	r.Get("/api/missions/{missionID}/budget-analysis", budgetrecHandler.GetAnalysis)
+
+	// Smart Price Alert Rules (Phase 100) — in-memory, no DB dependency
+	alertRuleRepo := pricealertrule.NewRepository()
+	alertRuleHandler := pricealertrule.NewHandler(alertRuleRepo)
+	r.Post("/api/items/{itemID}/alert-rules", alertRuleHandler.CreateRule)
+	r.Get("/api/items/{itemID}/alert-rules", alertRuleHandler.ListRules)
+	r.Delete("/api/items/{itemID}/alert-rules/{ruleID}", alertRuleHandler.DeleteRule)
+	r.Post("/api/items/{itemID}/alert-rules/check", alertRuleHandler.CheckRules)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

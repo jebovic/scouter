@@ -7,6 +7,7 @@ import { PriceSparkline } from './PriceSparkline'
 import { PricePredictionBadge } from './PricePredictionBadge'
 import { PriceAlertBadge } from './PriceAlertBadge'
 import { PriceBenchmarkBadge } from './PriceBenchmarkBadge'
+import { PriceAlertRules } from './PriceAlertRules'
 import { NegotiationCoach } from './NegotiationCoach'
 import { VATCalculator } from './VATCalculator'
 import { VoteBar } from './VoteBar'
@@ -191,6 +192,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         {showIntel && <DealIntelPanel missionId={missionId} itemId={item.id} />}
         <PricePredictionBadge itemId={item.id} />
         <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
+        <PriceAlertRules itemId={item.id} currentPrice={item.price} />
         <NegotiationCoach itemId={item.id} />
         <PriceHistoryExportButton missionId={missionId} itemId={item.id} itemName={item.name} />
         <CarbonBadge itemName={item.name} category={item.costCategory} />
