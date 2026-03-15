@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, StatusBadge, BudgetBar } from '../scouter'
 import { CategoryBadge } from './CategoryBadge'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
-import { useDuplicateMission } from '../../hooks/useMission'
+import { useDuplicateMission, useCloneMission } from '../../hooks/useMission'
 import type { Mission, ShoppingItem } from '../../types'
 import styles from './MissionCard.module.css'
 
@@ -15,6 +15,7 @@ interface MissionCardProps {
 export function MissionCard({ mission, items = [], onArchive }: MissionCardProps) {
   const navigate = useNavigate()
   const { duplicateMission, isPending: isDuplicating } = useDuplicateMission()
+  const { cloneMission, isPending: isCloning } = useCloneMission()
   const spent = items.reduce((sum, item) => sum + item.price, 0)
 
   const { swipeX, handlers } = useSwipeGesture({
@@ -84,6 +85,23 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
                 }}
               >
                 {isDuplicating ? '…' : '📋'}
+              </button>
+              <button
+                className={styles.cloneBtn}
+                title="Dupliquer avec options et achats"
+                aria-label="Dupliquer la mission avec tous les éléments"
+                disabled={isCloning}
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  try {
+                    const cloned = await cloneMission(mission.slug)
+                    navigate(`/missions/${cloned.slug}`)
+                  } catch {
+                    // error toast handled by useCloneMission onError
+                  }
+                }}
+              >
+                {isCloning ? 'Copie en cours...' : 'Dupliquer'}
               </button>
             </div>
           </div>

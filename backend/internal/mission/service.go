@@ -192,6 +192,12 @@ func (s *Service) Duplicate(ctx context.Context, slug string) (*Mission, error) 
 	return s.repo.Create(ctx, copy)
 }
 
+// CloneMission creates a full deep copy of a mission (options + shopping items)
+// identified by slug. The repository handles the transaction and slug generation.
+func (s *Service) CloneMission(ctx context.Context, slug string) (Mission, error) {
+	return s.repo.CloneMission(ctx, slug)
+}
+
 // uniqueSlug generates a URL-safe slug from the name, appending a counter if needed.
 // It caps retries at 100 to prevent unbounded loops.
 func (s *Service) uniqueSlug(ctx context.Context, name string) (string, error) {

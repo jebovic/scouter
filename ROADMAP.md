@@ -88,10 +88,12 @@
 | 62 | Option Price Alert (per-option threshold) | Functional | High | ✅ Done |
 | 63 | French Public Holidays & Closing Days Widget | Interface | Low | ✅ Done |
 | 64 | Loyalty Points Tracker (Fnac, Cdiscount) | Functional | Medium | ✅ Done |
-| 65 | Smart Category Auto-Tagging (AI) | Agent | Medium | 📋 Planned |
-| 66 | Budget Variance Heatmap (month over month) | Interface | Medium | 📋 Planned |
+| 65 | Smart Category Auto-Tagging (AI) | Agent | Medium | ✅ Done |
+| 66 | Budget Variance Heatmap (month over month) | Interface | Medium | ✅ Done |
 | 67 | Mission Cloning with Deep Copy | Functional | Low | 📋 Planned |
 | 68 | AI Shopping List Optimizer (best order to buy) | Agent | High | 📋 Planned |
+| 69 | Smart Receipt Analyzer (AI itemization) | Agent | Medium | 📋 Planned |
+| 70 | Price Benchmark vs Market Average (AI) | Agent | High | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 

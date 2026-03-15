@@ -6,6 +6,7 @@ import {
   updateMission,
   deleteMission,
   duplicateMission,
+  cloneMission,
 } from '../api'
 import { useToast } from '../components/scouter'
 import type { MissionCreateRequest, MissionUpdateRequest } from '../types'
@@ -90,4 +91,18 @@ export function useDuplicateMission() {
     onError: (err: unknown) => toast(`Failed to duplicate mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { duplicateMission: mutateAsync, isPending }
+}
+
+export function useCloneMission() {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (slug: string) => cloneMission(slug),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['missions'] })
+      toast('Mission clonée', 'success')
+    },
+    onError: (err: unknown) => toast(`Échec du clonage: ${err instanceof Error ? err.message : 'Erreur inconnue'}`, 'error'),
+  })
+  return { cloneMission: mutateAsync, isPending }
 }

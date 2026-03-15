@@ -42,7 +42,7 @@ export const MissionSchema = z.object({
   costCategories: z.array(z.string()),
   timeline: z.array(TimelineEventSchema),
   weightProfile: WeightProfileSchema.default({ price: 0, quality: 0, feature: 0 }),
-  lessons: z.string().nullish(),
+  lessons: z.string().nullish().transform(v => v ?? undefined),
   envelopeId: z.string().uuid().nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -85,6 +85,11 @@ export async function deleteMission(slug: string): Promise<void> {
 
 export async function duplicateMission(slug: string): Promise<Mission> {
   const data = await apiFetch<unknown>(`/api/missions/${slug}/duplicate`, { method: 'POST' })
+  return MissionSchema.parse(data) as Mission
+}
+
+export async function cloneMission(slug: string): Promise<Mission> {
+  const data = await apiFetch<unknown>(`/api/missions/${slug}/clone`, { method: 'POST' })
   return MissionSchema.parse(data) as Mission
 }
 

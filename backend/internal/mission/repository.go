@@ -30,6 +30,12 @@ type Repository interface {
 	ClearShareToken(ctx context.Context, id uuid.UUID) error
 	Archive(ctx context.Context, id uuid.UUID) (*Mission, error)
 	Unarchive(ctx context.Context, id uuid.UUID) (*Mission, error)
+	// CloneMission creates a full deep copy of a mission (options + shopping
+	// items) in a single transaction. The clone gets a new UUID, a new slug
+	// derived from the original (with "-copie" suffix), and the name gets a
+	// " (Copie)" suffix. Sensitive fields (lessons, share_token, archived_at)
+	// are not copied. Returns the new mission.
+	CloneMission(ctx context.Context, slug string) (Mission, error)
 }
 
 type pgRepository struct {
@@ -293,6 +299,120 @@ func (r *pgRepository) Unarchive(ctx context.Context, id uuid.UUID) (*Mission, e
 		return nil, nil
 	}
 	return m, err
+}
+
+// CloneMission deep-copies a mission (options + shopping_items) in one transaction.
+// The clone gets a new UUID, slug = original_slug + "-copie" (with a short random
+// suffix if that slug is already taken), and name = original_name + " (Copie)".
+// Sensitive fields (lessons, share_token, archived_at) are not carried over.
+func (r *pgRepository) CloneMission(ctx context.Context, slug string) (Mission, error) {
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: begin tx: %w", err)
+	}
+	defer tx.Rollback(ctx) //nolint:errcheck
+
+	// 1. Fetch original mission.
+	row := tx.QueryRow(ctx, `SELECT `+selectCols+` FROM missions WHERE slug = $1`, slug)
+	orig, err := scanMission(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return Mission{}, fmt.Errorf("mission %q not found", slug)
+		}
+		return Mission{}, fmt.Errorf("clone mission: fetch original: %w", err)
+	}
+
+	// 2. Determine a unique slug for the clone.
+	newSlug := slug + "-copie"
+	var taken bool
+	if err := tx.QueryRow(ctx,
+		`SELECT EXISTS(SELECT 1 FROM missions WHERE slug = $1)`, newSlug,
+	).Scan(&taken); err != nil {
+		return Mission{}, fmt.Errorf("clone mission: check slug: %w", err)
+	}
+	if taken {
+		// Append first 4 chars of a new UUID for uniqueness.
+		suffix := uuid.New().String()[:4]
+		newSlug = slug + "-copie-" + suffix
+	}
+
+	// 3. Marshal JSON fields from the original.
+	constraintsJSON, err := json.Marshal(orig.Constraints)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: marshal constraints: %w", err)
+	}
+	categoriesJSON, err := json.Marshal(orig.CostCategories)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: marshal cost_categories: %w", err)
+	}
+	timelineJSON, err := json.Marshal(orig.Timeline)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: marshal timeline: %w", err)
+	}
+	var weightProfileJSON []byte
+	wp := orig.WeightProfile
+	weightProfileJSON, err = json.Marshal(wp)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: marshal weight_profile: %w", err)
+	}
+
+	// 4. Insert cloned mission (new UUID assigned by DB default).
+	cloneRow := tx.QueryRow(ctx, `
+		INSERT INTO missions
+		  (slug, name, icon, category, budget, currency, locale, phase,
+		   constraints, cost_categories, timeline, weight_profile, envelope_id)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,'researching',$8,$9,$10,$11,$12)
+		RETURNING `+selectCols,
+		newSlug,
+		orig.Name+" (Copie)",
+		orig.Icon,
+		orig.Category,
+		orig.Budget,
+		orig.Currency,
+		orig.Locale,
+		string(constraintsJSON),
+		string(categoriesJSON),
+		string(timelineJSON),
+		nullableJSON(weightProfileJSON),
+		orig.EnvelopeID,
+	)
+	cloned, err := scanMission(cloneRow)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: insert clone: %w", err)
+	}
+
+	// 5. Deep-copy options.
+	_, err = tx.Exec(ctx, `
+		INSERT INTO options
+		  (mission_id, name, category, badge, attributes, price_range, notes, warnings, url)
+		SELECT $1, name, category, badge, attributes, price_range, notes, warnings, url
+		FROM options
+		WHERE mission_id = $2`,
+		cloned.ID, orig.ID,
+	)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: copy options: %w", err)
+	}
+
+	// 6. Deep-copy shopping items (price_history is intentionally not copied —
+	//    history belongs to the original purchase context).
+	_, err = tx.Exec(ctx, `
+		INSERT INTO shopping_items
+		  (mission_id, name, merchant, cost_category, price, original_estimate, target_price, status, note, url)
+		SELECT $1, name, merchant, cost_category, price, original_estimate, target_price, status, note, url
+		FROM shopping_items
+		WHERE mission_id = $2`,
+		cloned.ID, orig.ID,
+	)
+	if err != nil {
+		return Mission{}, fmt.Errorf("clone mission: copy shopping items: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return Mission{}, fmt.Errorf("clone mission: commit: %w", err)
+	}
+
+	return *cloned, nil
 }
 
 // GenerateShareToken creates a cryptographically random 32-byte base64url token.

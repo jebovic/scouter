@@ -78,6 +78,32 @@
   cursor: not-allowed;
 }
 
+.cloneBtn {
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  line-height: 1.4;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.cloneBtn:hover:not(:disabled) {
+  background: var(--raised);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.cloneBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .constraintList {
   display: flex;
   flex-wrap: wrap;

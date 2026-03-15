@@ -137,6 +137,22 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSON(w, http.StatusCreated, m)
 }
 
+// Clone creates a deep copy of a mission — including all options and shopping
+// items — identified by slug. POST /api/missions/{slug}/clone
+func (h *Handler) Clone(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	cloned, err := h.svc.CloneMission(r.Context(), slug)
+	if err != nil {
+		if isNotFound(err) {
+			httputil.WriteError(w, http.StatusNotFound, "mission not found")
+			return
+		}
+		httputil.WriteError(w, http.StatusInternalServerError, "clone failed")
+		return
+	}
+	httputil.WriteJSON(w, http.StatusCreated, cloned)
+}
+
 // isNotFound reports whether err is the "not found" sentinel from the service.
 func isNotFound(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "not found")

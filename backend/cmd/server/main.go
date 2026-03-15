@@ -18,6 +18,7 @@ import (
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/dealexplain"
+	"github.com/jibei/scouter/internal/optimizer"
 	"github.com/jibei/scouter/internal/digest"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/coach"
@@ -249,6 +250,7 @@ func main() {
 	r.Patch("/api/missions/{slug}", missionHandler.Update)
 	r.Delete("/api/missions/{slug}", missionHandler.Delete)
 	r.Post("/api/missions/{slug}/duplicate", missionHandler.Duplicate)
+	r.Post("/api/missions/{slug}/clone", missionHandler.Clone)
 
 	// Mission sub-resources
 	r.Mount("/api/missions/{missionID}/options", optionHandler.Routes())
@@ -394,6 +396,10 @@ func main() {
 	autotagAgent := autotag.NewAgent(provider)
 	autotagHandler := autotag.NewHandler(missionRepo, autotagAgent)
 	r.Post("/api/missions/{slug}/suggest-category", autotagHandler.Suggest)
+
+	// AI Shopping List Optimizer (Phase 68)
+	optimizerHandler := optimizer.NewHandler(pool, provider)
+	r.Post("/api/missions/{slug}/optimize", optimizerHandler.Optimize)
 
 	// AI Deal Explainer (Phase 60)
 	dealExplainCache := dealexplain.NewCache(1 * time.Hour)

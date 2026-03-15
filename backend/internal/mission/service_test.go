@@ -134,6 +134,10 @@ func (m *mockRepo) Unarchive(_ context.Context, _ uuid.UUID) (*Mission, error) {
 
 func (m *mockRepo) SetPhase(_ context.Context, _ uuid.UUID, _ string) error { return nil }
 
+func (m *mockRepo) CloneMission(_ context.Context, _ string) (Mission, error) {
+	return Mission{}, nil
+}
+
 func TestService_Create_Validation(t *testing.T) {
 	tests := []struct {
 		name    string
