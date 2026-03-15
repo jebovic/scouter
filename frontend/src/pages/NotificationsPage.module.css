@@ -115,9 +115,22 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  cursor: pointer;
   transition: border-color 0.12s, box-shadow 0.12s;
   position: relative;
+}
+
+.notifRowBtn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
 }
 
 .notifRow:hover {

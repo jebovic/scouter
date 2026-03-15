@@ -17,11 +17,11 @@ function getConstraintVars(pass: boolean | null, type: 'hard' | 'soft'): React.C
     return type === 'hard'
       ? ({
           '--constraint-bg': 'var(--coral-dim)',
-          '--constraint-border': 'var(--coral)30',
+          '--constraint-border': 'var(--coral-dim)',
         } as React.CSSProperties)
       : ({
           '--constraint-bg': 'var(--gold-dim)',
-          '--constraint-border': 'var(--gold)30',
+          '--constraint-border': 'var(--gold-dim)',
         } as React.CSSProperties)
   }
   return {

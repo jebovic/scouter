@@ -27,6 +27,13 @@
   --orange:       #f7974f;
   --orange-dim:   #f7974f25;
 
+  /* ── Semantic aliases ─────────────────────────────────── */
+  --accent:       var(--cyan);
+  --accent-dim:   var(--cyan-dim);
+  --border-mid:   #223050;
+  --success:      var(--green);
+  --success-dim:  var(--green-dim);
+
   /* ── Text ─────────────────────────────────────────────── */
   --text:         #e8edf5;
   --text-mid:     #8a95b0;
@@ -92,10 +99,14 @@
   --surface-raised: #f5f7ff;
   --border:        #c8d0e8;
   --border-glow:   #a0b0d0;
+  --border-mid:    #d0d8e8;
 
   --text:          #1a2040;
   --text-mid:      #5060a0;
   --text-dim:      #9aabcc;
+
+  --accent:        #0077b6;
+  --accent-dim:    #0077b630;
 
   --skeleton-base:  #eaeff8;
   --skeleton-shine: #c8d4eb;
@@ -146,4 +157,14 @@ body {
 @keyframes skeleton-shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position:  200% 0; }
+}
+
+/* ── Reduced motion — disable all animations ──────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

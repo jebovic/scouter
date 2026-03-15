@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import styles from './OnboardingOverlay.module.css'
 
@@ -12,6 +13,30 @@ interface OnboardingOverlayProps {
 
 export function OnboardingOverlay({ show, step, totalSteps, onNext, onPrev, onDismiss }: OnboardingOverlayProps) {
   const { t } = useTranslation()
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // Focus trap: keep focus inside dialog when visible
+  useEffect(() => {
+    if (!show) return
+    const dialog = dialogRef.current
+    if (!dialog) return
+    const focusable = dialog.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    first?.focus()
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last?.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first?.focus() }
+      }
+    }
+    dialog.addEventListener('keydown', onKeyDown)
+    return () => dialog.removeEventListener('keydown', onKeyDown)
+  }, [show, step])
 
   const STEPS = [
     {
@@ -39,6 +64,7 @@ export function OnboardingOverlay({ show, step, totalSteps, onNext, onPrev, onDi
   return (
     <div className={styles.backdrop}>
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Onboarding"

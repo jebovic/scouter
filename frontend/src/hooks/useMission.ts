@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import {
   listMissions,
   getMission,
@@ -96,13 +97,14 @@ export function useDuplicateMission() {
 export function useCloneMission() {
   const qc = useQueryClient()
   const { toast } = useToast()
+  const { t } = useTranslation()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (slug: string) => cloneMission(slug),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['missions'] })
-      toast('Mission clonée', 'success')
+      toast(t('mission.cloned'), 'success')
     },
-    onError: (err: unknown) => toast(`Échec du clonage: ${err instanceof Error ? err.message : 'Erreur inconnue'}`, 'error'),
+    onError: (err: unknown) => toast(t('mission.cloneError', { message: err instanceof Error ? err.message : t('common.error') }), 'error'),
   })
   return { cloneMission: mutateAsync, isPending }
 }

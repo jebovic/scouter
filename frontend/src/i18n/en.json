@@ -61,7 +61,9 @@
       "comparing": "Comparing",
       "buying": "Buying",
       "done": "Done"
-    }
+    },
+    "cloned": "Mission cloned",
+    "cloneError": "Clone failed: {{message}}"
   },
   "badges": {
     "buy": "Buy",
@@ -167,7 +169,7 @@
     "qualScore": "Quality",
     "featScore": "Features"
   },
-  "timeline": {
+  "missionTimeline": {
     "researchStarted": "Research started",
     "decisionRun": "Decision run",
     "purchaseRecorded": "Purchase recorded",

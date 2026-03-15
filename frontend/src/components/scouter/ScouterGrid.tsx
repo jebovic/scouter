@@ -7,11 +7,11 @@ interface ScouterGridProps {
   gap?: number
 }
 
-export function ScouterGrid({ children, cols: _cols = 3, gap = 16 }: ScouterGridProps) {
+export function ScouterGrid({ children, cols = 3, gap = 16 }: ScouterGridProps) {
   return (
     <div
       className={styles.grid}
-      style={{ '--grid-gap': `${gap}px` } as React.CSSProperties}
+      style={{ '--grid-gap': `${gap}px`, '--grid-cols': cols } as React.CSSProperties}
     >
       {children}
     </div>

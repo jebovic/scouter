@@ -64,6 +64,7 @@ a:hover { text-decoration: underline; }
 /* Layout helpers */
 .page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -177,6 +178,38 @@ button, a {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* iOS Safari: prevent auto-zoom on focused inputs (requires font-size >= 16px) */
+input, select, textarea {
+  font-size: max(1em, 16px);
+}
+
+/* Focus styles — keyboard-only, WCAG 2.1 AA */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip-to-content link for keyboard/screen-reader users */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 10000;
+  padding: 8px 16px;
+  background: var(--surface);
+  color: var(--cyan);
+  font-size: 0.875rem;
+  border: 1px solid var(--cyan);
+  border-radius: 0 0 var(--radius-sm) 0;
+  transition: top 0.1s;
+}
+.skip-to-content:focus {
+  top: 0;
 }
 
 /* RTL support — future languages */

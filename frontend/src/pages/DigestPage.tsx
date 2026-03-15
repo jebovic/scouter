@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Topnav } from '../components/scouter'
 import { useWeeklyDigest } from '../hooks/useDigest'
 import type { PriceDropItem } from '../api/digest'
 import styles from './DigestPage.module.css'
@@ -71,7 +70,6 @@ export default function DigestPage() {
 
   return (
     <>
-      <Topnav />
       <main className={styles.page}>
         <div className={styles.header}>
           <h1 className={styles.title}>Résumé de la semaine</h1>

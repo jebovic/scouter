@@ -100,9 +100,20 @@ export default function MissionOverview() {
   const budget = mission?.budget ?? 0
   useBudgetAlerts(spent, budget, items.length, addToast)
 
+  const [showDoneConfirm, setShowDoneConfirm] = useState(false)
+
   async function handlePhase(phase: MissionPhase) {
     if (!mission || updatePending) return
+    if (phase === 'done') {
+      setShowDoneConfirm(true)
+      return
+    }
     await updateMission({ phase })
+  }
+
+  async function confirmDone() {
+    setShowDoneConfirm(false)
+    await updateMission({ phase: 'done' })
   }
 
   async function handleResearch() {
@@ -284,11 +295,6 @@ export default function MissionOverview() {
         {/* Negotiation Outcome Tracker (Phase 151) */}
         <div className={styles.section}>
           <NegotiationOutcomePanel missionId={mission.id} />
-        </div>
-
-        {/* Reorder Suggestions (Phase 148) */}
-        <div className={styles.section}>
-          <ReorderSuggestionsPanel missionId={mission.id} />
         </div>
 
         {/* Smart Bundle Deal Detector (Phase 152) */}
@@ -538,6 +544,39 @@ export default function MissionOverview() {
         </div>
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+      {showDoneConfirm && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '16px' }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('mission.phases.done')}
+        >
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px', maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>
+              ✅ {t('mission.phases.done')}?
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-dim)' }}>
+              {t('mission.confirmDoneDesc', 'Mark this mission as done? You can still edit it after.')}
+            </p>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '4px' }}>
+              <button
+                style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text-dim)', borderRadius: '8px', padding: '8px 16px', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                onClick={() => setShowDoneConfirm(false)}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                style={{ background: 'var(--green)', border: 'none', color: 'white', borderRadius: '8px', padding: '8px 16px', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                onClick={confirmDone}
+                autoFocus
+              >
+                {t('common.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

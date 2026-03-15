@@ -16,27 +16,27 @@ const LLM_PROVIDERS = [
   { value: 'anthropic', label: 'Anthropic Claude' },
 ]
 
+const DELETE_CONFIRM_WORD = 'DELETE'
+
 export default function SettingsPage() {
   const { t } = useTranslation()
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
   const deleteData = useDeleteAllData()
-  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteInput, setDeleteInput] = useState('')
   const [deleteSuccess, setDeleteSuccess] = useState(false)
 
   function handleChange(key: string, value: string) {
     updateSettings.mutate({ [key]: value })
   }
 
-  function handleDeleteAll() {
-    if (!deleteConfirm) {
-      setDeleteConfirm(true)
-      return
-    }
+  function handleDeleteConfirm() {
     deleteData.mutate(undefined, {
       onSuccess: () => {
         setDeleteSuccess(true)
-        setDeleteConfirm(false)
+        setShowDeleteModal(false)
+        setDeleteInput('')
       },
     })
   }
@@ -123,29 +123,52 @@ export default function SettingsPage() {
               </p>
             </div>
             <button
-              className={`${styles.dangerBtn} ${
-                deleteConfirm ? styles.dangerBtnConfirm : ''
-              }`}
-              onClick={handleDeleteAll}
-              disabled={deleteData.isPending}
+              className={styles.dangerBtn}
+              onClick={() => { setShowDeleteModal(true); setDeleteInput('') }}
             >
-              {deleteData.isPending
-                ? t('settings.deleting')
-                : deleteConfirm
-                  ? t('settings.confirmDelete')
-                  : t('settings.deleteAll')}
+              {t('settings.deleteAll')}
             </button>
           </div>
           {deleteSuccess && (
             <p className={styles.success}>{t('settings.allDeleted')}</p>
           )}
-          {deleteConfirm && !deleteData.isPending && (
-            <p className={styles.dangerWarning}>
-              ⚠️ {t('settings.confirmWarning')}
-            </p>
-          )}
         </div>
       </section>
+
+      {showDeleteModal && (
+        <div className={styles.modalBackdrop} role="dialog" aria-modal="true" aria-label={t('settings.deleteAllData')}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>⚠️ {t('settings.dangerZone')}</h3>
+            <p className={styles.dangerWarning}>{t('settings.confirmWarning')}</p>
+            <p className={styles.modalPrompt}>
+              Type <strong>{DELETE_CONFIRM_WORD}</strong> to confirm:
+            </p>
+            <input
+              className={styles.modalInput}
+              type="text"
+              value={deleteInput}
+              onChange={(e) => setDeleteInput(e.target.value)}
+              autoFocus
+              aria-label="Type DELETE to confirm"
+            />
+            <div className={styles.modalActions}>
+              <button
+                className={styles.modalCancelBtn}
+                onClick={() => { setShowDeleteModal(false); setDeleteInput('') }}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                className={styles.dangerBtnConfirm}
+                onClick={handleDeleteConfirm}
+                disabled={deleteInput !== DELETE_CONFIRM_WORD || deleteData.isPending}
+              >
+                {deleteData.isPending ? t('settings.deleting') : t('settings.confirmDelete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

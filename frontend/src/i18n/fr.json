@@ -61,7 +61,9 @@
       "comparing": "Comparaison",
       "buying": "Achat",
       "done": "Terminé"
-    }
+    },
+    "cloned": "Mission clonée",
+    "cloneError": "Échec du clonage: {{message}}"
   },
   "badges": {
     "buy": "Acheter",
@@ -167,7 +169,7 @@
     "qualScore": "Qualité",
     "featScore": "Fonctionnalités"
   },
-  "timeline": {
+  "missionTimeline": {
     "researchStarted": "Recherche démarrée",
     "decisionRun": "Décision effectuée",
     "purchaseRecorded": "Achat enregistré",

@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSearchInput, useSearch } from '../../hooks/useSearch'
 import { useSearchSuggestions } from '../../hooks/useSearchSuggestions'
@@ -20,6 +20,8 @@ export function SearchDropdown() {
   const { data: results = [], isFetching } = useSearch(query, MAX_DROPDOWN)
   const { suggestions, history, clearHistory, refreshHistory } = useSearchSuggestions(query)
   const wrapRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(-1)
 
   // Close on outside click
   useEffect(() => {
@@ -32,6 +34,18 @@ export function SearchDropdown() {
     return () => document.removeEventListener('mousedown', onMouseDown)
   }, [close])
 
+  // Reset active index when dropdown opens/closes or results change
+  useEffect(() => {
+    setActiveIndex(-1)
+  }, [query, isOpen])
+
+  // Focus the active item in the dropdown
+  useEffect(() => {
+    if (activeIndex < 0 || !dropdownRef.current) return
+    const items = dropdownRef.current.querySelectorAll<HTMLElement>('[role="option"], a[role="option"]')
+    items[activeIndex]?.focus()
+  }, [activeIndex])
+
   const trimmed = query.trim()
   const showResultsDropdown = isOpen && trimmed.length >= 2
   // Show suggestions/history panel when focused with short or empty query
@@ -43,11 +57,43 @@ export function SearchDropdown() {
     clear()
   }
 
+  const getItemCount = useCallback(() => {
+    if (!dropdownRef.current) return 0
+    return dropdownRef.current.querySelectorAll<HTMLElement>('[role="option"], a[role="option"]').length
+  }, [])
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       clear()
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const count = getItemCount()
+      if (count > 0) setActiveIndex((i) => Math.min(i + 1, count - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex((i) => {
+        if (i <= 0) { inputRef.current?.focus(); return -1 }
+        return i - 1
+      })
     } else if (e.key === 'Enter' && trimmed) {
       navigateToSearch(trimmed)
+    }
+  }
+
+  function handleDropdownKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Escape') {
+      clear()
+      inputRef.current?.focus()
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const count = getItemCount()
+      setActiveIndex((i) => Math.min(i + 1, count - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex((i) => {
+        if (i <= 0) { inputRef.current?.focus(); return -1 }
+        return i - 1
+      })
     }
   }
 
@@ -86,7 +132,7 @@ export function SearchDropdown() {
 
       {/* Suggestions / History panel (query < 2 chars) */}
       {showSuggestionsDropdown && (
-        <div className={styles.dropdown} role="listbox">
+        <div className={styles.dropdown} role="listbox" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>
           {history.length > 0 && (
             <>
               <div className={styles.sectionHeader}>
@@ -102,15 +148,13 @@ export function SearchDropdown() {
               {history.map((entry) => (
                 <div key={entry} className={styles.suggestion} role="option">
                   <span className={styles.suggestionIcon}>🕐</span>
-                  <span
+                  <button
                     className={styles.suggestionText}
                     onClick={() => handleSuggestionClick(entry)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSuggestionClick(entry)}
+                    type="button"
                   >
                     {entry}
-                  </span>
+                  </button>
                   <button
                     className={styles.removeBtn}
                     onClick={(e) => handleRemoveHistory(e, entry)}
@@ -131,7 +175,7 @@ export function SearchDropdown() {
 
       {/* Results + suggestions panel (query >= 2 chars) */}
       {showResultsDropdown && (
-        <div className={styles.dropdown} role="listbox">
+        <div className={styles.dropdown} role="listbox" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>
           {isFetching && results.length === 0 && (
             <div className={styles.empty}>Recherche en cours…</div>
           )}
@@ -170,31 +214,28 @@ export function SearchDropdown() {
                 <span>Suggestions</span>
               </div>
               {suggestions.slice(0, 4).map((term) => (
-                <div
+                <button
                   key={term}
                   className={styles.suggestion}
                   role="option"
                   onClick={() => handleSuggestionClick(term)}
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSuggestionClick(term)}
+                  type="button"
                 >
                   <span className={styles.suggestionIcon}>🔍</span>
                   <span className={styles.suggestionText}>{term}</span>
-                </div>
+                </button>
               ))}
             </>
           )}
 
           {(results.length > 0) && (
-            <div
+            <button
               className={styles.footer}
-              role="button"
-              tabIndex={0}
+              type="button"
               onClick={() => navigateToSearch(trimmed)}
-              onKeyDown={(e) => e.key === 'Enter' && navigateToSearch(trimmed)}
             >
               Voir tous les résultats →
-            </div>
+            </button>
           )}
         </div>
       )}

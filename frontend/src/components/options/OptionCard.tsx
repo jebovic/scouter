@@ -175,7 +175,7 @@ export function OptionCard({
                 padding: '4px 8px',
                 background: 'var(--coral-dim)',
                 borderRadius: 4,
-                border: '1px solid var(--coral)30',
+                border: '1px solid var(--coral-dim)',
               }}
             >
               ⚠ {w}

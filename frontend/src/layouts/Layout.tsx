@@ -11,6 +11,7 @@ export function Layout() {
 
   return (
     <SidebarContext.Provider value={{ openSidebar: () => setSidebarOpen(true) }}>
+      <a href="#main-content" className="skip-to-content">Skip to main content</a>
       <OnboardingOverlay
         show={show}
         step={step}

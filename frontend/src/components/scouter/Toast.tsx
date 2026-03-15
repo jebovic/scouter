@@ -19,10 +19,19 @@ export function Toast({ alert, onDismiss }: ToastProps) {
   }, [onDismiss])
 
   return (
-    <div className={`${styles.toast} ${styles[alert.severity]} ${!visible ? styles.exit : ''}`}>
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className={`${styles.toast} ${styles[alert.severity]} ${!visible ? styles.exit : ''}`}
+    >
       <div className={styles.title}>{alert.title}</div>
       <div className={styles.message}>{alert.message}</div>
-      <button className={styles.close} onClick={() => { setVisible(false); setTimeout(onDismiss, 300) }}>×</button>
+      <button
+        className={styles.close}
+        aria-label="Dismiss notification"
+        onClick={() => { setVisible(false); setTimeout(onDismiss, 300) }}
+      >×</button>
     </div>
   )
 }

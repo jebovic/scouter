@@ -134,25 +134,24 @@ export default function NotificationsPage() {
                 <li
                   key={n.id}
                   className={`${styles.notifRow} ${n.read ? styles.notifRowRead : styles.notifRowUnread}`}
-                  onClick={() => handleRowClick(n)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) =>
-                    (e.key === 'Enter' || e.key === ' ') && handleRowClick(n)
-                  }
-                  aria-label={n.title}
                 >
-                  <span className={styles.typeIcon} aria-hidden="true">
-                    {TYPE_ICON[n.type] ?? '🔔'}
-                  </span>
-                  <div className={styles.notifContent}>
-                    <div className={styles.notifTitle}>{n.title}</div>
-                    <div className={styles.notifBody}>{n.body}</div>
-                    <div className={styles.notifMeta}>
-                      <span className={styles.notifTime}>{relativeTime(n.createdAt)}</span>
-                      {!n.read && <span className={styles.unreadDot} aria-label="unread" />}
+                  <button
+                    className={styles.notifRowBtn}
+                    onClick={() => handleRowClick(n)}
+                    aria-label={n.title}
+                  >
+                    <span className={styles.typeIcon} aria-hidden="true">
+                      {TYPE_ICON[n.type] ?? '🔔'}
+                    </span>
+                    <div className={styles.notifContent}>
+                      <div className={styles.notifTitle}>{n.title}</div>
+                      <div className={styles.notifBody}>{n.body}</div>
+                      <div className={styles.notifMeta}>
+                        <span className={styles.notifTime}>{relativeTime(n.createdAt)}</span>
+                        {!n.read && <span className={styles.unreadDot} aria-label="unread" />}
+                      </div>
                     </div>
-                  </div>
+                  </button>
                   <button
                     className={styles.deleteBtn}
                     title={t('notifications.deleteConfirm')}
