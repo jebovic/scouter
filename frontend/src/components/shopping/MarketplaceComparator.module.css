@@ -1,0 +1,55 @@
+@import '../../styles/theme.css';
+
+.wrap {
+  padding: 8px 0;
+}
+
+.title {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.loading {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.siteLink {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.72rem;
+  transition: border-color 0.15s, background 0.15s;
+  min-width: 70px;
+}
+
+.siteLink:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim, rgba(99,102,241,0.08));
+}
+
+.siteName {
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+.siteLabel {
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  margin-top: 2px;
+}

@@ -12,6 +12,7 @@ import { VATCalculator } from './VATCalculator'
 import { VoteBar } from './VoteBar'
 import { PriceForecastCard } from './PriceForecastCard'
 import { RetailerLinks } from '../options/RetailerLinks'
+import { MarketplaceComparator } from './MarketplaceComparator'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
 import { CarbonBadge } from './CarbonBadge'
 import { SeasonalBadge } from './SeasonalBadge'
@@ -107,7 +108,10 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
           </button>
         </div>
         {showRetailers && (
-          <RetailerLinks query={item.name} />
+          <>
+            <RetailerLinks query={item.name} />
+            <MarketplaceComparator itemName={item.name} />
+          </>
         )}
       </div>
 

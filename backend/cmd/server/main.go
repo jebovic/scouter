@@ -19,6 +19,7 @@ import (
 	"github.com/jibei/scouter/internal/autotag"
 	"github.com/jibei/scouter/internal/carbon"
 	"github.com/jibei/scouter/internal/cashback"
+	"github.com/jibei/scouter/internal/marketplace"
 	"github.com/jibei/scouter/internal/dealfeed"
 	"github.com/jibei/scouter/internal/benchmark"
 	"github.com/jibei/scouter/internal/dealexplain"
@@ -485,6 +486,10 @@ func main() {
 	seasonalAgent := seasonal.NewAgent(provider)
 	seasonalHandler := seasonal.NewHandler(seasonalAgent, seasonalCache)
 	r.Get("/api/seasonal", seasonalHandler.GetPrediction)
+
+	// Marketplace
+	mktHandler := marketplace.NewHandler()
+	mktHandler.RegisterRoutes(r)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)

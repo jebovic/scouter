@@ -1,0 +1,51 @@
+@import '../../styles/theme.css';
+
+.toast {
+  position: relative;
+  padding: 12px 36px 12px 16px;
+  border-radius: 10px;
+  border-left: 4px solid transparent;
+  background: var(--surface);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  min-width: 280px;
+  max-width: 360px;
+  animation: slideIn 0.25s ease;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast.exit {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.info    { border-left-color: var(--accent); }
+.warning { border-left-color: #f59e0b; }
+.danger  { border-left-color: #ef4444; }
+
+.title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.message {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  line-height: 1;
+}
