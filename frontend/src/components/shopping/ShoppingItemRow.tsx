@@ -3,6 +3,7 @@ import { Badge } from '../scouter'
 import { TrendBadge } from './TrendBadge'
 import { DealScoreBadge } from './DealScoreBadge'
 import { PriceSparkline } from './PriceSparkline'
+import { VATCalculator } from './VATCalculator'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
@@ -42,6 +43,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
   const [targetInput, setTargetInput] = useState('')
   const [showIntel, setShowIntel] = useState(false)
   const [showRetailers, setShowRetailers] = useState(false)
+  const [showVAT, setShowVAT] = useState(false)
   const cancelledRef = useRef(false)
 
   const { updateItem } = useUpdateShoppingItem(missionId)
@@ -73,7 +75,8 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
   }
 
   return (
-    <div className={styles.row}>
+    <>
+      <div className={styles.row}>
       {/* Name + merchant */}
       <div className={styles.info}>
         <div className={styles.name}>{item.name}</div>
@@ -131,6 +134,19 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         )}
       </div>
 
+      {/* VAT Calculator — only show toggle if item has a price */}
+      {item.price > 0 && (
+        <button
+          onClick={() => setShowVAT((v) => !v)}
+          className={styles.intelToggleBtn}
+          title={showVAT ? 'Hide VAT calculator' : 'Show VAT calculator'}
+          aria-label={showVAT ? 'Hide VAT calculator' : 'Show VAT calculator'}
+          aria-expanded={showVAT}
+        >
+          €
+        </button>
+      )}
+
       {/* Deal intelligence — loaded on demand to avoid N+1 requests per row */}
       <div className={styles.dealIntel}>
         <button
@@ -168,6 +184,10 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
           ))}
         </select>
       )}
-    </div>
+      </div>
+      {showVAT && (
+        <VATCalculator priceHT={item.price} onClose={() => setShowVAT(false)} />
+      )}
+    </>
   )
 }
