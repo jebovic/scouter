@@ -45,6 +45,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
             { label: 'Bons Plans', path: '/deal-calendar' },
             { label: 'History', path: '/history' },
             { label: 'Stats', path: '/stats' },
+            { label: 'Digest', path: '/digest' },
             { label: 'Perfs', path: '/performance' },
             { label: 'Settings', path: '/settings' },
           ].map(({ label, path }) => (

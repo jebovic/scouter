@@ -78,10 +78,16 @@
 | 52 | Smart Price Prediction (trending extrapolation) | Agent | High | ✅ Done |
 | 53 | Collaborative Wishlist Sharing (invite link) | Functional | Medium | ✅ Done |
 | 54 | AI Product Substitute Finder (French market) | Agent | High | ✅ Done |
-| 55 | Seasonal Savings Calendar (French promotions) | Interface | Medium | 📋 Planned |
-| 56 | Quick Note / Annotation on Options | Interface | Low | 📋 Planned |
-| 57 | Mission Health Score (AI composite rating) | Agent | High | 📋 Planned |
+| 55 | Seasonal Savings Calendar (French promotions) | Interface | Medium | ✅ Done |
+| 56 | Quick Note / Annotation on Options | Interface | Low | ✅ Done |
+| 57 | Mission Health Score (AI composite rating) | Agent | High | ✅ Done |
 | 58 | Price Drop Email Digest (weekly summary) | Functional | Medium | 📋 Planned |
+| 59 | Smart Retailer Radar (live stock + price aggregator) | Functional | High | 📋 Planned |
+| 60 | AI Deal Explainer (why is this a good deal?) | Agent | Medium | 📋 Planned |
+| 61 | Mission Collaboration Threads (inline comments) | Functional | Medium | 📋 Planned |
+| 62 | French Public Holidays & Closing Days Widget | Interface | Low | 📋 Planned |
+| 63 | Option Price Alert (per-option threshold) | Functional | High | 📋 Planned |
+| 64 | Loyalty Points Tracker (Fnac, Cdiscount) | Functional | Medium | 📋 Planned |
 
 **Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing → **31–35** auto-improvement loop v2 → **36–45** auto-improvement loop v3
 

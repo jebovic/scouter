@@ -16,6 +16,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/digest"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/coach"
 	"github.com/jibei/scouter/internal/collaborator"
@@ -410,6 +411,11 @@ func main() {
 	healthAgent := health.NewAgent(provider)
 	healthHandler := health.NewHandler(missionRepo, optionRepo, shoppingRepo, healthAgent, healthCache)
 	r.Get("/api/missions/{slug}/health", healthHandler.GetHealth)
+
+	// Price Drop Weekly Digest (Phase 58)
+	digestRepo := digest.NewRepository(pool)
+	digestHandler := digest.NewHandler(digestRepo)
+	r.Get("/api/digest/weekly", digestHandler.Weekly)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

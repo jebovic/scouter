@@ -1,0 +1,262 @@
+.page {
+  flex: 1;
+  padding: 2rem;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Header */
+.header {
+  margin-bottom: 1.75rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  font-size: 1.8rem;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Period selector */
+.periodTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tabBtn {
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-mid);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tabBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.tabBtnActive {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: var(--void);
+  font-weight: 600;
+}
+
+/* Summary bar */
+.summaryBar {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summaryLabel {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+}
+
+.summaryValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.summaryValueGreen {
+  color: var(--green);
+}
+
+/* Items list */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+/* Single drop row */
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1.125rem;
+  transition: border-color 0.15s;
+}
+
+.row:nth-child(even) {
+  background: var(--surface-alt, var(--surface));
+}
+
+.row:hover {
+  border-color: var(--green);
+}
+
+.rowLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.missionLink {
+  font-size: 0.72rem;
+  color: var(--cyan);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+}
+
+.missionLink:hover {
+  text-decoration: underline;
+}
+
+.itemName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.merchant {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.rowRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.priceGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.priceBefore {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-decoration: line-through;
+  font-family: var(--font-mono);
+}
+
+.arrow {
+  font-size: 0.8rem;
+  color: var(--green);
+}
+
+.priceNow {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--green);
+  font-family: var(--font-mono);
+}
+
+/* Drop % badge */
+.dropBadge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--coral);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+}
+
+.emptyIcon {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  color: var(--text-mid);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+}
+
+/* Skeleton */
+.skeletonRow {
+  height: 72px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  opacity: 0.4;
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  from { opacity: 0.3; }
+  to   { opacity: 0.55; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .rowRight {
+    justify-content: flex-start;
+  }
+
+  .summaryBar {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
