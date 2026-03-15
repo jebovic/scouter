@@ -9,6 +9,8 @@ const MissionOverview = lazy(() => import('./pages/MissionOverview'))
 const OptionsExplorer = lazy(() => import('./pages/OptionsExplorer'))
 const ShoppingTracker = lazy(() => import('./pages/ShoppingTracker'))
 const SearchPage = lazy(() => import('./pages/SearchPage').then((m) => ({ default: m.SearchPage })))
+const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const StatsPage = lazy(() => import('./pages/StatsPage'))
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<HQDashboard />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/stats" element={<StatsPage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />

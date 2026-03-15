@@ -57,6 +57,8 @@ func (m *mockMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mi
 	return nil, nil
 }
 
+func (m *mockMissionRepo) SetPhase(_ context.Context, _ uuid.UUID, _ string) error { return nil }
+
 // ---- mock option repository ----
 
 type mockOptionRepo struct {

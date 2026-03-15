@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel } from '../components/mission'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts } from '../hooks'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField } from '../components/mission'
+import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
 import type { MissionPhase } from '../types'
 
 const PHASES: MissionPhase[] = ['researching', 'comparing', 'buying', 'done']
@@ -17,6 +17,8 @@ export default function MissionOverview() {
   const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
   const { triggerPricing, isPending: pricingPending } = usePriceIntel(mission?.id ?? '')
   const { updateMission, isPending: updatePending } = useUpdateMission(slug!)
+  const { data: purchaseRecord } = usePurchaseRecord(mission?.id)
+  const { decision } = useDecision(mission?.id ?? '')
 
   const spent = items.reduce((sum, i) => sum + i.price, 0)
 
@@ -237,6 +239,47 @@ export default function MissionOverview() {
           <div style={{ marginBottom: '1.5rem' }}>
             <DecisionPanel mission={mission} />
           </div>
+
+          {/* Mission Timeline */}
+          <div
+            style={{
+              background: 'var(--surface)',
+              borderRadius: 'var(--radius)',
+              border: '1px solid var(--border)',
+              padding: '1.5rem',
+              marginBottom: '1.5rem',
+            }}
+          >
+            <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--text-mid)', fontSize: '0.8rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
+              MISSION PROGRESS
+            </h3>
+            <MissionTimeline
+              createdAt={mission.createdAt}
+              hasDecision={!!decision}
+              decisionAt={decision?.createdAt}
+              hasPurchase={!!purchaseRecord}
+              purchasedAt={purchaseRecord?.purchasedAt}
+              hasReview={!!purchaseRecord?.review}
+            />
+          </div>
+
+          {/* Purchase section — visible in buying/done phases */}
+          {(mission.phase === 'buying' || mission.phase === 'done') && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <PurchaseForm missionId={mission.id} existingRecord={purchaseRecord} />
+            </div>
+          )}
+
+          {/* Lessons Learned — visible when done */}
+          {mission.phase === 'done' && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <LessonsField
+                missionSlug={mission.slug}
+                value={mission.lessons}
+                onSave={async (lessons) => { await updateMission({ lessons }) }}
+              />
+            </div>
+          )}
 
           {/* Quick nav */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

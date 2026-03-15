@@ -34,6 +34,24 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
         {t('nav.hq')}
       </Link>
 
+      {/* Global nav links — only show when not in a mission sub-nav */}
+      {!missionSlug && (
+        <div className={styles.subNav}>
+          {[
+            { label: 'History', path: '/history' },
+            { label: 'Stats', path: '/stats' },
+          ].map(({ label, path }) => (
+            <Link
+              key={path}
+              to={path}
+              className={isActive(path) ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      )}
+
       {missionSlug && (
         <>
           {/* Breadcrumb separator — comms style */}

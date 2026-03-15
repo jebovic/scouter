@@ -37,8 +37,9 @@
 | **11** | **Semantic Search (pgvector)** | **Agent + Infra** | **Medium** | ✅ Done |
 | 12 | Mission Lifecycle & Post-Purchase | Functional | Medium | ⬜ |
 | 13 | Settings, Data Management & Deployment | Infrastructure | Low | ⬜ |
+| **14** | **Observability & Monitoring Stack** | **Infrastructure** | **Medium** | ⬜ |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14**
 
 ---
 
@@ -398,9 +399,148 @@ ALTER TABLE missions ADD COLUMN weight_profile JSONB NOT NULL DEFAULT '{}';
 
 ---
 
+## Phase 14: Observability & Monitoring Stack
+
+**Type**: Infrastructure | **Priority**: Medium | **Complexity**: Medium
+**Depends on**: Phase 9 (SmartRouter is the main instrumentation target)
+
+**User Value**: Full operational visibility — know when Ollama is struggling, which model is slow, how many alerts fired, and what each container is consuming. Pre-provisioned dashboards require zero setup.
+
+### Design Decisions
+- **Metrics interface**: domain-scoped sub-interfaces (`LLMRecorder`, `AgentRecorder`, `SchedulerRecorder`, `HTTPRecorder`) injected via constructors — no global Prometheus registry
+- **HTTP path labels**: `chi.RouteContext().RoutePattern` — returns `/api/missions/{slug}`, not actual UUIDs; bounded cardinality (~15 routes)
+- **Compose structure**: `profiles: ["monitoring"]` in existing `docker-compose.yml` — matches existing `seed` profile pattern
+- **Token tracking**: instrumented in `SmartRouter` only (single chokepoint, captures fallbacks)
+- **Alertmanager**: skipped initially — use Grafana alert panels instead
+- **NoopRecorder** as default in all constructors — no nil checks needed
+
+### Backend — `backend/internal/metrics/`
+
+New package with 5 files:
+- `recorder.go` — four sub-interfaces (`LLMRecorder`, `AgentRecorder`, `SchedulerRecorder`, `HTTPRecorder`)
+- `prometheus.go` — `PrometheusRecorder` implementing all interfaces; custom `prometheus.Registry` (not global)
+  - `scouter_llm_calls_total` (CounterVec: model, label, result)
+  - `scouter_llm_call_duration_seconds` (HistogramVec: model; buckets 0.5→180s)
+  - `scouter_llm_tokens_total` (CounterVec: model, direction=input|output)
+  - `scouter_llm_fallbacks_total` (CounterVec: model)
+  - `scouter_agent_runs_total` (CounterVec: agent_type, result)
+  - `scouter_scheduler_runs_total` (CounterVec: job_type, result)
+  - `scouter_scheduler_alerts_triggered_total` (Counter)
+  - `scouter_http_requests_total` (CounterVec: method, route, status)
+  - `scouter_http_request_duration_seconds` (HistogramVec: method, route)
+  - `scouter_active_missions` (GaugeFunc — queried at scrape time)
+  - `scouter_unread_notifications` (GaugeFunc — queried at scrape time)
+- `noop.go` — `NoopRecorder` (all methods no-ops; used in tests and when `METRICS_ENABLED=false`)
+- `middleware.go` — chi HTTP middleware; wraps `ResponseWriter` to capture status code
+- `recorder_test.go` + `middleware_test.go` — unit tests via `prometheus/testutil`
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `backend/internal/llm/smart_router.go` | Add `LLMRecorder` field + `WithRecorder` option; instrument `Complete()` (latency, tokens, fallback, circuit events) |
+| `backend/internal/research/agent.go` | Add `AgentRecorder`; record end-to-end run success/failure |
+| `backend/internal/pricing/agent.go` | Same |
+| `backend/internal/decision/agent.go` | Same |
+| `backend/internal/scheduler/orchestrator.go` | Add `SchedulerRecorder`; record missionsChecked + alertsTriggered per run |
+| `backend/cmd/server/main.go` | Wire `PrometheusRecorder`; register `/metrics`; add HTTP middleware; pass recorder to all agents/router/scheduler |
+| `backend/go.mod` | Add `github.com/prometheus/client_golang` |
+
+### Docker Compose — `profiles: ["monitoring"]`
+
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| `prometheus` | `prom/prometheus:v3.3.1` | 9090 | Scrapes backend (30s) + cAdvisor (30s) |
+| `grafana` | `grafana/grafana:11.6.0` | 3000 | Pre-provisioned dashboards |
+| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.51.0` | internal | Per-container CPU/memory/network |
+
+Prometheus storage: `--storage.tsdb.retention.size=500MB`
+
+### Monitoring Config Files
+
+```
+monitoring/
+  prometheus/
+    prometheus.yml             -- scrape jobs: scouter-backend, cadvisor
+    rules/
+      alerts.yml               -- alert rules (see below)
+  grafana/
+    provisioning/
+      datasources/
+        prometheus.yml         -- auto-configure Prometheus datasource
+      dashboards/
+        dashboard.yml          -- dashboard provider pointing to /dashboards/
+    dashboards/
+      scouter-application.json -- LLM + agents + HTTP + scheduler panels
+      scouter-infrastructure.json -- cAdvisor container + Go runtime panels
+```
+
+### Prometheus Alert Rules
+
+| Alert | Condition | Severity |
+|-------|-----------|----------|
+| `AllLLMModelsDown` | All circuit breakers open > 2m | critical |
+| `HighLLMLatency` | p95 > 30s for 5m | warning |
+| `HighLLMErrorRate` | failure rate > 30% for 5m | warning |
+| `SchedulerNotRunning` | no run in 2h | warning |
+| `BackendDown` | `up{job="scouter-backend"} == 0` for 1m | critical |
+
+### Grafana — Application Dashboard (`scouter-application.json`)
+
+Priority panels:
+1. LLM call p50/p95/p99 latency by model
+2. LLM fallback rate + error rate by model
+3. Token consumption over time (input vs output)
+4. Circuit breaker state table (closed/half-open/open per model)
+5. Agent runs by type (success/failure ratio)
+6. HTTP request rate + p95 latency by route
+7. Scheduler runs + alerts triggered
+8. Active missions gauge + unread notifications gauge
+
+### Grafana — Infrastructure Dashboard (`scouter-infrastructure.json`)
+
+Panels using cAdvisor:
+- Per-container CPU/memory/network I/O
+- Container restart count
+- Go runtime: goroutines, GC pause duration, heap usage
+
+### New Environment Variables
+
+| Variable | Default | Notes |
+|---|---|---|
+| `METRICS_ENABLED` | `true` | Set `false` to disable (uses NoopRecorder) |
+| `GF_SECURITY_ADMIN_PASSWORD` | `scouter` | Set in docker-compose (Grafana admin) |
+
+### No DB Changes
+
+### Risks
+
+| Level | Risk | Mitigation |
+|-------|------|-----------|
+| HIGH | Cardinality explosion on HTTP paths | `chi.RouteContext().RoutePattern` bounds to ~15 values |
+| MEDIUM | cAdvisor Docker socket on WSL2/Docker Desktop | Works on Linux/WSL2; document any host-specific flags |
+| MEDIUM | Prometheus disk growth | `--storage.tsdb.retention.size=500MB` |
+| LOW | Metric double-registration panic | Custom `prometheus.Registry` per instance, never global |
+
+### Success Criteria
+
+- [ ] `GET /metrics` returns Prometheus exposition format with all custom metrics + Go runtime
+- [ ] LLM metrics include correct model/label/result labels
+- [ ] HTTP middleware captures route patterns (not raw URLs)
+- [ ] `docker compose --profile monitoring up` starts Prometheus + Grafana + cAdvisor
+- [ ] Prometheus targets page shows `scouter-backend` and `cadvisor` as UP
+- [ ] Grafana loads with pre-provisioned dashboards showing real data
+- [ ] Alert rules visible in Prometheus alerts page
+- [ ] `make test` passes with no regressions (all new Recorder injections default to NoopRecorder)
+- [ ] `backend/internal/metrics/` achieves 80%+ test coverage
+
+---
+
 ## End of First Journey
 
 After Phase 13, SCOUTER covers the complete lifecycle:
 **Discover** → **Compare** → **Score & Decide** → **Track Prices** → **Get Alerts** → **Buy** → **Record Outcome** → **Search Past Research**
+
+Phase 14 adds full operational observability across the entire stack.
 
 Next journey: multi-user auth, cloud deployment, collaborative household/team missions.

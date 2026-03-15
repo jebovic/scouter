@@ -1,0 +1,162 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: var(--text);
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.missionName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font-display);
+}
+
+.missionName:hover {
+  color: var(--cyan);
+}
+
+.category {
+  font-size: 11px;
+  background: var(--raised);
+  color: var(--text-dim);
+  border-radius: 999px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+.purchaseDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.savings {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.positive {
+  color: var(--green);
+}
+
+.negative {
+  color: var(--coral);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+.review {
+  font-size: 13px;
+  color: var(--text-mid);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.noPurchase {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: 80px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin: 0;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.cta {
+  margin-top: 8px;
+  background: var(--cyan);
+  color: var(--void, #050810);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  font-family: var(--font-display);
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 20px 16px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -34,6 +34,7 @@ export interface Mission {
   costCategories: string[]
   timeline: TimelineEvent[]
   weightProfile: WeightProfile
+  lessons?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -58,4 +59,5 @@ export interface MissionUpdateRequest {
   costCategories?: string[]
   timeline?: TimelineEvent[]
   weightProfile?: WeightProfile
+  lessons?: string
 }

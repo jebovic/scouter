@@ -30,6 +30,7 @@ type Mission struct {
 	CostCategories []string        `json:"costCategories"`
 	Timeline       []TimelineEvent `json:"timeline"`
 	WeightProfile  WeightProfile   `json:"weightProfile"`
+	Lessons        *string         `json:"lessons,omitempty"`
 	ShareToken     *string         `json:"shareToken,omitempty"`
 	ArchivedAt     *time.Time      `json:"archivedAt,omitempty"`
 	CreatedAt      time.Time       `json:"createdAt"`
@@ -69,6 +70,7 @@ type UpdateRequest struct {
 	Icon           *string          `json:"icon,omitempty"`
 	Budget         *float64         `json:"budget,omitempty"        validate:"omitempty,gt=0"`
 	Phase          *string          `json:"phase,omitempty"         validate:"omitempty,oneof=researching comparing buying done"`
+	Lessons        *string          `json:"lessons,omitempty"`
 	Constraints    []Constraint     `json:"constraints,omitempty"`
 	CostCategories []string         `json:"costCategories,omitempty"`
 	Timeline       []TimelineEvent  `json:"timeline,omitempty"`

@@ -25,6 +25,7 @@ type Repository interface {
 	Create(ctx context.Context, m Mission) (*Mission, error)
 	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*Mission, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	SetPhase(ctx context.Context, id uuid.UUID, phase string) error
 	SetShareToken(ctx context.Context, id uuid.UUID, token string) (*Mission, error)
 	ClearShareToken(ctx context.Context, id uuid.UUID) error
 	Archive(ctx context.Context, id uuid.UUID) (*Mission, error)
@@ -42,7 +43,7 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 
 const selectCols = `id, slug, name, icon, category, budget, currency, locale, phase,
 		       constraints, cost_categories, timeline, weight_profile,
-		       share_token, archived_at, created_at, updated_at`
+		       lessons, share_token, archived_at, created_at, updated_at`
 
 func (r *pgRepository) List(ctx context.Context) ([]Mission, error) {
 	rows, err := r.pool.Query(ctx, `
@@ -208,14 +209,15 @@ func (r *pgRepository) Update(ctx context.Context, id uuid.UUID, req UpdateReque
 		  icon            = COALESCE($3, icon),
 		  budget          = COALESCE($4, budget),
 		  phase           = COALESCE($5, phase),
-		  constraints     = CASE WHEN $6::jsonb IS NOT NULL THEN $6 ELSE constraints END,
-		  cost_categories = CASE WHEN $7::jsonb IS NOT NULL THEN $7 ELSE cost_categories END,
-		  timeline        = CASE WHEN $8::jsonb IS NOT NULL THEN $8 ELSE timeline END,
-		  weight_profile  = CASE WHEN $9::jsonb IS NOT NULL THEN $9 ELSE weight_profile END,
+		  lessons         = COALESCE($6, lessons),
+		  constraints     = CASE WHEN $7::jsonb IS NOT NULL THEN $7 ELSE constraints END,
+		  cost_categories = CASE WHEN $8::jsonb IS NOT NULL THEN $8 ELSE cost_categories END,
+		  timeline        = CASE WHEN $9::jsonb IS NOT NULL THEN $9 ELSE timeline END,
+		  weight_profile  = CASE WHEN $10::jsonb IS NOT NULL THEN $10 ELSE weight_profile END,
 		  updated_at      = now()
 		WHERE id = $1
 		RETURNING `+selectCols,
-		id, req.Name, req.Icon, req.Budget, req.Phase,
+		id, req.Name, req.Icon, req.Budget, req.Phase, req.Lessons,
 		string(constraintsJSON), string(categoriesJSON), string(timelineJSON),
 		nullableJSON(weightProfileJSON))
 
@@ -237,6 +239,12 @@ func nullableJSON(b []byte) any {
 
 func (r *pgRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := r.pool.Exec(ctx, `DELETE FROM missions WHERE id = $1`, id)
+	return err
+}
+
+func (r *pgRepository) SetPhase(ctx context.Context, id uuid.UUID, phase string) error {
+	_, err := r.pool.Exec(ctx,
+		`UPDATE missions SET phase = $2, updated_at = now() WHERE id = $1`, id, phase)
 	return err
 }
 
@@ -306,7 +314,7 @@ func scanMission(s scanner) (*Mission, error) {
 		&m.ID, &m.Slug, &m.Name, &m.Icon, &m.Category,
 		&m.Budget, &m.Currency, &m.Locale, &m.Phase,
 		&constraintsRaw, &categoriesRaw, &timelineRaw, &weightProfileRaw,
-		&m.ShareToken, &m.ArchivedAt,
+		&m.Lessons, &m.ShareToken, &m.ArchivedAt,
 		&m.CreatedAt, &m.UpdatedAt,
 	)
 	if err != nil {

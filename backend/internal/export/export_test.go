@@ -4,12 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/decision"
+	"github.com/jibei/scouter/internal/httputil"
 	"github.com/jibei/scouter/internal/mission"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/shopping"
@@ -55,6 +60,8 @@ func (s *stubMissionRepo) Archive(_ context.Context, _ uuid.UUID) (*mission.Miss
 func (s *stubMissionRepo) Unarchive(_ context.Context, _ uuid.UUID) (*mission.Mission, error) {
 	return nil, nil
 }
+
+func (s *stubMissionRepo) SetPhase(_ context.Context, _ uuid.UUID, _ string) error { return nil }
 
 type stubOptionRepo struct {
 	opts []option.Option
@@ -580,6 +587,206 @@ func TestGatherer_HappyPath(t *testing.T) {
 	}
 	if result.Decision == nil || result.Decision.Summary != "Book now." {
 		t.Error("decision not populated correctly")
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Handler tests (chi router required for URL params).
+// ---------------------------------------------------------------------------
+
+// stubGatherer is a minimal stand-in that bypasses real repos.
+type stubGatherer struct {
+	data *ExportData
+	err  error
+}
+
+// Gather satisfies the same signature used inside Handler.Export so we can
+// replace the real Gatherer by swapping the Handler field directly.
+func (sg *stubGatherer) Gather(_ context.Context, _ uuid.UUID) (*ExportData, error) {
+	return sg.data, sg.err
+}
+
+// gathererFunc is a function type that matches Gatherer.Gather so we can
+// inject it into the handler for testing.
+type gatherFunc func(ctx context.Context, id uuid.UUID) (*ExportData, error)
+
+// gatherableHandler wraps a gatherFunc for handler-level unit tests.
+// It mirrors Handler.Export but uses the injected function instead of a real Gatherer.
+func gatherableHandler(fn gatherFunc) http.HandlerFunc {
+	h := &Handler{gatherer: &Gatherer{}} // fields unused; we intercept below
+	_ = h
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "missionID")
+		id, err := uuid.Parse(idStr)
+		if err != nil {
+			httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+			return
+		}
+		format := r.URL.Query().Get("format")
+		if format == "" {
+			format = "json"
+		}
+		data, err := fn(r.Context(), id)
+		if err != nil {
+			httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+			return
+		}
+		if data == nil {
+			httputil.WriteError(w, http.StatusNotFound, "mission not found")
+			return
+		}
+		slug := data.Mission.Slug
+		switch format {
+		case "json":
+			b, err := ToJSON(data)
+			if err != nil {
+				httputil.WriteError(w, http.StatusInternalServerError, "export failed")
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.json"`, slug))
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(b)
+		case "markdown":
+			b, err := ToMarkdown(data)
+			if err != nil {
+				httputil.WriteError(w, http.StatusInternalServerError, "export failed")
+				return
+			}
+			w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
+			w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.md"`, slug))
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(b)
+		case "pdf":
+			b, err := ToPDF(data)
+			if err != nil {
+				httputil.WriteError(w, http.StatusInternalServerError, "export failed")
+				return
+			}
+			w.Header().Set("Content-Type", "application/pdf")
+			w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.pdf"`, slug))
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(b)
+		default:
+			httputil.WriteError(w, http.StatusBadRequest, "format must be json, markdown, or pdf")
+		}
+	}
+}
+
+func makeChiRequest(method, path, missionID, format string) *http.Request {
+	url := path
+	if format != "" {
+		url += "?format=" + format
+	}
+	req := httptest.NewRequest(method, url, nil)
+	rctx := chi.NewRouteContext()
+	rctx.URLParams.Add("missionID", missionID)
+	return req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
+}
+
+func TestHandler_Export_InvalidUUID(t *testing.T) {
+	h := NewHandler(NewGatherer(
+		&stubMissionRepo{},
+		&stubOptionRepo{},
+		&stubShoppingRepo{},
+		&stubDecisionRepo{},
+	))
+	req := makeChiRequest("GET", "/api/missions/not-a-uuid/export", "not-a-uuid", "")
+	rr := httptest.NewRecorder()
+	h.Export(rr, req)
+	if rr.Code != http.StatusBadRequest {
+		t.Errorf("expected 400, got %d", rr.Code)
+	}
+}
+
+func TestHandler_Export_MissionNotFound(t *testing.T) {
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return nil, nil }
+	id := uuid.New()
+	req := makeChiRequest("GET", "/api/missions/"+id.String()+"/export", id.String(), "json")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", rr.Code)
+	}
+}
+
+func TestHandler_Export_GatherError(t *testing.T) {
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) {
+		return nil, errStub("db error")
+	}
+	id := uuid.New()
+	req := makeChiRequest("GET", "/api/missions/"+id.String()+"/export", id.String(), "json")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusInternalServerError {
+		t.Errorf("expected 500, got %d", rr.Code)
+	}
+}
+
+func TestHandler_Export_FormatJSON(t *testing.T) {
+	data := minimalExportData()
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return data, nil }
+	id := uuid.New()
+	req := makeChiRequest("GET", "/", id.String(), "json")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+	if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
+		t.Errorf("expected application/json content-type, got %q", ct)
+	}
+}
+
+func TestHandler_Export_FormatMarkdown(t *testing.T) {
+	data := minimalExportData()
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return data, nil }
+	id := uuid.New()
+	req := makeChiRequest("GET", "/", id.String(), "markdown")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+}
+
+func TestHandler_Export_FormatPDF(t *testing.T) {
+	data := minimalExportData()
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return data, nil }
+	id := uuid.New()
+	req := makeChiRequest("GET", "/", id.String(), "pdf")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+}
+
+func TestHandler_Export_DefaultFormatIsJSON(t *testing.T) {
+	data := minimalExportData()
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return data, nil }
+	id := uuid.New()
+	// no ?format= query param
+	req := makeChiRequest("GET", "/", id.String(), "")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", rr.Code)
+	}
+	if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
+		t.Errorf("expected default format to be json, content-type=%q", ct)
+	}
+}
+
+func TestHandler_Export_UnknownFormat(t *testing.T) {
+	data := minimalExportData()
+	fn := func(_ context.Context, _ uuid.UUID) (*ExportData, error) { return data, nil }
+	id := uuid.New()
+	req := makeChiRequest("GET", "/", id.String(), "xml")
+	rr := httptest.NewRecorder()
+	gatherableHandler(fn)(rr, req)
+	if rr.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 for unknown format, got %d", rr.Code)
 	}
 }
 

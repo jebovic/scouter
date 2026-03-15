@@ -16,6 +16,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/jibei/scouter/internal/agentrun"
+	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/config"
 	"github.com/jibei/scouter/internal/db"
 	"github.com/jibei/scouter/internal/decision"
@@ -130,6 +131,12 @@ func main() {
 	searchRepo := search.NewRepository(pool)
 	searchHandler := search.NewHandler(searchRepo, embedder, embedRepo, embedWorker)
 
+	// Purchase lifecycle (Phase 12)
+	purchaseRepo := purchase.NewRepository(pool)
+	purchaseSvc := purchase.NewService(purchaseRepo, missionRepo)
+	purchaseHandler := purchase.NewHandler(purchaseSvc)
+	statsHandler := purchase.NewStatsHandler(pool)
+
 	// Export
 	exportGatherer := export.NewGatherer(missionRepo, optionRepo, shoppingRepo, decisionRepo)
 	exportHandler := export.NewHandler(exportGatherer)
@@ -170,6 +177,10 @@ func main() {
 	r.Mount("/api/missions/{missionID}/pricing", pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", agentRunHandler.Routes())
+
+	// Purchase lifecycle (Phase 12)
+	r.Mount("/api/missions/{missionID}/purchase", purchaseHandler.Routes())
+	r.Get("/api/stats", statsHandler.Stats)
 
 	// Export, share, archive
 	r.Get("/api/missions/{missionID}/export", exportHandler.Export)
