@@ -16,6 +16,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/budgetalert"
+	"github.com/jibei/scouter/internal/ecoscore"
 	"github.com/jibei/scouter/internal/loyaltypoints"
 	"github.com/jibei/scouter/internal/pricealertrule"
 	"github.com/jibei/scouter/internal/currency"
@@ -593,6 +595,14 @@ func main() {
 	// French Market Price Intelligence (Phase 106) — hardcoded knowledge base, no LLM
 	frenchMarketHandler := frenchmarket.NewHandler()
 	r.Get("/api/market/insight", frenchMarketHandler.GetInsight)
+
+	// Smart Budget Alerts (Phase 108) — direct pool query, no service layer
+	budgetAlertHandler := budgetalert.NewHandler(pool)
+	r.Get("/api/budget-alerts", budgetAlertHandler.GetAlerts)
+
+	// Eco-Score & Sustainability Dashboard (Phase 109) — deterministic, no LLM
+	ecoScoreHandler := ecoscore.NewHandler(shoppingSvc)
+	r.Get("/api/missions/{missionID}/eco-score", ecoScoreHandler.GetEcoScore)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
