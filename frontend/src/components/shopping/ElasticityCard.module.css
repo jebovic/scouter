@@ -1,0 +1,134 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Gauge track */
+.gaugeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gaugeTrack {
+  position: relative;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ef4444);
+  overflow: visible;
+}
+
+/* Marker pin at the current elasticity position */
+.gaugeMarker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 2px var(--border-glow);
+  transition: left 0.4s ease;
+}
+
+.gaugeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  padding: 0 2px;
+}
+
+/* Classification badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.badgeInelastic {
+  background: color-mix(in srgb, #3b82f6 15%, transparent);
+  color: #3b82f6;
+  border: 1px solid color-mix(in srgb, #3b82f6 30%, transparent);
+}
+
+.badgeElastic {
+  background: color-mix(in srgb, #8b5cf6 15%, transparent);
+  color: #8b5cf6;
+  border: 1px solid color-mix(in srgb, #8b5cf6 30%, transparent);
+}
+
+.badgeVeryElastic {
+  background: color-mix(in srgb, #ef4444 15%, transparent);
+  color: #ef4444;
+  border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+}
+
+.badgeStronglyInelastic {
+  background: color-mix(in srgb, #3b82f6 25%, transparent);
+  color: #1d4ed8;
+  border: 1px solid color-mix(in srgb, #3b82f6 40%, transparent);
+}
+
+/* Insight text */
+.insight {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  font-style: italic;
+  border-left: 2px solid var(--border-glow);
+  padding-left: 8px;
+}
+
+/* Optimal buy threshold */
+.threshold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-mid);
+}
+
+.thresholdValue {
+  font-weight: 700;
+  color: var(--green);
+  font-size: 0.85rem;
+}
+
+.thresholdLabel {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* Data points count */
+.meta {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 10px 12px;
+  }
+}

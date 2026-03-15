@@ -36,6 +36,7 @@ import { TargetSuggestionCard } from './TargetSuggestionCard'
 import { DropPredictionCard } from './DropPredictionCard'
 import { PriceAnnotationList } from './PriceAnnotationList'
 import { VolatilityCalendar } from './VolatilityCalendar'
+import { ElasticityCard } from './ElasticityCard'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -305,6 +306,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <VolatilityCalendar missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <ElasticityCard missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

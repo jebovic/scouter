@@ -114,8 +114,10 @@ import (
 	"github.com/jibei/scouter/internal/notificationrules"
 	"github.com/jibei/scouter/internal/roicalculator"
 	"github.com/jibei/scouter/internal/targetsuggestion"
+	"github.com/jibei/scouter/internal/elasticity"
 	"github.com/jibei/scouter/internal/volatilitycalendar"
 	"github.com/jibei/scouter/internal/wishlistvote"
+	"github.com/jibei/scouter/internal/missionreport"
 )
 
 func main() {
@@ -767,6 +769,14 @@ func main() {
 	// Collaborative Wishlist Voting Summary (Phase 144) — 10min in-memory cache
 	voteSummaryHandler := wishlistvote.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/vote-summary", voteSummaryHandler.GetVoteSummary)
+
+	// Price Elasticity & Demand Estimator (Phase 145) — 1h in-memory cache
+	elasticityHandler := elasticity.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/items/{itemId}/elasticity", elasticityHandler.GetElasticity)
+
+	// Mission Summary Text Report (Phase 146)
+	missionReportHandler := missionreport.NewHandler(pool)
+	r.Get("/api/missions/{missionID}/report", missionReportHandler.GetReport)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
