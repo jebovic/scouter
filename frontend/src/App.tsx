@@ -20,6 +20,7 @@ const EnvelopesPage = lazy(() => import('./pages/EnvelopesPage'))
 const DealCalendarPage = lazy(() => import('./pages/DealCalendarPage'))
 const PerformancePage = lazy(() => import('./pages/PerformancePage'))
 const DigestPage = lazy(() => import('./pages/DigestPage'))
+const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'))
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/deal-calendar" element={<DealCalendarPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/digest" element={<DigestPage />} />
+            <Route path="/loyalty" element={<LoyaltyPage />} />
             <Route path="/missions/:slug" element={<MissionLayout />}>
               <Route index element={<MissionOverview />} />
               <Route path="options" element={<OptionsExplorer />} />
