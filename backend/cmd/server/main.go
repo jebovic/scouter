@@ -16,7 +16,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/priceanalytics"
 	"github.com/jibei/scouter/internal/autotag"
+	"github.com/jibei/scouter/internal/budgetrec"
 	"github.com/jibei/scouter/internal/carbon"
 	"github.com/jibei/scouter/internal/cashback"
 	"github.com/jibei/scouter/internal/marketplace"
@@ -545,6 +547,14 @@ func main() {
 	digestRepo := digest.NewRepository(pool)
 	digestHandler := digest.NewHandler(digestRepo)
 	r.Get("/api/digest/weekly", digestHandler.Weekly)
+
+	// Price History Analytics (Phase 97)
+	priceAnalyticsHandler := priceanalytics.NewHandler(pool)
+	r.Get("/api/missions/{missionID}/items/{itemID}/price-stats", priceAnalyticsHandler.GetStats)
+
+	// Smart Budget Recommendations (Phase 96)
+	budgetrecHandler := budgetrec.NewHandler(shoppingSvc)
+	r.Get("/api/missions/{missionID}/budget-analysis", budgetrecHandler.GetAnalysis)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {

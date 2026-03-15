@@ -11,6 +11,7 @@ import { NegotiationCoach } from './NegotiationCoach'
 import { VATCalculator } from './VATCalculator'
 import { VoteBar } from './VoteBar'
 import { PriceForecastCard } from './PriceForecastCard'
+import { PriceAnalyticsPanel } from './PriceAnalyticsPanel'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { MarketplaceComparator } from './MarketplaceComparator'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
@@ -221,6 +222,9 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
       )}
       {showIntel && (
         <PriceForecastCard missionId={missionId} itemId={item.id} currency={currency} />
+      )}
+      {showIntel && (
+        <PriceAnalyticsPanel missionId={missionId} itemId={item.id} currency={currency} />
       )}
     </>
   )

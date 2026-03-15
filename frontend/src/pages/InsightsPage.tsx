@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getMissions } from '../api/missions'
+import { listMissions } from '../api/missions'
 import { analyzeSpending } from '../utils/spendingInsights'
 import styles from './InsightsPage.module.css'
 
@@ -22,7 +22,7 @@ function SpendingBar({ pct, label }: { pct: number; label: string }) {
 export default function InsightsPage() {
   const { data: missions, isLoading } = useQuery({
     queryKey: ['missions'],
-    queryFn: getMissions,
+    queryFn: listMissions,
     staleTime: 60_000,
   })
 

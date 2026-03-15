@@ -1,0 +1,102 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.statValue.falling {
+  color: var(--success, #22c55e);
+}
+
+.statValue.rising {
+  color: var(--danger, #ef4444);
+}
+
+.statValue.stable {
+  color: var(--text-dim);
+}
+
+.volatilityRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.volatilityLabel {
+  color: var(--text-dim);
+}
+
+.volatilityBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-raised, var(--surface));
+  border: 1px solid var(--border);
+}
+
+.volatilityBadge.low {
+  color: var(--success, #22c55e);
+  border-color: var(--success, #22c55e);
+}
+
+.volatilityBadge.medium {
+  color: var(--warning, #f59e0b);
+  border-color: var(--warning, #f59e0b);
+}
+
+.volatilityBadge.high {
+  color: var(--danger, #ef4444);
+  border-color: var(--danger, #ef4444);
+}
+
+.noData {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
