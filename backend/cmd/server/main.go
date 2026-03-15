@@ -132,6 +132,8 @@ import (
 	"github.com/jibei/scouter/internal/regretanalyzer"
 	"github.com/jibei/scouter/internal/cashbacktracker"
 	"github.com/jibei/scouter/internal/listoptimizer"
+	"github.com/jibei/scouter/internal/pricedropwatch"
+	"github.com/jibei/scouter/internal/seasonalcalendar"
 )
 
 func main() {
@@ -847,6 +849,14 @@ func main() {
 	// French Cashback & Reward Tracker (Phase 160)
 	cashbackTrackerHandler := cashbacktracker.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/cashback", cashbackTrackerHandler.GetCashbackSummary)
+
+
+	// Smart Price Drop Watchlist (Phase 161)
+	priceDropWatchlistHandler := pricedropwatch.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/price-drop-watchlist", priceDropWatchlistHandler.GetWatchlist)
+	// Seasonal Buying Calendar (Phase 162)
+	seasonalCalHandler := seasonalcalendar.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/seasonal-calendar", seasonalCalHandler.GetCalendar)
 
 	// LLM pool health (nil when provider is Anthropic-only)
 	if smartRouter != nil {
