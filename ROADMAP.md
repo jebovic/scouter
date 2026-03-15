@@ -68,9 +68,9 @@
 | 42 | Real-time Stock Availability (French retailers) | Functional | High | ✅ Done |
 | 43 | AI Shopping Summary Report (PDF/email) | Agent | Medium | ✅ Done |
 | 44 | Voice Input for Mission Creation (Web Speech API) | Interface | Low | ✅ Done |
-| 45 | Performance Dashboard (Lighthouse + bundle analysis) | Infrastructure | Low | 📋 Planned |
-| 46 | Smart Comparison Mode (side-by-side option viewer) | Interface | High | 📋 Planned |
-| 47 | Mission AI Coach (proactive tips during research) | Agent | Medium | 📋 Planned |
+| 45 | Performance Dashboard (Lighthouse + bundle analysis) | Infrastructure | Low | ✅ Done |
+| 46 | Smart Comparison Mode (side-by-side option viewer) | Interface | High | ✅ Done |
+| 47 | Mission AI Coach (proactive tips during research) | Agent | Medium | ✅ Done |
 | 48 | French VAT Calculator (TVA 20%/5.5% per category) | Functional | Medium | ✅ Done |
 | 49 | Gamification: Scouter Badges & Saving Milestones | Interface | Low | 📋 Planned |
 | 50 | Multi-Mission Budget Rollup Dashboard | Interface | High | 📋 Planned |

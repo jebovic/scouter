@@ -1,12 +1,18 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
+import { useMissions } from '../hooks/useMission'
+import { useBadges } from '../hooks/useBadges'
+import { BadgeRow, BadgeToast } from '../components/scouter'
 import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
 import { BudgetVsActualChart } from '../components/charts/BudgetVsActualChart'
 import { PersonaCard } from '../components/persona'
 import { formatCurrencyLocale } from '../utils/format'
+import { unlockIfEarned, ALL_BADGES } from '../utils/badges'
+import type { Badge } from '../utils/badges'
 import styles from './StatsPage.module.css'
 
 export default function StatsPage() {
@@ -17,8 +23,47 @@ export default function StatsPage() {
 
   const { data: stats, isLoading } = useStats()
   const { data: monthlyStats } = useMonthlyStats()
+  const { missions } = useMissions()
+  const { badges, unlock } = useBadges()
+  const [newBadge, setNewBadge] = useState<Badge | null>(null)
 
   const fmt = (amount: number) => formatCurrencyLocale(amount, locale, currency)
+
+  // Check for earned badges on load
+  useEffect(() => {
+    if (!stats) return
+
+    const missionCount = missions.length
+    const savedTotal = Math.max(0, stats.savings)
+    const researchCount = 0 // Default to 0; can be enhanced with actual research tracking
+
+    const earnedBadgeIds = unlockIfEarned(missionCount, savedTotal, researchCount)
+
+    // Unlock new badges and show toast for the first new one
+    let firstNewBadge: string | null = null
+    earnedBadgeIds.forEach((badgeId) => {
+      if (!badges.some((b) => b.id === badgeId)) {
+        unlock(badgeId)
+        if (!firstNewBadge) {
+          firstNewBadge = badgeId
+        }
+      }
+    })
+
+    // Show toast only for the first new badge in this render
+    if (firstNewBadge && firstNewBadge in ALL_BADGES) {
+      const badgeKey = firstNewBadge as keyof typeof ALL_BADGES
+      const def = ALL_BADGES[badgeKey]
+      const badge: Badge = {
+        id: def.id as any,
+        name: def.name,
+        description: def.description,
+        icon: def.icon,
+        unlockedAt: new Date(),
+      }
+      setNewBadge(badge)
+    }
+  }, [stats, missions.length, badges, unlock])
 
   if (isLoading) {
     return (
@@ -127,8 +172,15 @@ export default function StatsPage() {
       )}
 
       <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Vos badges</h2>
+        <BadgeRow badges={badges} />
+      </section>
+
+      <section className={styles.section}>
         <PersonaCard />
       </section>
+
+      {newBadge && <BadgeToast badge={newBadge} onDismiss={() => setNewBadge(null)} />}
     </main>
   )
 }
