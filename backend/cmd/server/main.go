@@ -134,6 +134,7 @@ import (
 	"github.com/jibei/scouter/internal/listoptimizer"
 	"github.com/jibei/scouter/internal/pricedropwatch"
 	"github.com/jibei/scouter/internal/seasonalcalendar"
+	"github.com/jibei/scouter/internal/budgetadvisor"
 )
 
 func main() {
@@ -369,6 +370,10 @@ func main() {
 	// Regret Analyzer (Phase 158)
 	regretHandler := regretanalyzer.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/regret-analysis", regretHandler.GetAnalysis)
+
+	// Budget Allocation Advisor (Phase 163)
+	budgetAdvisorHandler := budgetadvisor.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/budget-advice", budgetAdvisorHandler.GetAdvice)
 
 	// Public shared mission (accessible without auth, always CORS-open)
 	r.With(corsMiddleware).Get("/api/shared/{token}", func(w http.ResponseWriter, r *http.Request) {

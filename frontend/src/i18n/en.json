@@ -412,5 +412,14 @@
     "priorityNow": "Buy now (this week)",
     "prioritySoon": "Buy soon (next month)",
     "priorityWait": "Wait for better opportunity (2+ months)"
+  },
+  "budgetAdvisor": {
+    "title": "Budget Advisor",
+    "loading": "Loading budget advice...",
+    "total": "Total Budget",
+    "spent": "Spent",
+    "remaining": "Remaining",
+    "surplus": "Surplus",
+    "allocations": "Recommended Allocations"
   }
 }
