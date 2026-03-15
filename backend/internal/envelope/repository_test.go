@@ -86,6 +86,13 @@ func (m *mockRepository) GetSummary(ctx context.Context, id uuid.UUID) (*Envelop
 	return nil, nil
 }
 
+func (m *mockRepository) MonthlySpendAll(ctx context.Context) ([]EnvelopeSpend, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	return nil, nil
+}
+
 // ---------- repository tests ----------
 
 func TestRepository_FindAll_Empty(t *testing.T) {

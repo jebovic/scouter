@@ -46,6 +46,16 @@ func New(cronExpr string, o *Orchestrator, log *slog.Logger, wishlistChecker *wi
 		}
 	}
 
+	// Budget alert job: runs every 6 hours.
+	_, err = c.AddFunc("0 */6 * * *", func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
+		defer cancel()
+		o.checkBudgetAlerts(ctx)
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return s, nil
 }
 

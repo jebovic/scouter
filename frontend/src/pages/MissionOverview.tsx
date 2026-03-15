@@ -1,11 +1,12 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge } from '../components/scouter'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
 import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useDecision } from '../hooks'
 import type { MissionPhase } from '../types'
+import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import styles from './MissionOverview.module.css'
 
 const PHASES: MissionPhase[] = ['researching', 'comparing', 'buying', 'done']
@@ -21,6 +22,9 @@ export default function MissionOverview() {
   const { updateMission, isPending: updatePending } = useUpdateMission(slug!)
   const { data: purchaseRecord } = usePurchaseRecord(mission?.id)
   const { decision } = useDecision(mission?.id ?? '')
+  const [showScanner, setShowScanner] = useState(false)
+  const [scanPrefill, setScanPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
+  const [scanKey, setScanKey] = useState(0)
 
   const spent = items.reduce((sum, i) => sum + i.price, 0)
 
@@ -199,8 +203,46 @@ export default function MissionOverview() {
         {/* Purchase section — visible in buying/done phases */}
         {(mission.phase === 'buying' || mission.phase === 'done') && (
           <div className={styles.section}>
-            <PurchaseForm missionId={mission.id} existingRecord={purchaseRecord} />
+            {!purchaseRecord && (
+              <div className={styles.scannerTrigger}>
+                <button
+                  className={styles.scannerBtn}
+                  onClick={() => setShowScanner(true)}
+                  title="Scanner un reçu pour pré-remplir le formulaire"
+                >
+                  📷 Scanner un reçu
+                </button>
+              </div>
+            )}
+            <PurchaseForm
+              key={scanKey}
+              missionId={mission.id}
+              existingRecord={purchaseRecord}
+              prefill={scanPrefill}
+            />
           </div>
+        )}
+
+        {/* Receipt scanner modal */}
+        {showScanner && (
+          <ReceiptScanner
+            onResult={(data) => {
+              setScanPrefill({
+                merchant: data.merchant,
+                finalPrice: data.amount,
+                purchasedAt: data.date
+                  ? (() => {
+                      // Convert DD/MM/YYYY or DD-MM-YYYY → YYYY-MM-DD for date input
+                      const parts = data.date.split(/[\/\-]/)
+                      return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : undefined
+                    })()
+                  : undefined,
+              })
+              setScanKey((k) => k + 1)
+              setShowScanner(false)
+            }}
+            onClose={() => setShowScanner(false)}
+          />
         )}
 
         {/* Lessons Learned — visible when done */}

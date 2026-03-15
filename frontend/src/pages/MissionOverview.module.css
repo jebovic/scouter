@@ -245,6 +245,34 @@
   color: var(--gold);
 }
 
+/* ── Receipt scanner trigger ──────────────────────────────────────────────── */
+.scannerTrigger {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.scannerBtn {
+  background: transparent;
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text-mid);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scannerBtn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-glow);
+}
+
 @media (max-width: 640px) {
   .main {
     padding: 1rem;

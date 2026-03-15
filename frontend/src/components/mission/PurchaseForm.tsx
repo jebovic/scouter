@@ -7,18 +7,25 @@ import { NegotiationCoach } from './NegotiationCoach'
 import type { PurchaseRecord } from '../../api/purchase'
 import styles from './PurchaseForm.module.css'
 
+export interface PurchaseFormPrefill {
+  merchant?: string
+  finalPrice?: number
+  purchasedAt?: string
+}
+
 interface PurchaseFormProps {
   missionId: string
   selectedOptionId?: string | null
   existingRecord?: PurchaseRecord | null
+  prefill?: PurchaseFormPrefill
 }
 
-export function PurchaseForm({ missionId, selectedOptionId, existingRecord }: PurchaseFormProps) {
+export function PurchaseForm({ missionId, selectedOptionId, existingRecord, prefill }: PurchaseFormProps) {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
-  const [purchasedAt, setPurchasedAt] = useState(existingRecord?.purchasedAt?.split('T')[0] ?? today)
-  const [finalPrice, setFinalPrice] = useState(String(existingRecord?.finalPrice ?? ''))
-  const [merchant, setMerchant] = useState(existingRecord?.merchant ?? '')
+  const [purchasedAt, setPurchasedAt] = useState(existingRecord?.purchasedAt?.split('T')[0] ?? prefill?.purchasedAt ?? today)
+  const [finalPrice, setFinalPrice] = useState(String(existingRecord?.finalPrice ?? prefill?.finalPrice ?? ''))
+  const [merchant, setMerchant] = useState(existingRecord?.merchant ?? prefill?.merchant ?? '')
   const [satisfaction, setSatisfaction] = useState<number | null>(existingRecord?.satisfaction ?? null)
   const [review, setReview] = useState(existingRecord?.review ?? '')
   const [success, setSuccess] = useState(false)

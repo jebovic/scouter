@@ -146,10 +146,16 @@ func (m *mockShoppingRepo) GetPriceHistory(_ context.Context, _ uuid.UUID, _ int
 // ---- mock notification repository ----
 
 type mockOrchestratorNotifRepo struct {
-	created []notification.CreateRequest
+	created         []notification.CreateRequest
+	existing        []notification.Notification // returned by ListFiltered for dedup tests
+	createErr       error                        // injected error for Create calls
+	listFilteredErr error                        // injected error for ListFiltered calls
 }
 
 func (m *mockOrchestratorNotifRepo) Create(_ context.Context, req notification.CreateRequest) (*notification.Notification, error) {
+	if m.createErr != nil {
+		return nil, m.createErr
+	}
 	m.created = append(m.created, req)
 	return &notification.Notification{}, nil
 }
@@ -160,8 +166,11 @@ func (m *mockOrchestratorNotifRepo) UnreadCount(_ context.Context) (int, error) 
 func (m *mockOrchestratorNotifRepo) MarkRead(_ context.Context, _ uuid.UUID) error { return nil }
 func (m *mockOrchestratorNotifRepo) MarkAllRead(_ context.Context) error           { return nil }
 func (m *mockOrchestratorNotifRepo) Delete(_ context.Context, _ uuid.UUID) error   { return nil }
-func (m *mockOrchestratorNotifRepo) ListFiltered(_ context.Context, f notification.ListFilter) ([]notification.Notification, error) {
-	return nil, nil
+func (m *mockOrchestratorNotifRepo) ListFiltered(_ context.Context, _ notification.ListFilter) ([]notification.Notification, error) {
+	if m.listFilteredErr != nil {
+		return nil, m.listFilteredErr
+	}
+	return m.existing, nil
 }
 
 // ---- mock pricing runners ----

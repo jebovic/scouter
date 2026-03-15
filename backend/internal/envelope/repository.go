@@ -111,6 +111,53 @@ func (r *Repository) GetSummary(ctx context.Context, id uuid.UUID) (*EnvelopeSum
 	return &s, nil
 }
 
+// MonthlySpendAll returns the current-month purchase_records spend aggregated
+// per envelope, along with one representative mission ID per envelope so the
+// caller can anchor a notification without an extra query.
+//
+// Envelopes with no missions or no purchase records in the current month are
+// excluded (spend = 0 is not actionable).
+func (r *Repository) MonthlySpendAll(ctx context.Context) ([]EnvelopeSpend, error) {
+	const q = `
+	SELECT
+		e.id,
+		e.name,
+		e.monthly_amount,
+		e.currency,
+		e.created_at,
+		COALESCE(SUM(pr.final_price), 0)        AS spent,
+		MIN(m.id)                                AS representative_mission_id
+	FROM envelopes e
+	JOIN missions m          ON m.envelope_id = e.id
+	LEFT JOIN purchase_records pr
+		ON pr.mission_id = m.id
+		AND DATE_TRUNC('month', pr.purchased_at) = DATE_TRUNC('month', NOW()::date)
+	GROUP BY e.id, e.name, e.monthly_amount, e.currency, e.created_at
+	HAVING COALESCE(SUM(pr.final_price), 0) > 0`
+
+	rows, err := r.pool.Query(ctx, q)
+	if err != nil {
+		return nil, fmt.Errorf("monthly spend all: %w", err)
+	}
+	defer rows.Close()
+
+	var out []EnvelopeSpend
+	for rows.Next() {
+		var es EnvelopeSpend
+		if err := rows.Scan(
+			&es.Envelope.ID, &es.Envelope.Name,
+			&es.Envelope.MonthlyAmount, &es.Envelope.Currency,
+			&es.Envelope.CreatedAt,
+			&es.Spent,
+			&es.MissionID,
+		); err != nil {
+			return nil, fmt.Errorf("scan envelope spend: %w", err)
+		}
+		out = append(out, es)
+	}
+	return out, rows.Err()
+}
+
 // Delete removes an envelope by UUID; returns pgx.ErrNoRows if it did not exist.
 func (r *Repository) Delete(ctx context.Context, id uuid.UUID) error {
 	tag, err := r.pool.Exec(ctx, `DELETE FROM envelopes WHERE id = $1`, id)

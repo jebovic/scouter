@@ -32,6 +32,15 @@ type EnvelopeSummary struct {
 	TotalSpent   float64  `json:"totalSpent"`
 }
 
+// EnvelopeSpend holds the computed monthly spend for a single envelope along
+// with one representative mission ID that can be used as a notification anchor.
+// MissionID is the nil UUID when the envelope has no associated missions.
+type EnvelopeSpend struct {
+	Envelope  Envelope
+	Spent     float64
+	MissionID uuid.UUID // zero UUID when no mission exists
+}
+
 // CreateRequest is the JSON payload for POST /api/envelopes.
 type CreateRequest struct {
 	Name          string  `json:"name"`

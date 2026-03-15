@@ -16,6 +16,7 @@ type Repo interface {
 	Update(ctx context.Context, e Envelope) (Envelope, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetSummary(ctx context.Context, id uuid.UUID) (*EnvelopeSummary, error)
+	MonthlySpendAll(ctx context.Context) ([]EnvelopeSpend, error)
 }
 
 // Service is a thin validation layer over the Repo.
@@ -94,6 +95,12 @@ func (s *Service) UpdateEnvelope(ctx context.Context, id uuid.UUID, req UpdateRe
 // GetSummary returns the envelope along with computed mission stats.
 func (s *Service) GetSummary(ctx context.Context, id uuid.UUID) (*EnvelopeSummary, error) {
 	return s.repo.GetSummary(ctx, id)
+}
+
+// MonthlySpendAll returns the current-month spend for every envelope that has
+// at least one associated mission with purchase records.
+func (s *Service) MonthlySpendAll(ctx context.Context) ([]EnvelopeSpend, error) {
+	return s.repo.MonthlySpendAll(ctx)
 }
 
 // DeleteEnvelope removes an envelope by ID.

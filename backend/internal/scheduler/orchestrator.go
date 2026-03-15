@@ -31,6 +31,7 @@ type Orchestrator struct {
 	shoppingRepo shopping.Repository
 	notifRepo    notification.Repository
 	pricingAgent pricingRunner
+	envelopeRepo envelopeBudgetRepo // nil when envelope feature is not wired
 	maxMissions  int
 	log          *slog.Logger
 	recorder     metrics.SchedulerRecorder
@@ -56,6 +57,12 @@ func NewOrchestrator(
 		log:          log,
 		recorder:     metrics.NoopRecorder{},
 	}
+}
+
+// SetEnvelopeRepo attaches an envelope repository for budget-alert checks.
+// Call this after NewOrchestrator when the envelope feature is active.
+func (o *Orchestrator) SetEnvelopeRepo(repo envelopeBudgetRepo) {
+	o.envelopeRepo = repo
 }
 
 // SetRecorder attaches a SchedulerRecorder for metrics instrumentation.
