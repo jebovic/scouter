@@ -13,6 +13,7 @@ import { VoteBar } from './VoteBar'
 import { PriceForecastCard } from './PriceForecastCard'
 import { RetailerLinks } from '../options/RetailerLinks'
 import { PriceHistoryExportButton } from './PriceHistoryExportButton'
+import { CarbonBadge } from './CarbonBadge'
 import { useDealScore, useUpdateShoppingItem } from '../../hooks'
 import { formatCurrency } from '../../utils/format'
 import type { ShoppingItem, ItemStatus } from '../../types'
@@ -180,6 +181,7 @@ export function ShoppingItemRow({ item, missionId, currency = 'USD', onStatusCha
         <PriceBenchmarkBadge itemId={item.id} itemName={item.name} />
         <NegotiationCoach itemId={item.id} />
         <PriceHistoryExportButton missionId={missionId} itemId={item.id} itemName={item.name} />
+        <CarbonBadge itemName={item.name} category={item.costCategory} />
       </div>
 
       <Badge variant={item.status} />

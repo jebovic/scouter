@@ -1,0 +1,41 @@
+@import '../../styles/theme.css';
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.loading {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pill:hover { opacity: 0.85; }
+
+.veryLow  { background: #d4edda; color: #155724; }
+.low      { background: #c3e6cb; color: #155724; }
+.medium   { background: #fff3cd; color: #856404; }
+.high     { background: #f8d7da; color: #721c24; }
+.veryHigh { background: #c53030; color: #fff; }
+
+.tips {
+  margin: 0;
+  padding: 0 0 0 16px;
+  font-size: 0.72rem;
+  color: var(--text-mid);
+  line-height: 1.5;
+}

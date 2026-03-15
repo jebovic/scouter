@@ -17,6 +17,7 @@ import (
 
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/autotag"
+	"github.com/jibei/scouter/internal/carbon"
 	"github.com/jibei/scouter/internal/cashback"
 	"github.com/jibei/scouter/internal/dealfeed"
 	"github.com/jibei/scouter/internal/benchmark"
@@ -471,6 +472,12 @@ func main() {
 	priceForecastAgent := priceforecast.NewAgent(provider)
 	priceForecastHandler := priceforecast.NewHandler(priceForecastAgent, shoppingRepo, shoppingRepo, priceForecastCache)
 	r.Get("/api/missions/{missionID}/shopping/{itemID}/forecast", priceForecastHandler.GetForecast)
+
+	// AI Carbon Footprint Estimator (Phase 88)
+	carbonCache := carbon.NewCache(24 * time.Hour)
+	carbonAgent := carbon.NewAgent(provider)
+	carbonHandler := carbon.NewHandler(carbonAgent, carbonCache)
+	r.Get("/api/carbon", carbonHandler.GetEstimate)
 
 	// Mission Collaboration Threads (Phase 61)
 	commentRepo := comment.NewRepository(pool)
