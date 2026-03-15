@@ -43,12 +43,19 @@
 | 17 | AI Negotiation Coach | Agent | Medium | ✅ Done |
 | 18 | PWA + Mobile UX (offline, swipe, BottomNav) | Interface | Medium | ✅ Done |
 | 19 | Multi-Currency & i18n Completion | Interface | Low | ✅ Done |
-| **20** | **Interactive Analytics Dashboard (recharts)** | **Interface** | **High** | 🔄 In Progress |
-| 21 | Wish List & Price Drop Alerts | Functional | High | 📋 Planned |
-| 22 | Weighted Comparison Matrix | Functional | Medium | 📋 Planned |
-| 23 | Smart Budget Forecaster (AI) | Agent | Medium | 📋 Planned |
+| **20** | **Interactive Analytics Dashboard (recharts)** | **Interface** | **High** | ✅ Done |
+| 21 | Wish List & Price Drop Alerts | Functional | High | ✅ Done |
+| 22 | Weighted Comparison Matrix | Functional | Medium | ✅ Done |
+| 23 | Smart Budget Forecaster (AI) | Agent | Medium | ✅ Done |
+| 24 | Price Alert Toggle + French Market UX | Functional | High | ✅ Done |
+| 25 | EAN Barcode Lookup (Open Food Facts) | Functional | Medium | ✅ Done |
+| 26 | Spending Persona (AI buyer archetype) | Agent | Medium | ✅ Done |
+| 27 | Price History Chart (recharts LineChart) | Interface | Medium | ✅ Done |
+| **28** | **Smart Notifications Center** | **Interface** | **High** | 🔄 In Progress |
+| 29 | French Market Integrations (travel APIs) | Functional | High | 📋 Planned |
+| 30 | Social Proof & Review Aggregation | Functional | Medium | 📋 Planned |
 
-**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–23** auto-improvement loop
+**Execution order:** 3+4 in parallel → 5+6 in parallel → 7 → 8 → **9** → 10+11 in parallel → 12+13 in parallel → **14** → 15–19 sequential → **20–27** auto-improvement loop → **28–30** ongoing
 
 ---
 
@@ -675,3 +682,113 @@ Next journey: multi-user auth, cloud deployment, collaborative household/team mi
 ### Frontend
 - `ForecastPanel` component on MissionOverview: risk gauge, predicted spend range, AI suggestions
 - `useForecast` hook with mutation + caching
+
+---
+
+## Phase 24: Price Alert Toggle + French Market UX ✅ COMPLETE
+
+**Status**: ✅ Done
+Added price alert toggle per shopping item, real-time notification on price drop, French locale formatting.
+
+---
+
+## Phase 25: EAN Barcode Lookup (Open Food Facts) ✅ COMPLETE
+
+**Status**: ✅ Done
+EAN barcode scanner using device camera → Open Food Facts API → auto-populate shopping item.
+
+---
+
+## Phase 26: Spending Persona — AI Buyer Archetype ✅ COMPLETE
+
+**Status**: ✅ Done
+PersonaAgent uses LLM tool-use to analyze purchase history and generate an archetype (e.g. "Budget Optimiser", "Impulse Buyer") with traits and tips. Displayed as PersonaCard on StatsPage.
+
+### Backend
+- `internal/persona/` — agent, repository, handler, model
+- `GET /api/persona` (latest), `POST /api/persona` (run agent)
+- Migration `018_persona.up.sql`
+
+### Frontend
+- `frontend/src/components/persona/PersonaCard.tsx`
+- `usePersona` / `useRunPersona` hooks
+- Wired into StatsPage
+
+---
+
+## Phase 27: Price History Chart ✅ COMPLETE
+
+**Status**: ✅ Done
+recharts LineChart per shopping item showing price evolution over time.
+
+### Backend
+- `GetPriceHistory(ctx, itemID, limit)` on `shopping.Repository`
+- `GET /api/shopping/{itemID}/price-history?limit=N` endpoint
+- `PriceHistoryPoint` model (`price`, `source`, `recordedAt`)
+
+### Frontend
+- `PriceHistoryChart` component (recharts AreaChart, gradient fill)
+- `PriceHistoryModal` on ShoppingItemRow
+
+---
+
+## Phase 28: Smart Notifications Center
+
+**Type**: Interface | **Priority**: High | **Complexity**: Medium
+**Status**: 🔄 In Progress
+
+**User Value**: Replace the 60s-polling dropdown with a dedicated, actionable notifications page. Users can filter by mission, mark all read, delete, and click-through to the relevant item.
+
+### Backend
+- `DELETE /api/notifications/:id` — delete single notification
+- `POST /api/notifications/mark-all-read` — bulk mark-read
+- Filter query params on `GET /api/notifications`: `?missionId=&type=`
+
+### Frontend
+- `/notifications` full-page route: `NotificationsPage`
+- Group notifications by mission (accordion sections)
+- Filter bar: All / Price Alerts / Deal Score / System
+- Bulk action toolbar: "Mark all read", "Clear dismissed"
+- Per-notification delete button + navigation link to relevant mission
+- `useNotifications` extended with delete/mark-all mutations
+- `NotificationBell` dropdown shows "View all" → `/notifications`
+
+---
+
+## Phase 29: French Market Integrations
+
+**Type**: Functional | **Priority**: High | **Complexity**: High
+**Status**: 📋 Planned
+
+**User Value**: Real-time travel + product prices from French-market public APIs — Aviationstack for flights, SNCF (French rail) open data for trains, Google Shopping-style price comparison.
+
+### Backend
+- `internal/travel/` — TravelAgent: Aviationstack flight search, SNCF journey search
+- Fetch cheapest fares for a route + date range → price history snapshots
+- `GET /api/travel/flights?from=CDG&to=NCE&date=2026-04-01`
+- `GET /api/travel/trains?from=Paris&to=Lyon&date=2026-04-01`
+- Rate limiting + caching (1h TTL in memory)
+
+### Frontend
+- `TravelSearchWidget` in `MissionOverview` for travel-type missions
+- Flight/train results shown as ShoppingItems with airline/operator badge
+- i18n: French station/airport names
+
+---
+
+## Phase 30: Social Proof & Review Aggregation
+
+**Type**: Functional | **Priority**: Medium | **Complexity**: High
+**Status**: 📋 Planned
+
+**User Value**: Pull community sentiment for a product from public sources — Trustpilot, Amazon FR reviews summary, Reddit mentions — to help users validate their shortlisted options with social proof.
+
+### Backend
+- `internal/reviews/` — ReviewAgent: LLM summarisation of public review excerpts
+- `GET /api/options/:id/reviews` — fetch + cache review summary
+- Sentiment score + top pro/con bullets
+
+### Frontend
+- `ReviewSummaryCard` on OptionCard detail view
+- Sentiment gauge (positive/neutral/negative %)
+- "Last refreshed" timestamp + manual refresh button
