@@ -129,6 +129,7 @@ import (
 	"github.com/jibei/scouter/internal/timingrecommender"
 	"github.com/jibei/scouter/internal/dealaggregator"
 	"github.com/jibei/scouter/internal/burnrate"
+	"github.com/jibei/scouter/internal/spendingvelocity"
 	"github.com/jibei/scouter/internal/merchantrecommender"
 	"github.com/jibei/scouter/internal/regretanalyzer"
 	"github.com/jibei/scouter/internal/cashbacktracker"
@@ -137,6 +138,7 @@ import (
 	"github.com/jibei/scouter/internal/seasonalcalendar"
 	"github.com/jibei/scouter/internal/budgetadvisor"
 	"github.com/jibei/scouter/internal/expensecategorizer"
+	"github.com/jibei/scouter/internal/pricealertdigest"
 )
 
 func main() {
@@ -287,6 +289,9 @@ func main() {
 	// Deal Calendar (no DB dependency — hardcoded French events)
 	dealCalHandler := dealcalendar.NewHandler()
 
+	// Price Alert Digest (Phase 166)
+	priceAlertDigestHandler := pricealertdigest.NewHandler(pool)
+
 	// Router
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -376,6 +381,9 @@ func main() {
 	// Budget Allocation Advisor (Phase 163)
 	budgetAdvisorHandler := budgetadvisor.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/budget-advice", budgetAdvisorHandler.GetAdvice)
+
+	// Price Alert Digest (Phase 166)
+	r.Get("/api/missions/{missionId}/price-alert-digest", priceAlertDigestHandler.GetDigest)
 
 	// Smart Expense Categorizer (Phase 164)
 	expenseCatHandler := expensecategorizer.NewHandler(pool)
@@ -848,6 +856,10 @@ func main() {
 	// Budget Burn Rate Tracker (Phase 156)
 	burnRateHandler := burnrate.NewHandler(pool)
 	r.Get("/api/missions/{missionId}/burn-rate", burnRateHandler.GetBurnRate)
+
+	// Smart Spending Velocity (Phase 167)
+	spendingVelocityHandler := spendingvelocity.NewHandler(pool)
+	r.Get("/api/missions/{missionId}/spending-velocity", spendingVelocityHandler.GetReport)
 
 	// Smart Merchant Recommender (Phase 157)
 	merchantRecHandler := merchantrecommender.NewHandler(pool)

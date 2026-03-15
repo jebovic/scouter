@@ -1,0 +1,199 @@
+@import '../../styles/theme.css';
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+/* ── Pace Badge ────────────────────────────────────────────────────────── */
+
+.paceBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-family: var(--font-display);
+  background: var(--raised);
+  color: var(--text);
+}
+
+.fast {
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+}
+
+.moderate {
+  background: color-mix(in srgb, var(--orange) 15%, transparent);
+  color: var(--orange);
+}
+
+.onTrack {
+  background: color-mix(in srgb, var(--green) 15%, transparent);
+  color: var(--green);
+}
+
+.slow {
+  background: color-mix(in srgb, var(--gray) 15%, transparent);
+  color: var(--gray);
+}
+
+.unconfigured {
+  background: color-mix(in srgb, var(--text-dim) 15%, transparent);
+  color: var(--text-dim);
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────── */
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressLabelText {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+}
+
+.progressPercent {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.progressBar {
+  height: 8px;
+  background: var(--raised);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  width: calc(var(--pct) * 1%);
+  background: var(--pace-color, var(--accent));
+  border-radius: 4px;
+  transition: width 0.4s ease, background 0.3s ease;
+}
+
+/* ── Metrics grid ─────────────────────────────────────────────────────── */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-sm);
+}
+
+.metric {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricLabel {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+}
+
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ── Advice section ───────────────────────────────────────────────────── */
+
+.advice {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-left: 3px solid var(--accent);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.adviceText {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* ── Skeleton & error states ────────────────────────────────────────────── */
+
+.skeleton {
+  background: var(--raised);
+  border-radius: var(--radius-sm);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.skeletonLine {
+  height: 12px;
+  width: 100%;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-sm);
+}
+
+.skeletonCell {
+  height: 48px;
+  border-radius: var(--radius-sm);
+}
+
+.errorState {
+  padding: var(--gap);
+  text-align: center;
+  color: var(--coral);
+  font-size: 0.875rem;
+  font-family: var(--font-body);
+}
