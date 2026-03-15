@@ -1,0 +1,226 @@
+@import '../../styles/theme.css';
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.summaryBadge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemRow {
+  display: grid;
+  grid-template-columns: 40px 1fr 80px 120px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: var(--background);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.rank1 {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #000;
+}
+
+.rank2 {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: #000;
+}
+
+.rank3 {
+  background: linear-gradient(135deg, #cd7f32 0%, #e8a76a 100%);
+  color: white;
+}
+
+.rankDefault {
+  background: var(--text-secondary);
+  color: white;
+}
+
+.itemName {
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.priceValue {
+  text-align: right;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.scoreBarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scoreBar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scoreBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.scoreBarFillGreen {
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+}
+
+.scoreBarFillOrange {
+  background: linear-gradient(90deg, #fb923c 0%, #f97316 100%);
+}
+
+.scoreBarFillRed {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.scoreLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.verdict {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toggle {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle:hover {
+  background: var(--background);
+}
+
+.toggleIcon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.toggleIcon.open {
+  transform: rotate(180deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .itemRow {
+    grid-template-columns: 40px 1fr 80px;
+    gap: 8px;
+  }
+
+  .scoreBarContainer,
+  .verdict {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .itemRow {
+    grid-template-columns: 32px 1fr 60px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .rank {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .priceValue {
+    font-size: 13px;
+  }
+
+  .itemName {
+    font-size: 14px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+}

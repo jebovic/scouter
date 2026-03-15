@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse } from '../scouter'
 import { useBudgetAdvisor } from '../../hooks'
-import type { BudgetAdvice } from '../../api/budgetadvisor'
 import styles from './BudgetAdvisorPanel.module.css'
 
 interface BudgetAdvisorPanelProps {

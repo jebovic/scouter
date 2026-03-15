@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import type { BudgetAdvice } from '../api/budgetadvisor'
 import { getBudgetAdvice } from '../api/budgetadvisor'
 
 export function useBudgetAdvisor(missionId: string) {
