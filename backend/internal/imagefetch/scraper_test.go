@@ -76,3 +76,24 @@ func TestScraper_SkipsSmallImages(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, imgs, "small img (width<300) should be skipped")
 }
+
+func TestScraper_SkipsExistingURLs(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/img.jpg" {
+			w.Header().Set("Content-Type", "image/jpeg")
+			w.Write(make([]byte, 1024))
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprintf(w, `<html><head>
+            <meta property="og:image" content="%s/img.jpg">
+        </head><body></body></html>`, "http://"+r.Host)
+	}))
+	defer srv.Close()
+
+	existing := map[string]bool{srv.URL + "/img.jpg": true}
+	s := imagefetch.NewScraper()
+	imgs, err := s.Fetch(t.Context(), srv.URL, existing)
+	require.NoError(t, err)
+	assert.Empty(t, imgs, "image already in DB should be skipped via existingURLs")
+}
