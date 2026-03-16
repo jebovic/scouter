@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Search, GitCompare, ShoppingCart, CheckCircle } from 'lucide-react'
+import { ArrowRight, Search, GitCompare, ShoppingCart } from 'lucide-react'
 import type { Mission } from '../../types'
 import styles from './NextActionNudge.module.css'
 
@@ -40,18 +40,10 @@ function getNudge(mission: Mission): NudgeConfig | null {
     case 'buying':
       return {
         icon: <ShoppingCart size={14} />,
-        message: 'Tu es prêt·e à acheter ! Vérifie les prix.',
+        message: 'Vous êtes prêt·e à acheter ! Vérifiez les prix.',
         action: 'Acheter',
         href: `${base}/shopping`,
         color: 'var(--green)',
-      }
-    case 'done':
-      return {
-        icon: <CheckCircle size={14} />,
-        message: 'Mission accomplie ! Consulte ton bilan.',
-        action: 'Voir le bilan',
-        href: base,
-        color: 'var(--text-dim)',
       }
     default:
       return null

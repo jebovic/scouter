@@ -52,3 +52,17 @@
   color: var(--text);
   font-weight: 700;
 }
+
+.calm {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.calmLink {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.calmLink:hover {
+  text-decoration: underline;
+}

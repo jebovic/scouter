@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useMissions } from '../../hooks'
 import styles from './MissionQuickSwitcher.module.css'
 
@@ -9,9 +9,17 @@ interface MissionQuickSwitcherProps {
   onClose: () => void
 }
 
+const PHASE_LABELS: Record<string, string> = {
+  researching: 'Recherche',
+  comparing:   'Comparaison',
+  buying:      'Achat',
+  done:        'Terminé',
+}
+
 export function MissionQuickSwitcher({ open, onClose }: MissionQuickSwitcherProps) {
   const { missions } = useMissions()
   const [query, setQuery] = useState('')
+  const [activeIndex, setActiveIndex] = useState(-1)
   const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -22,9 +30,12 @@ export function MissionQuickSwitcher({ open, onClose }: MissionQuickSwitcherProp
   useEffect(() => {
     if (open) {
       setQuery('')
+      setActiveIndex(-1)
       setTimeout(() => inputRef.current?.focus(), 50)
     }
   }, [open])
+
+  useEffect(() => { setActiveIndex(-1) }, [query])
 
   function handleSelect(slug: string) {
     navigate(`/missions/${slug}`)
@@ -40,6 +51,7 @@ export function MissionQuickSwitcher({ open, onClose }: MissionQuickSwitcherProp
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-label="Navigation rapide"
+        aria-modal="true"
       >
         <div className={styles.searchRow}>
           <Search size={16} className={styles.searchIcon} aria-hidden="true" />
@@ -50,22 +62,33 @@ export function MissionQuickSwitcher({ open, onClose }: MissionQuickSwitcherProp
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Escape') onClose()
-              if (e.key === 'Enter' && filtered.length > 0) handleSelect(filtered[0].slug)
+              if (e.key === 'Escape') { onClose(); return }
+              if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIndex(i => Math.min(i + 1, filtered.length - 1)) }
+              if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIndex(i => Math.max(i - 1, 0)) }
+              if (e.key === 'Enter') {
+                const idx = activeIndex >= 0 ? activeIndex : 0
+                if (filtered[idx]) handleSelect(filtered[idx].slug)
+              }
             }}
           />
-          <kbd className={styles.esc}>esc</kbd>
+          <kbd className={styles.esc}>Échap</kbd>
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Fermer" type="button">
+            <X size={14} aria-hidden="true" />
+          </button>
         </div>
-        <ul className={styles.list} role="listbox">
+        <ul className={styles.list}>
           {filtered.length === 0 && (
             <li className={styles.empty}>Aucune mission trouvée</li>
           )}
-          {filtered.map(m => (
-            <li key={m.id} role="option" aria-selected={false}>
-              <button className={styles.item} onClick={() => handleSelect(m.slug)}>
+          {filtered.map((m, i) => (
+            <li key={m.id}>
+              <button
+                className={`${styles.item} ${i === activeIndex ? styles.itemActive : ''}`}
+                onClick={() => handleSelect(m.slug)}
+              >
                 <span className={styles.icon}>{m.icon}</span>
                 <span className={styles.name}>{m.name}</span>
-                <span className={styles.phase}>{m.phase}</span>
+                <span className={styles.phase}>{PHASE_LABELS[m.phase] ?? m.phase}</span>
               </button>
             </li>
           ))}

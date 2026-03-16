@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import {
   Home, ShoppingCart, Heart, Bell, Package,
@@ -47,7 +47,7 @@ const SECTIONS = [
   },
   {
     key: 'stats',
-    label: 'STATISTIQUES',
+    label: 'MON BILAN',
     items: [
       { label: 'Bilan général',  path: '/stats',       icon: BarChart2 },
       { label: 'Performances',   path: '/performance', icon: Award },
@@ -71,11 +71,19 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('railCollapsed') === 'true' } catch { return false }
   })
-  const [simpleMode] = useState(() => {
+  const [simpleMode, setSimpleMode] = useState(() => {
     try { return localStorage.getItem('simpleMode') === 'true' } catch { return false }
   })
 
   useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key === 'simpleMode') setSimpleMode(e.newValue === 'true')
+    }
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [])
+
+  useLayoutEffect(() => {
     try { localStorage.setItem('railCollapsed', String(collapsed)) } catch {}
     document.documentElement.style.setProperty(
       '--rail-offset',
@@ -97,7 +105,6 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
     <nav
       className={`${styles.rail} ${collapsed ? styles.collapsed : ''}`}
       aria-label="Navigation principale"
-      role="navigation"
     >
       {/* Logo */}
       <Link to="/" className={styles.logo} title="Accueil">
@@ -170,6 +177,11 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
               )}
             </NavLink>
           ))}
+          {missions.length > 8 && !collapsed && (
+            <Link to="/" className={styles.moreLink}>
+              +{missions.length - 8} autres missions
+            </Link>
+          )}
         </div>
       </div>
 
@@ -188,7 +200,7 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
         <button
           className={styles.collapseBtn}
           onClick={() => setCollapsed(c => !c)}
-          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+          aria-label={collapsed ? 'Agrandir la navigation' : 'Réduire la navigation'}
           title={collapsed ? 'Agrandir' : 'Réduire'}
           type="button"
         >

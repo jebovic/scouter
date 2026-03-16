@@ -10,7 +10,7 @@ interface QuickAddMenuProps {
 function QuickAddMenu({ onClose }: QuickAddMenuProps) {
   return (
     <div className={styles.quickAddOverlay} onClick={onClose} role="presentation">
-      <div className={styles.quickAddSheet} onClick={e => e.stopPropagation()} role="dialog" aria-label="Action rapide">
+      <div className={styles.quickAddSheet} onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Action rapide">
         <div className={styles.sheetHandle} />
         <h3 className={styles.sheetTitle}>Que voulez-vous faire ?</h3>
         <nav className={styles.sheetActions}>

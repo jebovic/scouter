@@ -12,7 +12,17 @@ export function EtatDuJourCard() {
     { count: unreadCount, label: 'alertes prix', to: '/notifications', show: unreadCount > 0 },
   ].filter(i => i.show)
 
-  if (items.length === 0) return null
+  if (items.length === 0) {
+    return (
+      <div className={styles.card}>
+        <span className={styles.title}>Aujourd'hui</span>
+        <span className={styles.calm}>
+          Tout est calme —{' '}
+          <Link to="/?new=1" className={styles.calmLink}>créez une nouvelle mission</Link>
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.card}>

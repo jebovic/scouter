@@ -86,8 +86,27 @@
   transition: background 0.12s;
 }
 
-.item:hover {
+.item:hover,
+.itemActive {
   background: var(--surface-hover, rgba(255,255,255,0.06));
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+
+.closeBtn:hover {
+  color: var(--text);
 }
 
 .icon {

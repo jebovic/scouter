@@ -9,12 +9,12 @@ export function DaySummaryStrip() {
 
   return (
     <div className={styles.strip}>
-      <Link to="/envelopes" className={styles.cell}>
+      <Link to="/" className={styles.cell}>
         <span className={styles.value}>{activeMissions}</span>
         <span className={styles.label}>missions actives</span>
       </Link>
       <div className={styles.divider} />
-      <Link to="/wishlist" className={styles.cell}>
+      <Link to="/kanban" className={styles.cell}>
         <span className={styles.value}>{inProgress}</span>
         <span className={styles.label}>en cours</span>
       </Link>

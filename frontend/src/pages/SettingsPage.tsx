@@ -60,7 +60,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <main className={styles.page}>
+      <main className={`page ${styles.page}`}>
         <h1 className={styles.heading}>{t('settings.title')}</h1>
         <div className={styles.loading}>{t('common.loading')}</div>
       </main>
@@ -68,7 +68,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`page ${styles.page}`}>
       <h1 className={styles.heading}>{t('settings.title')}</h1>
 
       <section className={styles.section}>
