@@ -49,21 +49,27 @@ export default function InsightsPage() {
 
   if (isLoading) {
     return (
-      <main className={`page ${styles.main}`}>
-        <div className={styles.loading}>Analyse en cours…</div>
-      </main>
+      <>
+        <Topnav />
+        <main className={`page ${styles.main}`}>
+          <div className={styles.loading}>{t('insights.loading')}</div>
+        </main>
+      </>
     )
   }
 
   if (!report || !missions || missions.length === 0) {
     return (
-      <main className={`page ${styles.main}`}>
-        <div className={styles.empty}>
-          <div className={styles.emptyIcon}>📊</div>
-          <h2>Aucune donnée</h2>
-          <p>Créez des missions pour voir vos insights.</p>
-        </div>
-      </main>
+      <>
+        <Topnav />
+        <main className={`page ${styles.main}`}>
+          <div className={styles.empty}>
+            <div className={styles.emptyIcon}>📊</div>
+            <h2>{t('insights.noData')}</h2>
+            <p>{t('insights.noDataDesc')}</p>
+          </div>
+        </main>
+      </>
     )
   }
 
@@ -72,28 +78,28 @@ export default function InsightsPage() {
       <Topnav />
       <main className={`page ${styles.main}`}>
       <div className="container">
-        <h1 className={styles.title}>📊 Insights Budget</h1>
+        <h1 className={styles.title}>📊 {t('insights.title')}</h1>
 
         {/* KPI row */}
         <div className={styles.kpiRow}>
           <div className={styles.kpi}>
             <div className={styles.kpiValue}>{missions.length}</div>
-            <div className={styles.kpiLabel}>Missions actives</div>
+            <div className={styles.kpiLabel}>{t('insights.activeMissions')}</div>
           </div>
           <div className={styles.kpi}>
             <div className={styles.kpiValue}>{fmt(report.totalBudget)}</div>
-            <div className={styles.kpiLabel}>Budget total</div>
+            <div className={styles.kpiLabel}>{t('insights.totalBudget')}</div>
           </div>
           <div className={styles.kpi}>
             <div className={styles.kpiValue}>{report.utilizationPct.toFixed(0)}%</div>
-            <div className={styles.kpiLabel}>Utilisation budget</div>
+            <div className={styles.kpiLabel}>{t('insights.budgetUsage')}</div>
           </div>
         </div>
 
         {/* Insights */}
         {report.insights.length > 0 && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Recommandations</h2>
+            <h2 className={styles.sectionTitle}>{t('insights.recommendations')}</h2>
             <div className={styles.insightGrid}>
               {report.insights.map((ins, i) => (
                 <div key={i} className={`${styles.insightCard} ${styles[ins.type]}`}>
@@ -111,7 +117,7 @@ export default function InsightsPage() {
         {/* Category breakdown */}
         {report.patterns.length > 0 && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Par catégorie</h2>
+            <h2 className={styles.sectionTitle}>{t('insights.byCategory')}</h2>
             {report.patterns.map((p) => (
               <SpendingBar key={p.category} pct={p.pctOfBudget} label={p.category} />
             ))}
@@ -120,7 +126,7 @@ export default function InsightsPage() {
 
         {/* Missions table */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Toutes les missions</h2>
+          <h2 className={styles.sectionTitle}>{t('insights.allMissions')}</h2>
           <div className={styles.missionTable}>
             {missions.map((m) => (
               <div key={m.id} className={styles.missionRow}>
