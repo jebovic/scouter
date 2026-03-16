@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -18,22 +19,39 @@ const (
 	maxImageBytes      = 5 * 1024 * 1024 // 5 MB
 	scrapeTimeout      = 10 * time.Second
 	minImgWidth        = 300
+	userAgent          = "Mozilla/5.0 (compatible; Scouter/1.0)"
 )
 
-var userAgent = "Mozilla/5.0 (compatible; Scouter/1.0)"
-
 // Scraper fetches HTML pages and extracts product image candidates.
-type Scraper struct{ client *http.Client }
+type Scraper struct {
+	client    *http.Client
+	urlFilter func(string) bool // defaults to isSafeURL; overridable in tests
+}
 
-// NewScraper returns a Scraper with a default HTTP client.
+// NewScraper returns a Scraper with a default HTTP client and SSRF filter.
 func NewScraper() *Scraper {
-	return &Scraper{client: &http.Client{Timeout: scrapeTimeout}}
+	return &Scraper{
+		client:    &http.Client{Timeout: scrapeTimeout},
+		urlFilter: isSafeURL,
+	}
+}
+
+// NewScraperWithFilter returns a Scraper with a custom URL safety filter.
+// Intended for testing only.
+func NewScraperWithFilter(filter func(string) bool) *Scraper {
+	return &Scraper{
+		client:    &http.Client{Timeout: scrapeTimeout},
+		urlFilter: filter,
+	}
 }
 
 // Fetch scrapes pageURL and returns up to maxImagesPerOption images.
 // existingURLs is the set of source_url values already stored for deduplication.
 func (s *Scraper) Fetch(ctx context.Context, pageURL string, existingURLs map[string]bool) ([]FetchedImage, error) {
-	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, pageURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, pageURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create request for %s: %w", pageURL, err)
+	}
 	req.Header.Set("User-Agent", userAgent)
 
 	resp, err := s.client.Do(req)
@@ -73,7 +91,13 @@ func (s *Scraper) Fetch(ctx context.Context, pageURL string, existingURLs map[st
 }
 
 func (s *Scraper) downloadImage(ctx context.Context, imgURL string) (*FetchedImage, error) {
-	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, imgURL, nil)
+	if !s.urlFilter(imgURL) {
+		return nil, fmt.Errorf("rejected unsafe URL: %s", imgURL)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imgURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create request for %s: %w", imgURL, err)
+	}
 	req.Header.Set("User-Agent", userAgent)
 	resp, err := s.client.Do(req)
 	if err != nil {
@@ -102,6 +126,33 @@ func (s *Scraper) downloadImage(ctx context.Context, imgURL string) (*FetchedIma
 		ContentType: ct,
 		SourceURL:   imgURL,
 	}, nil
+}
+
+// isSafeURL rejects URLs that point to loopback, link-local, or private addresses.
+func isSafeURL(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false
+	}
+	host := u.Hostname()
+	ips, err := net.LookupHost(host)
+	if err != nil {
+		// Can't resolve — allow it (scraper runs with network access; DNS failure ≠ malicious)
+		return true
+	}
+	for _, ipStr := range ips {
+		ip := net.ParseIP(ipStr)
+		if ip == nil {
+			continue
+		}
+		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
+			return false
+		}
+	}
+	return true
 }
 
 // extractCandidates returns image URLs in priority order:
@@ -150,8 +201,8 @@ func extractCandidates(html string, base *url.URL) []string {
 }
 
 var (
-	ogImageRE      = regexp.MustCompile(`(?i)property=["']og:image["'][^>]*content=["']([^"']+)["']|content=["']([^"']+)["'][^>]*property=["']og:image["']`)
-	twitterImageRE = regexp.MustCompile(`(?i)name=["']twitter:image["'][^>]*content=["']([^"']+)["']|content=["']([^"']+)["'][^>]*name=["']twitter:image["']`)
+	ogImageRE      = regexp.MustCompile(`(?i)property=["']og:image["'][\s\S]*?content=["']([^"']+)["']|content=["']([^"']+)["'][\s\S]*?property=["']og:image["']`)
+	twitterImageRE = regexp.MustCompile(`(?i)name=["']twitter:image["'][\s\S]*?content=["']([^"']+)["']|content=["']([^"']+)["'][\s\S]*?name=["']twitter:image["']`)
 	jsonldImageRE  = regexp.MustCompile(`"image"\s*:\s*"([^"]+)"`)
 	imgTagRE       = regexp.MustCompile(`(?i)<img\s[^>]+>`)
 	imgSrcRE       = regexp.MustCompile(`(?i)src=["']([^"']+)["']`)
