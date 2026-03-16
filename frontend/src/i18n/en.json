@@ -175,11 +175,20 @@
     "noItemsInBucket": "No items",
     "hideShareCard": "Hide Share Card",
     "shareWishlist": "Share Wishlist",
+    "budgetPlan": "Budget Plan",
+    "exportCSV": "Export CSV",
+    "moreActions": "More actions",
     "viewList": "≡ List",
     "viewKanban": "⊞ Kanban",
     "viewListTitle": "List view",
     "viewKanbanTitle": "Kanban view",
-    "viewModeLabel": "View mode"
+    "viewModeLabel": "View mode",
+    "tabForecast": "Forecast",
+    "tabAnalytics": "Analytics",
+    "tabNegotiate": "Negotiate",
+    "tabMarket": "Market",
+    "tabReviews": "Reviews",
+    "intelPanelLabel": "Deal intelligence"
   },
   "options": {
     "all": "All",
@@ -191,7 +200,12 @@
     "rerunResearch": "Re-run Research",
     "running": "Running...",
     "rerunResearchTitle": "Re-Run Research",
-    "rejectOption": "Reject Option"
+    "rejectOption": "Reject Option",
+    "images": {
+      "lightboxClose": "Close image",
+      "prevImage": "Previous image",
+      "nextImage": "Next image"
+    }
   },
   "purchase": {
     "record": "Record Purchase",

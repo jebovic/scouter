@@ -175,11 +175,20 @@
     "noItemsInBucket": "Aucun article",
     "hideShareCard": "Masquer la carte partage",
     "shareWishlist": "Partager la liste",
+    "budgetPlan": "Plan budgétaire",
+    "exportCSV": "Exporter CSV",
+    "moreActions": "Plus d'actions",
     "viewList": "≡ Liste",
     "viewKanban": "⊞ Kanban",
     "viewListTitle": "Vue liste",
     "viewKanbanTitle": "Vue Kanban",
-    "viewModeLabel": "Mode d'affichage"
+    "viewModeLabel": "Mode d'affichage",
+    "tabForecast": "Prévision",
+    "tabAnalytics": "Analytique",
+    "tabNegotiate": "Négocier",
+    "tabMarket": "Marché",
+    "tabReviews": "Avis",
+    "intelPanelLabel": "Intelligence marché"
   },
   "options": {
     "all": "Tout",
@@ -191,7 +200,12 @@
     "rerunResearch": "Relancer la Recherche",
     "running": "En cours...",
     "rerunResearchTitle": "Relancer la Recherche",
-    "rejectOption": "Rejeter l'option"
+    "rejectOption": "Rejeter l'option",
+    "images": {
+      "lightboxClose": "Fermer l'image",
+      "prevImage": "Image précédente",
+      "nextImage": "Image suivante"
+    }
   },
   "purchase": {
     "record": "Enregistrer l'achat",

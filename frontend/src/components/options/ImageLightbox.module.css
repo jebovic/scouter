@@ -49,3 +49,8 @@
 
 .navPrev { left: 16px; }
 .navNext { right: 16px; }
+
+.nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

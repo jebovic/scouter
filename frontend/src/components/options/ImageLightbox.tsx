@@ -26,7 +26,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: Props) {
   const img = images[index];
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
       <button
         className={styles.close}
         onClick={onClose}
@@ -46,7 +46,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: Props) {
             className={`${styles.nav} ${styles.navPrev}`}
             onClick={(e) => { e.stopPropagation(); setIndex((i) => Math.max(0, i - 1)); }}
             disabled={index === 0}
-            aria-label="Previous image"
+            aria-label={t("options.images.prevImage")}
           >
             ‹
           </button>
@@ -54,7 +54,7 @@ export function ImageLightbox({ images, initialIndex, onClose }: Props) {
             className={`${styles.nav} ${styles.navNext}`}
             onClick={(e) => { e.stopPropagation(); setIndex((i) => Math.min(images.length - 1, i + 1)); }}
             disabled={index === images.length - 1}
-            aria-label="Next image"
+            aria-label={t("options.images.nextImage")}
           >
             ›
           </button>
