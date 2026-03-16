@@ -45,7 +45,17 @@ func (h *Handler) GetPrediction(w http.ResponseWriter, r *http.Request) {
 
 	prediction, err := h.agent.Predict(ctx, itemName, category)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, "seasonal prediction unavailable")
+		degraded := &Prediction{
+			ItemName:       itemName,
+			Category:       category,
+			BestMonths:     []string{},
+			AvgDiscountPct: 0,
+			Events:         []string{},
+			NextEventDays:  0,
+			Rationale:      "Prédiction temporairement indisponible.",
+			Confidence:     "unavailable",
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 

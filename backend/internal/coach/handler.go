@@ -99,7 +99,12 @@ func (h *Handler) getCoachTips(w http.ResponseWriter, r *http.Request) {
 	// Generate new tips
 	tips, err := h.agent.Run(r.Context(), *m, optionsCount, itemsCount)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		degraded := CoachResponse{
+			MissionID:   m.ID.String(),
+			Tips:        []CoachTip{{ID: "unavailable", Category: "research", Priority: "low", Title: "Analyse temporairement indisponible", Body: "Le service de coaching est temporairement indisponible. Veuillez réessayer dans quelques instants."}},
+			GeneratedAt: time.Now(),
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 

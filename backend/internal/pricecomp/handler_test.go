@@ -138,8 +138,18 @@ func TestGetComparison_AgentError(t *testing.T) {
 	w := httptest.NewRecorder()
 	mountPriceCompRouter(h).ServeHTTP(w, req)
 
-	if w.Code != http.StatusBadGateway {
-		t.Fatalf("expected 502, got %d: %s", w.Code, w.Body.String())
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 degraded, got %d: %s", w.Code, w.Body.String())
+	}
+	var got pricecomp.PriceComparison
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode degraded response: %v", err)
+	}
+	if got.OptionID != optID {
+		t.Errorf("expected optionId %s, got %s", optID, got.OptionID)
+	}
+	if len(got.Offers) != 0 {
+		t.Errorf("expected empty offers in degraded response, got %d", len(got.Offers))
 	}
 }
 
@@ -243,8 +253,15 @@ func TestRefreshComparison_AgentError(t *testing.T) {
 	w := httptest.NewRecorder()
 	mountPriceCompRouter(h).ServeHTTP(w, req)
 
-	if w.Code != http.StatusBadGateway {
-		t.Fatalf("expected 502, got %d: %s", w.Code, w.Body.String())
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 degraded, got %d: %s", w.Code, w.Body.String())
+	}
+	var got pricecomp.PriceComparison
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode degraded response: %v", err)
+	}
+	if len(got.Offers) != 0 {
+		t.Errorf("expected empty offers in degraded response, got %d", len(got.Offers))
 	}
 }
 

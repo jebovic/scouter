@@ -3,6 +3,7 @@ package coach
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -224,6 +225,53 @@ func TestHandler_GetCoachTips_MissionNotFound(t *testing.T) {
 
 	if w.Code != http.StatusNotFound {
 		t.Errorf("status = %d; want 404", w.Code)
+	}
+}
+
+func TestHandler_GetCoachTips_AgentError_ReturnsDegradedDTO(t *testing.T) {
+	missionID := uuid.New()
+	m := &mission.Mission{
+		ID:       missionID,
+		Slug:     "broken-mission",
+		Name:     "Broken Mission",
+		Category: "electronics",
+		Budget:   500,
+		Currency: "EUR",
+	}
+
+	handler := &Handler{
+		agent: &MockCoachAgent{err: fmt.Errorf("llm unavailable")},
+		missionGetter: &MockMissionService{
+			missions: map[string]*mission.Mission{
+				"broken-mission": m,
+			},
+		},
+		optionRepo:   &MockOptionRepository{optionsByMission: map[uuid.UUID][]option.Option{}},
+		shoppingRepo: &MockShoppingRepository{itemsByMission: map[uuid.UUID][]shopping.Item{}},
+		cache:        NewCache(15 * time.Minute),
+	}
+
+	req := httptest.NewRequest("GET", "/api/missions/broken-mission/coach", nil)
+	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, &chi.Context{
+		URLParams: chi.RouteParams{Keys: []string{"slug"}, Values: []string{"broken-mission"}},
+	}))
+	w := httptest.NewRecorder()
+
+	handler.getCoachTips(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("status = %d; want 200 (degraded)", w.Code)
+	}
+
+	var result CoachResponse
+	if err := json.NewDecoder(w.Body).Decode(&result); err != nil {
+		t.Fatalf("decode degraded response: %v", err)
+	}
+	if len(result.Tips) == 0 {
+		t.Error("expected at least one placeholder tip in degraded response")
+	}
+	if result.MissionID != missionID.String() {
+		t.Errorf("MissionID = %q; want %q", result.MissionID, missionID.String())
 	}
 }
 

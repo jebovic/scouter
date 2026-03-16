@@ -3,6 +3,7 @@ package carbon_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -144,5 +145,27 @@ func TestGetEstimate_NoCategoryParam(t *testing.T) {
 	}
 	if got.ItemName != "Cafetière" {
 		t.Errorf("expected itemName Cafetière, got %s", got.ItemName)
+	}
+}
+
+func TestGetEstimate_AgentError_ReturnsDegradedDTO(t *testing.T) {
+	agent := &fakeAgent{err: errors.New("llm unavailable")}
+	cache := carbon.NewCache(24 * time.Hour)
+	h := carbon.NewHandler(agent, cache)
+
+	w := doGet(h, "/api/carbon?itemName=MacBook+Pro&category=electronics")
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 degraded, got %d: %s", w.Code, w.Body.String())
+	}
+	var got carbon.CarbonEstimate
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode degraded response: %v", err)
+	}
+	if got.Confidence != "unavailable" {
+		t.Errorf("expected confidence 'unavailable', got %q", got.Confidence)
+	}
+	if got.ItemName != "MacBook Pro" {
+		t.Errorf("expected itemName 'MacBook Pro', got %q", got.ItemName)
 	}
 }

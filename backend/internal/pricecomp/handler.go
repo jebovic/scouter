@@ -58,7 +58,14 @@ func (h *Handler) GetComparison(w http.ResponseWriter, r *http.Request) {
 
 	comparison, err := h.comparator.Compare(r.Context(), name, optionID)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadGateway, "price comparison service unavailable")
+		degraded := &PriceComparison{
+			OptionID:  optionID,
+			Product:   name,
+			Offers:    []RetailerOffer{},
+			LowestIdx: 0,
+			FetchedAt: "",
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 
@@ -86,7 +93,14 @@ func (h *Handler) RefreshComparison(w http.ResponseWriter, r *http.Request) {
 
 	comparison, err := h.comparator.Compare(r.Context(), name, optionID)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadGateway, "price comparison service unavailable")
+		degraded := &PriceComparison{
+			OptionID:  optionID,
+			Product:   name,
+			Offers:    []RetailerOffer{},
+			LowestIdx: 0,
+			FetchedAt: "",
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 

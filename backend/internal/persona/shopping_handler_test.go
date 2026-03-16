@@ -3,6 +3,7 @@ package persona
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -332,6 +333,34 @@ func TestGetShoppingPersona_CacheHit(t *testing.T) {
 	}
 	if callCount != 1 {
 		t.Errorf("expected LLM called once (cache hit on second), got %d calls", callCount)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Test 6: agent error returns degraded default persona
+// ---------------------------------------------------------------------------
+
+func TestGetShoppingPersona_AgentError_ReturnsDegradedDTO(t *testing.T) {
+	mRepo := &stubShoppingMissionRepo{missions: makeMissions(3)}
+	oRepo := &stubShoppingOptionRepo{}
+	sRepo := &stubShoppingItemRepo{}
+	agent := NewShoppingPersonaAgent(&stubShoppingLLM{err: errors.New("llm unavailable")})
+	h := NewShoppingPersonaHandler(mRepo, oRepo, sRepo, agent)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/persona/shopping", nil)
+	w := httptest.NewRecorder()
+	h.GetShoppingPersona(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 degraded, got %d", w.Code)
+	}
+
+	var p ShoppingPersona
+	if err := json.NewDecoder(w.Body).Decode(&p); err != nil {
+		t.Fatalf("decode degraded response: %v", err)
+	}
+	if p.Archetype == "" {
+		t.Error("expected non-empty archetype in degraded persona")
 	}
 }
 

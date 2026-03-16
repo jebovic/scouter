@@ -40,7 +40,15 @@ func (h *Handler) GetEstimate(w http.ResponseWriter, r *http.Request) {
 
 	estimate, err := h.agent.Estimate(r.Context(), itemName, category)
 	if err != nil {
-		httputil.WriteError(w, http.StatusInternalServerError, "carbon estimate unavailable")
+		degraded := &CarbonEstimate{
+			ItemName:   itemName,
+			Category:   category,
+			KgCO2:      0,
+			Label:      "Inconnu",
+			Tips:       []string{},
+			Confidence: "unavailable",
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 

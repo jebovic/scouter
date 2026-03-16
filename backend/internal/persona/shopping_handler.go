@@ -94,7 +94,9 @@ func (h *ShoppingPersonaHandler) GetShoppingPersona(w http.ResponseWriter, r *ht
 	persona, err := h.agent.Analyze(ctx, summary)
 	if err != nil {
 		slog.ErrorContext(ctx, "shopping persona: agent analyze failed", "err", err)
-		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
+		stub := defaultShoppingPersona
+		stub.CachedAt = time.Now().Unix()
+		httputil.WriteJSON(w, http.StatusOK, stub)
 		return
 	}
 
