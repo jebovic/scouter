@@ -41,6 +41,14 @@ type Config struct {
 	AviationStackBaseURL string // default: "https://api.aviationstack.com"
 	SNCFAPIKey           string
 	SNCFBaseURL          string // default: "https://api.sncf.com/v1"
+
+	// Product Images: MinIO object storage
+	MinioEndpoint  string
+	MinioPublicURL string
+	MinioAccessKey string
+	MinioSecretKey string
+	MinioBucket    string
+	MinioQuotaMB   int64
 }
 
 // Load reads required environment variables, returning an error if any are missing.
@@ -155,6 +163,28 @@ func Load() (*Config, error) {
 	cfg.SNCFBaseURL = os.Getenv("SNCF_BASE_URL")
 	if cfg.SNCFBaseURL == "" {
 		cfg.SNCFBaseURL = "https://api.sncf.com/v1"
+	}
+
+	// Product Images: MinIO object storage
+	cfg.MinioEndpoint = os.Getenv("MINIO_ENDPOINT")
+	if cfg.MinioEndpoint == "" {
+		cfg.MinioEndpoint = "minio:9000"
+	}
+	cfg.MinioPublicURL = os.Getenv("MINIO_PUBLIC_URL")
+	if cfg.MinioPublicURL == "" {
+		cfg.MinioPublicURL = "https://minio.dev.local"
+	}
+	cfg.MinioAccessKey = os.Getenv("MINIO_ACCESS_KEY")
+	cfg.MinioSecretKey = os.Getenv("MINIO_SECRET_KEY")
+	cfg.MinioBucket = os.Getenv("MINIO_BUCKET")
+	if cfg.MinioBucket == "" {
+		cfg.MinioBucket = "scouter-images"
+	}
+	cfg.MinioQuotaMB = 2048
+	if v := os.Getenv("MINIO_QUOTA_MB"); v != "" {
+		if n, err := strconv.ParseInt(v, 10, 64); err == nil && n > 0 {
+			cfg.MinioQuotaMB = n
+		}
 	}
 
 	return cfg, nil
