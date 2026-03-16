@@ -1,5 +1,6 @@
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Home, ShoppingCart, Heart, Bell, Package,
   Wallet, History, RotateCcw, CreditCard,
@@ -15,46 +16,6 @@ interface NavRailProps {
   onNewMission?: () => void
 }
 
-const SECTIONS = [
-  {
-    key: 'achats',
-    label: 'MES ACHATS',
-    items: [
-      { label: 'Accueil',         path: '/',           icon: Home,          end: true },
-      { label: 'Tableau achats',  path: '/kanban',     icon: ShoppingCart },
-      { label: 'Liste de souhaits', path: '/wishlist', icon: Heart },
-      { label: 'Alertes',         path: '/notifications', icon: Bell },
-    ],
-  },
-  {
-    key: 'budget',
-    label: 'MON BUDGET',
-    items: [
-      { label: 'Budget par catégorie', path: '/envelopes', icon: Wallet },
-      { label: 'Historique',     path: '/history',   icon: History },
-      { label: 'Cashback',       path: '/cashback',  icon: RotateCcw },
-      { label: 'Cartes fidélité', path: '/loyalty',  icon: CreditCard },
-    ],
-  },
-  {
-    key: 'bons-plans',
-    label: 'BONS PLANS',
-    items: [
-      { label: 'Calendrier promos', path: '/deal-calendar', icon: CalendarDays },
-      { label: 'Analyse',        path: '/insights',  icon: TrendingDown },
-      { label: 'Résumé hebdo',   path: '/digest',    icon: FileText },
-    ],
-  },
-  {
-    key: 'stats',
-    label: 'MON BILAN',
-    items: [
-      { label: 'Bilan général',  path: '/stats',       icon: BarChart2 },
-      { label: 'Performances',   path: '/performance', icon: Award },
-    ],
-  },
-]
-
 const PHASE_DOT: Record<string, string> = {
   researching: 'var(--cyan)',
   comparing:   'var(--gold)',
@@ -68,12 +29,53 @@ function missionDotColor(mission: Mission): string {
 }
 
 export function NavRail({ missions, onNewMission }: NavRailProps) {
+  const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem('railCollapsed') === 'true' } catch { return false }
   })
   const [simpleMode, setSimpleMode] = useState(() => {
     try { return localStorage.getItem('simpleMode') === 'true' } catch { return false }
   })
+
+  const SECTIONS = [
+    {
+      key: 'achats',
+      label: t('nav.rail.sectionAchats'),
+      items: [
+        { label: t('nav.rail.itemHq'),            path: '/',              icon: Home,          end: true },
+        { label: t('nav.rail.itemKanban'),         path: '/kanban',        icon: ShoppingCart },
+        { label: t('nav.rail.itemWishlist'),       path: '/wishlist',      icon: Heart },
+        { label: t('nav.rail.itemNotifications'),  path: '/notifications', icon: Bell },
+      ],
+    },
+    {
+      key: 'budget',
+      label: t('nav.rail.sectionBudget'),
+      items: [
+        { label: t('nav.rail.itemEnvelopes'), path: '/envelopes', icon: Wallet },
+        { label: t('nav.rail.itemHistory'),   path: '/history',   icon: History },
+        { label: t('nav.rail.itemCashback'),  path: '/cashback',  icon: RotateCcw },
+        { label: t('nav.rail.itemLoyalty'),   path: '/loyalty',   icon: CreditCard },
+      ],
+    },
+    {
+      key: 'bons-plans',
+      label: t('nav.rail.sectionBonsPlans'),
+      items: [
+        { label: t('nav.rail.itemDealCalendar'), path: '/deal-calendar', icon: CalendarDays },
+        { label: t('nav.rail.itemInsights'),     path: '/insights',      icon: TrendingDown },
+        { label: t('nav.rail.itemDigest'),       path: '/digest',        icon: FileText },
+      ],
+    },
+    {
+      key: 'stats',
+      label: t('nav.rail.sectionStats'),
+      items: [
+        { label: t('nav.rail.itemStats'),       path: '/stats',       icon: BarChart2 },
+        { label: t('nav.rail.itemPerformance'), path: '/performance', icon: Award },
+      ],
+    },
+  ]
 
   useEffect(() => {
     function handleStorage(e: StorageEvent) {
@@ -138,15 +140,15 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
 
         {/* Missions section */}
         <div className={styles.section}>
-          {!collapsed && <span className={styles.sectionLabel}>MES MISSIONS</span>}
+          {!collapsed && <span className={styles.sectionLabel}>{t('nav.rail.sectionMissions')}</span>}
           <button
             className={`${styles.navItem} ${styles.newMissionBtn}`}
             onClick={onNewMission}
-            title="Nouvelle mission"
+            title={t('nav.rail.newMission')}
             type="button"
           >
             <span className={styles.plusIcon} aria-hidden="true">+</span>
-            {!collapsed && <span className={styles.label}>Nouvelle mission</span>}
+            {!collapsed && <span className={styles.label}>{t('nav.rail.newMission')}</span>}
           </button>
           {missions.slice(0, 8).map(m => (
             <NavLink
@@ -179,7 +181,7 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
           ))}
           {missions.length > 8 && !collapsed && (
             <Link to="/" className={styles.moreLink}>
-              +{missions.length - 8} autres missions
+              {t('nav.rail.moreMissions', { count: missions.length - 8 })}
             </Link>
           )}
         </div>
@@ -192,23 +194,23 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
           className={({ isActive }) =>
             `${styles.navItem} ${isActive ? styles.active : ''}`
           }
-          title={collapsed ? 'Paramètres' : undefined}
+          title={collapsed ? t('nav.rail.itemSettings') : undefined}
         >
           <Settings className={styles.icon} size={18} aria-hidden="true" />
-          {!collapsed && <span className={styles.label}>Paramètres</span>}
+          {!collapsed && <span className={styles.label}>{t('nav.rail.itemSettings')}</span>}
         </NavLink>
         <button
-          className={styles.collapseBtn}
+          className={`${styles.navItem} ${styles.collapseBtn}`}
           onClick={() => setCollapsed(c => !c)}
-          aria-label={collapsed ? 'Agrandir la navigation' : 'Réduire la navigation'}
-          title={collapsed ? 'Agrandir' : 'Réduire'}
+          aria-label={collapsed ? t('nav.rail.expand') : t('nav.rail.collapse')}
+          title={collapsed ? t('nav.rail.expand') : t('nav.rail.collapse')}
           type="button"
         >
           {collapsed
             ? <PanelLeft size={16} aria-hidden="true" />
             : <PanelLeftClose size={16} aria-hidden="true" />
           }
-          {!collapsed && <span className={styles.label}>Réduire</span>}
+          {!collapsed && <span className={styles.label}>{t('nav.rail.collapse')}</span>}
         </button>
       </div>
     </nav>

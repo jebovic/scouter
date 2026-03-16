@@ -2,31 +2,34 @@
 
 .widget {
   background: var(--surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: var(--gap-lg);
+  margin-bottom: var(--gap-lg);
 }
 
 .header {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--gap-lg);
 }
 
 .title {
-  font-size: var(--font-size-lg);
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text);
+  font-family: var(--font-display);
   margin: 0;
 }
 
 /* Tabs */
 .tabs {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--gap-sm);
   overflow-x: auto;
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--gap-lg);
+  padding-bottom: var(--gap-sm);
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .tab {
@@ -34,31 +37,33 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-color);
+  gap: 4px;
+  padding: var(--gap-sm) var(--gap);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface-secondary);
-  color: var(--text-secondary);
+  background: var(--raised);
+  color: var(--text-mid);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
   white-space: nowrap;
-  font-size: var(--font-size-sm);
+  font-size: 0.78rem;
+  font-family: var(--font-body);
 }
 
 .tab:hover {
-  border-color: var(--primary-color);
+  border-color: var(--cyan);
   background: var(--surface);
+  color: var(--text);
 }
 
 .tabActive {
-  border-color: var(--primary-color);
-  background: var(--primary-color);
-  color: white;
+  border-color: var(--cyan);
+  background: var(--cyan-glow);
+  color: var(--cyan);
 }
 
 .tabIcon {
-  font-size: var(--font-size-lg);
+  font-size: 1rem;
 }
 
 .tabLabel {
@@ -69,21 +74,21 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-lg);
 }
 
 .cell {
   position: relative;
   border-radius: var(--radius-sm);
-  padding: var(--spacing-sm);
+  padding: var(--gap-sm);
   text-align: center;
   min-height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border: 2px solid transparent;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
   cursor: default;
 }
 
@@ -91,64 +96,64 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 4px;
 }
 
 .monthLabel {
   font-weight: 600;
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
+  font-size: 0.75rem;
+  color: var(--text);
+  font-family: var(--font-body);
 }
 
 .indicator {
-  font-size: var(--font-size-lg);
+  font-size: 0.875rem;
 }
 
+/* Best months — green */
 .levelow,
 .levellow {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-  border-color: rgba(34, 197, 94, 0.2);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--green-dim), rgba(0, 214, 143, 0.03));
+  border-color: rgba(0, 214, 143, 0.25);
 }
 
 .levelow:hover,
 .levellow:hover {
-  border-color: rgb(34, 197, 94);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  border-color: var(--green);
+  box-shadow: 0 2px 8px var(--green-dim);
 }
 
+/* Neutral months */
 .levelmedium {
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(217, 119, 6, 0.05));
-  border-color: rgba(217, 119, 6, 0.2);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--gold-dim), rgba(255, 217, 61, 0.03));
+  border-color: rgba(255, 217, 61, 0.2);
 }
 
 .levelmedium:hover {
-  border-color: rgb(217, 119, 6);
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.15);
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px var(--gold-dim);
 }
 
+/* Worst months — coral */
 .levelhigh {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-  border-color: rgba(239, 68, 68, 0.2);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--coral-dim), rgba(255, 61, 113, 0.03));
+  border-color: rgba(255, 61, 113, 0.25);
 }
 
 .levelhigh:hover {
-  border-color: rgb(239, 68, 68);
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+  border-color: var(--coral);
+  box-shadow: 0 2px 8px var(--coral-dim);
 }
 
 .cellCurrent {
-  border-color: var(--primary-color);
-  border-width: 3px;
-  font-weight: 600;
+  border-color: var(--cyan) !important;
+  border-width: 2px;
 }
 
 .currentHighlight {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15), transparent);
+  background: radial-gradient(ellipse at center, var(--cyan-glow), transparent);
   border-radius: var(--radius-sm);
   pointer-events: none;
 }
@@ -156,15 +161,15 @@
 /* Callout */
 .callout {
   display: flex;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  gap: var(--gap);
+  padding: var(--gap);
   border-radius: var(--radius-sm);
-  background: var(--surface-secondary);
-  border-left: 4px solid var(--primary-color);
+  background: var(--raised);
+  border-left: 3px solid var(--cyan);
 }
 
 .calloutIcon {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
@@ -174,15 +179,16 @@
 
 .calloutTitle {
   font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 var(--spacing-xs) 0;
-  font-size: var(--font-size-sm);
+  color: var(--text);
+  margin: 0 0 4px 0;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
 }
 
 .calloutTip {
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: 0.78rem;
   line-height: 1.5;
 }
 
@@ -190,61 +196,63 @@
 .compactWidget {
   background: var(--surface);
   border-radius: var(--radius-sm);
-  padding: var(--spacing-sm);
-  border: 1px solid var(--border-color);
+  padding: var(--gap-sm);
+  border: 1px solid var(--border);
 }
 
 .compactHeader {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--gap-sm);
 }
 
 .compactTitle {
-  font-size: var(--font-size-sm);
+  font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text);
+  font-family: var(--font-body);
   margin: 0;
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--gap-sm);
 }
 
 .compactGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-sm);
 }
 
 .compactCell {
   position: relative;
-  border-radius: var(--radius-xs);
-  padding: var(--spacing-xs);
+  border-radius: 4px;
+  padding: var(--gap-sm);
   text-align: center;
   min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid transparent;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s;
 }
 
 .compactMonth {
   font-weight: 600;
-  font-size: var(--font-size-xs);
-  color: var(--text-primary);
+  font-size: 0.72rem;
+  color: var(--text);
+  font-family: var(--font-body);
 }
 
 .currentBorder {
   position: absolute;
   inset: 0;
-  border: 2px solid var(--primary-color);
-  border-radius: var(--radius-xs);
+  border: 2px solid var(--cyan);
+  border-radius: 4px;
   pointer-events: none;
 }
 
 .compactTip {
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  color: var(--text-mid);
   margin: 0;
   line-height: 1.4;
 }
@@ -257,16 +265,16 @@
 
   .cell {
     min-height: 70px;
-    padding: var(--spacing-xs);
+    padding: var(--gap-sm);
   }
 
   .tabs {
-    gap: var(--spacing-xs);
+    gap: 4px;
   }
 
   .tab {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: var(--font-size-xs);
+    padding: var(--gap-sm);
+    font-size: 0.72rem;
   }
 
   .tabLabel {

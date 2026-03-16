@@ -36,8 +36,8 @@
 
   /* ── Text ─────────────────────────────────────────────── */
   --text:         #e8edf5;
-  --text-mid:     #8a95b0;
-  --text-dim:     #4a5570;
+  --text-mid:     #96a3be;  /* was #8a95b0 — bumped to widen gap with text-dim (7.6:1 on abyss) */
+  --text-dim:     #727f9e;  /* was #4a5570 — lifted for 4.8:1 on abyss (WCAG AA) */
 
   /* ── Typography ───────────────────────────────────────── */
   --font-display: 'Oxanium', 'Chakra Petch', sans-serif;
@@ -80,6 +80,24 @@
   --sidebar-collapsed: 48px;
   --topnav-height:     52px;
 
+  /* ── Alias layer — components may use these naming conventions ── */
+  --primary-color:    var(--cyan);
+  --surface-secondary: var(--raised);
+  --border-color:     var(--border);
+  --radius-md:        var(--radius);
+  --radius-xs:        4px;
+  --text-primary:     var(--text);
+  --text-secondary:   var(--text-mid);
+  --spacing-xs:       4px;
+  --spacing-sm:       var(--gap-sm);
+  --spacing-md:       var(--gap);
+  --spacing-lg:       var(--gap-lg);
+  --font-size-xs:     0.72rem;
+  --font-size-sm:     0.82rem;
+  --font-size-md:     0.875rem;
+  --font-size-lg:     1rem;
+  --font-size-xl:     1.25rem;
+
   /* ── Skeleton ─────────────────────────────────────────── */
   --skeleton-base:  var(--raised);
   --skeleton-shine: var(--border-glow);
@@ -91,25 +109,25 @@
   /* ── Navigation Rail ─────────────────────────────────── */
   --rail-width:     260px;
   --rail-collapsed: 64px;
-  --rail-offset:    var(--rail-collapsed);
+  --rail-offset:    var(--rail-width);   /* JS overrides per localStorage state */
   --bottom-nav-h:   60px;
 }
 
 /* ── Light mode overrides ─────────────────────────────────── */
 [data-theme="light"] {
-  --void:          #f0f4ff;
-  --abyss:         #e8edf8;
-  --deep:          #dce3f2;
+  --void:          #f6f7fb;  /* was #f0f4ff — more neutral, less blue-heavy */
+  --abyss:         #eceef6;  /* was #e8edf8 */
+  --deep:          #e2e6f0;  /* was #dce3f2 */
   --surface:       #ffffff;
-  --raised:        #f5f7ff;
-  --surface-raised: #f5f7ff;
-  --border:        #c8d0e8;
-  --border-glow:   #a0b0d0;
-  --border-mid:    #d0d8e8;
+  --raised:        #f2f4fa;  /* was #f5f7ff */
+  --surface-raised: #f2f4fa;
+  --border:        #c5cee0;  /* was #c8d0e8 */
+  --border-glow:   #9bafc9;  /* was #a0b0d0 */
+  --border-mid:    #cdd5e2;  /* was #d0d8e8 */
 
   --text:          #1a2040;
-  --text-mid:      #5060a0;
-  --text-dim:      #9aabcc;
+  --text-mid:      #3d4e7a;  /* was #5060a0 — darker for 8.2:1 on white */
+  --text-dim:      #546078;  /* was #9aabcc — WCAG AA: 6.3:1 on white, 5.5:1 on abyss */
 
   --accent:        #0077b6;
   --accent-dim:    #0077b630;

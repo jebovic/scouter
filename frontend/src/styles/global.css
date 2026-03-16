@@ -18,7 +18,7 @@ html, body, #root {
   background-color: var(--void);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 15px;  /* was 14px — 15px improves readability without breaking compact layouts */
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -34,7 +34,6 @@ html, body, #root {
 
 /* Links */
 a { color: var(--cyan); text-decoration: none; }
-a:hover { text-decoration: underline; }
 
 /* Scanline overlay — subtle CRT texture */
 .scanlines::after {
@@ -52,13 +51,20 @@ a:hover { text-decoration: underline; }
   z-index: 9999;
 }
 
-/* Grid background — dimmed so content reads clearly */
+/* Grid background — very subtle, stays out of the way of content */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(42, 53, 88, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(42, 53, 88, 0.5) 1px, transparent 1px);
+    linear-gradient(rgba(42, 53, 88, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 53, 88, 0.18) 1px, transparent 1px);
   background-size: 40px 40px;
   background-color: var(--void);
+}
+
+/* Light-mode grid: use a warmer neutral line instead of blue */
+[data-theme="light"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(100, 110, 140, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 110, 140, 0.10) 1px, transparent 1px);
 }
 
 /* Layout helpers */
@@ -210,6 +216,72 @@ input, select, textarea {
 }
 .skip-to-content:focus {
   top: 0;
+}
+
+/* ── Button harmony system ────────────────────────────────── */
+/* Base for all <button> elements — prevents browser inconsistencies */
+button {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+}
+
+/* Reusable utility button classes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-sm);
+  padding: 0 var(--gap);
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: var(--void);
+  border-color: var(--cyan);
+}
+
+.btn-primary:hover {
+  background: #33eeff;
+  border-color: #33eeff;
+  box-shadow: 0 0 12px var(--cyan-dim);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border-color: var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--raised);
+  color: var(--text);
+  border-color: var(--border-glow);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--coral);
+  border-color: var(--coral-dim);
+}
+
+.btn-danger:hover {
+  background: var(--coral-dim);
+  border-color: var(--coral);
 }
 
 /* RTL support — future languages */

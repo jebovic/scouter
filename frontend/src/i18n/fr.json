@@ -9,7 +9,32 @@
     "allMissions": "← Toutes mes missions",
     "resume": "Résumé",
     "comparatif": "Comparatif",
-    "listeAchats": "Mes achats"
+    "listeAchats": "Mes achats",
+    "rail": {
+      "sectionAchats": "MES ACHATS",
+      "sectionBudget": "MON BUDGET",
+      "sectionBonsPlans": "BONS PLANS",
+      "sectionStats": "MON BILAN",
+      "sectionMissions": "MES MISSIONS",
+      "itemHq": "Accueil",
+      "itemKanban": "Tableau achats",
+      "itemWishlist": "Liste de souhaits",
+      "itemNotifications": "Alertes",
+      "itemEnvelopes": "Budget par catégorie",
+      "itemHistory": "Historique",
+      "itemCashback": "Cashback",
+      "itemLoyalty": "Cartes fidélité",
+      "itemDealCalendar": "Calendrier promos",
+      "itemInsights": "Analyse",
+      "itemDigest": "Résumé hebdo",
+      "itemStats": "Bilan général",
+      "itemPerformance": "Performances",
+      "itemSettings": "Paramètres",
+      "newMission": "Nouvelle mission",
+      "collapse": "Réduire",
+      "expand": "Agrandir",
+      "moreMissions": "+{{count}} autres missions"
+    }
   },
   "common": {
     "loading": "Chargement...",
