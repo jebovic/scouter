@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { apiFetch } from './client'
+import { apiFetch, ApiError } from './client'
 import type { Decision } from '../types/decision'
 
 // ── Zod schemas ─────────────────────────────────────────────────────────────
@@ -32,7 +32,14 @@ export async function runDecision(missionId: string): Promise<Decision> {
   return DecisionSchema.parse(data) as Decision
 }
 
-export async function getDecision(missionId: string): Promise<Decision> {
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/decision`)
-  return DecisionSchema.parse(data) as Decision
+export async function getDecision(missionId: string): Promise<Decision | null> {
+  try {
+    const data = await apiFetch<unknown>(`/api/missions/${missionId}/decision`)
+    return DecisionSchema.parse(data) as Decision
+  } catch (e: unknown) {
+    if (e instanceof ApiError && e.status === 404) {
+      return null
+    }
+    throw e
+  }
 }
