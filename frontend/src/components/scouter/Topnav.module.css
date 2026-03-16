@@ -39,14 +39,10 @@
 }
 
 .logo {
-  font-family: var(--font-display);
-  color: var(--cyan);
-  letter-spacing: 0.15em;
-  font-size: 0.95rem;
-  font-weight: 700;
   flex-shrink: 0;
-  text-shadow: 0 0 12px var(--cyan-dim);
   text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
 .separator {

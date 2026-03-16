@@ -7,6 +7,7 @@ import { LLMStatus } from './LLMStatus'
 import { NotificationBell } from './NotificationBell'
 import { SearchDropdown } from './SearchDropdown'
 import styles from './Topnav.module.css'
+import { Logo } from './Logo'
 
 interface TopnavProps {
   missionSlug?: string
@@ -27,13 +28,13 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
   return (
     <nav className={styles.nav}>
       {/* Sidebar toggle — mobile only (NavRail handles desktop) */}
-      <button className={styles.menuBtn} onClick={openSidebar} aria-label="Open missions sidebar">
+      <button className={styles.menuBtn} onClick={openSidebar} aria-label={t('common.openSidebar')}>
         <Menu size={18} aria-hidden="true" />
       </button>
 
       {/* Logo */}
-      <Link to="/" className={styles.logo}>
-        {t('nav.hq')}
+      <Link to="/" className={styles.logo} aria-label="SCOUTER — Home">
+        <Logo size="md" />
       </Link>
 
       {/* Mission breadcrumb + sub-nav — only when inside a mission */}
@@ -82,8 +83,8 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
         <button
           className={styles.themeBtn}
           onClick={toggleTheme}
-          aria-label="Toggle theme"
-          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={isDark ? t('common.switchToLight') : t('common.switchToDark')}
+          title={isDark ? t('common.switchToLight') : t('common.switchToDark')}
         >
           {isDark ? <Sun size={15} aria-hidden="true" /> : <Moon size={15} aria-hidden="true" />}
         </button>
