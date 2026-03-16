@@ -246,6 +246,9 @@ func main() {
 
 	// Async research jobs
 	researchJobRepo := researchjob.NewRepository(pool)
+	if err := researchJobRepo.FailStaleJobs(context.Background()); err != nil {
+		log.Warn("failed to clean stale research jobs", "err", err)
+	}
 	researchJobHandler := researchjob.NewHandler(
 		researchJobRepo,
 		missionSvc,
