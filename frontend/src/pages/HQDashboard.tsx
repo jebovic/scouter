@@ -74,7 +74,8 @@ function NextDealWidget() {
 
 export default function HQDashboard() {
   const { t } = useTranslation()
-  const { missions, isLoading } = useMissions()
+  const [showArchived, setShowArchived] = useState(false)
+  const { missions, isLoading } = useMissions({ includeArchived: showArchived })
   const { createMission, isPending } = useCreateMission()
   const { templates, isLoading: templatesLoading } = useTemplates()
   const navigate = useNavigate()
@@ -163,9 +164,17 @@ export default function HQDashboard() {
                 {t('mission.activeCount', { count: missions.length })}
               </p>
             </div>
-            <button className={styles.createBtn} onClick={() => setShowForm(true)}>
-              + {t('mission.create')}
-            </button>
+            <div className={styles.headerBtns}>
+              <button
+                className={showArchived ? styles.filterActive : styles.filterBtn}
+                onClick={() => setShowArchived((s) => !s)}
+              >
+                {t('mission.actions.showArchived')}
+              </button>
+              <button className={styles.createBtn} onClick={() => setShowForm(true)}>
+                + {t('mission.create')}
+              </button>
+            </div>
           </div>
 
           {showForm && (

@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Card, StatusBadge, BudgetBar } from '../scouter'
 import { CategoryBadge } from './CategoryBadge'
 import { useSwipeGesture } from '../../hooks/useSwipeGesture'
-import { useDuplicateMission, useCloneMission } from '../../hooks/useMission'
+import { useDuplicateMission, useCloneMission, useArchiveMission, useUnarchiveMission, useDeleteMission } from '../../hooks/useMission'
 import type { Mission, ShoppingItem } from '../../types'
 import styles from './MissionCard.module.css'
 
@@ -13,9 +15,17 @@ interface MissionCardProps {
 }
 
 export function MissionCard({ mission, items = [], onArchive }: MissionCardProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { duplicateMission, isPending: isDuplicating } = useDuplicateMission()
   const { cloneMission, isPending: isCloning } = useCloneMission()
+  const { archiveMission } = useArchiveMission()
+  const { unarchiveMission } = useUnarchiveMission()
+  const { deleteMission } = useDeleteMission()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleteConfirmName, setDeleteConfirmName] = useState('')
+  const isArchived = !!mission.archivedAt
   const spent = items.reduce((sum, item) => sum + item.price, 0)
 
   const { swipeX, handlers } = useSwipeGesture({
@@ -72,6 +82,9 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
               </div>
             </div>
             <div className={styles.headerActions}>
+              {isArchived && (
+                <span className={styles.archivedBadge}>{t('mission.actions.archivedBadge')}</span>
+              )}
               <StatusBadge phase={mission.phase} />
               <button
                 className={styles.duplicateBtn}
@@ -103,6 +116,34 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
               >
                 {isCloning ? 'Copie en cours...' : 'Dupliquer'}
               </button>
+              <div className={styles.menuContainer}>
+                <button
+                  className={styles.menuBtn}
+                  aria-label="more options"
+                  onClick={(e) => { e.stopPropagation(); setMenuOpen((o) => !o) }}
+                >
+                  ⋯
+                </button>
+                {menuOpen && (
+                  <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
+                    {isArchived ? (
+                      <button onClick={() => { unarchiveMission(mission.id); setMenuOpen(false) }}>
+                        {t('mission.actions.unarchive')}
+                      </button>
+                    ) : (
+                      <button onClick={() => { archiveMission(mission.id); setMenuOpen(false) }}>
+                        {t('mission.actions.archive')}
+                      </button>
+                    )}
+                    <button
+                      className={styles.menuDeleteBtn}
+                      onClick={() => { setConfirmDelete(true); setMenuOpen(false) }}
+                    >
+                      {t('common.delete')}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -127,6 +168,34 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
           )}
         </Card>
       </div>
+
+      {confirmDelete && (
+        <div className={styles.overlay} onClick={() => setConfirmDelete(false)}>
+          <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+            <p>{t('mission.actions.deleteConfirm')}</p>
+            <p className={styles.deleteHint}>{t('mission.actions.deleteTypeToConfirm')}</p>
+            <input
+              placeholder={mission.name}
+              value={deleteConfirmName}
+              onChange={(e) => setDeleteConfirmName(e.target.value)}
+              autoFocus
+            />
+            <div className={styles.dialogActions}>
+              <button onClick={() => { setConfirmDelete(false); setDeleteConfirmName('') }}>{t('common.cancel')}</button>
+              <button
+                disabled={deleteConfirmName !== mission.name}
+                onClick={() => {
+                  deleteMission(mission.slug)
+                  setConfirmDelete(false)
+                  setDeleteConfirmName('')
+                }}
+              >
+                {t('common.delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

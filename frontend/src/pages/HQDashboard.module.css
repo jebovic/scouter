@@ -42,6 +42,32 @@
   color: var(--void);
 }
 
+.headerBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterBtn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.filterActive {
+  background: var(--surface);
+  border: 1px solid var(--text-dim);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
