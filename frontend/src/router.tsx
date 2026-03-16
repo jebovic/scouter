@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import HQDashboard from './pages/HQDashboard'
+import NotFoundPage from './pages/NotFoundPage'
 import { ErrorBoundary, LoadingPulse } from './components/scouter'
 import { Layout } from './layouts/Layout'
 import { GlobalLayout } from './layouts/GlobalLayout'
@@ -220,5 +221,9 @@ export const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ])

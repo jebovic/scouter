@@ -1,0 +1,253 @@
+@import '../styles/theme.css';
+
+/* ── Root layout ───────────────────────────────────────── */
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  background: var(--void);
+  overflow: hidden;
+  padding: var(--gap-lg);
+}
+
+/* ── Background grid ───────────────────────────────────── */
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%);
+}
+
+/* ── Content card ──────────────────────────────────────── */
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 560px;
+  width: 100%;
+  gap: 0;
+  animation: fadeUp 0.5s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tag label ─────────────────────────────────────────── */
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--coral);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* ── 404 digits ────────────────────────────────────────── */
+.codeWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.05em;
+  margin-bottom: 2rem;
+  line-height: 1;
+}
+
+.digit,
+.digitGlitch {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 20vw, 11rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--cyan);
+  text-stroke: 2px var(--cyan);
+  user-select: none;
+  filter: drop-shadow(0 0 20px var(--cyan));
+}
+
+.digitGlitch {
+  position: relative;
+  color: var(--cyan);
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
+  filter: drop-shadow(0 0 24px var(--cyan));
+  animation: glitch 3.5s infinite;
+}
+
+.digitGlitch::before,
+.digitGlitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+.digitGlitch::before {
+  color: var(--coral);
+  animation: glitchTop 3.5s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+}
+
+.digitGlitch::after {
+  color: var(--purple);
+  animation: glitchBot 3.5s infinite;
+  clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch {
+  0%, 90%, 100% { transform: translate(0); }
+  91%           { transform: translate(-2px, 1px); }
+  93%           { transform: translate(2px, -1px); }
+  95%           { transform: translate(-1px, 2px); }
+  97%           { transform: translate(0); }
+}
+
+@keyframes glitchTop {
+  0%, 90%, 100% { transform: translate(0); opacity: 0; }
+  91%           { transform: translate(-4px, 0); opacity: 0.7; }
+  94%           { transform: translate(3px, 0); opacity: 0.5; }
+  97%           { transform: translate(0); opacity: 0; }
+}
+
+@keyframes glitchBot {
+  0%, 90%, 100% { transform: translate(0); opacity: 0; }
+  92%           { transform: translate(4px, 0); opacity: 0.6; }
+  95%           { transform: translate(-2px, 0); opacity: 0.4; }
+  97%           { transform: translate(0); opacity: 0; }
+}
+
+/* ── Title ─────────────────────────────────────────────── */
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+/* ── Description ───────────────────────────────────────── */
+.description {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin: 0 0 2.5rem;
+  max-width: 400px;
+}
+
+/* ── Action buttons ────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btnPrimary {
+  padding: 10px 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  min-height: 44px;
+}
+
+.btnPrimary:hover {
+  background: var(--cyan-glow);
+  box-shadow: 0 0 16px var(--cyan-dim);
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.btnGhost {
+  padding: 10px 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  min-height: 44px;
+}
+
+.btnGhost:hover {
+  border-color: var(--border-glow);
+  color: var(--text);
+}
+
+.btnGhost:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* ── Scanline overlay ──────────────────────────────────── */
+.scanline {
+  position: absolute;
+  inset: -100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 3px,
+    rgba(0, 229, 255, 0.015) 3px,
+    rgba(0, 229, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+  from { transform: translateY(-50%); }
+  to   { transform: translateY(50%); }
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .codeWrap {
+    gap: 0.02em;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btnPrimary,
+  .btnGhost {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content { animation: none; }
+  .digitGlitch,
+  .digitGlitch::before,
+  .digitGlitch::after { animation: none; }
+  .scanline { animation: none; }
+}
