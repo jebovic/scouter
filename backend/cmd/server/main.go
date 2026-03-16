@@ -35,6 +35,7 @@ import (
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
 	"github.com/jibei/scouter/internal/research"
+	"github.com/jibei/scouter/internal/researchjob"
 	"github.com/jibei/scouter/internal/scheduler"
 	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/settings"
@@ -175,7 +176,6 @@ func main() {
 	optionHandler.WithImageHandler(imageHandler)
 	shoppingHandler := shopping.NewHandler(shoppingSvc)
 	notifHandler := notification.NewHandler(notifRepo)
-	researchHandler := research.NewHandler(researchAgent, missionSvc)
 	pricingHandler := pricing.NewHandler(pricingAgent, missionSvc, optionRepo)
 	usageHandler := usage.NewHandler(usageSvc)
 	decisionHandler := decision.NewHandler(decisionSvc)
@@ -244,6 +244,14 @@ func main() {
 	// Price Alert Digest (Phase 166)
 	priceAlertDigestHandler := pricealertdigest.NewHandler(pool)
 
+	// Async research jobs
+	researchJobRepo := researchjob.NewRepository(pool)
+	researchJobHandler := researchjob.NewHandler(
+		researchJobRepo,
+		missionSvc,
+		&researchAgentAdapter{agent: researchAgent},
+	)
+
 	deps := routeDeps{
 		pool:        pool,
 		provider:    provider,
@@ -270,8 +278,9 @@ func main() {
 		optionHandler:           optionHandler,
 		shoppingHandler:         shoppingHandler,
 		notifHandler:            notifHandler,
-		researchHandler:         researchHandler,
 		pricingHandler:          pricingHandler,
+		researchJobRepo:         researchJobRepo,
+		researchJobHandler:      researchJobHandler,
 		usageHandler:            usageHandler,
 		decisionHandler:         decisionHandler,
 		agentRunHandler:         agentRunHandler,

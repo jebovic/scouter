@@ -109,7 +109,7 @@ func (a *Agent) run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 
 	req := a.buildRequest(m, fb, pinned, rejected)
 
-	llmCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
+	llmCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 	llmCtx = llm.WithRequestOpts(llmCtx, llm.RequestOpts{
 		Capabilities: llm.CapToolUse,

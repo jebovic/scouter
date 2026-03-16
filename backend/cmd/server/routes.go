@@ -11,6 +11,8 @@ import (
 	"github.com/jibei/scouter/internal/activityfeed"
 	"github.com/jibei/scouter/internal/admin"
 	"github.com/jibei/scouter/internal/missionprogress"
+	"github.com/jibei/scouter/internal/research"
+	"github.com/jibei/scouter/internal/researchjob"
 	"github.com/jibei/scouter/internal/priceinsights"
 	"github.com/jibei/scouter/internal/budgetplanner"
 	"github.com/jibei/scouter/internal/pricedigest"
@@ -64,7 +66,6 @@ import (
 	"github.com/jibei/scouter/internal/product"
 	"github.com/jibei/scouter/internal/pricing"
 	"github.com/jibei/scouter/internal/purchase"
-	"github.com/jibei/scouter/internal/research"
 	"github.com/jibei/scouter/internal/search"
 	"github.com/jibei/scouter/internal/reviews"
 	"github.com/jibei/scouter/internal/reviewsummary"
@@ -165,12 +166,15 @@ type routeDeps struct {
 	optionSvc   *option.Service
 	shoppingSvc *shopping.Service
 
+	// researchjob
+	researchJobRepo    researchjob.Repository
+	researchJobHandler *researchjob.Handler
+
 	// core handlers
 	missionHandler          *mission.Handler
 	optionHandler           *option.Handler
 	shoppingHandler         *shopping.Handler
 	notifHandler            *notification.Handler
-	researchHandler         *research.Handler
 	pricingHandler          *pricing.Handler
 	usageHandler            *usage.Handler
 	decisionHandler         *decision.Handler
@@ -191,8 +195,25 @@ type routeDeps struct {
 	metricsHandler          http.Handler
 }
 
+// researchAgentAdapter bridges research.Agent to researchjob.AgentRunner.
+type researchAgentAdapter struct {
+	agent *research.Agent
+}
+
+func (a *researchAgentAdapter) Run(ctx context.Context, ms mission.Mission, fb *researchjob.FeedbackInput) ([]option.Option, error) {
+	var rFb *research.FeedbackInput
+	if fb != nil {
+		rFb = &research.FeedbackInput{Feedback: fb.Feedback}
+	}
+	return a.agent.Run(ctx, ms, rFb)
+}
+
 // registerRoutes mounts all HTTP routes onto r using dependencies from d.
 func registerRoutes(r chi.Router, d *routeDeps) {
+	if err := d.researchJobRepo.FailStaleJobs(context.Background()); err != nil {
+		d.log.Warn("failed to clean stale research jobs", "err", err)
+	}
+
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
@@ -239,7 +260,7 @@ func registerRoutes(r chi.Router, d *routeDeps) {
 	// Mission sub-resources
 	r.Mount("/api/missions/{missionID}/options", d.optionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/shopping", d.shoppingHandler.Routes())
-	r.Mount("/api/missions/{missionID}/research", d.researchHandler.Routes())
+	r.Mount("/api/missions/{missionID}/research", d.researchJobHandler.Routes())
 	r.Mount("/api/missions/{missionID}/pricing", d.pricingHandler.Routes())
 	r.Mount("/api/missions/{missionID}/decision", d.decisionHandler.Routes())
 	r.Mount("/api/missions/{missionID}/agent-runs", d.agentRunHandler.Routes())
