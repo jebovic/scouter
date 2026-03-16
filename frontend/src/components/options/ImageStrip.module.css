@@ -12,14 +12,21 @@
   display: none;
 }
 
+.thumbBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .thumb {
   min-width: 80px;
   width: 80px;
   height: 60px;
   object-fit: cover;
   border-radius: 8px;
-  flex-shrink: 0;
-  cursor: pointer;
   transition: opacity 0.15s;
 }
 
@@ -40,6 +47,8 @@
   color: var(--text-dim, #94a3b8);
   font-size: 12px;
   font-weight: 500;
+  border: none;
+  cursor: pointer;
 }
 
 .skeleton {

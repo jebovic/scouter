@@ -33,25 +33,30 @@ export function ImageStrip({ images, loading }: Props) {
 
   return (
     <>
-      <div className={styles.strip} role="list" aria-label={t("options.images.gallery")}>
+      <div className={styles.strip} aria-label={t("options.images.gallery")}>
         {visible.map((img, i) => (
-          <img
+          <button
             key={img.id}
-            src={img.url}
-            alt=""
-            className={styles.thumb}
-            width={80}
-            height={60}
+            className={styles.thumbBtn}
             onClick={() => setLightboxIndex(i)}
-          />
+            aria-label={`${t("options.images.view")} ${i + 1}`}
+          >
+            <img
+              src={img.url}
+              alt=""
+              className={styles.thumb}
+              width={80}
+              height={60}
+            />
+          </button>
         ))}
         {overflow > 0 && (
-          <div
+          <button
             className={styles.overflow}
-            onClick={() => setLightboxIndex(MAX_VISIBLE - 1)}
+            onClick={() => setLightboxIndex(MAX_VISIBLE)}
           >
             +{overflow}
-          </div>
+          </button>
         )}
       </div>
       {lightboxIndex !== null && (
