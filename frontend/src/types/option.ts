@@ -54,6 +54,7 @@ export interface OptionCreateRequest {
 }
 
 export interface OptionUpdateRequest {
+  name?: string
   badge?: OptionBadge
   attributes?: Attribute[]
   priceRange?: PriceRange

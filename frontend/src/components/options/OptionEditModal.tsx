@@ -21,9 +21,7 @@ export function OptionEditModal({ option, onSave, onClose, loading, error }: Opt
   const [priceMax, setPriceMax] = useState(String(option.priceRange?.max ?? ''))
   const [notes, setNotes] = useState(option.notes ?? '')
   const [warnings, setWarnings] = useState(
-    Array.isArray(option.warnings)
-      ? option.warnings.join(', ')
-      : (option.warnings as unknown as string) ?? ''
+    (option.warnings ?? []).join(', ')
   )
 
   useEffect(() => {

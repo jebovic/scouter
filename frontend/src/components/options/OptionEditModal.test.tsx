@@ -10,7 +10,7 @@ const mockOption: Partial<Option> = {
   badge: 'recommended',
   priceRange: { min: 2000, max: 2500, best: 2200 },
   notes: 'Great laptop',
-  warnings: 'Expensive',
+  warnings: ['Expensive'],
   attributes: [],
 }
 
