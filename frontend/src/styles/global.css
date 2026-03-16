@@ -232,3 +232,11 @@ input, select, textarea {
     padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* Desktop: shift page content right to clear the NavRail */
+@media (min-width: 1025px) {
+  .page {
+    padding-left: var(--rail-offset, var(--rail-collapsed));
+    transition: padding-left 0.2s;
+  }
+}

@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import HQDashboard from './pages/HQDashboard'
 import { ErrorBoundary, LoadingPulse } from './components/scouter'
 import { Layout } from './layouts/Layout'
+import { GlobalLayout } from './layouts/GlobalLayout'
 import { MissionLayout } from './layouts/MissionLayout'
 
 const MissionOverview = lazy(() => import('./pages/MissionOverview'))
@@ -45,138 +46,145 @@ export const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
+      // Global pages — wrapped with GlobalLayout (Topnav + page container)
       {
-        path: '/',
-        element: (
-          <SuspenseWrapper>
-            <HQDashboard />
-          </SuspenseWrapper>
-        ),
+        element: <GlobalLayout />,
+        children: [
+          {
+            path: '/',
+            element: (
+              <SuspenseWrapper>
+                <HQDashboard />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/search',
+            element: (
+              <SuspenseWrapper>
+                <SearchPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/invites/:token',
+            element: (
+              <SuspenseWrapper>
+                <JoinPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/history',
+            element: (
+              <SuspenseWrapper>
+                <HistoryPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/stats',
+            element: (
+              <SuspenseWrapper>
+                <StatsPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/analytics',
+            element: <Navigate to="/stats" replace />,
+          },
+          {
+            path: '/settings',
+            element: (
+              <SuspenseWrapper>
+                <SettingsPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/wishlist',
+            element: (
+              <SuspenseWrapper>
+                <WishListPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/notifications',
+            element: (
+              <SuspenseWrapper>
+                <NotificationsPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/envelopes',
+            element: (
+              <SuspenseWrapper>
+                <EnvelopesPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/deal-calendar',
+            element: (
+              <SuspenseWrapper>
+                <DealCalendarPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/performance',
+            element: (
+              <SuspenseWrapper>
+                <PerformancePage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/digest',
+            element: (
+              <SuspenseWrapper>
+                <DigestPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/loyalty',
+            element: (
+              <SuspenseWrapper>
+                <LoyaltyPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/kanban',
+            element: (
+              <SuspenseWrapper>
+                <KanbanPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/cashback',
+            element: (
+              <SuspenseWrapper>
+                <CashbackPage />
+              </SuspenseWrapper>
+            ),
+          },
+          {
+            path: '/insights',
+            element: (
+              <SuspenseWrapper>
+                <InsightsPage />
+              </SuspenseWrapper>
+            ),
+          },
+        ],
       },
-      {
-        path: '/search',
-        element: (
-          <SuspenseWrapper>
-            <SearchPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/invites/:token',
-        element: (
-          <SuspenseWrapper>
-            <JoinPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/history',
-        element: (
-          <SuspenseWrapper>
-            <HistoryPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/stats',
-        element: (
-          <SuspenseWrapper>
-            <StatsPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/analytics',
-        element: <Navigate to="/stats" replace />,
-      },
-      {
-        path: '/settings',
-        element: (
-          <SuspenseWrapper>
-            <SettingsPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/wishlist',
-        element: (
-          <SuspenseWrapper>
-            <WishListPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/notifications',
-        element: (
-          <SuspenseWrapper>
-            <NotificationsPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/envelopes',
-        element: (
-          <SuspenseWrapper>
-            <EnvelopesPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/deal-calendar',
-        element: (
-          <SuspenseWrapper>
-            <DealCalendarPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/performance',
-        element: (
-          <SuspenseWrapper>
-            <PerformancePage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/digest',
-        element: (
-          <SuspenseWrapper>
-            <DigestPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/loyalty',
-        element: (
-          <SuspenseWrapper>
-            <LoyaltyPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/kanban',
-        element: (
-          <SuspenseWrapper>
-            <KanbanPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/cashback',
-        element: (
-          <SuspenseWrapper>
-            <CashbackPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: '/insights',
-        element: (
-          <SuspenseWrapper>
-            <InsightsPage />
-          </SuspenseWrapper>
-        ),
-      },
+      // Mission pages — MissionLayout has its own Topnav + BottomNav
       {
         path: '/missions/:slug',
         element: (

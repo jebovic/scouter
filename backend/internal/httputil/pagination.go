@@ -53,6 +53,9 @@ func BuildPagedResponse[T any](items []T, limit int, cursorOf func(T) string) Pa
 	if hasMore {
 		items = items[:limit]
 	}
+	if items == nil {
+		items = []T{}
+	}
 	resp := PagedResponse[T]{Items: items, HasMore: hasMore}
 	if hasMore && len(items) > 0 {
 		resp.NextCursor = cursorOf(items[len(items)-1])

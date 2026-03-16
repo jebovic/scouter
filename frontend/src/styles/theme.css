@@ -87,6 +87,12 @@
   /* ── Breakpoints (reference, used as literals in @media) ─ */
   /* --bp-mobile:  640px  */
   /* --bp-desktop: 1024px */
+
+  /* ── Navigation Rail ─────────────────────────────────── */
+  --rail-width:     260px;
+  --rail-collapsed: 64px;
+  --rail-offset:    var(--rail-collapsed);
+  --bottom-nav-h:   60px;
 }
 
 /* ── Light mode overrides ─────────────────────────────────── */

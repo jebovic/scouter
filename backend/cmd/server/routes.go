@@ -806,6 +806,6 @@ func registerRoutes(r chi.Router, d *routeDeps) {
 
 	// Prometheus metrics endpoint (Phase 14)
 	if d.metricsHandler != nil {
-		r.Get("/metrics", d.metricsHandler.ServeHTTP)
+		r.Handle("/metrics", d.metricsHandler)
 	}
 }

@@ -74,7 +74,7 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	}
 	defer missionRows.Close()
 
-	var activities []Activity
+	activities := make([]Activity, 0)
 	for missionRows.Next() {
 		var id, name, slug string
 		var createdAt time.Time

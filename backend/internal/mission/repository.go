@@ -464,5 +464,16 @@ func scanMission(s scanner) (*Mission, error) {
 		}
 	}
 
+	// Ensure slice fields are never nil so they serialize as [] not null.
+	if m.Constraints == nil {
+		m.Constraints = []Constraint{}
+	}
+	if m.CostCategories == nil {
+		m.CostCategories = []string{}
+	}
+	if m.Timeline == nil {
+		m.Timeline = []TimelineEvent{}
+	}
+
 	return &m, nil
 }
