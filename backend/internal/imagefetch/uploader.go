@@ -7,18 +7,20 @@ import (
 	"net/url"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
-const presignTTL = time.Hour
+// publicReadPolicy returns an S3 bucket policy that allows anonymous GET on all objects.
+func publicReadPolicy(bucket string) string {
+	return `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::` + bucket + `/*"]}]}`
+}
 
 type UploaderConfig struct {
 	Endpoint  string // internal Docker hostname, e.g. "minio:9000"
-	PublicURL string // external URL for presigned URLs, e.g. "https://minio.dev.local"
+	PublicURL string // external URL served via Traefik, e.g. "https://minio.dev.local"
 	AccessKey string
 	SecretKey string
 	Bucket    string
@@ -49,6 +51,11 @@ func NewUploader(ctx context.Context, cfg UploaderConfig) (*Uploader, error) {
 		}
 	}
 
+	// Allow anonymous reads so browsers can load images directly via plain URLs.
+	if err := client.SetBucketPolicy(ctx, cfg.Bucket, publicReadPolicy(cfg.Bucket)); err != nil {
+		return nil, fmt.Errorf("set bucket policy: %w", err)
+	}
+
 	pubURL, err := url.Parse(cfg.PublicURL)
 	if err != nil {
 		return nil, fmt.Errorf("parse public URL: %w", err)
@@ -72,17 +79,10 @@ func (u *Uploader) Upload(ctx context.Context, optionID uuid.UUID, img FetchedIm
 	return key, nil
 }
 
-// PresignURL returns a time-limited URL for the given key, with the host
-// rewritten to PublicURL so browsers receive HTTPS via Traefik.
-func (u *Uploader) PresignURL(ctx context.Context, key string) (string, error) {
-	raw, err := u.client.PresignedGetObject(ctx, u.bucket, key, presignTTL, url.Values{})
-	if err != nil {
-		return "", fmt.Errorf("presign %s: %w", key, err)
-	}
-	// Replace internal host with external public URL so browser gets HTTPS.
-	raw.Scheme = u.pubURL.Scheme
-	raw.Host = u.pubURL.Host
-	return raw.String(), nil
+// PresignURL returns a plain public URL for the given key.
+// The bucket is publicly readable, so no signature is needed.
+func (u *Uploader) PresignURL(_ context.Context, key string) (string, error) {
+	return u.pubURL.String() + "/" + u.bucket + "/" + key, nil
 }
 
 // Delete removes an object from MinIO.
