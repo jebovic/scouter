@@ -19,7 +19,7 @@ export function useOptionImages(
     refetchInterval: (query) => {
       const data = query.state.data;
       const retries = query.state.dataUpdateCount;
-      if (!data || data.length === 0 && retries < MAX_POLL_RETRIES) {
+      if (!data || (data.length === 0 && retries < MAX_POLL_RETRIES)) {
         return POLL_INTERVAL_MS;
       }
       return false;
