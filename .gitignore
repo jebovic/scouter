@@ -44,3 +44,4 @@ deployment/certs/
 
 # Playwright MCP
 .playwright-mcp
+.superpowers/
