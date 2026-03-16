@@ -246,7 +246,37 @@
     "researchStarted": "Research started",
     "decisionRun": "Decision run",
     "purchaseRecorded": "Purchase recorded",
-    "reviewed": "Reviewed"
+    "reviewed": "Reviewed",
+    "loadingHistory": "Loading history...",
+    "noActivity": "No activity recorded",
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less"
+  },
+  "burnRate": {
+    "ariaLabel": "Burn rate card",
+    "title": "Burn Rate",
+    "error": "Unable to load burn rate.",
+    "statusOnTrack": "On track",
+    "statusAtRisk": "At risk",
+    "statusOverBudget": "Over budget",
+    "metricDailyRate": "Daily rate",
+    "metricProjection": "Projected total",
+    "metricDaysElapsed": "Days elapsed",
+    "daysUnit": " days",
+    "empty": "No spending data yet.",
+    "cumulativeLabel": "Cumulative spend"
+  },
+  "cashbackSummary": {
+    "ariaLabel": "Cashback summary panel",
+    "title": "Estimated Cashback",
+    "error": "Unable to load cashback estimate.",
+    "estimatedTotal": "Estimated total",
+    "bestPlatform": "Best platform:",
+    "colMerchant": "Merchant",
+    "colPlatform": "Platform",
+    "colCashbackPct": "% Cashback",
+    "colEstimated": "Estimated",
+    "colItems": "Items"
   },
   "lessons": {
     "title": "Lessons Learned",

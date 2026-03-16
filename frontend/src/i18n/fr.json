@@ -246,7 +246,37 @@
     "researchStarted": "Recherche démarrée",
     "decisionRun": "Décision effectuée",
     "purchaseRecorded": "Achat enregistré",
-    "reviewed": "Évalué"
+    "reviewed": "Évalué",
+    "loadingHistory": "Chargement de l'historique...",
+    "noActivity": "Aucune activité enregistrée",
+    "showAll": "Voir tout ({{count}})",
+    "showLess": "Voir moins"
+  },
+  "burnRate": {
+    "ariaLabel": "Carte taux de dépense",
+    "title": "Taux de Dépense",
+    "error": "Impossible de charger le taux de dépense.",
+    "statusOnTrack": "Dans les clous",
+    "statusAtRisk": "À risque",
+    "statusOverBudget": "Hors budget",
+    "metricDailyRate": "Taux journalier",
+    "metricProjection": "Total projeté",
+    "metricDaysElapsed": "Jours écoulés",
+    "daysUnit": " j",
+    "empty": "Aucune dépense enregistrée.",
+    "cumulativeLabel": "Dépenses cumulées"
+  },
+  "cashbackSummary": {
+    "ariaLabel": "Panneau récapitulatif cashback",
+    "title": "Cashback Estimé",
+    "error": "Impossible de charger l'estimé de cashback.",
+    "estimatedTotal": "Estimé total",
+    "bestPlatform": "Meilleure plateforme :",
+    "colMerchant": "Marchand",
+    "colPlatform": "Plateforme",
+    "colCashbackPct": "% Cashback",
+    "colEstimated": "Estimé",
+    "colItems": "Articles"
   },
   "lessons": {
     "title": "Leçons Apprises",

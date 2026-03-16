@@ -16,6 +16,36 @@ import { formatCurrencyLocale } from '../utils/format'
 import styles from './StatsPage.module.css'
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+const CATEGORY_NAMES: Record<string, string> = {
+  audio: 'Audio',
+  computing: 'Computing',
+  hardware: 'Hardware',
+  tech: 'Tech',
+  food: 'Food',
+  transport: 'Transport',
+  clothing: 'Clothing',
+  furniture: 'Furniture',
+  sports: 'Sports',
+  books: 'Books',
+  health: 'Health',
+  beauty: 'Beauty',
+  gaming: 'Gaming',
+  appliances: 'Appliances',
+  travel: 'Travel',
+}
+
+function formatCategoryName(raw: string): string {
+  if (CATEGORY_NAMES[raw]) return CATEGORY_NAMES[raw]
+  return raw
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+// ---------------------------------------------------------------------------
 // Analytics sub-components (previously in AnalyticsPage.tsx)
 // ---------------------------------------------------------------------------
 
@@ -353,7 +383,7 @@ export default function StatsPage() {
                         {stats.categoryBreakdown.map((cat) => (
                           <div key={cat.category} className={styles.categoryRow}>
                             <div className={styles.categoryMeta}>
-                              <span className={styles.categoryName}>{cat.category}</span>
+                              <span className={styles.categoryName}>{formatCategoryName(cat.category)}</span>
                               <span className={styles.categoryCount}>
                                 {t('stats.purchaseCount', { count: cat.count })}
                               </span>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useTimeline } from '../../hooks/useTimeline'
 import { LoadingPulse } from '../scouter'
 import styles from './MissionTimeline.module.css'
@@ -11,17 +12,18 @@ interface MissionTimelineProps {
 const EVENTS_PER_PAGE = 5
 
 export function MissionTimeline({ missionId, missionSlug }: MissionTimelineProps) {
+  const { t } = useTranslation()
   const { events, isLoading } = useTimeline(missionId, missionSlug)
   const [expanded, setExpanded] = useState(false)
 
   if (isLoading) {
-    return <LoadingPulse label="Chargement de l'historique..." />
+    return <LoadingPulse label={t('missionTimeline.loadingHistory')} />
   }
 
   if (events.length === 0) {
     return (
       <div className={styles.emptyState} role="status">
-        Aucune activité enregistrée
+        {t('missionTimeline.noActivity')}
       </div>
     )
   }
@@ -67,7 +69,7 @@ export function MissionTimeline({ missionId, missionSlug }: MissionTimelineProps
           onClick={() => setExpanded(!expanded)}
           aria-expanded={expanded}
         >
-          {expanded ? `Voir moins` : `Voir tout (${events.length})`}
+          {expanded ? t('missionTimeline.showLess') : t('missionTimeline.showAll', { count: events.length })}
         </button>
       )}
     </div>
