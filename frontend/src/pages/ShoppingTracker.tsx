@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Zap, ClipboardList, Share2, FileDown, Trash2, Plus, MoreHorizontal, Globe, Calendar } from 'lucide-react'
 import { BudgetBar, EmptyState, Skeleton, FeedbackModal } from '../components/scouter'
-import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard, WishlistShareCard, BudgetPlannerPanel, MissionCSVExportButton } from '../components/shopping'
+import { ShoppingList, CostBreakdown, PriceHistoryModal, RetailerRadar, OptimizedPlanPanel, ReceiptAnalyzer, PurchaseTimeline, ShoppingOptimizerPanel, KanbanBoard, WishlistShareCard, BudgetPlannerPanel } from '../components/shopping'
 import { DuplicateAlert } from '../components/shopping/DuplicateAlert'
 import { AgentRunHistory } from '../components/agentrun'
 import {
@@ -24,7 +25,7 @@ function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
   const { data, isLoading } = useFrenchBenchmark(missionId)
   const { fmt } = useFormatCurrency()
   const { t } = useTranslation()
-  if (isLoading) return <div style={{ padding: '10px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>{t('shopping.frenchBenchmarkLoading')}</div>
+  if (isLoading) return <div className={`${styles.benchmarkPanel} ${styles.benchmarkLoading}`}>{t('shopping.frenchBenchmarkLoading')}</div>
   if (!data) return null
   const verdictColor = data.verdictCode === 'bon_prix'
     ? 'var(--status-buy)'
@@ -32,28 +33,30 @@ function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
       ? 'var(--status-crisis)'
       : 'var(--text-dim)'
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '1.1rem' }}>🇫🇷</span>
-        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>{t('shopping.frenchBenchmarkTitle')}</span>
+    <div className={styles.benchmarkPanel}>
+      <div className={styles.benchmarkHeader}>
+        <Globe size={16} color="var(--accent)" />
+        <span className={styles.benchmarkHeaderTitle}>{t('shopping.frenchBenchmarkTitle')}</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)' }}>{fmt(data.medianPrice)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.medianMarket')}</div>
+      <div className={styles.benchmarkGrid}>
+        <div className={styles.benchmarkStat}>
+          <div className={styles.benchmarkStatValue}>{fmt(data.medianPrice)}</div>
+          <div className={styles.benchmarkStatLabel}>{t('shopping.medianMarket')}</div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent)' }}>{fmt(data.yourAvgPrice)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.yourAverage')}</div>
+        <div className={styles.benchmarkStat}>
+          <div className={styles.benchmarkStatValueAccent}>{fmt(data.yourAvgPrice)}</div>
+          <div className={styles.benchmarkStatLabel}>{t('shopping.yourAverage')}</div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: verdictColor }}>{data.verdictCode === 'bon_prix' ? t('shopping.verdictBonPrix') : data.verdictCode === 'au_dessus_du_marche' ? t('shopping.verdictEleve') : t('shopping.verdictMoyen')}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.offersCount', { count: data.sampleSize })}</div>
+        <div className={styles.benchmarkStat}>
+          <div className={styles.benchmarkStatValue} style={{ color: verdictColor }}>
+            {data.verdictCode === 'bon_prix' ? t('shopping.verdictBonPrix') : data.verdictCode === 'au_dessus_du_marche' ? t('shopping.verdictEleve') : t('shopping.verdictMoyen')}
+          </div>
+          <div className={styles.benchmarkStatLabel}>{t('shopping.offersCount', { count: data.sampleSize })}</div>
         </div>
       </div>
-      <p style={{ fontSize: '0.8rem', color: verdictColor, fontWeight: 500, marginBottom: '8px' }}>{data.verdict}</p>
+      <p className={styles.benchmarkVerdict} style={{ color: verdictColor }}>{data.verdict}</p>
       {data.tips.length > 0 && (
-        <ul style={{ fontSize: '0.78rem', color: 'var(--text-dim)', paddingLeft: '16px', margin: 0 }}>
+        <ul className={styles.benchmarkTips}>
           {data.tips.map((tip, i) => <li key={i}>{tip}</li>)}
         </ul>
       )}
@@ -67,29 +70,24 @@ function PurchaseTimelineCard({ missionId }: { missionId: string }) {
   if (isLoading) return null
   if (!data || data.totalItems === 0) return null
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-        <span style={{ fontSize: '1.1rem' }}>📅</span>
-        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>{t('shopping.timelineTitle')}</span>
-        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.totalItems', { count: data.totalItems })}</span>
+    <div className={styles.timelineCard}>
+      <div className={styles.timelineCardHeader}>
+        <Calendar size={16} color="var(--accent)" />
+        <span className={styles.timelineCardTitle}>{t('shopping.timelineTitle')}</span>
+        <span className={styles.timelineCardCount}>{t('shopping.totalItems', { count: data.totalItems })}</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+      <div className={styles.timelineGrid}>
         {data.buckets.map((b) => (
-          <div key={b.week} style={{
-            background: 'var(--surface-alt)',
-            borderRadius: '8px',
-            padding: '10px',
-            border: b.itemCount > 0 ? '1px solid var(--accent)' : '1px solid var(--border)',
-          }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-dim)', marginBottom: '4px' }}>{b.label}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--accent)', marginBottom: '6px' }}>{b.action}</div>
+          <div key={b.week} className={styles.timelineBucket} data-active={b.itemCount > 0 ? 'true' : 'false'}>
+            <div className={styles.timelineWeekLabel}>{b.label}</div>
+            <div className={styles.timelineAction}>{b.action}</div>
             {b.items.length > 0
               ? b.items.map((item, i) => (
-                  <div key={i} style={{ fontSize: '0.75rem', color: 'var(--text)', padding: '2px 0' }}>• {item}</div>
+                  <div key={i} className={styles.timelineItem}>• {item}</div>
                 ))
-              : <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>{t('shopping.noItemsInBucket')}</div>
+              : <div className={styles.timelineEmpty}>{t('shopping.noItemsInBucket')}</div>
             }
-            <div style={{ marginTop: '6px', fontSize: '0.68rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>{b.promoHint}</div>
+            <div className={styles.timelinePromoHint}>{b.promoHint}</div>
           </div>
         ))}
       </div>
@@ -114,6 +112,19 @@ export default function ShoppingTracker() {
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
   const [showShareCard, setShowShareCard] = useState(false)
   const [showBudgetPlanner, setShowBudgetPlanner] = useState(false)
+  const [showOverflow, setShowOverflow] = useState(false)
+  const overflowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!showOverflow) return
+    function handleClickOutside(e: MouseEvent) {
+      if (overflowRef.current && !overflowRef.current.contains(e.target as Node)) {
+        setShowOverflow(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showOverflow])
 
   const isLoading = missionLoading || itemsLoading
 
@@ -168,41 +179,82 @@ export default function ShoppingTracker() {
             </div>
 
             <div className={styles.actions}>
+              {/* Primary action */}
               <button className={styles.addBtn} onClick={() => setShowAddForm(true)}>
-                + {t('shopping.addItem')}
+                <Plus size={14} strokeWidth={2.5} />
+                {t('shopping.addItem')}
               </button>
-              {pinnedCount > 0 && (
-                <button
-                  className={styles.clearPinnedBtn}
-                  onClick={() => deletePinnedItems()}
-                >
-                  {t('shopping.clearPinned', { count: pinnedCount })}
-                </button>
-              )}
+
+              {/* Secondary action */}
               <button
                 className={styles.priceIntelBtn}
                 onClick={() => setShowFeedback(true)}
                 disabled={pricingPending}
               >
-                <span aria-hidden="true">💰</span>{pricingPending ? ` ${t('pricing.scouting')}` : ` ${t('pricing.priceIntel')}`}
+                <Zap size={14} />
+                {pricingPending ? t('pricing.scouting') : t('pricing.priceIntel')}
               </button>
-              <button
-                className={styles.addBtn}
-                onClick={() => setShowShareCard((v) => !v)}
-                aria-pressed={showShareCard}
-              >
-                {showShareCard ? t('shopping.hideShareCard') : t('shopping.shareWishlist')}
-              </button>
-              {items.length > 0 && mission && (
+
+              {/* Overflow menu */}
+              <div className={styles.overflowMenuWrap} ref={overflowRef}>
                 <button
-                  className={styles.addBtn}
-                  onClick={() => setShowBudgetPlanner((v) => !v)}
-                  aria-pressed={showBudgetPlanner}
+                  className={styles.overflowBtn}
+                  onClick={() => setShowOverflow((v) => !v)}
+                  aria-label={t('shopping.moreActions')}
+                  aria-expanded={showOverflow}
+                  aria-haspopup="menu"
                 >
-                  📋 Plan
+                  <MoreHorizontal size={16} />
                 </button>
-              )}
-              {mission && <MissionCSVExportButton missionId={mission.id} />}
+                {showOverflow && (
+                  <div className={styles.overflowDropdown} role="menu">
+                    <button
+                      className={styles.overflowItem}
+                      role="menuitem"
+                      onClick={() => { setShowShareCard((v) => !v); setShowOverflow(false) }}
+                    >
+                      <Share2 size={14} />
+                      {t('shopping.shareWishlist')}
+                    </button>
+                    {items.length > 0 && mission && (
+                      <button
+                        className={styles.overflowItem}
+                        role="menuitem"
+                        onClick={() => { setShowBudgetPlanner((v) => !v); setShowOverflow(false) }}
+                      >
+                        <ClipboardList size={14} />
+                        {t('shopping.budgetPlan')}
+                      </button>
+                    )}
+                    {mission && (
+                      <a
+                        href={`/api/missions/${mission.id}/export/csv`}
+                        download
+                        className={styles.overflowItem}
+                        role="menuitem"
+                        onClick={() => setShowOverflow(false)}
+                      >
+                        <FileDown size={14} />
+                        {t('shopping.exportCSV')}
+                      </a>
+                    )}
+                    {pinnedCount > 0 && (
+                      <>
+                        <div className={styles.overflowDivider} />
+                        <button
+                          className={`${styles.overflowItem} ${styles.overflowItemDestructive}`}
+                          role="menuitem"
+                          onClick={() => { deletePinnedItems(); setShowOverflow(false) }}
+                        >
+                          <Trash2 size={14} />
+                          {t('shopping.clearPinned', { count: pinnedCount })}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* View mode toggle */}
               <div className={styles.viewToggle} role="group" aria-label={t('shopping.viewModeLabel')}>
                 <button

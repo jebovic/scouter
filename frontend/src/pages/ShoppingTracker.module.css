@@ -59,7 +59,15 @@
   font-family: var(--font-display);
   font-size: 0.8rem;
   letter-spacing: 0.06em;
-  transition: opacity 0.15s;
+  transition: background 0.15s, color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.priceIntelBtn:hover {
+  background: var(--purple);
+  color: var(--void);
 }
 
 .priceIntelBtn:disabled {
@@ -70,18 +78,19 @@
 .clearPinnedBtn {
   padding: 8px 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--cyan);
-  background: var(--cyan-dim);
-  color: var(--cyan);
+  border: 1px solid var(--coral);
+  background: var(--coral-dim);
+  color: var(--coral);
   cursor: pointer;
   font-family: var(--font-display);
   font-size: 0.8rem;
   letter-spacing: 0.06em;
-  transition: opacity 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
 .clearPinnedBtn:hover {
-  opacity: 0.8;
+  background: var(--coral);
+  color: var(--void);
 }
 
 .historySection {
@@ -266,6 +275,229 @@
 .viewToggleActive {
   background: var(--raised);
   color: var(--gold);
+}
+
+/* ── Overflow menu ─────────────────────────────────────────────────────────── */
+
+.overflowMenuWrap {
+  position: relative;
+}
+
+.overflowBtn {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.overflowBtn:hover {
+  border-color: var(--text-mid);
+  color: var(--text);
+}
+
+.overflowDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 0;
+  min-width: 200px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.overflowItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  transition: background 0.1s;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+.overflowItem:hover {
+  background: var(--raised);
+}
+
+.overflowItemDestructive {
+  color: var(--coral);
+}
+
+.overflowItemDestructive:hover {
+  background: var(--coral-dim);
+}
+
+.overflowDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* ── French Benchmark Panel ────────────────────────────────────────────────── */
+
+.benchmarkPanel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.benchmarkHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.benchmarkHeaderTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.benchmarkGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.benchmarkStat {
+  text-align: center;
+}
+
+.benchmarkStatValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.benchmarkStatValueAccent {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.benchmarkStatLabel {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.benchmarkVerdict {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.benchmarkTips {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  padding-left: 16px;
+  margin: 0;
+}
+
+.benchmarkLoading {
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+/* ── Purchase Timeline Card ────────────────────────────────────────────────── */
+
+.timelineCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.timelineCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.timelineCardTitle {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.timelineCardCount {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.timelineGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.timelineBucket {
+  background: var(--raised);
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+}
+
+.timelineBucket[data-active='true'] {
+  border-color: var(--accent);
+}
+
+.timelineWeekLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.timelineAction {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.timelineItem {
+  font-size: 0.75rem;
+  color: var(--text);
+  padding: 2px 0;
+}
+
+.timelineEmpty {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.timelinePromoHint {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 /* Responsive */

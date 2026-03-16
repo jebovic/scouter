@@ -23,7 +23,10 @@ export function MerchantGroup({ missionId, merchant, items, currency = 'USD', on
     <div className={styles.root}>
       {merchant && (
         <div className={styles.header}>
-          <span className={styles.merchantName}>{merchant}</span>
+          <span className={styles.merchantName}>
+            {merchant}
+            <span className={styles.itemCount}>{items.length}</span>
+          </span>
           <span className={styles.total}>{formatCurrency(total, currency)}</span>
         </div>
       )}

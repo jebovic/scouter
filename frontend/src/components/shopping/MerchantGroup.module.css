@@ -10,15 +10,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  padding: 12px 20px;
   background: var(--raised);
   border-bottom: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
 }
 
 .merchantName {
   font-family: var(--font-display);
-  font-size: 0.8rem;
-  color: var(--text-mid);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
   letter-spacing: 0.05em;
 }
 
@@ -26,4 +28,14 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--gold);
+}
+
+.itemCount {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--border);
+  border-radius: 999px;
+  padding: 1px 7px;
+  margin-left: 8px;
 }
