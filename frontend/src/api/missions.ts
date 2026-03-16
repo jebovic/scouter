@@ -53,8 +53,9 @@ export type MissionDTO = z.infer<typeof MissionSchema>
 
 // ── API functions ────────────────────────────────────────────────────────────
 
-export async function listMissions(): Promise<Mission[]> {
-  const data = await apiFetch<unknown>('/api/missions')
+export async function listMissions(opts?: { includeArchived?: boolean }): Promise<Mission[]> {
+  const params = opts?.includeArchived ? '?include_archived=true' : ''
+  const data = await apiFetch<unknown>(`/api/missions${params}`)
   const { items } = z.object({ items: z.array(MissionSchema) }).parse(data)
   return items as Mission[]
 }
@@ -115,4 +116,12 @@ export async function triggerPricing(missionId: string, feedback?: string): Prom
     body: feedback ? JSON.stringify({ feedback }) : undefined,
   })
   return AgentResultSchema.parse(data)
+}
+
+export async function archiveMission(missionId: string): Promise<void> {
+  await apiFetch<void>(`/api/missions/${missionId}/archive`, { method: 'POST' })
+}
+
+export async function unarchiveMission(missionId: string): Promise<void> {
+  await apiFetch<void>(`/api/missions/${missionId}/unarchive`, { method: 'POST' })
 }
