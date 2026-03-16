@@ -116,7 +116,19 @@
     "scanReceipt": "Scanner un reçu",
     "activityFeed": "Fil d'activité",
     "decisionMatrix": "Matrice de décision",
-    "giftFinder": "Idées cadeaux"
+    "giftFinder": "Idées cadeaux",
+    "actions": {
+      "archive": "Archiver",
+      "archiveConfirm": "Archiver cette mission ?",
+      "archivedBadge": "Archivée",
+      "delete": "Supprimer la mission",
+      "deleteConfirm": "Cela supprimera définitivement la mission et toutes ses options.",
+      "deleteTypeToConfirm": "Tapez le nom de la mission pour confirmer",
+      "edit": "Modifier la mission",
+      "showArchived": "Afficher les archivées",
+      "unarchive": "Désarchiver",
+      "unarchiveConfirm": "Restaurer cette mission dans votre tableau de bord ?"
+    }
   },
   "badges": {
     "buy": "Acheter",
@@ -210,6 +222,23 @@
       "prevImage": "Image précédente",
       "nextImage": "Image suivante"
     }
+  },
+  "option": {
+    "actions": {
+      "badgeLabel": "Badge",
+      "delete": "Supprimer l'option",
+      "deleteConfirm": "Supprimer cette option définitivement ?",
+      "edit": "Modifier l'option",
+      "unpinAll": "Tout désépingler ({{count}})",
+      "unpinAllError": "Impossible de désépingler {{count}} option(s). Veuillez réessayer."
+    }
+  },
+  "shortlist": {
+    "empty": "Épinglez vos meilleures options pour construire votre liste courte.",
+    "emptyLink": "Aller aux options",
+    "replaceConfirm": "Un achat est déjà enregistré. Remplacer par cette option ?",
+    "select": "Sélectionner",
+    "title": "Votre liste courte"
   },
   "purchase": {
     "record": "Enregistrer l'achat",

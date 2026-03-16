@@ -116,7 +116,19 @@
     "scanReceipt": "Scan a receipt",
     "activityFeed": "Activity Feed",
     "decisionMatrix": "Decision Matrix",
-    "giftFinder": "Gift Ideas"
+    "giftFinder": "Gift Ideas",
+    "actions": {
+      "archive": "Archive",
+      "archiveConfirm": "Archive this mission?",
+      "archivedBadge": "Archived",
+      "delete": "Delete mission",
+      "deleteConfirm": "This will permanently delete the mission and all its options.",
+      "deleteTypeToConfirm": "Type the mission name to confirm",
+      "edit": "Edit mission",
+      "showArchived": "Show archived",
+      "unarchive": "Unarchive",
+      "unarchiveConfirm": "Restore this mission to your dashboard?"
+    }
   },
   "badges": {
     "buy": "Buy",
@@ -210,6 +222,23 @@
       "prevImage": "Previous image",
       "nextImage": "Next image"
     }
+  },
+  "option": {
+    "actions": {
+      "badgeLabel": "Badge",
+      "delete": "Delete option",
+      "deleteConfirm": "Remove this option permanently?",
+      "edit": "Edit option",
+      "unpinAll": "Unpin all ({{count}})",
+      "unpinAllError": "Could not unpin {{count}} option(s). Please try again."
+    }
+  },
+  "shortlist": {
+    "empty": "Pin your top picks in Options to build your shortlist.",
+    "emptyLink": "Go to Options",
+    "replaceConfirm": "A purchase is already recorded. Replace with this option?",
+    "select": "Select",
+    "title": "Your Shortlist"
   },
   "purchase": {
     "record": "Record Purchase",
