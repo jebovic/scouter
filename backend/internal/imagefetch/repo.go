@@ -98,6 +98,12 @@ func (r *Repository) ListAll(ctx context.Context) ([]*OptionImage, error) {
 	return out, rows.Err()
 }
 
+// DeleteByKey removes the option_images row with the given minio_key.
+func (r *Repository) DeleteByKey(ctx context.Context, minioKey string) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM option_images WHERE minio_key=$1`, minioKey)
+	return err
+}
+
 type scanner interface{ Scan(dest ...any) error }
 
 func scanImage(s scanner) (*OptionImage, error) {
