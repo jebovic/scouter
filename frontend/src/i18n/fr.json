@@ -164,6 +164,7 @@
     "failed": "Recherche échouée : {{error}}",
     "alreadyRunning": "Une recherche est déjà en cours",
     "triggerFailed": "Échec de la recherche : {{message}}",
+    "historyOptionCount": "{{count}} options",
     "historyStatus": {
       "done": "✓",
       "failed": "✗",
@@ -237,6 +238,7 @@
     "compare": "Comparer",
     "optionCount_one": "{{count}} option",
     "optionCount_other": "{{count}} options",
+    "compareMode": "Mode Comparaison",
     "rerunResearch": "Relancer la Recherche",
     "running": "En cours...",
     "rerunResearchTitle": "Relancer la Recherche",

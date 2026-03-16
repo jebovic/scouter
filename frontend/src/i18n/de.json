@@ -83,7 +83,23 @@
     "running": "Läuft...",
     "noOptions": "Keine Optionen gefunden",
     "noOptionsDesc": "Starten Sie den Recherche-Agenten, um Optionen für diese Mission zu finden",
-    "runResearch": "Recherche starten"
+    "runResearch": "Recherche starten",
+    "runButton": "Recherche starten",
+    "lastRunSuccess": "Letzter Lauf: {{date}} · {{count}} Optionen gefunden",
+    "lastRunFailed": "Letzter Lauf: {{date}} · Fehlgeschlagen",
+    "showHistory": "Verlauf anzeigen",
+    "hideHistory": "Verlauf ausblenden",
+    "complete": "Recherche abgeschlossen — {{count}} Optionen gefunden",
+    "failed": "Recherche fehlgeschlagen: {{error}}",
+    "alreadyRunning": "Eine Recherche läuft bereits",
+    "triggerFailed": "Recherche fehlgeschlagen: {{message}}",
+    "historyOptionCount": "{{count}} Optionen",
+    "historyStatus": {
+      "done": "✓",
+      "failed": "✗",
+      "running": "🔄",
+      "pending": "⏳"
+    }
   },
   "pricing": {
     "trigger": "Preisanalyse mit Vegeta",
@@ -116,6 +132,7 @@
     "compare": "Vergleichen",
     "optionCount_one": "{{count}} Option",
     "optionCount_other": "{{count}} Optionen",
+    "compareMode": "Vergleichsmodus",
     "rerunResearch": "Recherche wiederholen",
     "running": "Läuft...",
     "rerunResearchTitle": "Recherche wiederholen",

@@ -164,6 +164,7 @@
     "failed": "Research failed: {{error}}",
     "alreadyRunning": "Research is already running",
     "triggerFailed": "Research failed: {{message}}",
+    "historyOptionCount": "{{count}} options",
     "historyStatus": {
       "done": "✓",
       "failed": "✗",
@@ -237,6 +238,7 @@
     "compare": "Compare",
     "optionCount_one": "{{count}} option",
     "optionCount_other": "{{count}} options",
+    "compareMode": "Compare Mode",
     "rerunResearch": "Re-run Research",
     "running": "Running...",
     "rerunResearchTitle": "Re-Run Research",

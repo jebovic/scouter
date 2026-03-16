@@ -111,7 +111,7 @@ export default function OptionsExplorer() {
                 className={`${styles.viewToggleBtn}${isCompareMode ? ` ${styles.active}` : ''}`}
                 style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '6px 14px' }}
               >
-                <span aria-hidden="true">⊞↔</span> {t('options.compareMode', { defaultValue: 'Mode Comparaison' })}
+                <span aria-hidden="true">⊞↔</span> {t('options.compareMode')}
               </button>
 
               {/* View mode toggle */}
@@ -193,7 +193,7 @@ export default function OptionsExplorer() {
                   </span>
                   <span>
                     {new Date(job.completed_at ?? job.created_at).toLocaleDateString()}
-                    {job.status === 'done' && job.options_count != null && ` · ${job.options_count} options`}
+                    {job.status === 'done' && job.options_count != null && ` · ${t('research.historyOptionCount', { count: job.options_count })}`}
                     {job.status === 'failed' && job.error && ` · ${job.error}`}
                   </span>
                 </li>
