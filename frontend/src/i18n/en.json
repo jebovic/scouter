@@ -577,7 +577,9 @@
     "none": "No cashback recorded",
     "noneDesc": "Use the form above to log your first refund.",
     "delete": "Delete",
-    "deleteAriaLabel": "Delete {{name}}"
+    "deleteAriaLabel": "Delete {{name}}",
+    "itemPlaceholder": "MacBook Pro",
+    "merchantPlaceholder": "Amazon"
   },
   "envelopes": {
     "subtitle": "Named monthly budget allocations",
@@ -661,6 +663,13 @@
   "loyalty": {
     "title": "My Loyalty Points",
     "subtitle": "Track your loyalty programmes"
+  },
+  "currencyConverter": {
+    "title": "Currency Converter",
+    "rateLabel": "Today's rate",
+    "swapTitle": "Swap currencies",
+    "source": "Source: ECB (European Central Bank)",
+    "lastUpdated": "Updated:"
   },
   "templates": {
     "laptop": { "name": "Laptop / Notebook", "description": "Compare laptops by performance, portability, and value" },

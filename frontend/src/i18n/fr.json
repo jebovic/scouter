@@ -577,7 +577,9 @@
     "none": "Aucun cashback enregistré",
     "noneDesc": "Utilisez le formulaire ci-dessus pour logger votre premier remboursement.",
     "delete": "Supprimer",
-    "deleteAriaLabel": "Supprimer {{name}}"
+    "deleteAriaLabel": "Supprimer {{name}}",
+    "itemPlaceholder": "MacBook Pro",
+    "merchantPlaceholder": "Amazon"
   },
   "envelopes": {
     "subtitle": "Allocations mensuelles nommées",
@@ -668,6 +670,13 @@
   "loyalty": {
     "title": "Mes Points Fidélité",
     "subtitle": "Suivi de vos programmes de fidélité"
+  },
+  "currencyConverter": {
+    "title": "Convertisseur de Devises",
+    "rateLabel": "Taux du jour",
+    "swapTitle": "Inverser les devises",
+    "source": "Source : BCE (Banque Centrale Européenne)",
+    "lastUpdated": "Mis à jour :"
   },
   "templates": {
     "laptop": { "name": "Laptop / Ordinateur portable", "description": "Comparer les laptops selon leurs performances, portabilité et rapport qualité-prix" },

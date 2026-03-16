@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Topnav } from '../components/scouter/Topnav'
 import {
   useCashbackEntries,
@@ -25,6 +26,7 @@ const STATUS_OPTIONS = ['pending', 'confirmed', 'paid'] as const
 type Status = (typeof STATUS_OPTIONS)[number]
 
 export default function CashbackPage() {
+  const { t } = useTranslation()
   const userRef = getUserRef()
   const { fmt } = useFormatCurrency()
 
@@ -71,26 +73,26 @@ export default function CashbackPage() {
       <Topnav />
       <main className={`page ${styles.page}`}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Cashback Tracker</h1>
-          <p className={styles.subtitle}>Suivez vos remboursements cashback</p>
+          <h1 className={styles.title}>{t('cashback.title')}</h1>
+          <p className={styles.subtitle}>{t('cashback.subtitle')}</p>
         </div>
 
         {/* Summary cards */}
         <div className={styles.summaryGrid}>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>En attente</span>
+            <span className={styles.summaryLabel}>{t('cashback.pending')}</span>
             <span className={`${styles.summaryAmount} ${styles.pending}`}>
               {summary ? fmt(summary.totalPending) : '—'}
             </span>
           </div>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Confirmé</span>
+            <span className={styles.summaryLabel}>{t('cashback.confirmed')}</span>
             <span className={`${styles.summaryAmount} ${styles.confirmed}`}>
               {summary ? fmt(summary.totalConfirmed) : '—'}
             </span>
           </div>
           <div className={styles.summaryCard}>
-            <span className={styles.summaryLabel}>Reçu</span>
+            <span className={styles.summaryLabel}>{t('cashback.received')}</span>
             <span className={`${styles.summaryAmount} ${styles.paid}`}>
               {summary ? fmt(summary.totalPaid) : '—'}
             </span>
@@ -99,35 +101,35 @@ export default function CashbackPage() {
 
         {/* Form */}
         <div className={styles.formCard}>
-          <p className={styles.formTitle}>+ Ajouter un cashback</p>
+          <p className={styles.formTitle}>{t('cashback.addTitle')}</p>
           <form onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="itemName">Article</label>
+                <label className={styles.label} htmlFor="itemName">{t('cashback.item')}</label>
                 <input
                   id="itemName"
                   name="itemName"
                   className={styles.input}
                   value={form.itemName}
                   onChange={handleChange}
-                  placeholder="MacBook Pro"
+                  placeholder={t('cashback.itemPlaceholder')}
                   required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="merchant">Marchand</label>
+                <label className={styles.label} htmlFor="merchant">{t('cashback.merchant')}</label>
                 <input
                   id="merchant"
                   name="merchant"
                   className={styles.input}
                   value={form.merchant}
                   onChange={handleChange}
-                  placeholder="Amazon"
+                  placeholder={t('cashback.merchantPlaceholder')}
                   required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="amount">Montant (€)</label>
+                <label className={styles.label} htmlFor="amount">{t('cashback.amount')}</label>
                 <input
                   id="amount"
                   name="amount"
@@ -141,7 +143,7 @@ export default function CashbackPage() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="percentRate">Taux (%)</label>
+                <label className={styles.label} htmlFor="percentRate">{t('cashback.rate')}</label>
                 <input
                   id="percentRate"
                   name="percentRate"
@@ -155,7 +157,7 @@ export default function CashbackPage() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="status">Statut</label>
+                <label className={styles.label} htmlFor="status">{t('cashback.status')}</label>
                 <select
                   id="status"
                   name="status"
@@ -165,20 +167,20 @@ export default function CashbackPage() {
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>
-                      {s === 'pending' ? 'En attente' : s === 'confirmed' ? 'Confirmé' : 'Reçu'}
+                      {s === 'pending' ? t('cashback.pending') : s === 'confirmed' ? t('cashback.confirmed') : t('cashback.received')}
                     </option>
                   ))}
                 </select>
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="notes">Notes</label>
+                <label className={styles.label} htmlFor="notes">{t('cashback.notes')}</label>
                 <input
                   id="notes"
                   name="notes"
                   className={styles.input}
                   value={form.notes}
                   onChange={handleChange}
-                  placeholder="Optionnel"
+                  placeholder={t('cashback.optional')}
                 />
               </div>
             </div>
@@ -187,25 +189,25 @@ export default function CashbackPage() {
               className={styles.submitBtn}
               disabled={createMutation.isPending || !form.itemName.trim() || !form.merchant.trim()}
             >
-              {createMutation.isPending ? 'Ajout...' : 'Ajouter'}
+              {createMutation.isPending ? t('cashback.adding') : t('common.add')}
             </button>
           </form>
         </div>
 
         {/* Entries */}
         <p className={styles.listHeader}>
-          Mes cashbacks {summary ? `(${summary.entryCount})` : ''}
+          {t('cashback.myCashbacks')} {summary ? `(${summary.entryCount})` : ''}
         </p>
 
         {loadingEntries ? (
           <div className={styles.empty}>
-            <p>Chargement...</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : entries.length === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>🐷</div>
-            <p className={styles.emptyTitle}>Aucun cashback enregistré</p>
-            <p className={styles.emptyDesc}>Utilisez le formulaire ci-dessus pour logger votre premier remboursement.</p>
+            <p className={styles.emptyTitle}>{t('cashback.none')}</p>
+            <p className={styles.emptyDesc}>{t('cashback.noneDesc')}</p>
           </div>
         ) : (
           <div className={styles.entryList}>
@@ -221,15 +223,15 @@ export default function CashbackPage() {
                 </div>
                 <span className={styles.entryAmount}>{fmt(entry.amount)}</span>
                 <span className={`${styles.statusPill} ${styles[entry.status]}`}>
-                  {entry.status === 'pending' ? 'En attente' : entry.status === 'confirmed' ? 'Confirmé' : 'Reçu'}
+                  {entry.status === 'pending' ? t('cashback.pending') : entry.status === 'confirmed' ? t('cashback.confirmed') : t('cashback.received')}
                 </span>
                 <button
                   className={styles.deleteBtn}
                   onClick={() => deleteMutation.mutate(entry.id)}
                   disabled={deleteMutation.isPending}
-                  aria-label={`Supprimer ${entry.itemName}`}
+                  aria-label={t('cashback.deleteAriaLabel', { name: entry.itemName })}
                 >
-                  Supprimer
+                  {t('cashback.delete')}
                 </button>
               </div>
             ))}
