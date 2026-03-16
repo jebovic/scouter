@@ -1,0 +1,44 @@
+/* ── Root container ─────────────────────────────────── */
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+  line-height: 1;
+}
+
+/* ── Text column (wordmark + optional tagline) ──────── */
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Wordmark ───────────────────────────────────────── */
+.wordmark {
+  font-family: 'Chakra Petch', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  background: linear-gradient(90deg, var(--logo-start, #00e5ff), var(--logo-end, #a855f7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* ── Tagline ────────────────────────────────────────── */
+.tagline {
+  font-family: 'Chakra Petch', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--text-dim, #727f9e);
+  text-transform: uppercase;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* ── Size variants ──────────────────────────────────── */
+.sm .wordmark { font-size: 15px; }
+.md .wordmark { font-size: 20px; }
+.lg .wordmark { font-size: 28px; }
