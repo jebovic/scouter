@@ -144,10 +144,24 @@
     "trigger": "Research with Goku",
     "loading": "Goku is on the case...",
     "rerun": "Re-run Research",
-    "running": "Running...",
+    "running": "Research running…",
     "noOptions": "No options found",
     "noOptionsDesc": "Run the Research Agent to discover options for this mission",
-    "runResearch": "Run Research"
+    "runResearch": "Run Research",
+    "runButton": "Run Research",
+    "lastRunSuccess": "Last run: {{date}} · {{count}} options found",
+    "lastRunFailed": "Last run: {{date}} · Failed",
+    "showHistory": "show history",
+    "hideHistory": "hide history",
+    "complete": "Research complete — {{count}} options found",
+    "failed": "Research failed: {{error}}",
+    "alreadyRunning": "Research is already running",
+    "historyStatus": {
+      "done": "✓",
+      "failed": "✗",
+      "running": "🔄",
+      "pending": "⏳"
+    }
   },
   "pricing": {
     "trigger": "Price Intel with Vegeta",

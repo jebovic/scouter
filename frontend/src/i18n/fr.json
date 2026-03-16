@@ -144,10 +144,24 @@
     "trigger": "Rechercher avec Goku",
     "loading": "Goku est sur le coup...",
     "rerun": "Relancer la Recherche",
-    "running": "En cours...",
+    "running": "Recherche en cours…",
     "noOptions": "Aucune option trouvée",
     "noOptionsDesc": "Lancez l'Agent de Recherche pour découvrir des options pour cette mission",
-    "runResearch": "Lancer la Recherche"
+    "runResearch": "Lancer la Recherche",
+    "runButton": "Lancer la recherche",
+    "lastRunSuccess": "Dernière exécution : {{date}} · {{count}} options trouvées",
+    "lastRunFailed": "Dernière exécution : {{date}} · Échec",
+    "showHistory": "afficher l'historique",
+    "hideHistory": "masquer l'historique",
+    "complete": "Recherche terminée — {{count}} options trouvées",
+    "failed": "Recherche échouée : {{error}}",
+    "alreadyRunning": "Une recherche est déjà en cours",
+    "historyStatus": {
+      "done": "✓",
+      "failed": "✗",
+      "running": "🔄",
+      "pending": "⏳"
+    }
   },
   "pricing": {
     "trigger": "Prix Intel avec Vegeta",

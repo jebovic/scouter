@@ -1,18 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { triggerResearch } from '../api'
+import { useTranslation } from 'react-i18next'
+import { triggerResearch } from '../api/researchJobs'
 import { useToast } from '../components/scouter'
 
-export function useResearch(missionId: string) {
-  const qc = useQueryClient()
+export function useTriggerResearch(missionId: string) {
+  const queryClient = useQueryClient()
+  const { t } = useTranslation()
   const { toast } = useToast()
-  const { mutateAsync, isPending, error, isSuccess } = useMutation({
+
+  return useMutation({
     mutationFn: (feedback?: string) => triggerResearch(missionId, feedback),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
-      qc.invalidateQueries({ queryKey: ['agent-runs', missionId] })
-      toast('Research complete', 'success')
+      queryClient.invalidateQueries({ queryKey: ['research-jobs', missionId] })
     },
-    onError: (err: unknown) => toast(`Research failed: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
+    onError: (err: Error) => {
+      if (err.message === 'already_running') {
+        toast(t('research.alreadyRunning'), 'error')
+      } else {
+        toast(`Research failed: ${err.message}`, 'error')
+      }
+    },
   })
-  return { triggerResearch: mutateAsync, isPending, error, isSuccess }
 }
