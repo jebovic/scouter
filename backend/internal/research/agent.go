@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/agentrun"
+	"github.com/jibei/scouter/internal/imagefetch"
 	"github.com/jibei/scouter/internal/llm"
 	"github.com/jibei/scouter/internal/metrics"
 	"github.com/jibei/scouter/internal/mission"
@@ -37,7 +38,8 @@ type Agent struct {
 	optRepo      option.Repository
 	agentRunRepo agentrun.Repository
 	usageSvc     *usage.Service
-	embedCh      chan<- uuid.UUID // optional; nil disables embedding
+	embedCh      chan<- uuid.UUID            // optional; nil disables embedding
+	imageCh      chan<- imagefetch.OptionJob // optional; nil disables image fetching
 	recorder     metrics.AgentRecorder
 }
 
@@ -61,6 +63,12 @@ func (a *Agent) SetRecorder(r metrics.AgentRecorder) {
 // is automatically queued for embedding.
 func (a *Agent) SetEmbedChannel(ch chan<- uuid.UUID) {
 	a.embedCh = ch
+}
+
+// SetImageChannel attaches an image fetch job channel so that each newly persisted
+// option is automatically queued for image scraping.
+func (a *Agent) SetImageChannel(ch chan<- imagefetch.OptionJob) {
+	a.imageCh = ch
 }
 
 // Run performs LLM-based research for the mission, persists results, and returns them.
@@ -143,6 +151,13 @@ func (a *Agent) run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 			select {
 			case a.embedCh <- created.ID:
 			default:
+			}
+		}
+		if a.imageCh != nil {
+			select {
+			case a.imageCh <- imagefetch.OptionJob{ID: created.ID, URL: created.URL}:
+			default:
+				log.Printf("research: image worker channel full, dropping %s", created.ID)
 			}
 		}
 		results = append(results, *created)

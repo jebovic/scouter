@@ -13,8 +13,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/robfig/cron/v3"
 
 	"github.com/jibei/scouter/internal/admin"
+	"github.com/jibei/scouter/internal/imagefetch"
 	"github.com/jibei/scouter/internal/agentrun"
 	"github.com/jibei/scouter/internal/coach"
 	"github.com/jibei/scouter/internal/collaborator"
@@ -106,9 +108,34 @@ func main() {
 	// Wire embed channel into option service and research agent.
 	optionSvc.WithEmbedChannel(embedWorker.Jobs())
 
+	// Image fetch worker
+	minioUploader, err := imagefetch.NewUploader(ctx, imagefetch.UploaderConfig{
+		Endpoint:  cfg.MinioEndpoint,
+		PublicURL: cfg.MinioPublicURL,
+		AccessKey: cfg.MinioAccessKey,
+		SecretKey: cfg.MinioSecretKey,
+		Bucket:    cfg.MinioBucket,
+	})
+	if err != nil {
+		log.Error("minio init", "err", err)
+		os.Exit(1)
+	}
+	imageRepo := imagefetch.NewRepository(pool)
+	imageScraper := imagefetch.NewScraper()
+	imageWorker := imagefetch.NewWorker(imageRepo, minioUploader, imageScraper)
+	imageWorker.Start(ctx)
+
+	imageHandler := imagefetch.NewHandler(imageRepo, minioUploader)
+
+	// Purge cron: enforce MinIO quota daily (always runs, independent of price-check scheduler)
+	purgeCron := cron.New(cron.WithLocation(time.UTC))
+	purgeCron.AddFunc("@daily", imagefetch.PurgeJob(ctx, minioUploader, imageRepo, cfg.MinioQuotaMB)) //nolint:errcheck
+	purgeCron.Start()
+
 	// Agents
 	researchAgent := research.NewAgent(provider, optionRepo, agentRunRepo, usageSvc)
 	researchAgent.SetEmbedChannel(embedWorker.Jobs())
+	researchAgent.SetImageChannel(imageWorker.Jobs())
 	researchAgent.SetRecorder(rec)
 	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
 	pricingAgent.SetRecorder(rec)
@@ -123,6 +150,7 @@ func main() {
 	// Handlers
 	missionHandler := mission.NewHandler(missionSvc)
 	optionHandler := option.NewHandler(optionSvc)
+	optionHandler.WithImageHandler(imageHandler)
 	shoppingHandler := shopping.NewHandler(shoppingSvc)
 	notifHandler := notification.NewHandler(notifRepo)
 	researchHandler := research.NewHandler(researchAgent, missionSvc)
@@ -275,6 +303,12 @@ func main() {
 	go func() {
 		defer wg.Done()
 		embedWorker.Wait()
+	}()
+	// Wait for image fetch worker to drain in-flight jobs.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		imageWorker.Wait()
 	}()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)

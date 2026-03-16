@@ -11,17 +11,25 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/httputil"
+	"github.com/jibei/scouter/internal/imagefetch"
 )
 
 // Handler exposes option CRUD as chi routes.
 // Routes are mounted under /api/missions/{missionID}/options.
 type Handler struct {
-	svc *Service
+	svc          *Service
+	imageHandler *imagefetch.Handler
 }
 
 // NewHandler creates a new option handler.
 func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
+}
+
+// WithImageHandler attaches an imagefetch.Handler so that image sub-routes are
+// mounted under /{optionID}/images.
+func (h *Handler) WithImageHandler(ih *imagefetch.Handler) {
+	h.imageHandler = ih
 }
 
 // Routes mounts option routes. Expects chi URL param "missionID" from parent router.
@@ -37,6 +45,9 @@ func (h *Handler) Routes() chi.Router {
 	r.Patch("/{optionID}/pin", h.pin)
 	r.Patch("/{optionID}/reject", h.reject)
 	r.Patch("/{optionID}/unreject", h.unreject)
+	if h.imageHandler != nil {
+		r.Mount("/{optionID}/images", h.imageHandler.Routes())
+	}
 	return r
 }
 
