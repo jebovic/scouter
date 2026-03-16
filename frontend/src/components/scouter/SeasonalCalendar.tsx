@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import { Calendar } from 'lucide-react'
 import { CATEGORY_SEASONS, FRENCH_MONTHS } from '../../utils/seasonalPricing'
 import styles from './SeasonalCalendar.module.css'
 
@@ -65,13 +64,6 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
 
   return (
     <section className={styles.widget} role="region" aria-label={`Saisonnalité - ${selectedCategory.category}`}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>
-          <Calendar size={18} aria-hidden="true" className={styles.titleIcon} />
-          Saisonnalité des Prix
-        </h2>
-      </div>
-
       <div className={styles.tabs} role="tablist">
         {CATEGORY_SEASONS.map((cat, idx) => (
           <button

@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { CalendarDays } from 'lucide-react'
 import { getUpcomingHolidays } from '../../utils/frenchHolidays'
 import { useFormatCurrency } from '../../hooks/useFormatCurrency'
 import styles from './HolidayWidget.module.css'
@@ -50,13 +49,6 @@ export function HolidayWidget({ maxItems = 4, compact = false }: HolidayWidgetPr
 
   return (
     <section className={styles.widget} role="region" aria-label="Jours fériés à venir">
-      <div className={styles.header}>
-        <h2 className={styles.title}>
-          <CalendarDays size={18} aria-hidden="true" className={styles.titleIcon} />
-          Prochains jours fériés
-        </h2>
-      </div>
-
       <table className={styles.table}>
         <thead>
           <tr>

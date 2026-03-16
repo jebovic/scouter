@@ -1,27 +1,9 @@
 @import '../../styles/theme.css';
 
 .widget {
-  background: var(--surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
   padding: var(--gap-lg);
-  margin-bottom: var(--gap-lg);
 }
 
-.header {
-  margin-bottom: var(--gap-lg);
-}
-
-.title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text);
-  font-family: var(--font-display);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
 /* Tabs */
 .tabs {
@@ -127,10 +109,6 @@
   flex-shrink: 0;
 }
 
-.titleIcon {
-  flex-shrink: 0;
-  color: var(--cyan);
-}
 
 /* Best months — green */
 .levelow,
