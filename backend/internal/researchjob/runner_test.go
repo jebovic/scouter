@@ -6,7 +6,6 @@ import (
 	"errors"
 	"log/slog"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jibei/scouter/internal/mission"
@@ -91,9 +90,6 @@ func TestRunResearchJob_PanicRecovery(t *testing.T) {
 	}()
 
 	researchjob.RunResearchJob(job.ID, ms, "", agent, repo, logger)
-
-	// Give goroutine a moment if async
-	time.Sleep(50 * time.Millisecond)
 
 	jobs, _ := repo.GetByMission(context.Background(), missionID, 10)
 	if jobs[0].Status != researchjob.StatusFailed {
