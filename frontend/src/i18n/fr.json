@@ -63,7 +63,8 @@
     "switchToLight": "Passer en mode clair",
     "switchToDark": "Passer en mode sombre",
     "noMissionsYet": "Aucune mission pour l'instant",
-    "missions": "Missions"
+    "missions": "Missions",
+    "unknown": "Inconnu"
   },
   "mission": {
     "create": "Nouvelle Mission",
@@ -557,6 +558,27 @@
     "runPriceIntel": "Lancer l'Intel Prix",
     "runPriceIntelPlaceholder": "Optionnel : guidez l'agent (ex. « vérifiez les offres du Black Friday sur l'électronique »)"
   },
+  "cashback": {
+    "title": "Cashback Tracker",
+    "subtitle": "Suivez vos remboursements cashback",
+    "pending": "En attente",
+    "confirmed": "Confirmé",
+    "received": "Reçu",
+    "addTitle": "+ Ajouter un cashback",
+    "item": "Article",
+    "merchant": "Marchand",
+    "amount": "Montant (€)",
+    "rate": "Taux (%)",
+    "status": "Statut",
+    "notes": "Notes",
+    "optional": "Optionnel",
+    "adding": "Ajout...",
+    "myCashbacks": "Mes cashbacks",
+    "none": "Aucun cashback enregistré",
+    "noneDesc": "Utilisez le formulaire ci-dessus pour logger votre premier remboursement.",
+    "delete": "Supprimer",
+    "deleteAriaLabel": "Supprimer {{name}}"
+  },
   "envelopes": {
     "subtitle": "Allocations mensuelles nommées",
     "newBtn": "Nouvelle enveloppe",
@@ -564,7 +586,41 @@
     "health": "Santé budgétaire",
     "empty": "Aucune enveloppe",
     "emptyDesc": "Créez des enveloppes budgétaires pour allouer vos dépenses mensuelles.",
-    "budgetVariance": "Variance budgétaire"
+    "budgetVariance": "Variance budgétaire",
+    "title": "Budget Enveloppes",
+    "pageSubtitle": "Gérez votre budget par catégorie",
+    "newBtn2": "+ Nouvelle enveloppe",
+    "globalBudget": "BUDGET GLOBAL",
+    "nameRequired": "Le nom est requis",
+    "invalidBudget": "Budget invalide",
+    "newEnvelope": "Nouvelle enveloppe",
+    "emoji": "Emoji",
+    "name": "Nom",
+    "namePlaceholder": "ex: Alimentation, Loisirs…",
+    "budget": "Budget (€)",
+    "color": "Couleur",
+    "chooseEmoji": "Choisir un emoji",
+    "colorAriaLabel": "Couleur {{color}}",
+    "deleteAriaLabel": "Supprimer {{name}}",
+    "labelRequired": "Libellé requis",
+    "invalidAmount": "Montant invalide",
+    "addOperation": "Ajouter une opération",
+    "expense": "Dépense",
+    "topup": "Rechargement",
+    "label": "Libellé",
+    "labelPlaceholder": "ex: Supermarché, Netflix…",
+    "amount": "Montant (€)",
+    "date": "Date",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "spent": "Dépensé",
+    "remaining": "{{amount}} restant",
+    "overbudget": "{{amount}} dépassé",
+    "addExpense": "+ Ajouter une dépense",
+    "recentTransactions": "Transactions récentes",
+    "deleteTransaction": "Supprimer la transaction",
+    "deleteTransactionAriaLabel": "Supprimer la transaction",
+    "createFirst": "Créer ma première enveloppe"
   },
   "performance": {
     "title": "Perfs",
@@ -597,7 +653,21 @@
     "categories": "catégories"
   },
   "insights": {
-    "crossMission": "Analyse multi-missions"
+    "crossMission": "Analyse multi-missions",
+    "loading": "Analyse en cours…",
+    "noData": "Aucune donnée",
+    "noDataDesc": "Créez des missions pour voir vos insights.",
+    "title": "Insights Budget",
+    "activeMissions": "Missions actives",
+    "totalBudget": "Budget total",
+    "budgetUsage": "Utilisation budget",
+    "recommendations": "Recommandations",
+    "byCategory": "Par catégorie",
+    "allMissions": "Toutes les missions"
+  },
+  "loyalty": {
+    "title": "Mes Points Fidélité",
+    "subtitle": "Suivi de vos programmes de fidélité"
   },
   "templates": {
     "laptop": { "name": "Laptop / Ordinateur portable", "description": "Comparer les laptops selon leurs performances, portabilité et rapport qualité-prix" },

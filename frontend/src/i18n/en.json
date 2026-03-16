@@ -63,7 +63,8 @@
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode",
     "noMissionsYet": "No missions yet",
-    "missions": "Missions"
+    "missions": "Missions",
+    "unknown": "Unknown"
   },
   "mission": {
     "create": "New Mission",
@@ -557,6 +558,27 @@
     "runPriceIntel": "Run Price Intel",
     "runPriceIntelPlaceholder": "Optional: guide the agent (e.g. \"check for Black Friday deals on electronics\")"
   },
+  "cashback": {
+    "title": "Cashback Tracker",
+    "subtitle": "Track your cashback refunds",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "received": "Received",
+    "addTitle": "+ Add cashback",
+    "item": "Item",
+    "merchant": "Merchant",
+    "amount": "Amount (€)",
+    "rate": "Rate (%)",
+    "status": "Status",
+    "notes": "Notes",
+    "optional": "Optional",
+    "adding": "Adding...",
+    "myCashbacks": "My cashbacks",
+    "none": "No cashback recorded",
+    "noneDesc": "Use the form above to log your first refund.",
+    "delete": "Delete",
+    "deleteAriaLabel": "Delete {{name}}"
+  },
   "envelopes": {
     "subtitle": "Named monthly budget allocations",
     "newBtn": "New envelope",
@@ -564,7 +586,41 @@
     "health": "Budget health",
     "empty": "No envelopes yet",
     "emptyDesc": "Create budget envelopes to allocate your monthly spending.",
-    "budgetVariance": "Budget Variance"
+    "budgetVariance": "Budget Variance",
+    "title": "Envelope Budget",
+    "pageSubtitle": "Manage your budget by category",
+    "newBtn2": "+ New envelope",
+    "globalBudget": "GLOBAL BUDGET",
+    "nameRequired": "Name is required",
+    "invalidBudget": "Invalid budget",
+    "newEnvelope": "New envelope",
+    "emoji": "Emoji",
+    "name": "Name",
+    "namePlaceholder": "e.g. Groceries, Entertainment…",
+    "budget": "Budget (€)",
+    "color": "Color",
+    "chooseEmoji": "Choose an emoji",
+    "colorAriaLabel": "Color {{color}}",
+    "deleteAriaLabel": "Delete {{name}}",
+    "labelRequired": "Label is required",
+    "invalidAmount": "Invalid amount",
+    "addOperation": "Add transaction",
+    "expense": "Expense",
+    "topup": "Top-up",
+    "label": "Label",
+    "labelPlaceholder": "e.g. Supermarket, Netflix…",
+    "amount": "Amount (€)",
+    "date": "Date",
+    "create": "Create",
+    "save": "Save",
+    "spent": "Spent",
+    "remaining": "{{amount}} remaining",
+    "overbudget": "{{amount}} overbudget",
+    "addExpense": "+ Add expense",
+    "recentTransactions": "Recent transactions",
+    "deleteTransaction": "Delete transaction",
+    "deleteTransactionAriaLabel": "Delete transaction",
+    "createFirst": "Create my first envelope"
   },
   "performance": {
     "title": "Perfs",
@@ -590,7 +646,21 @@
     "allocations": "Recommended Allocations"
   },
   "insights": {
-    "crossMission": "Cross-Mission Analysis"
+    "crossMission": "Cross-Mission Analysis",
+    "loading": "Analysis in progress…",
+    "noData": "No data",
+    "noDataDesc": "Create missions to see your insights.",
+    "title": "Budget Insights",
+    "activeMissions": "Active missions",
+    "totalBudget": "Total budget",
+    "budgetUsage": "Budget usage",
+    "recommendations": "Recommendations",
+    "byCategory": "By category",
+    "allMissions": "All missions"
+  },
+  "loyalty": {
+    "title": "My Loyalty Points",
+    "subtitle": "Track your loyalty programmes"
   },
   "templates": {
     "laptop": { "name": "Laptop / Notebook", "description": "Compare laptops by performance, portability, and value" },
