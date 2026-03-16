@@ -1,9 +1,13 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid, DaySummaryStrip, EtatDuJourCard, LastVisitCard } from '../components/scouter'
+import { Topnav, ScouterGrid, UsageWidget, EmptyState, SkeletonGrid, DaySummaryStrip, EtatDuJourCard, LastVisitCard, BadgeRow, BadgeToast, ShoppingPersonaCard } from '../components/scouter'
 import { MissionCard, MissionForm, TemplateGallery, TemplatePreview, BudgetRollupWidget, MissionComparison, BudgetAlertBanner, PriceDigestWidget, ActivityFeedPanel, WeeklyDigestPanel, SaleCalendarWidget, HolidayAlertBanner } from '../components/mission'
-import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar, useMissionComparison } from '../hooks'
+import { PersonaCard } from '../components/persona'
+import { useMissions, useCreateMission, useKeyboardShortcuts, useTemplates, useDealCalendar, useMissionComparison, useBadges } from '../hooks'
+import { useStats } from '../hooks/usePurchase'
+import { unlockIfEarned, ALL_BADGES } from '../utils/badges'
+import type { Badge } from '../utils/badges'
 import type { MissionCreateRequest, Template } from '../types'
 import type { DealEvent } from '../api/dealCalendar'
 import styles from './HQDashboard.module.css'
@@ -78,6 +82,9 @@ export default function HQDashboard() {
   const [createError, setCreateError] = useState<string | null>(null)
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null)
   const [formInitialValues, setFormInitialValues] = useState<Partial<MissionCreateRequest> | undefined>()
+  const { data: stats } = useStats()
+  const { badges, unlock } = useBadges()
+  const [newBadge, setNewBadge] = useState<Badge | null>(null)
 
   const { selectedIds: compareIds, toggle: toggleCompare, clear: clearCompare, isSelected: isCompareSelected, canAdd: canAddToCompare } = useMissionComparison()
 
@@ -85,6 +92,39 @@ export default function HQDashboard() {
     n: () => setShowForm(true),
   }), [])
   useKeyboardShortcuts(shortcuts)
+
+  useEffect(() => {
+    if (!stats) return
+
+    const missionCount = missions.length
+    const savedTotal = Math.max(0, stats.savings)
+    const researchCount = 0
+
+    const earnedBadgeIds = unlockIfEarned(missionCount, savedTotal, researchCount)
+
+    let firstNewBadge: string | null = null
+    earnedBadgeIds.forEach((badgeId) => {
+      if (!badges.some((b) => b.id === badgeId)) {
+        unlock(badgeId)
+        if (!firstNewBadge) {
+          firstNewBadge = badgeId
+        }
+      }
+    })
+
+    if (firstNewBadge && firstNewBadge in ALL_BADGES) {
+      const badgeKey = firstNewBadge as keyof typeof ALL_BADGES
+      const def = ALL_BADGES[badgeKey]
+      const badge: Badge = {
+        id: def.id as any,
+        name: def.name,
+        description: def.description,
+        icon: def.icon,
+        unlockedAt: new Date(),
+      }
+      setNewBadge(badge)
+    }
+  }, [stats, missions.length, badges, unlock])
 
   async function handleCreate(req: MissionCreateRequest) {
     setCreateError(null)
@@ -247,8 +287,19 @@ export default function HQDashboard() {
               isLoading={templatesLoading}
             />
           </div>
+
+          <section className={styles.badgesSection}>
+            <h2 className={styles.sectionTitle}>{t('hq.badges')}</h2>
+            <BadgeRow badges={badges} />
+          </section>
+
+          <section className={styles.personaSection}>
+            <ShoppingPersonaCard />
+            <PersonaCard />
+          </section>
         </div>
       </main>
+      {newBadge && <BadgeToast badge={newBadge} onDismiss={() => setNewBadge(null)} />}
     </div>
   )
 }

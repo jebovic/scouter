@@ -272,7 +272,24 @@
     "allDeleted": "Toutes les données supprimées.",
     "confirmWarning": "Cliquez à nouveau pour confirmer. Cela supprimera définitivement tout.",
     "tools": "Outils",
-    "deletePrompt": "Tapez <bold>{{word}}</bold> pour confirmer :"
+    "deletePrompt": "Tapez <bold>{{word}}</bold> pour confirmer :",
+    "performance": "Performances",
+    "performanceDesc": "Métriques de rendu du navigateur",
+    "perfRefresh": "Actualiser",
+    "perfTTFB": "TTFB",
+    "perfTTFBLabel": "Temps avant premier octet",
+    "perfDOMLoaded": "DOM Content Loaded",
+    "perfDOMLabel": "Temps jusqu'au DOM prêt",
+    "perfLoadTime": "Temps de chargement",
+    "perfLoadLabel": "Chargement complet de la page",
+    "perfHeapUsed": "Heap JS utilisé",
+    "perfHeapLabel": "Mémoire JavaScript",
+    "perfConnection": "Connexion",
+    "perfConnectionLabel": "Type effectif",
+    "perfTotalHeap": "Heap total",
+    "perfTotalHeapLabel": "Taille du heap JS",
+    "perfDisclaimer": "Métriques mesurées en temps réel dans votre navigateur",
+    "perfNote": "Navigation Timing API, Memory API (Chrome/Edge) et Network Information API."
   },
   "stats": {
     "title": "Statistiques de dépenses",
@@ -376,7 +393,8 @@
     "compareMissions": "COMPARER DES MISSIONS",
     "compareSubtitle": "Sélectionnez 2 à 4 missions pour une analyse côte à côte",
     "compareClear": "Effacer",
-    "compareMax": "Maximum 4 missions sélectionnées"
+    "compareMax": "Maximum 4 missions sélectionnées",
+    "badges": "Badges & Récompenses"
   },
   "quickNav": {
     "optionsExplorer": "Explorateur d'options",
@@ -545,7 +563,8 @@
     "monthly": "/ mois",
     "health": "Santé budgétaire",
     "empty": "Aucune enveloppe",
-    "emptyDesc": "Créez des enveloppes budgétaires pour allouer vos dépenses mensuelles."
+    "emptyDesc": "Créez des enveloppes budgétaires pour allouer vos dépenses mensuelles.",
+    "budgetVariance": "Variance budgétaire"
   },
   "performance": {
     "title": "Perfs",
@@ -576,6 +595,9 @@
     "total": "Total",
     "items": "articles",
     "categories": "catégories"
+  },
+  "insights": {
+    "crossMission": "Analyse multi-missions"
   },
   "templates": {
     "laptop": { "name": "Laptop / Ordinateur portable", "description": "Comparer les laptops selon leurs performances, portabilité et rapport qualité-prix" },

@@ -144,3 +144,7 @@
 .missionName { flex: 1; font-weight: 500; font-size: 0.88rem; }
 .missionCat  { font-size: 0.72rem; color: var(--text-dim); }
 .missionBudget { font-size: 0.88rem; font-weight: 600; color: var(--accent); }
+
+.crossMissionSection {
+  margin-top: 2rem;
+}

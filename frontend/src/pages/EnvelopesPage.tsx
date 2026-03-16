@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocalEnvelopes } from '../hooks/useLocalEnvelopes'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import { Topnav } from '../components/scouter/Topnav'
+import { BudgetHeatmap } from '../components/scouter'
 import { PRESET_COLORS, DEFAULT_EMOJIS, type Transaction } from '../utils/envelopes'
 import styles from './EnvelopesPage.module.css'
 
@@ -369,6 +371,7 @@ function RecentTransactions({ transactions, envelopeMap, onDelete, fmt, locale }
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function EnvelopesPage() {
+  const { t } = useTranslation()
   const {
     envelopes,
     transactions,
@@ -509,6 +512,12 @@ export default function EnvelopesPage() {
         fmt={fmt}
         locale={locale}
       />
+
+      {/* Budget Variance Heatmap */}
+      <section className={styles.heatmapSection}>
+        <h2 className={styles.sectionTitle}>{t('envelopes.budgetVariance')}</h2>
+        <BudgetHeatmap monthsBack={3} />
+      </section>
     </main>
     </>
   )

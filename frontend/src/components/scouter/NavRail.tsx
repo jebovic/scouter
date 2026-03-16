@@ -5,7 +5,7 @@ import {
   Home, ShoppingCart, Heart, Bell, Package,
   Wallet, History, RotateCcw, CreditCard,
   CalendarDays, TrendingDown, FileText,
-  BarChart2, Award,
+  BarChart2,
   Settings, PanelLeftClose, PanelLeft,
 } from 'lucide-react'
 import type { Mission } from '../../types'
@@ -57,6 +57,7 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
         { label: t('nav.rail.itemHistory'),   path: '/history',   icon: History },
         { label: t('nav.rail.itemCashback'),  path: '/cashback',  icon: RotateCcw },
         { label: t('nav.rail.itemLoyalty'),   path: '/loyalty',   icon: CreditCard },
+        { label: t('nav.rail.itemStats'),     path: '/stats',     icon: BarChart2 },
       ],
     },
     {
@@ -66,14 +67,6 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
         { label: t('nav.rail.itemDealCalendar'), path: '/deal-calendar', icon: CalendarDays },
         { label: t('nav.rail.itemInsights'),     path: '/insights',      icon: TrendingDown },
         { label: t('nav.rail.itemDigest'),       path: '/digest',        icon: FileText },
-      ],
-    },
-    {
-      key: 'stats',
-      label: t('nav.rail.sectionStats'),
-      items: [
-        { label: t('nav.rail.itemStats'),       path: '/stats',       icon: BarChart2 },
-        { label: t('nav.rail.itemPerformance'), path: '/performance', icon: Award },
       ],
     },
   ]
@@ -95,7 +88,7 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
   }, [collapsed])
 
   // In simple mode, hide advanced tools
-  const HIDDEN_SIMPLE = ['/kanban', '/performance', '/digest', '/insights', '/cashback', '/loyalty']
+  const HIDDEN_SIMPLE = ['/kanban', '/digest', '/insights', '/cashback', '/loyalty']
 
   const visibleSections = SECTIONS.map(section => ({
     ...section,

@@ -277,6 +277,115 @@
   color: var(--cyan);
 }
 
+/* ── Performance Panel ──────────────────────────────────── */
+
+.perfHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.perfDesc {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 0;
+  flex: 1;
+}
+
+.perfRefreshBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.perfRefreshBtn:hover {
+  background: var(--deep);
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.perfGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.perfCard {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.perfCardGreen {
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.perfCardGold {
+  border-color: rgba(255, 200, 50, 0.3);
+}
+
+.perfCardCoral {
+  border-color: rgba(255, 61, 113, 0.3);
+}
+
+.perfCardNeutral {
+  border-color: var(--border);
+}
+
+.perfMetricName {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
+.perfMetricValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.perfMetricValueGreen { color: var(--green); }
+.perfMetricValueGold  { color: var(--gold); }
+.perfMetricValueCoral { color: var(--coral); }
+
+.perfMetricUnit {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.perfMetricLabel {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.perfFooter {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 640px) {

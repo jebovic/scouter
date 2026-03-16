@@ -272,7 +272,24 @@
     "allDeleted": "All data deleted.",
     "confirmWarning": "Click again to confirm. This will permanently delete everything.",
     "tools": "Tools",
-    "deletePrompt": "Type <bold>{{word}}</bold> to confirm:"
+    "deletePrompt": "Type <bold>{{word}}</bold> to confirm:",
+    "performance": "Performance",
+    "performanceDesc": "Browser rendering metrics",
+    "perfRefresh": "Refresh",
+    "perfTTFB": "TTFB",
+    "perfTTFBLabel": "Time to First Byte",
+    "perfDOMLoaded": "DOM Content Loaded",
+    "perfDOMLabel": "Time to DOM Ready",
+    "perfLoadTime": "Load Time",
+    "perfLoadLabel": "Full Page Load",
+    "perfHeapUsed": "JS Heap Used",
+    "perfHeapLabel": "JavaScript Memory",
+    "perfConnection": "Connection",
+    "perfConnectionLabel": "Effective Type",
+    "perfTotalHeap": "Total Heap",
+    "perfTotalHeapLabel": "JS Heap Size",
+    "perfDisclaimer": "Metrics measured in real-time in your browser",
+    "perfNote": "Navigation Timing API, Memory API (Chrome/Edge), and Network Information API."
   },
   "stats": {
     "title": "Spending Stats",
@@ -376,7 +393,8 @@
     "compareMissions": "COMPARE MISSIONS",
     "compareSubtitle": "Select 2 to 4 missions for a side-by-side analysis",
     "compareClear": "Clear",
-    "compareMax": "Maximum 4 missions selected"
+    "compareMax": "Maximum 4 missions selected",
+    "badges": "Badges & Achievements"
   },
   "quickNav": {
     "optionsExplorer": "Options Explorer",
@@ -545,7 +563,8 @@
     "monthly": "/ month",
     "health": "Budget health",
     "empty": "No envelopes yet",
-    "emptyDesc": "Create budget envelopes to allocate your monthly spending."
+    "emptyDesc": "Create budget envelopes to allocate your monthly spending.",
+    "budgetVariance": "Budget Variance"
   },
   "performance": {
     "title": "Perfs",
@@ -569,6 +588,9 @@
     "remaining": "Remaining",
     "surplus": "Surplus",
     "allocations": "Recommended Allocations"
+  },
+  "insights": {
+    "crossMission": "Cross-Mission Analysis"
   },
   "templates": {
     "laptop": { "name": "Laptop / Notebook", "description": "Compare laptops by performance, portability, and value" },

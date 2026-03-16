@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { listMissions } from '../api/missions'
 import { analyzeSpending } from '../utils/spendingInsights'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
+import { useCrossMission } from '../hooks/useCrossMission'
+import CrossMissionPanel from '../components/mission/CrossMissionPanel'
 import { Topnav } from '../components/scouter/Topnav'
 import styles from './InsightsPage.module.css'
 
@@ -22,12 +25,14 @@ function SpendingBar({ pct, label }: { pct: number; label: string }) {
 }
 
 export default function InsightsPage() {
+  const { t } = useTranslation()
   const { data: missions, isLoading } = useQuery({
     queryKey: ['missions'],
     queryFn: listMissions,
     staleTime: 60_000,
   })
-  const { currency, locale } = useFormatCurrency()
+  const { currency, locale, fmt } = useFormatCurrency()
+  const { data: crossData } = useCrossMission()
 
   // Aggregate items from all missions (use budget data only, no per-item fetch needed)
   const report = useMemo(() => {
@@ -61,8 +66,6 @@ export default function InsightsPage() {
       </main>
     )
   }
-
-  const { fmt } = useFormatCurrency()
 
   return (
     <>
@@ -129,6 +132,12 @@ export default function InsightsPage() {
             ))}
           </div>
         </section>
+        {crossData && crossData.missions.length > 0 && (
+          <section className={styles.crossMissionSection}>
+            <h2 className={styles.sectionTitle}>{t('insights.crossMission')}</h2>
+            <CrossMissionPanel data={crossData} />
+          </section>
+        )}
       </div>
     </main>
     </>

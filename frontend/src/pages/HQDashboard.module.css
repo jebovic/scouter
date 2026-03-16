@@ -212,6 +212,25 @@
   color: var(--cyan);
 }
 
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--cyan);
+  margin: 0 0 1rem;
+}
+
+.badgesSection {
+  margin-top: 2rem;
+}
+
+.personaSection {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .header {

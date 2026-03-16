@@ -20,7 +20,6 @@ const SharedWishlistPage = lazy(() => import('./pages/SharedWishlistPage'))
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 const EnvelopesPage = lazy(() => import('./pages/EnvelopesPage'))
 const DealCalendarPage = lazy(() => import('./pages/DealCalendarPage'))
-const PerformancePage = lazy(() => import('./pages/PerformancePage'))
 const DigestPage = lazy(() => import('./pages/DigestPage'))
 const LoyaltyPage = lazy(() => import('./pages/LoyaltyPage'))
 const KanbanPage = lazy(() => import('./pages/KanbanPage'))
@@ -137,11 +136,7 @@ export const router = createBrowserRouter([
           },
           {
             path: '/performance',
-            element: (
-              <SuspenseWrapper>
-                <PerformancePage />
-              </SuspenseWrapper>
-            ),
+            element: <Navigate to="/settings" replace />,
           },
           {
             path: '/digest',

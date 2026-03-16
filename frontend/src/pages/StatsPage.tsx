@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStats, useMonthlyStats } from '../hooks/usePurchase'
 import { useSettings } from '../hooks/useSettings'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
-import { useMissions } from '../hooks/useMission'
-import { useBadges } from '../hooks/useBadges'
 import { useSpendingAnalytics } from '../hooks/useSpendingAnalytics'
 import { useBudgetHeatmap } from '../hooks/useBudgetHeatmap'
-import { useCrossMission } from '../hooks/useCrossMission'
 import type { CategoryStats, MerchantStats, TopItem, MonthStats } from '../api/spendinganalytics'
 import BudgetHeatmapMission from '../components/mission/BudgetHeatmap'
-import CrossMissionPanel from '../components/mission/CrossMissionPanel'
-import { BadgeRow, BadgeToast, BudgetHeatmap, ShoppingPersonaCard } from '../components/scouter'
+import { BudgetHeatmap } from '../components/scouter'
 import { Topnav } from '../components/scouter/Topnav'
 import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
 import { BudgetVsActualChart } from '../components/charts/BudgetVsActualChart'
-import { PersonaCard } from '../components/persona'
 import { formatCurrencyLocale } from '../utils/format'
-import { unlockIfEarned, ALL_BADGES } from '../utils/badges'
-import type { Badge } from '../utils/badges'
 import styles from './StatsPage.module.css'
 
 // ---------------------------------------------------------------------------
@@ -208,14 +200,13 @@ function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) 
 }
 
 // ---------------------------------------------------------------------------
-// Analytics tab panel
+// Analytics section (formerly AnalyticsTab)
 // ---------------------------------------------------------------------------
 
-function AnalyticsTab() {
+function AnalyticsSection() {
   const { t } = useTranslation()
   const { data, isLoading, error } = useSpendingAnalytics()
   const { data: heatmapData } = useBudgetHeatmap()
-  const { data: crossData } = useCrossMission()
   const { fmt, locale } = useFormatCurrency()
 
   if (isLoading) {
@@ -290,13 +281,6 @@ function AnalyticsTab() {
         </section>
       )}
 
-      {crossData && crossData.missions.length > 0 && (
-        <section className={styles.analyticsCard}>
-          <h2 className={styles.analyticsCardTitle}>{t('stats.crossMissionTitle')}</h2>
-          <CrossMissionPanel data={crossData} />
-        </section>
-      )}
-
       <div className={styles.generatedAt}>
         {t('stats.generatedAt')}{' '}
         {new Date(data.generatedAt).toLocaleString(locale, {
@@ -312,94 +296,23 @@ function AnalyticsTab() {
 // Main page
 // ---------------------------------------------------------------------------
 
-type Tab = 'stats' | 'analytics'
-
 export default function StatsPage() {
   const { t } = useTranslation()
   const { data: settings } = useSettings()
   const locale = settings?.locale ?? 'fr-FR'
   const currency = settings?.currency ?? 'EUR'
 
-  const [activeTab, setActiveTab] = useState<Tab>('stats')
-
   const { data: stats, isLoading } = useStats()
   const { data: monthlyStats } = useMonthlyStats()
-  const { missions } = useMissions()
-  const { badges, unlock } = useBadges()
-  const [newBadge, setNewBadge] = useState<Badge | null>(null)
 
   const fmt = (amount: number) => formatCurrencyLocale(amount, locale, currency)
-
-  useEffect(() => {
-    if (!stats) return
-
-    const missionCount = missions.length
-    const savedTotal = Math.max(0, stats.savings)
-    const researchCount = 0
-
-    const earnedBadgeIds = unlockIfEarned(missionCount, savedTotal, researchCount)
-
-    let firstNewBadge: string | null = null
-    earnedBadgeIds.forEach((badgeId) => {
-      if (!badges.some((b) => b.id === badgeId)) {
-        unlock(badgeId)
-        if (!firstNewBadge) {
-          firstNewBadge = badgeId
-        }
-      }
-    })
-
-    if (firstNewBadge && firstNewBadge in ALL_BADGES) {
-      const badgeKey = firstNewBadge as keyof typeof ALL_BADGES
-      const def = ALL_BADGES[badgeKey]
-      const badge: Badge = {
-        id: def.id as any,
-        name: def.name,
-        description: def.description,
-        icon: def.icon,
-        unlockedAt: new Date(),
-      }
-      setNewBadge(badge)
-    }
-  }, [stats, missions.length, badges, unlock])
 
   return (
     <>
       <Topnav />
       <main className={`page ${styles.page}`}>
-      <h1 className={styles.heading}>{t('stats.title')}</h1>
+        <h1 className={styles.heading}>{t('stats.title')}</h1>
 
-      {/* Tab switcher */}
-      <div className={styles.tabs} role="tablist" aria-label="Stats sections">
-        <button
-          role="tab"
-          aria-selected={activeTab === 'stats'}
-          aria-controls="panel-stats"
-          id="tab-stats"
-          className={`${styles.tab} ${activeTab === 'stats' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('stats')}
-        >
-          {t('stats.tabStats')}
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === 'analytics'}
-          aria-controls="panel-analytics"
-          id="tab-analytics"
-          className={`${styles.tab} ${activeTab === 'analytics' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('analytics')}
-        >
-          {t('stats.tabAnalytics')}
-        </button>
-      </div>
-
-      {/* Stats tab panel */}
-      <div
-        role="tabpanel"
-        id="panel-stats"
-        aria-labelledby="tab-stats"
-        hidden={activeTab !== 'stats'}
-      >
         {isLoading ? (
           <div className={styles.loading}>{t('stats.loading')}</div>
         ) : !stats || stats.purchaseCount === 0 ? (
@@ -414,10 +327,6 @@ export default function StatsPage() {
               const maxCategorySpend = Math.max(...stats.categoryBreakdown.map((c) => c.totalSpent), 1)
               return (
                 <>
-                  <section className={styles.section}>
-                    <ShoppingPersonaCard />
-                  </section>
-
                   <div className={styles.summaryGrid}>
                     <div className={styles.statCard}>
                       <span className={styles.statLabel}>{t('stats.totalSpent')}</span>
@@ -502,34 +411,14 @@ export default function StatsPage() {
                       <BudgetHeatmap monthsBack={3} />
                     </div>
                   </section>
-
-                  <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>{t('stats.badges')}</h2>
-                    <BadgeRow badges={badges} />
-                  </section>
-
-                  <section className={styles.section}>
-                    <PersonaCard />
-                  </section>
                 </>
               )
             })()}
           </>
         )}
-      </div>
 
-      {/* Analytics tab panel */}
-      <div
-        role="tabpanel"
-        id="panel-analytics"
-        aria-labelledby="tab-analytics"
-        hidden={activeTab !== 'analytics'}
-      >
-        <AnalyticsTab />
-      </div>
-
-      {newBadge && <BadgeToast badge={newBadge} onDismiss={() => setNewBadge(null)} />}
-    </main>
+        <AnalyticsSection />
+      </main>
     </>
   )
 }

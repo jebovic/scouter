@@ -4,6 +4,7 @@ import { useSettings, useUpdateSettings, useDeleteAllData } from '../hooks'
 import { CurrencyConverter } from '../components/scouter'
 import { Topnav } from '../components/scouter/Topnav'
 import { syncLanguageFromSettings } from '../i18n'
+import { usePerformanceMetrics } from '../hooks/usePerformanceMetrics'
 import styles from './SettingsPage.module.css'
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CAD']
@@ -19,6 +20,113 @@ const LLM_PROVIDERS = [
 ]
 
 const DELETE_CONFIRM_WORD = 'DELETE'
+
+function formatMs(value: number | null): { value: string; unit: string } {
+  if (value === null) return { value: '—', unit: '' }
+  if (value >= 1000) return { value: (value / 1000).toFixed(2), unit: 's' }
+  return { value: Math.round(value).toString(), unit: 'ms' }
+}
+
+function formatBytes(value: number | null): { value: string; unit: string } {
+  if (value === null) return { value: '—', unit: '' }
+  const mb = value / (1024 * 1024)
+  return { value: mb.toFixed(1), unit: 'MB' }
+}
+
+function msColorClass(value: number | null, greenThreshold: number, goldThreshold: number): string {
+  if (value === null) return styles.perfCardNeutral
+  if (value <= greenThreshold) return styles.perfCardGreen
+  if (value <= goldThreshold) return styles.perfCardGold
+  return styles.perfCardCoral
+}
+
+function msValueClass(value: number | null, greenThreshold: number, goldThreshold: number): string {
+  if (value === null) return ''
+  if (value <= greenThreshold) return styles.perfMetricValueGreen
+  if (value <= goldThreshold) return styles.perfMetricValueGold
+  return styles.perfMetricValueCoral
+}
+
+function PerformancePanel() {
+  const { t } = useTranslation()
+  const { metrics, refresh } = usePerformanceMetrics()
+
+  const metricCards = [
+    {
+      name: t('settings.perfTTFB'),
+      label: t('settings.perfTTFBLabel'),
+      formatted: formatMs(metrics.ttfb),
+      cardClass: msColorClass(metrics.ttfb, 200, 600),
+      valueClass: msValueClass(metrics.ttfb, 200, 600),
+    },
+    {
+      name: t('settings.perfDOMLoaded'),
+      label: t('settings.perfDOMLabel'),
+      formatted: formatMs(metrics.domContentLoaded),
+      cardClass: msColorClass(metrics.domContentLoaded, 1500, 3000),
+      valueClass: msValueClass(metrics.domContentLoaded, 1500, 3000),
+    },
+    {
+      name: t('settings.perfLoadTime'),
+      label: t('settings.perfLoadLabel'),
+      formatted: formatMs(metrics.loadTime),
+      cardClass: msColorClass(metrics.loadTime, 2500, 5000),
+      valueClass: msValueClass(metrics.loadTime, 2500, 5000),
+    },
+    {
+      name: t('settings.perfHeapUsed'),
+      label: t('settings.perfHeapLabel'),
+      formatted: formatBytes(metrics.usedJSHeapSize),
+      cardClass: styles.perfCardNeutral,
+      valueClass: '',
+    },
+    {
+      name: t('settings.perfConnection'),
+      label: t('settings.perfConnectionLabel'),
+      formatted: { value: metrics.connectionType ?? '—', unit: '' },
+      cardClass: styles.perfCardNeutral,
+      valueClass: '',
+    },
+    {
+      name: t('settings.perfTotalHeap'),
+      label: t('settings.perfTotalHeapLabel'),
+      formatted: formatBytes(metrics.totalJSHeapSize),
+      cardClass: styles.perfCardNeutral,
+      valueClass: '',
+    },
+  ]
+
+  return (
+    <details>
+      <summary style={{ cursor: 'pointer', userSelect: 'none', fontSize: '14px', fontWeight: 600, color: 'var(--text)', padding: '4px 0' }}>
+        {t('settings.performance')}
+      </summary>
+      <div style={{ marginTop: '12px' }}>
+        <div className={styles.perfHeader}>
+          <p className={styles.perfDesc}>{t('settings.performanceDesc')}</p>
+          <button className={styles.perfRefreshBtn} onClick={refresh} type="button">
+            {t('settings.perfRefresh')}
+          </button>
+        </div>
+        <div className={styles.perfGrid}>
+          {metricCards.map((card) => (
+            <div key={card.name} className={`${styles.perfCard} ${card.cardClass}`}>
+              <p className={styles.perfMetricName}>{card.name}</p>
+              <p className={`${styles.perfMetricValue} ${card.valueClass}`}>
+                {card.formatted.value}
+                {card.formatted.unit && (
+                  <span className={styles.perfMetricUnit}> {card.formatted.unit}</span>
+                )}
+              </p>
+              <p className={styles.perfMetricLabel}>{card.label}</p>
+            </div>
+          ))}
+        </div>
+        <p className={styles.perfFooter}>{t('settings.perfDisclaimer')} — {t('settings.perfNote')}</p>
+      </div>
+    </details>
+  )
+}
 
 export default function SettingsPage() {
   const { t } = useTranslation()
@@ -148,6 +256,9 @@ export default function SettingsPage() {
         <h2 className={styles.sectionTitle}>{t('settings.tools')}</h2>
         <div className={styles.card}>
           <CurrencyConverter />
+        </div>
+        <div className={styles.card} style={{ marginTop: '12px' }}>
+          <PerformancePanel />
         </div>
       </section>
 
