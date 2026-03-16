@@ -40,6 +40,7 @@ import (
 	"github.com/jibei/scouter/internal/settings"
 	"github.com/jibei/scouter/internal/shopping"
 	"github.com/jibei/scouter/internal/template"
+	"github.com/jibei/scouter/internal/translation"
 	"github.com/jibei/scouter/internal/usage"
 	"github.com/jibei/scouter/internal/vote"
 	"github.com/jibei/scouter/internal/wishlist"
@@ -137,6 +138,18 @@ func main() {
 	researchAgent.SetEmbedChannel(embedWorker.Jobs())
 	researchAgent.SetImageChannel(imageWorker.Jobs())
 	researchAgent.SetRecorder(rec)
+
+	// Translation worker — init after researchAgent so we can wire the channel
+	supportedLocales := strings.Split(cfg.SupportedLocales, ",")
+	for i, l := range supportedLocales {
+		supportedLocales[i] = strings.TrimSpace(l)
+	}
+	translator := translation.NewTranslator(smartRouter)
+	translateWorker := translation.NewWorker(translator, optionRepo, supportedLocales, nil)
+	translateWorker.Start(ctx)
+	translateHandler := translation.NewHandler(translateWorker.Submit)
+	researchAgent.SetTranslateChannel(translateWorker.Jobs())
+
 	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
 	pricingAgent.SetRecorder(rec)
 	decisionAgent := decision.NewAgent(provider, usageSvc)
@@ -234,9 +247,11 @@ func main() {
 		optionRepo:   optionRepo,
 		shoppingRepo: shoppingRepo,
 		notifRepo:    notifRepo,
-		embedder:     embedder,
-		embedRepo:    embedRepo,
-		embedWorker:  embedWorker,
+		embedder:         embedder,
+		embedRepo:        embedRepo,
+		embedWorker:      embedWorker,
+		translateWorker:  translateWorker,
+		translateHandler: translateHandler,
 
 		missionSvc:  missionSvc,
 		optionSvc:   optionSvc,
@@ -298,6 +313,11 @@ func main() {
 			sched.Stop()
 		}()
 	}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		<-purgeCron.Stop().Done()
+	}()
 	// Wait for embedding worker to drain in-flight jobs.
 	wg.Add(1)
 	go func() {
@@ -309,6 +329,12 @@ func main() {
 	go func() {
 		defer wg.Done()
 		imageWorker.Wait()
+	}()
+	// Wait for translation worker to drain in-flight jobs.
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		translateWorker.Wait()
 	}()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)

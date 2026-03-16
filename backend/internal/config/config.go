@@ -42,6 +42,9 @@ type Config struct {
 	SNCFAPIKey           string
 	SNCFBaseURL          string // default: "https://api.sncf.com/v1"
 
+	// Translation worker
+	SupportedLocales string // comma-separated, e.g. "fr,de"
+
 	// Product Images: MinIO object storage
 	MinioEndpoint  string
 	MinioPublicURL string
@@ -163,6 +166,12 @@ func Load() (*Config, error) {
 	cfg.SNCFBaseURL = os.Getenv("SNCF_BASE_URL")
 	if cfg.SNCFBaseURL == "" {
 		cfg.SNCFBaseURL = "https://api.sncf.com/v1"
+	}
+
+	// Translation worker
+	cfg.SupportedLocales = os.Getenv("SUPPORTED_LOCALES")
+	if cfg.SupportedLocales == "" {
+		cfg.SupportedLocales = "fr,de"
 	}
 
 	// Product Images: MinIO object storage

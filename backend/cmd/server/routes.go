@@ -135,6 +135,7 @@ import (
 	"github.com/jibei/scouter/internal/scorecard"
 	"github.com/jibei/scouter/internal/quantityoptimizer"
 	"github.com/jibei/scouter/internal/timelineplanner"
+	"github.com/jibei/scouter/internal/translation"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -156,6 +157,8 @@ type routeDeps struct {
 	embedder     *llm.OllamaEmbedder
 	embedRepo    embedding.Repository
 	embedWorker  *embedding.Worker
+	translateWorker  *translation.Worker
+	translateHandler *translation.Handler
 
 	// services
 	missionSvc  *mission.Service
@@ -227,6 +230,11 @@ func registerRoutes(r chi.Router, d *routeDeps) {
 	r.Delete("/api/missions/{slug}", d.missionHandler.Delete)
 	r.Post("/api/missions/{slug}/duplicate", d.missionHandler.Duplicate)
 	r.Post("/api/missions/{slug}/clone", d.missionHandler.Clone)
+
+	// Wire translation handler into option handler (nil-safe)
+	if d.translateHandler != nil {
+		d.optionHandler.WithTranslationHandler(d.translateHandler.Retranslate)
+	}
 
 	// Mission sub-resources
 	r.Mount("/api/missions/{missionID}/options", d.optionHandler.Routes())

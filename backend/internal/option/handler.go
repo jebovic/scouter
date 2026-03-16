@@ -17,8 +17,9 @@ import (
 // Handler exposes option CRUD as chi routes.
 // Routes are mounted under /api/missions/{missionID}/options.
 type Handler struct {
-	svc          *Service
-	imageHandler *imagefetch.Handler
+	svc                *Service
+	imageHandler       *imagefetch.Handler
+	retranslateHandler http.HandlerFunc
 }
 
 // NewHandler creates a new option handler.
@@ -30,6 +31,12 @@ func NewHandler(svc *Service) *Handler {
 // mounted under /{optionID}/images.
 func (h *Handler) WithImageHandler(ih *imagefetch.Handler) {
 	h.imageHandler = ih
+}
+
+// WithTranslationHandler attaches a retranslate http.HandlerFunc so that
+// POST /{optionID}/retranslate is served without creating an import cycle.
+func (h *Handler) WithTranslationHandler(fn http.HandlerFunc) {
+	h.retranslateHandler = fn
 }
 
 // Routes mounts option routes. Expects chi URL param "missionID" from parent router.
@@ -47,6 +54,9 @@ func (h *Handler) Routes() chi.Router {
 	r.Patch("/{optionID}/unreject", h.unreject)
 	if h.imageHandler != nil {
 		r.Mount("/{optionID}/images", h.imageHandler.Routes())
+	}
+	if h.retranslateHandler != nil {
+		r.Post("/{optionID}/retranslate", h.retranslateHandler)
 	}
 	return r
 }

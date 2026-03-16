@@ -40,6 +40,7 @@ type Agent struct {
 	usageSvc     *usage.Service
 	embedCh      chan<- uuid.UUID            // optional; nil disables embedding
 	imageCh      chan<- imagefetch.OptionJob // optional; nil disables image fetching
+	translateCh  chan<- uuid.UUID            // optional; nil disables translation
 	recorder     metrics.AgentRecorder
 }
 
@@ -69,6 +70,12 @@ func (a *Agent) SetEmbedChannel(ch chan<- uuid.UUID) {
 // option is automatically queued for image scraping.
 func (a *Agent) SetImageChannel(ch chan<- imagefetch.OptionJob) {
 	a.imageCh = ch
+}
+
+// SetTranslateChannel attaches a translation job channel so that each newly
+// persisted option is automatically queued for background translation.
+func (a *Agent) SetTranslateChannel(ch chan<- uuid.UUID) {
+	a.translateCh = ch
 }
 
 // Run performs LLM-based research for the mission, persists results, and returns them.
@@ -158,6 +165,13 @@ func (a *Agent) run(ctx context.Context, m mission.Mission, fb *FeedbackInput) (
 			case a.imageCh <- imagefetch.OptionJob{ID: created.ID, URL: created.URL}:
 			default:
 				log.Printf("research: image worker channel full, dropping %s", created.ID)
+			}
+		}
+		if a.translateCh != nil {
+			select {
+			case a.translateCh <- created.ID:
+			default:
+				log.Printf("research: translation channel full, dropping %s", created.ID)
 			}
 		}
 		results = append(results, *created)
