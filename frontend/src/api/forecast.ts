@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { apiFetch } from './client'
+import { apiFetch, ApiError } from './client'
 
 // ── Zod schemas ─────────────────────────────────────────────────────────────
 
@@ -19,9 +19,14 @@ export type ForecastResult = z.infer<typeof ForecastResultSchema>
 
 // ── API functions ────────────────────────────────────────────────────────────
 
-export async function fetchForecast(missionId: string): Promise<ForecastResult> {
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/forecast`)
-  return ForecastResultSchema.parse(data)
+export async function fetchForecast(missionId: string): Promise<ForecastResult | null> {
+  try {
+    const data = await apiFetch<unknown>(`/api/missions/${missionId}/forecast`)
+    return ForecastResultSchema.parse(data)
+  } catch (e: unknown) {
+    if (e instanceof ApiError && e.status === 404) return null
+    throw e
+  }
 }
 
 export async function runForecast(missionId: string): Promise<ForecastResult> {
