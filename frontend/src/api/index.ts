@@ -1,5 +1,6 @@
 export * from './client'
 export * from './missions'
+export * from './researchJobs'
 export * from './options'
 export * from './shopping'
 export * from './decision'
