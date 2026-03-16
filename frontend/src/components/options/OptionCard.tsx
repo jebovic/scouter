@@ -71,6 +71,18 @@ export function OptionCard({
     document.addEventListener('mousedown', handleMouseDown)
     return () => document.removeEventListener('mousedown', handleMouseDown)
   }, [menuOpen])
+
+  useEffect(() => {
+    if (!menuOpen && !confirmDelete) return
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        setConfirmDelete(false)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [menuOpen, confirmDelete])
   const displayOption = useTranslatedOption(option)
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
@@ -202,23 +214,6 @@ export function OptionCard({
             </div>
           )}
         </div>
-        {confirmDelete && (
-          <div className={styles.confirmOverlay} onClick={() => setConfirmDelete(false)}>
-            <div className={styles.confirmDialog} onClick={e => e.stopPropagation()}>
-              <p>{t('option.actions.deleteConfirm')}</p>
-              <div className={styles.confirmActions}>
-                <button onClick={() => setConfirmDelete(false)}>{t('common.cancel')}</button>
-                <button
-                  className={styles.deleteConfirmBtn}
-                  aria-label={t('common.delete')}
-                  onClick={() => { onDelete!(option.id); setConfirmDelete(false); setMenuOpen(false) }}
-                >
-                  {t('common.delete')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <OptionNote optionId={option.id} />
@@ -376,6 +371,24 @@ export function OptionCard({
       <ReviewSummaryCard optionId={option.id} />
       <PriceComparisonPanel optionId={option.id} />
       <SubstituteSuggestions optionId={option.id} />
+
+      {confirmDelete && (
+        <div className={styles.confirmOverlay} onClick={() => setConfirmDelete(false)}>
+          <div className={styles.confirmDialog} role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+            <p>{t('option.actions.deleteConfirm')}</p>
+            <div className={styles.confirmActions}>
+              <button onClick={() => setConfirmDelete(false)}>{t('common.cancel')}</button>
+              <button
+                className={styles.deleteConfirmBtn}
+                aria-label={t('common.delete')}
+                onClick={() => { onDelete!(option.id) }}
+              >
+                {t('common.delete')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   )
 }
