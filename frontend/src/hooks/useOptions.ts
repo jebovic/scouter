@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { listOptions, updateOption, deleteOption, pinOption, rejectOption, unrejectOption, deletePinnedOptions } from '../api'
+import { listOptions, updateOption, deleteOption, pinOption, rejectOption, unrejectOption, deletePinnedOptions, retranslateOption } from '../api'
 import { useToast } from '../components/scouter'
 import { queryKeys } from '../lib/queryKeys'
 import type { OptionUpdateRequest } from '../types'
@@ -87,6 +87,17 @@ export function useUnrejectOption(missionId: string) {
     onError: (err: unknown) => toast(`Failed to un-reject option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { unrejectOption: mutateAsync, isPending }
+}
+
+export function useRetranslateOption(missionId: string) {
+  const qc = useQueryClient()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (optionId: string) => retranslateOption(missionId, optionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['options', missionId] })
+    },
+  })
+  return { retranslateOption: mutateAsync, isPending }
 }
 
 export function useDeletePinnedOptions(missionId: string) {
