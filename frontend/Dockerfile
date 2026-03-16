@@ -1,5 +1,8 @@
 FROM node:22-alpine AS builder
 
+ARG VITE_DISABLE_SW=false
+ENV VITE_DISABLE_SW=$VITE_DISABLE_SW
+
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps

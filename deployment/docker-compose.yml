@@ -26,6 +26,8 @@ services:
       OLLAMA_HEAVY_MODEL: qwen3:14b
       OLLAMA_FAST_MODEL: qwen3:4b
       METRICS_ENABLED: "true"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +44,10 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=8080"
 
   frontend:
-    build: ../frontend
+    build:
+      context: ../frontend
+      args:
+        VITE_DISABLE_SW: "true"
     depends_on:
       backend:
         condition: service_healthy

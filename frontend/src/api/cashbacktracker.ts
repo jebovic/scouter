@@ -11,7 +11,7 @@ const MerchantCashbackSchema = z.object({
 
 export const CashbackSummarySchema = z.object({
   missionId: z.string(),
-  merchantCashback: z.array(MerchantCashbackSchema).nullable().default([]),
+  merchantCashback: z.array(MerchantCashbackSchema).nullable().transform(v => v ?? []),
   totalEstimated: z.number(),
   bestPlatform: z.string(),
   tip: z.string(),
