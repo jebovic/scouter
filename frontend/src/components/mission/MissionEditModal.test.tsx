@@ -1,8 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MissionEditModal } from './MissionEditModal'
-import type { Mission } from '../../types'
-import type { MissionCreateRequest } from '../../types'
+import type { Mission, MissionCreateRequest } from '../../types'
 
 vi.mock('./MissionForm', () => ({
   MissionForm: ({ initialValues, onSubmit, onCancel }: {
@@ -64,5 +63,6 @@ describe('MissionEditModal', () => {
     )
     fireEvent.submit(screen.getByRole('form'))
     expect(onSave).toHaveBeenCalledOnce()
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ name: 'Test Mission' }))
   })
 })

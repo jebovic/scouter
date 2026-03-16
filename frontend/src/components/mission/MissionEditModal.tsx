@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MissionForm } from './MissionForm'
 import type { Mission, MissionCreateRequest } from '../../types'
@@ -5,7 +6,7 @@ import styles from './MissionEditModal.module.css'
 
 interface MissionEditModalProps {
   mission: Mission
-  onSave: (updates: Partial<MissionCreateRequest>) => void
+  onSave: (updates: MissionCreateRequest & { envelopeId?: string | null }) => void
   onClose: () => void
   loading?: boolean
   error?: string
@@ -13,6 +14,18 @@ interface MissionEditModalProps {
 
 export function MissionEditModal({ mission, onSave, onClose, loading, error }: MissionEditModalProps) {
   const { t } = useTranslation()
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onClose])
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) {
@@ -36,7 +49,9 @@ export function MissionEditModal({ mission, onSave, onClose, loading, error }: M
             category: mission.category,
             budget: mission.budget,
             currency: mission.currency,
+            locale: mission.locale,
             constraints: mission.constraints,
+            costCategories: mission.costCategories,
             envelopeId: mission.envelopeId,
           }}
           onSubmit={onSave}
