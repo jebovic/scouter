@@ -3,9 +3,10 @@ import { describe, it, expect, vi } from 'vitest'
 import { useTranslatedOption } from './useTranslatedOption'
 import type { Option } from '../types'
 
-// Mock react-i18next
+// Mock react-i18next — language is controlled per describe via mockReturnValue
+const mockLanguage = { language: 'fr' }
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ i18n: { language: 'fr' } }),
+  useTranslation: () => ({ i18n: mockLanguage }),
 }))
 
 const baseOption: Option = {
@@ -57,15 +58,14 @@ describe('useTranslatedOption', () => {
     expect(result.current.attributes[1].value).toBe(100)
   })
 
-  it('returns original when language is en', () => {
-    // Override mock for this test
+  it('returns option unchanged when language is en even if fr translation exists', () => {
+    mockLanguage.language = 'en'
     const option: Option = {
       ...baseOption,
       translations: { fr: { name: 'Option Test' } },
     }
-    // With fr mock, it should translate; but we test en directly in a separate describe
     const { result } = renderHook(() => useTranslatedOption(option))
-    // With fr language, it should translate
-    expect(result.current.name).toBe('Option Test')
+    expect(result.current).toBe(option)
+    mockLanguage.language = 'fr' // restore for other tests
   })
 })
