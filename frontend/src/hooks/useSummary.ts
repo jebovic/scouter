@@ -50,7 +50,7 @@ export function useMissionSummary(slug: string, enabled: boolean = false) {
     queryFn: () => getMissionSummary(slug),
     staleTime: 60 * 60 * 1000, // 1h — mirrors server-side cache TTL
     enabled: !!slug && enabled,
-    retry: 1,
+    retry: false,
   })
 
   function invalidate() {

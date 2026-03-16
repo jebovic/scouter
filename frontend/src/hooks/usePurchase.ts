@@ -15,6 +15,7 @@ export function usePurchaseRecord(missionId: string | undefined) {
     queryKey: queryKeys.purchase(missionId ?? ''),
     queryFn: () => getPurchaseRecord(missionId!),
     enabled: !!missionId,
+    retry: false,
   })
 }
 
