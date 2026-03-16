@@ -18,6 +18,9 @@
   color: var(--text);
   font-family: var(--font-display);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Tabs */
@@ -106,8 +109,27 @@
   font-family: var(--font-body);
 }
 
-.indicator {
-  font-size: 0.875rem;
+.dotGood {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+.dotBad {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--coral);
+  flex-shrink: 0;
+}
+
+.titleIcon {
+  flex-shrink: 0;
+  color: var(--cyan);
 }
 
 /* Best months — green */

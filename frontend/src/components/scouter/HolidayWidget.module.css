@@ -24,6 +24,14 @@
   font-weight: 700;
   color: var(--text);
   letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.titleIcon {
+  flex-shrink: 0;
+  color: var(--cyan);
 }
 
 .table {

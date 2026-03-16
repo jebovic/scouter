@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { Calendar } from 'lucide-react'
 import { CATEGORY_SEASONS, FRENCH_MONTHS } from '../../utils/seasonalPricing'
 import styles from './SeasonalCalendar.module.css'
 
@@ -22,14 +23,10 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
     return 'medium'
   }
 
-  const getMonthIndicator = (month: number): string => {
-    if (selectedCategory.bestMonths.includes(month)) {
-      return '🟢'
-    }
-    if (selectedCategory.worstMonths.includes(month)) {
-      return '🔴'
-    }
-    return ''
+  const getMonthLevel = (month: number): 'good' | 'bad' | null => {
+    if (selectedCategory.bestMonths.includes(month)) return 'good'
+    if (selectedCategory.worstMonths.includes(month)) return 'bad'
+    return null
   }
 
   if (compact) {
@@ -69,7 +66,10 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
   return (
     <section className={styles.widget} role="region" aria-label={`Saisonnalité - ${selectedCategory.category}`}>
       <div className={styles.header}>
-        <h2 className={styles.title}>📅 Saisonnalité des Prix</h2>
+        <h2 className={styles.title}>
+          <Calendar size={18} aria-hidden="true" className={styles.titleIcon} />
+          Saisonnalité des Prix
+        </h2>
       </div>
 
       <div className={styles.tabs} role="tablist">
@@ -78,11 +78,12 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
             key={cat.category}
             role="tab"
             aria-selected={idx === selectedCategoryIndex}
+            aria-label={cat.category}
             className={`${styles.tab} ${idx === selectedCategoryIndex ? styles.tabActive : ''}`}
             onClick={() => setSelectedCategoryIndex(idx)}
             title={cat.category}
           >
-            <span className={styles.tabIcon}>{cat.icon}</span>
+            <span className={styles.tabIcon} aria-hidden="true">{cat.icon}</span>
             <span className={styles.tabLabel}>{cat.category}</span>
           </button>
         ))}
@@ -91,6 +92,7 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
       <div className={styles.grid}>
         {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => {
           const priceLevel = getMonthColor(month)
+          const level = getMonthLevel(month)
           const isCurrent = month === currentMonth
           return (
             <div
@@ -101,9 +103,8 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
             >
               <div className={styles.cellHeader}>
                 <span className={styles.monthLabel}>{FRENCH_MONTHS[month - 1]}</span>
-                {getMonthIndicator(month) && (
-                  <span className={styles.indicator}>{getMonthIndicator(month)}</span>
-                )}
+                {level === 'good' && <span className={styles.dotGood} aria-hidden="true" />}
+                {level === 'bad' && <span className={styles.dotBad} aria-hidden="true" />}
               </div>
               {isCurrent && <div className={styles.currentHighlight} />}
             </div>
@@ -112,7 +113,7 @@ export function SeasonalCalendar({ compact = false }: SeasonalCalendarProps) {
       </div>
 
       <div className={styles.callout}>
-        <div className={styles.calloutIcon}>{selectedCategory.icon}</div>
+        <div className={styles.calloutIcon} aria-hidden="true">{selectedCategory.icon}</div>
         <div className={styles.calloutContent}>
           <p className={styles.calloutTitle}>{selectedCategory.category}</p>
           <p className={styles.calloutTip}>{selectedCategory.tip}</p>

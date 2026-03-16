@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronDown, CalendarRange, CalendarDays, Sparkles } from 'lucide-react'
 import { Topnav, UpcomingPromoStrip, HolidayWidget, SeasonalCalendar, PromoFeedPanel } from '../components/scouter'
 import { useDealCalendar } from '../hooks/useDealCalendar'
 import type { DealEvent } from '../api/dealCalendar'
@@ -74,6 +75,41 @@ function matchesCategory(event: DealEvent, selected: string): boolean {
   return event.categoryHint === 'all' || event.categoryHint === selected
 }
 
+function CollapsibleSection({
+  title,
+  icon: Icon,
+  defaultOpen = false,
+  children,
+}: {
+  title: string
+  icon: React.ElementType
+  defaultOpen?: boolean
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className={`${styles.collapsible} ${open ? styles.collapsibleOpen : ''}`}>
+      <button
+        className={styles.collapsibleHeader}
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
+        <span className={styles.collapsibleHeaderLeft}>
+          <Icon size={16} className={styles.collapsibleIcon} aria-hidden="true" />
+          <span className={styles.collapsibleTitle}>{title}</span>
+        </span>
+        <ChevronDown size={16} className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`} aria-hidden="true" />
+      </button>
+      <div className={styles.collapsibleBody}>
+        <div className={styles.collapsibleInner}>
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventCard({ event }: { event: DealEvent }) {
   const active = isActive(event)
   const past = isPast(event)
@@ -117,7 +153,6 @@ export default function DealCalendarPage() {
   const filtered = events.filter((e) => matchesCategory(e, selectedCategory))
 
   const handlePromoEventClick = (event: PromoEvent) => {
-    // Handle promo event click - could scroll to relevant deals or filter
     console.log('Promo event clicked:', event)
   }
 
@@ -125,10 +160,8 @@ export default function DealCalendarPage() {
     <>
       <Topnav />
       <main className={`page ${styles.page}`}>
-        <UpcomingPromoStrip onEventClick={handlePromoEventClick} />
-        <HolidayWidget />
-        <SeasonalCalendar />
 
+        {/* ── Page header — always visible at top ── */}
         <div className={styles.header}>
           <h1 className={styles.title}>Calendrier des bons plans</h1>
           <p className={styles.subtitle}>
@@ -136,6 +169,24 @@ export default function DealCalendarPage() {
           </p>
         </div>
 
+        {/* ── Upcoming promo strip — always visible ── */}
+        <UpcomingPromoStrip onEventClick={handlePromoEventClick} />
+
+        {/* ── Collapsible context sections ── */}
+        <CollapsibleSection title="Jours fériés" icon={CalendarDays} defaultOpen={false}>
+          <HolidayWidget />
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Saisonnalité des prix" icon={CalendarRange} defaultOpen={false}>
+          <SeasonalCalendar />
+        </CollapsibleSection>
+
+        {/* ── Section divider ── */}
+        <div className={styles.sectionDivider}>
+          <span className={styles.sectionDividerLabel}>Événements à venir</span>
+        </div>
+
+        {/* ── Promo search ── */}
         <div className={styles.promoSearchRow}>
           <input
             className={styles.promoSearchInput}
@@ -154,6 +205,7 @@ export default function DealCalendarPage() {
           />
         </div>
 
+        {/* ── Category filters ── */}
         <div className={styles.filters}>
           {CATEGORY_FILTERS.map(({ label, value }) => (
             <button
@@ -170,6 +222,7 @@ export default function DealCalendarPage() {
           ))}
         </div>
 
+        {/* ── Event list ── */}
         {isLoading ? (
           <div className={styles.timeline}>
             {[1, 2, 3, 4].map((k) => (
@@ -178,7 +231,7 @@ export default function DealCalendarPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.empty}>
-            <div className={styles.emptyIcon}>📅</div>
+            <Sparkles size={32} className={styles.emptyIcon} aria-hidden="true" />
             <div className={styles.emptyTitle}>
               AUCUN ÉVÉNEMENT POUR CETTE CATÉGORIE
             </div>
