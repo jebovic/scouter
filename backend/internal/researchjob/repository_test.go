@@ -36,6 +36,14 @@ func (m *MockRepository) UpdateStatus(ctx context.Context, id uuid.UUID, status,
 	for i, j := range m.jobs {
 		if j.ID == id {
 			m.jobs[i].Status = status
+			if errMsg != "" {
+				e := errMsg
+				m.jobs[i].Error = &e
+			}
+			if optionsCount > 0 {
+				c := optionsCount
+				m.jobs[i].OptionsCount = &c
+			}
 			return 1, nil
 		}
 	}
