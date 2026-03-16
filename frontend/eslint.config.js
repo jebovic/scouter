@@ -32,8 +32,8 @@ export default defineConfig([
         'jsx-attributes': {
           include: ['title', 'placeholder', 'aria-label', 'alt'],
         },
-        // ignore: pure numbers/decimals, alphanumeric tokens with spaces (e.g. "MacBook Pro"), ALL_CAPS constants
-        ignore: [/^\d+(\.\d+)?$/, /^[a-zA-Z0-9_\-\.\/ ]+$/, /^[A-Z_]+$/],
+        // ignore: pure numbers/decimals, single-word alphanumeric tokens (CSS classes, path segments), ALL_CAPS constants
+        ignore: [/^\d+(\.\d+)?$/, /^[a-zA-Z0-9_\-\.\/]+$/, /^[A-Z_]+$/],
       }],
     },
   },
