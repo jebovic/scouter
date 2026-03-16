@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card, StatusBadge, BudgetBar } from '../scouter'
@@ -27,6 +27,15 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
   const [deleteConfirmName, setDeleteConfirmName] = useState('')
   const isArchived = !!mission.archivedAt
   const spent = items.reduce((sum, item) => sum + item.price, 0)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleOutside(e: MouseEvent) {
+      setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [menuOpen])
 
   const { swipeX, handlers } = useSwipeGesture({
     threshold: 80,

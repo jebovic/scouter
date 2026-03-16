@@ -167,6 +167,7 @@ export default function HQDashboard() {
             <div className={styles.headerBtns}>
               <button
                 className={showArchived ? styles.filterActive : styles.filterBtn}
+                aria-pressed={showArchived}
                 onClick={() => setShowArchived((s) => !s)}
               >
                 {t('mission.actions.showArchived')}

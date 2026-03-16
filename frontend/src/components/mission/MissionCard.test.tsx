@@ -52,4 +52,32 @@ describe('MissionCard ⋯ menu', () => {
     expect(screen.getByRole('button', { name: /unarchive/i })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^archive$/i })).not.toBeInTheDocument()
   })
+
+  it('shows delete confirmation dialog when Delete is clicked', () => {
+    renderCard()
+    fireEvent.click(screen.getByRole('button', { name: /more options/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^delete$/i }))
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
+  })
+
+  it('enables confirm button after typing the mission name', () => {
+    renderCard()
+    fireEvent.click(screen.getByRole('button', { name: /more options/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^delete$/i }))
+    const input = screen.getByRole('textbox')
+    // Before typing: confirm button is disabled
+    const allButtons = screen.getAllByRole('button')
+    const confirmBtnBefore = allButtons.find(
+      (b) => b.textContent?.toLowerCase() === 'delete'
+    ) as HTMLButtonElement | undefined
+    expect(confirmBtnBefore?.disabled).toBe(true)
+    // Type the correct mission name
+    fireEvent.change(input, { target: { value: 'Test Mission' } })
+    // After typing: confirm button is enabled
+    const allButtonsAfter = screen.getAllByRole('button')
+    const confirmBtnAfter = allButtonsAfter.find(
+      (b) => b.textContent?.toLowerCase() === 'delete'
+    ) as HTMLButtonElement | undefined
+    expect(confirmBtnAfter?.disabled).toBe(false)
+  })
 })
