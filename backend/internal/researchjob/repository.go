@@ -3,6 +3,7 @@ package researchjob
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -122,10 +123,10 @@ func (r *pgRepository) GetByID(ctx context.Context, id uuid.UUID) (*ResearchJob,
 		WHERE id = $1`, id)
 	j, err := scanJob(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, fmt.Errorf("get research job by id: %w", err)
 	}
 	return j, nil
 }
@@ -137,7 +138,7 @@ func (r *pgRepository) HasActiveJob(ctx context.Context, missionID uuid.UUID) (b
 		WHERE mission_id = $1 AND status IN ('pending', 'running')
 		LIMIT 1`, missionID).Scan(&id)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return false, nil
 		}
 		return false, fmt.Errorf("check active research job: %w", err)
