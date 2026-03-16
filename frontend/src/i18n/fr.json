@@ -65,7 +65,14 @@
     "switchLanguage": "Changer de langue",
     "noMissionsYet": "Aucune mission pour l'instant",
     "missions": "Missions",
-    "unknown": "Inconnu"
+    "unknown": "Inconnu",
+    "name": "Nom",
+    "notes": "Notes",
+    "warnings": "Avertissements",
+    "priceMin": "Prix min",
+    "priceMax": "Prix max",
+    "attributes": "Attributs",
+    "readOnly": "lecture seule"
   },
   "mission": {
     "create": "Nouvelle Mission",
@@ -156,6 +163,7 @@
     "complete": "Recherche terminée — {{count}} options trouvées",
     "failed": "Recherche échouée : {{error}}",
     "alreadyRunning": "Une recherche est déjà en cours",
+    "triggerFailed": "Échec de la recherche : {{message}}",
     "historyStatus": {
       "done": "✓",
       "failed": "✗",
@@ -218,6 +226,12 @@
   },
   "options": {
     "all": "Tout",
+    "badge": {
+      "recommended": "Recommandé",
+      "alternative": "Alternatif",
+      "watch": "À surveiller",
+      "rejected": "Rejeté"
+    },
     "clearPinned": "Effacer les épinglés ({{count}})",
     "grid": "Grille",
     "compare": "Comparer",

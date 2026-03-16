@@ -65,7 +65,14 @@
     "switchLanguage": "Switch language",
     "noMissionsYet": "No missions yet",
     "missions": "Missions",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "name": "Name",
+    "notes": "Notes",
+    "warnings": "Warnings",
+    "priceMin": "Min price",
+    "priceMax": "Max price",
+    "attributes": "Attributes",
+    "readOnly": "read-only"
   },
   "mission": {
     "create": "New Mission",
@@ -156,6 +163,7 @@
     "complete": "Research complete — {{count}} options found",
     "failed": "Research failed: {{error}}",
     "alreadyRunning": "Research is already running",
+    "triggerFailed": "Research failed: {{message}}",
     "historyStatus": {
       "done": "✓",
       "failed": "✗",
@@ -218,6 +226,12 @@
   },
   "options": {
     "all": "All",
+    "badge": {
+      "recommended": "Recommended",
+      "alternative": "Alternative",
+      "watch": "Watch",
+      "rejected": "Rejected"
+    },
     "clearPinned": "Clear Pinned ({{count}})",
     "grid": "Grid",
     "compare": "Compare",
