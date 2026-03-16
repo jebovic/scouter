@@ -11,6 +11,7 @@ import {
   CompareBar,
   ComparisonPanel,
   ExportButton,
+  OptionEditModal,
 } from '../components/options'
 import { ComparisonMatrix } from '../components/comparison'
 import { AgentRunHistory } from '../components/agentrun'
@@ -25,9 +26,10 @@ import {
   useAgentRuns,
   useComparisonMode,
 } from '../hooks'
+import { useDeleteOption, useUpdateOption } from '../hooks/useOptions'
 import { useTriggerResearch } from '../hooks/useResearch'
 import { useResearchJobs } from '../hooks/useResearchJobs'
-import type { OptionBadge } from '../types'
+import type { Option, OptionBadge } from '../types'
 import styles from './OptionsExplorer.module.css'
 
 type ViewMode = 'grid' | 'compare'
@@ -59,6 +61,9 @@ export default function OptionsExplorer() {
   const [rejectTarget, setRejectTarget] = useState<string | null>(null)
   const [showComparisonPanel, setShowComparisonPanel] = useState(false)
   const { isCompareMode, setIsCompareMode, selectedIds, toggle, clearSelection } = useComparisonMode()
+  const [editingOption, setEditingOption] = useState<Option | null>(null)
+  const { deleteOption } = useDeleteOption(mission?.id ?? '')
+  const { updateOption } = useUpdateOption(mission?.id ?? '')
 
   const isLoading = missionLoading || optionsLoading
 
@@ -272,6 +277,8 @@ export default function OptionsExplorer() {
                       selected={selectedIds.has(option.id)}
                       onToggleSelect={toggle}
                       selectionFull={selectionFull}
+                      onEdit={(id) => setEditingOption(options.find(o => o.id === id) ?? null)}
+                      onDelete={(id) => deleteOption(id)}
                     />
                     {mission && (
                       <LivePricesPanel
@@ -328,6 +335,17 @@ export default function OptionsExplorer() {
             setRejectTarget(null)
           }}
           onClose={() => setRejectTarget(null)}
+        />
+      )}
+
+      {editingOption && (
+        <OptionEditModal
+          option={editingOption}
+          onSave={async (updates) => {
+            await updateOption({ optionId: editingOption.id, req: updates })
+            setEditingOption(null)
+          }}
+          onClose={() => setEditingOption(null)}
         />
       )}
     </>

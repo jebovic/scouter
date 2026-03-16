@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, Badge } from '../scouter'
 import { AttributeRenderer } from './AttributeRenderer'
@@ -26,6 +27,8 @@ interface OptionCardProps {
   selected?: boolean
   onToggleSelect?: (id: string) => void
   selectionFull?: boolean
+  onEdit?: (optionId: string) => void
+  onDelete?: (optionId: string) => void
 }
 
 const BADGES: Option['badge'][] = ['recommended', 'alternative', 'watch', 'rejected']
@@ -50,8 +53,24 @@ export function OptionCard({
   selected = false,
   onToggleSelect,
   selectionFull = false,
+  onEdit,
+  onDelete,
 }: OptionCardProps) {
   const { i18n, t } = useTranslation()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function handleMouseDown(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [menuOpen])
   const displayOption = useTranslatedOption(option)
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
@@ -149,7 +168,57 @@ export function OptionCard({
             )
           })()}
           <Badge variant={option.badge} />
+          {(onEdit || onDelete) && (
+            <div className={styles.menuWrapper} ref={menuRef}>
+              <button
+                className={styles.menuBtn}
+                aria-label="more options"
+                onClick={() => { setMenuOpen(o => !o); setConfirmDelete(false) }}
+              >
+                ⋯
+              </button>
+              {menuOpen && (
+                <div className={styles.menu} role="menu">
+                  {onEdit && (
+                    <button
+                      role="menuitem"
+                      className={styles.menuItem}
+                      onClick={() => { onEdit(option.id); setMenuOpen(false) }}
+                    >
+                      {t('option.actions.edit')}
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      role="menuitem"
+                      className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                      onClick={() => setConfirmDelete(true)}
+                    >
+                      {t('option.actions.delete')}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
+        {confirmDelete && (
+          <div className={styles.confirmOverlay} onClick={() => setConfirmDelete(false)}>
+            <div className={styles.confirmDialog} onClick={e => e.stopPropagation()}>
+              <p>{t('option.actions.deleteConfirm')}</p>
+              <div className={styles.confirmActions}>
+                <button onClick={() => setConfirmDelete(false)}>{t('common.cancel')}</button>
+                <button
+                  className={styles.deleteConfirmBtn}
+                  aria-label={t('common.delete')}
+                  onClick={() => { onDelete!(option.id); setConfirmDelete(false); setMenuOpen(false) }}
+                >
+                  {t('common.delete')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <OptionNote optionId={option.id} />
