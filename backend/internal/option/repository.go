@@ -25,6 +25,7 @@ type Repository interface {
 	Reject(ctx context.Context, id uuid.UUID, req RejectRequest) (*Option, error)
 	Unreject(ctx context.Context, id uuid.UUID) (*Option, error)
 	DeletePinned(ctx context.Context, missionID uuid.UUID) error
+	SaveTranslations(ctx context.Context, optionID uuid.UUID, locale string, blob json.RawMessage) error
 }
 
 type pgRepository struct {
@@ -36,7 +37,7 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	return &pgRepository{pool: pool}
 }
 
-const selectCols = `id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, pinned, rejected, reject_reason, created_at`
+const selectCols = `id, mission_id, name, category, badge, attributes, price_range, notes, warnings, url, pinned, rejected, reject_reason, created_at, translations`
 
 func (r *pgRepository) ListByMission(ctx context.Context, missionID uuid.UUID) ([]Option, error) {
 	rows, err := r.pool.Query(ctx, `
@@ -228,6 +229,20 @@ func (r *pgRepository) Unreject(ctx context.Context, id uuid.UUID) (*Option, err
 	return o, nil
 }
 
+func (r *pgRepository) SaveTranslations(ctx context.Context, optionID uuid.UUID, locale string, blob json.RawMessage) error {
+	wrapped, err := json.Marshal(map[string]json.RawMessage{locale: blob})
+	if err != nil {
+		return fmt.Errorf("marshal translation wrapper: %w", err)
+	}
+	_, err = r.pool.Exec(ctx,
+		`UPDATE options SET translations = COALESCE(translations, '{}'::jsonb) || $1::jsonb WHERE id = $2`,
+		wrapped, optionID)
+	if err != nil {
+		return fmt.Errorf("save translations: %w", err)
+	}
+	return nil
+}
+
 // DeletePinned removes only pinned options for a mission (e.g. user clears their pin list).
 func (r *pgRepository) DeletePinned(ctx context.Context, missionID uuid.UUID) error {
 	_, err := r.pool.Exec(ctx, `DELETE FROM options WHERE mission_id = $1 AND pinned = true`, missionID)
@@ -249,7 +264,7 @@ func scanOption(s scanner) (*Option, error) {
 	err := s.Scan(
 		&o.ID, &o.MissionID, &o.Name, &o.Category, &o.Badge,
 		&attrsRaw, &priceRangeRaw, &o.Notes, &warningsRaw, &o.URL,
-		&o.Pinned, &o.Rejected, &rejectReason, &o.CreatedAt,
+		&o.Pinned, &o.Rejected, &rejectReason, &o.CreatedAt, &o.Translations,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("scan option: %w", err)

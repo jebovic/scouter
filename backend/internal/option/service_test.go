@@ -2,6 +2,7 @@ package option
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -151,6 +152,18 @@ func (m *mockRepo) DeletePinned(_ context.Context, missionID uuid.UUID) error {
 			delete(m.options, id)
 		}
 	}
+	return nil
+}
+
+func (m *mockRepo) SaveTranslations(_ context.Context, optionID uuid.UUID, _ string, blob json.RawMessage) error {
+	if m.nextErr != nil {
+		return m.nextErr
+	}
+	o, ok := m.options[optionID]
+	if !ok {
+		return nil
+	}
+	o.Translations = blob
 	return nil
 }
 

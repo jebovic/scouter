@@ -1,6 +1,7 @@
 package option
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,7 +22,8 @@ type Option struct {
 	Pinned       bool        `json:"pinned"`
 	Rejected     bool        `json:"rejected"`
 	RejectReason string      `json:"rejectReason,omitempty"`
-	CreatedAt    time.Time   `json:"createdAt"`
+	CreatedAt    time.Time       `json:"createdAt"`
+	Translations json.RawMessage `json:"translations,omitempty"`
 }
 
 // Attribute is a typed key-value pair describing an aspect of an option.
