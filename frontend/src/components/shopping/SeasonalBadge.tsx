@@ -51,11 +51,11 @@ export function SeasonalBadge({ itemName, category = '' }: SeasonalBadgeProps) {
               <span className={styles.value}>dans {data.nextEventDays} j</span>
             </div>
           )}
-          {data.events.length > 0 && (
+          {(data.events?.length ?? 0) > 0 && (
             <div>
               <span className={styles.label}>Événements</span>
               <ul className={styles.events}>
-                {data.events.map((ev, i) => (
+                {(data.events ?? []).map((ev, i) => (
                   <li key={i}>{ev}</li>
                 ))}
               </ul>

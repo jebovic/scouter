@@ -355,16 +355,16 @@ func registerRoutes(r chi.Router, d *routeDeps) {
 	envelopeHandler := envelope.NewHandler(envelopeSvc)
 	r.Route("/api/envelopes", envelope.Routes(envelopeHandler))
 
-	// Spending Persona (Phase 26)
+	// Spending Persona (Phase 26) + AI Shopping Persona Insights (Phase 82)
 	personaRepo := persona.NewRepository(d.pool)
 	personaAgent := persona.NewPersonaAgent(d.provider, personaRepo, d.pool)
 	personaHandler := persona.NewHandler(personaAgent, personaRepo)
-	r.Route("/api/persona", personaHandler.Routes())
-
-	// AI Shopping Persona Insights (Phase 82)
 	shoppingPersonaAgent := persona.NewShoppingPersonaAgent(d.provider)
 	shoppingPersonaHandler := persona.NewShoppingPersonaHandler(d.missionRepo, d.optionRepo, d.shoppingRepo, shoppingPersonaAgent)
-	r.Get("/api/persona/shopping", shoppingPersonaHandler.GetShoppingPersona)
+	r.Route("/api/persona", func(r chi.Router) {
+		personaHandler.Routes()(r)
+		r.Get("/shopping", shoppingPersonaHandler.GetShoppingPersona)
+	})
 
 	// Product barcode lookup (Phase 25)
 	productLooker := product.NewLooker()

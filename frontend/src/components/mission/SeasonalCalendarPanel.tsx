@@ -29,9 +29,9 @@ function MonthCell({ month }: { month: MonthRecommendation }) {
           style={{ width: `${month.score}%` }}
         />
       </div>
-      {month.events.length > 0 && (
+      {(month.events?.length ?? 0) > 0 && (
         <div className={styles.eventDots}>
-          {month.events.map((event, idx) => (
+          {(month.events ?? []).map((event, idx) => (
             <span key={idx} className={styles.eventDot} title={event} />
           ))}
         </div>

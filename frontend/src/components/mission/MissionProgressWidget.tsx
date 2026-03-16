@@ -12,6 +12,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
 export function MissionProgressWidget({ missionId }: Props) {
   const { data, isLoading, isError } = useMissionProgress(missionId)
+  const { fmt } = useFormatCurrency()
 
   if (isLoading) {
     return (
@@ -59,8 +60,6 @@ export function MissionProgressWidget({ missionId }: Props) {
 
   const clampedBudget = Math.min(data.budgetPct, 100)
   const isOverBudget = data.budgetPct > 100
-
-  const { fmt } = useFormatCurrency()
 
   return (
     <section className={styles.card} aria-label="Progression de la mission">
