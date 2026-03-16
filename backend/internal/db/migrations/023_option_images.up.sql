@@ -1,7 +1,7 @@
 CREATE TABLE option_images (
     id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     option_id    UUID NOT NULL REFERENCES options(id) ON DELETE CASCADE,
-    minio_key    TEXT NOT NULL,
+    minio_key    TEXT NOT NULL UNIQUE,
     content_type TEXT NOT NULL,
     width        INT,
     height       INT,
