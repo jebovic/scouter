@@ -14,13 +14,13 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
   font-family: var(--font-display);
-  color: var(--text);
+  color: var(--cyan);
   margin-bottom: var(--gap-sm);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .subtitle {

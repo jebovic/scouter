@@ -98,10 +98,10 @@ function PerformancePanel() {
 
   return (
     <details>
-      <summary style={{ cursor: 'pointer', userSelect: 'none', fontSize: '14px', fontWeight: 600, color: 'var(--text)', padding: '4px 0' }}>
+      <summary className={styles.perfSummary}>
         {t('settings.performance')}
       </summary>
-      <div style={{ marginTop: '12px' }}>
+      <div className={styles.perfBody}>
         <div className={styles.perfHeader}>
           <p className={styles.perfDesc}>{t('settings.performanceDesc')}</p>
           <button className={styles.perfRefreshBtn} onClick={refresh} type="button">
@@ -254,10 +254,8 @@ export default function SettingsPage() {
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t('settings.tools')}</h2>
-        <div className={styles.card}>
-          <CurrencyConverter />
-        </div>
-        <div className={styles.card} style={{ marginTop: '12px' }}>
+        <CurrencyConverter />
+        <div className={`${styles.card} ${styles.toolCard}`}>
           <PerformancePanel />
         </div>
       </section>

@@ -277,7 +277,24 @@
   color: var(--cyan);
 }
 
+.toolCard {
+  margin-top: 12px;
+}
+
 /* ── Performance Panel ──────────────────────────────────── */
+
+.perfSummary {
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 4px 0;
+}
+
+.perfBody {
+  margin-top: 12px;
+}
 
 .perfHeader {
   display: flex;

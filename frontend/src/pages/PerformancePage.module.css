@@ -13,11 +13,12 @@
 }
 
 .heading {
-  font-size: 28px;
+  font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
-  color: var(--text);
+  color: var(--cyan);
   font-family: var(--font-display);
+  letter-spacing: 0.08em;
 }
 
 .refreshBtn {

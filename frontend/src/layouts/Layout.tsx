@@ -5,6 +5,7 @@ import { SidebarContext } from '../contexts/sidebar'
 import { useOnboarding, useMissions } from '../hooks'
 import { useSettings } from '../hooks/useSettings'
 import { syncLanguageFromSettings } from '../i18n'
+import styles from './Layout.module.css'
 
 export function Layout() {
   const { show, step, totalSteps, nextStep, prevStep, dismiss } = useOnboarding()
@@ -37,7 +38,7 @@ export function Layout() {
         missions={missions}
         onClose={() => setSidebarOpen(false)}
       />
-      <Outlet />
+      <div className={styles.content}><Outlet /></div>
     </SidebarContext.Provider>
   )
 }

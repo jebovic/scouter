@@ -7,6 +7,10 @@ import { BudgetHeatmap } from '../components/scouter'
 import { PRESET_COLORS, DEFAULT_EMOJIS, type Transaction } from '../utils/envelopes'
 import styles from './EnvelopesPage.module.css'
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const CLOSE_SYMBOL = '\u2715' // ✕ (decorative, used in aria-hidden spans)
+
 // ── Formatting helper ─────────────────────────────────────────────────────────
 
 function fmtDate(iso: string, locale: string): string {
@@ -32,6 +36,7 @@ interface NewEnvelopeFormProps {
 }
 
 function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [emoji, setEmoji] = useState('💰')
   const [budget, setBudget] = useState('')
@@ -42,25 +47,25 @@ function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmed = name.trim()
-    if (!trimmed) { setError('Le nom est requis'); return }
+    if (!trimmed) { setError(t('envelopes.nameRequired')); return }
     const amount = parseFloat(budget)
-    if (isNaN(amount) || amount <= 0) { setError('Budget invalide'); return }
+    if (isNaN(amount) || amount <= 0) { setError(t('envelopes.invalidBudget')); return }
     onSave({ name: trimmed, emoji, budgetEur: amount, color })
   }
 
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <div className={styles.formTitle}>Nouvelle enveloppe</div>
+      <div className={styles.formTitle}>{t('envelopes.newEnvelope')}</div>
 
       {/* Emoji picker */}
       <div className={styles.field}>
-        <label className={styles.label}>Emoji</label>
+        <label className={styles.label}>{t('envelopes.emoji')}</label>
         <div className={styles.emojiPickerWrap}>
           <button
             type="button"
             className={styles.emojiToggle}
             onClick={() => setEmojiOpen((v) => !v)}
-            aria-label="Choisir un emoji"
+            aria-label={t('envelopes.chooseEmoji')}
           >
             {emoji}
           </button>
@@ -83,17 +88,17 @@ function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
 
       <div className={styles.fieldRow}>
         <div className={styles.field}>
-          <label className={styles.label}>Nom</label>
+          <label className={styles.label}>{t('envelopes.name')}</label>
           <input
             className={styles.input}
             value={name}
             onChange={(e) => { setName(e.target.value); setError(null) }}
-            placeholder="ex: Alimentation, Loisirs…"
+            placeholder={t('envelopes.namePlaceholder')}
             required
           />
         </div>
         <div className={styles.field} style={{ maxWidth: 120 }}>
-          <label className={styles.label}>Budget (€)</label>
+          <label className={styles.label}>{t('envelopes.budget')}</label>
           <input
             className={styles.input}
             type="number"
@@ -109,7 +114,7 @@ function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
 
       {/* Color picker */}
       <div className={styles.field}>
-        <label className={styles.label}>Couleur</label>
+        <label className={styles.label}>{t('envelopes.color')}</label>
         <div className={styles.colorGrid}>
           {PRESET_COLORS.map((c) => (
             <button
@@ -118,7 +123,7 @@ function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
               className={styles.colorDot}
               style={{ '--dot-color': c, outline: color === c ? `2px solid ${c}` : undefined } as React.CSSProperties}
               onClick={() => setColor(c)}
-              aria-label={`Couleur ${c}`}
+              aria-label={t('envelopes.colorAriaLabel', { color: c })}
             />
           ))}
         </div>
@@ -128,10 +133,10 @@ function NewEnvelopeForm({ onSave, onCancel }: NewEnvelopeFormProps) {
 
       <div className={styles.formActions}>
         <button type="button" className={styles.cancelBtn} onClick={onCancel}>
-          Annuler
+          {t('common.cancel')}
         </button>
         <button type="submit" className={styles.saveBtn}>
-          Créer
+          {t('envelopes.create')}
         </button>
       </div>
     </form>
@@ -147,6 +152,7 @@ interface TransactionFormProps {
 }
 
 function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps) {
+  const { t } = useTranslation()
   const today = new Date().toISOString().slice(0, 10)
   const [label, setLabel] = useState('')
   const [amount, setAmount] = useState('')
@@ -157,16 +163,16 @@ function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps)
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmedLabel = label.trim()
-    if (!trimmedLabel) { setError('Libellé requis'); return }
+    if (!trimmedLabel) { setError(t('envelopes.labelRequired')); return }
     const parsed = parseFloat(amount)
-    if (isNaN(parsed) || parsed <= 0) { setError('Montant invalide'); return }
+    if (isNaN(parsed) || parsed <= 0) { setError(t('envelopes.invalidAmount')); return }
     const finalAmount = type === 'expense' ? -parsed : parsed
     onSave({ envelopeId, label: trimmedLabel, amountEur: finalAmount, date })
   }
 
   return (
     <form className={styles.txForm} onSubmit={handleSubmit} noValidate>
-      <div className={styles.formTitle}>Ajouter une opération</div>
+      <div className={styles.formTitle}>{t('envelopes.addOperation')}</div>
 
       <div className={styles.typeToggle}>
         <button
@@ -174,30 +180,30 @@ function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps)
           className={type === 'expense' ? styles.typeActive : styles.typeInactive}
           onClick={() => setType('expense')}
         >
-          Dépense
+          {t('envelopes.expense')}
         </button>
         <button
           type="button"
           className={type === 'refill' ? styles.typeActiveGreen : styles.typeInactive}
           onClick={() => setType('refill')}
         >
-          Rechargement
+          {t('envelopes.topup')}
         </button>
       </div>
 
       <div className={styles.fieldRow}>
         <div className={styles.field}>
-          <label className={styles.label}>Libellé</label>
+          <label className={styles.label}>{t('envelopes.label')}</label>
           <input
             className={styles.input}
             value={label}
             onChange={(e) => { setLabel(e.target.value); setError(null) }}
-            placeholder="ex: Supermarché, Netflix…"
+            placeholder={t('envelopes.labelPlaceholder')}
             required
           />
         </div>
         <div className={styles.field} style={{ maxWidth: 110 }}>
-          <label className={styles.label}>Montant (€)</label>
+          <label className={styles.label}>{t('envelopes.amount')}</label>
           <input
             className={styles.input}
             type="number"
@@ -210,7 +216,7 @@ function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps)
           />
         </div>
         <div className={styles.field} style={{ maxWidth: 140 }}>
-          <label className={styles.label}>Date</label>
+          <label className={styles.label}>{t('envelopes.date')}</label>
           <input
             className={styles.input}
             type="date"
@@ -224,10 +230,10 @@ function TransactionForm({ envelopeId, onSave, onCancel }: TransactionFormProps)
 
       <div className={styles.formActions}>
         <button type="button" className={styles.cancelBtn} onClick={onCancel}>
-          Annuler
+          {t('common.cancel')}
         </button>
         <button type="submit" className={styles.saveBtn}>
-          Enregistrer
+          {t('envelopes.save')}
         </button>
       </div>
     </form>
@@ -251,6 +257,7 @@ interface EnvelopeCardProps {
 }
 
 function EnvelopeCard({ envelope, onDelete, onAddTransaction, fmt }: EnvelopeCardProps) {
+  const { t } = useTranslation()
   const remaining = envelope.budgetEur - envelope.spentEur
   const pct = envelope.budgetEur > 0
     ? Math.min(100, (envelope.spentEur / envelope.budgetEur) * 100)
@@ -273,27 +280,29 @@ function EnvelopeCard({ envelope, onDelete, onAddTransaction, fmt }: EnvelopeCar
           type="button"
           className={`${styles.iconBtn} ${styles.danger}`}
           onClick={() => onDelete(envelope.id)}
-          aria-label={`Supprimer ${envelope.name}`}
-          title="Supprimer"
+          aria-label={t('envelopes.deleteAriaLabel', { name: envelope.name })}
+          title={t('common.delete')}
         >
-          ✕
+          <span aria-hidden="true">{CLOSE_SYMBOL}</span>
         </button>
       </div>
 
       <div className={styles.cardAmounts}>
         <div>
-          <div className={styles.amountLabel}>Dépensé</div>
+          <div className={styles.amountLabel}>{t('envelopes.spent')}</div>
           <div className={styles.amountValue} style={{ color: barColor }}>
             {fmt(envelope.spentEur)}
           </div>
         </div>
         <div className={styles.amountDivider}>/</div>
         <div>
-          <div className={styles.amountLabel}>Budget</div>
+          <div className={styles.amountLabel}>{t('envelopes.budget')}</div>
           <div className={styles.amountBudget}>{fmt(envelope.budgetEur)}</div>
         </div>
         <div className={styles.remainingBadge} style={{ color: remaining >= 0 ? 'var(--green)' : 'var(--coral)' }}>
-          {remaining >= 0 ? `${fmt(remaining)} restant` : `${fmt(-remaining)} dépassé`}
+          {remaining >= 0
+            ? t('envelopes.remaining', { amount: fmt(remaining) })
+            : t('envelopes.overbudget', { amount: fmt(-remaining) })}
         </div>
       </div>
 
@@ -310,7 +319,7 @@ function EnvelopeCard({ envelope, onDelete, onAddTransaction, fmt }: EnvelopeCar
         className={styles.addTxBtn}
         onClick={() => onAddTransaction(envelope.id)}
       >
-        + Ajouter une dépense
+        {t('envelopes.addExpense')}
       </button>
     </div>
   )
@@ -327,13 +336,14 @@ interface RecentTxProps {
 }
 
 function RecentTransactions({ transactions, envelopeMap, onDelete, fmt, locale }: RecentTxProps) {
+  const { t } = useTranslation()
   const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20)
 
   if (sorted.length === 0) return null
 
   return (
     <section className={styles.txSection}>
-      <h2 className={styles.sectionTitle}>Transactions récentes</h2>
+      <h2 className={styles.sectionTitle}>{t('envelopes.recentTransactions')}</h2>
       <div className={styles.txList}>
         {sorted.map((tx) => {
           const env = envelopeMap[tx.envelopeId]
@@ -343,7 +353,7 @@ function RecentTransactions({ transactions, envelopeMap, onDelete, fmt, locale }
               <span className={styles.txEmoji}>{env?.emoji ?? '?'}</span>
               <div className={styles.txInfo}>
                 <span className={styles.txLabel}>{tx.label}</span>
-                <span className={styles.txEnvName}>{env?.name ?? 'Inconnu'}</span>
+                <span className={styles.txEnvName}>{env?.name ?? t('common.unknown')}</span>
               </div>
               <span className={styles.txDate}>{fmtDate(tx.date, locale)}</span>
               <span
@@ -356,9 +366,9 @@ function RecentTransactions({ transactions, envelopeMap, onDelete, fmt, locale }
                 type="button"
                 className={styles.txDeleteBtn}
                 onClick={() => onDelete(tx.id)}
-                aria-label="Supprimer la transaction"
+                aria-label={t('envelopes.deleteTransactionAriaLabel')}
               >
-                ✕
+                <span aria-hidden="true">{CLOSE_SYMBOL}</span>
               </button>
             </div>
           )
@@ -418,8 +428,8 @@ export default function EnvelopesPage() {
       {/* Header */}
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Budget Enveloppes</h1>
-          <p className={styles.subtitle}>Gérez votre budget par catégorie</p>
+          <h1 className={styles.title}>{t('envelopes.title')}</h1>
+          <p className={styles.subtitle}>{t('envelopes.pageSubtitle')}</p>
         </div>
         {!showNewForm && (
           <button
@@ -427,7 +437,7 @@ export default function EnvelopesPage() {
             className={styles.addBtn}
             onClick={() => setShowNewForm(true)}
           >
-            + Nouvelle enveloppe
+            {t('envelopes.newBtn2')}
           </button>
         )}
       </div>
@@ -436,7 +446,7 @@ export default function EnvelopesPage() {
       {envelopes.length > 0 && (
         <div className={styles.health}>
           <div className={styles.healthMeta}>
-            <span className={styles.healthLabel}>BUDGET GLOBAL</span>
+            <span className={styles.healthLabel}>{t('envelopes.globalBudget')}</span>
             <div className={styles.healthAmounts}>
               <span style={{ color: globalColor }}>{fmt(totalSpent)}</span>
               <span className={styles.healthSep}>/</span>
@@ -467,9 +477,9 @@ export default function EnvelopesPage() {
       {envelopes.length === 0 && !showNewForm ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>💸</div>
-          <div className={styles.emptyTitle}>Aucune enveloppe</div>
+          <div className={styles.emptyTitle}>{t('envelopes.empty')}</div>
           <div className={styles.emptyDesc}>
-            Créez des enveloppes pour organiser votre budget par catégorie.
+            {t('envelopes.emptyDesc')}
           </div>
           <button
             type="button"
@@ -477,7 +487,7 @@ export default function EnvelopesPage() {
             onClick={() => setShowNewForm(true)}
             style={{ marginTop: '1rem' }}
           >
-            Créer ma première enveloppe
+            {t('envelopes.createFirst')}
           </button>
         </div>
       ) : (

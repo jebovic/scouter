@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCurrencyRates } from '../../hooks/useCurrencyRates'
 import { formatCurrencyLocale, formatDate } from '../../utils/format'
 import { useFormatCurrency } from '../../hooks/useFormatCurrency'
@@ -20,6 +21,7 @@ const CURRENCY_FLAGS: Record<string, string> = {
 }
 
 export function CurrencyConverter() {
+  const { t } = useTranslation()
   const { rates, isLoading, convert } = useCurrencyRates()
   const { locale } = useFormatCurrency()
   const [amount, setAmount] = useState<string>('100')
@@ -45,7 +47,7 @@ export function CurrencyConverter() {
 
   return (
     <div className={styles.converter}>
-      <h3 className={styles.title}>💱 Convertisseur de Devises</h3>
+      <h3 className={styles.title}>{t('currencyConverter.title')}</h3>
 
       <div className={styles.inputGroup}>
         <input
@@ -72,7 +74,7 @@ export function CurrencyConverter() {
           className={styles.swapButton}
           onClick={handleSwap}
           disabled={isLoading}
-          title="Inverser les devises"
+          title={t('currencyConverter.swapTitle')}
         >
           ⇄
         </button>
@@ -93,7 +95,7 @@ export function CurrencyConverter() {
       <div className={styles.divider} />
 
       <div className={styles.resultSection}>
-        <div className={styles.rateLabel}>Taux du jour</div>
+        <div className={styles.rateLabel}>{t('currencyConverter.rateLabel')}</div>
         <div className={styles.resultValue}>
           {isLoading ? '...' : formatCurrencyLocale(convertedAmount, locale, toCurrency)}
         </div>
@@ -105,11 +107,11 @@ export function CurrencyConverter() {
           </div>
         )}
 
-        <div className={styles.sourceCredit}>Source: BCE (Banque Centrale Européenne)</div>
+        <div className={styles.sourceCredit}>{t('currencyConverter.source')}</div>
 
         {rates && (
           <div className={styles.lastUpdated}>
-            Mis à jour: {formatDate(new Date(rates.date), locale)}
+            {t('currencyConverter.lastUpdated')} {formatDate(new Date(rates.date), locale)}
           </div>
         )}
       </div>
