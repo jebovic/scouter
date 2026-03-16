@@ -1,7 +1,7 @@
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px 20px;
   margin-bottom: 16px;
 }
@@ -73,10 +73,10 @@
   font-weight: 600;
 }
 
-.recommended { background: rgba(102, 187, 106, 0.15); color: #66bb6a; }
-.alternative { background: rgba(79, 195, 247, 0.15); color: #4fc3f7; }
-.watch { background: rgba(186, 104, 200, 0.15); color: #ba68c8; }
-.rejected { background: rgba(239, 83, 80, 0.15); color: #ef5350; }
+.recommended { background: var(--badge-recommended-bg); color: var(--badge-recommended); }
+.alternative { background: rgba(79, 195, 247, 0.1); color: var(--text-dim); }
+.watch { background: var(--badge-watch-bg); color: var(--badge-watch); }
+.rejected { background: var(--badge-rejected-bg); color: var(--badge-rejected); }
 
 .selectBtn {
   background: var(--accent);
