@@ -21,7 +21,7 @@ export function Logo({
   size = 'md',
   showTagline = false,
   iconOnly = false,
-  variant = 'dark',
+  variant,
   gradientId,
   className,
   'aria-label': ariaLabel = 'SCOUTER',
@@ -32,8 +32,15 @@ export function Logo({
   const clipId = `${prefix}-lens`
   const px = ICON_SIZE[size]
 
-  const c1 = variant === 'light' ? '#0099bb' : '#00e5ff'
-  const c2 = variant === 'light' ? '#7c3aed' : '#a855f7'
+  // Detect effective variant: explicit prop > prefers-color-scheme > dark
+  const effectiveVariant: 'dark' | 'light' =
+    variant ??
+    (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches
+      ? 'light'
+      : 'dark')
+
+  const c1 = effectiveVariant === 'light' ? '#0099bb' : '#00e5ff'
+  const c2 = effectiveVariant === 'light' ? '#7c3aed' : '#a855f7'
 
   const svgSharedProps = iconOnly
     ? { role: 'img' as const, 'aria-label': ariaLabel }
