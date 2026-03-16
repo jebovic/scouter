@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts, NextActionNudge } from '../components/scouter'
@@ -160,29 +160,31 @@ export default function MissionOverview() {
   }), [researchPending, pricingPending]) // eslint-disable-line react-hooks/exhaustive-deps
   useKeyboardShortcuts(shortcuts)
 
-  function handleSelectShortlistOption(option: Option) {
+  const handleSelectShortlistOption = useCallback((option: Option) => {
     if (purchaseRecord) {
       setReplacePrefillOption(option)
     } else {
       setShortlistPrefill({
+        itemName: option.name,
         finalPrice: option.priceRange
           ? Math.round((option.priceRange.min + option.priceRange.max) / 2)
           : undefined,
       })
       setShortlistKey(k => k + 1)
     }
-  }
+  }, [purchaseRecord, setReplacePrefillOption, setShortlistPrefill, setShortlistKey])
 
-  function handleConfirmReplace() {
+  const handleConfirmReplace = useCallback(() => {
     if (!replacePrefillOption) return
     setShortlistPrefill({
+      itemName: replacePrefillOption.name,
       finalPrice: replacePrefillOption.priceRange
         ? Math.round((replacePrefillOption.priceRange.min + replacePrefillOption.priceRange.max) / 2)
         : undefined,
     })
     setShortlistKey(k => k + 1)
     setReplacePrefillOption(null)
-  }
+  }, [replacePrefillOption, setShortlistPrefill, setShortlistKey, setReplacePrefillOption])
 
   if (isLoading) {
     return (
@@ -527,7 +529,7 @@ export default function MissionOverview() {
               </div>
             )}
             <PurchaseForm
-              key={shortlistKey + scanKey}
+              key={`sl${shortlistKey}-sc${scanKey}`}
               missionId={mission.id}
               existingRecord={purchaseRecord}
               prefill={shortlistPrefill ?? scanPrefill}
@@ -628,7 +630,13 @@ export default function MissionOverview() {
 
       {replacePrefillOption && (
         <div className={styles.overlay} onClick={() => setReplacePrefillOption(null)}>
-          <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('shortlist.replaceConfirm')}
+            onClick={(e) => e.stopPropagation()}
+          >
             <p>{t('shortlist.replaceConfirm')}</p>
             <div className={styles.dialogActions}>
               <button onClick={() => setReplacePrefillOption(null)}>{t('common.cancel')}</button>

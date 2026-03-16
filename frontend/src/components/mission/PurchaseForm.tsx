@@ -11,6 +11,7 @@ export interface PurchaseFormPrefill {
   merchant?: string
   finalPrice?: number
   purchasedAt?: string
+  itemName?: string
 }
 
 interface PurchaseFormProps {
@@ -73,6 +74,18 @@ export function PurchaseForm({ missionId, selectedOptionId, existingRecord, pref
     <div className={styles.wrap}>
       <h3 className={styles.title}>{isEditing ? t('purchase.edit') : t('purchase.record')}</h3>
       <form className={styles.form} onSubmit={handleSubmit}>
+        {prefill?.itemName && !isEditing && (
+          <div className={styles.field}>
+            <label className={styles.label}>{t('shopping.itemName')}</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={prefill.itemName}
+              readOnly
+              aria-readonly="true"
+            />
+          </div>
+        )}
         {!isEditing && (
           <div className={styles.field}>
             <label className={styles.label}>{t('purchase.purchaseDate')}</label>

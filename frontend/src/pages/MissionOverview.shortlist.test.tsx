@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
+
+const mockUsePurchaseRecord = vi.fn(() => ({ data: null, isLoading: false }))
 
 vi.mock('../hooks', () => ({
   useMission: () => ({
@@ -29,7 +32,7 @@ vi.mock('../hooks', () => ({
     error: null,
   }),
   useShopping: () => ({ shoppingItems: [], isLoading: false, items: [] }),
-  usePurchaseRecord: () => ({ purchaseRecord: null, isLoading: false }),
+  usePurchaseRecord: (...args: unknown[]) => mockUsePurchaseRecord(...args),
   useResearch: () => ({ researchJob: null, isLoading: false }),
   usePriceIntel: () => ({ priceIntel: null, triggerPricing: vi.fn(), isPending: false }),
   useKeyboardShortcuts: () => undefined,
@@ -142,6 +145,15 @@ vi.mock('../components/mission/MissionEditModal', () => ({
   MissionEditModal: () => null,
 }))
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}))
+
 import MissionOverview from './MissionOverview'
 
 function renderOverview() {
@@ -158,6 +170,10 @@ function renderOverview() {
 }
 
 describe('MissionOverview shortlist (buying phase)', () => {
+  beforeEach(() => {
+    mockUsePurchaseRecord.mockReturnValue({ data: null, isLoading: false })
+  })
+
   it('renders ShortlistPanel when phase is buying', () => {
     renderOverview()
     expect(screen.getByText(/your shortlist/i)).toBeInTheDocument()
@@ -166,5 +182,16 @@ describe('MissionOverview shortlist (buying phase)', () => {
   it('shows pinned option in shortlist', () => {
     renderOverview()
     expect(screen.getByText('MacBook Pro')).toBeInTheDocument()
+  })
+
+  it('shows replace-confirm dialog when a purchase record exists and Select is clicked', async () => {
+    mockUsePurchaseRecord.mockReturnValue({ data: { id: 'p1' }, isLoading: false })
+    const user = userEvent.setup()
+    renderOverview()
+
+    const selectBtn = screen.getByRole('button', { name: /select/i })
+    await user.click(selectBtn)
+
+    expect(screen.getByText('shortlist.replaceConfirm')).toBeInTheDocument()
   })
 })

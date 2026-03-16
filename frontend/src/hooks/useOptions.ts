@@ -25,7 +25,7 @@ export function useUpdateOption(missionId: string) {
     mutationFn: ({ optionId, req }: { optionId: string; req: OptionUpdateRequest }) =>
       updateOption(missionId, optionId, req),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Option updated', 'success')
     },
     onError: (err: unknown) => toast(`Failed to update option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -39,7 +39,7 @@ export function useDeleteOption(missionId: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (optionId: string) => deleteOption(missionId, optionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Option removed', 'success')
     },
     onError: (err: unknown) => toast(`Failed to remove option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -53,7 +53,7 @@ export function usePinOption(missionId: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (optionId: string) => pinOption(missionId, optionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Option pinned', 'success')
     },
     onError: (err: unknown) => toast(`Failed to pin option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -68,7 +68,7 @@ export function useRejectOption(missionId: string) {
     mutationFn: ({ optionId, reason }: { optionId: string; reason: string }) =>
       rejectOption(missionId, optionId, reason),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Option rejected', 'success')
     },
     onError: (err: unknown) => toast(`Failed to reject option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -82,7 +82,7 @@ export function useUnrejectOption(missionId: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (optionId: string) => unrejectOption(missionId, optionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Option un-rejected', 'success')
     },
     onError: (err: unknown) => toast(`Failed to un-reject option: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -95,7 +95,7 @@ export function useRetranslateOption(missionId: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (optionId: string) => retranslateOption(missionId, optionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
     },
   })
   return { retranslateOption: mutateAsync, isPending }
@@ -107,7 +107,7 @@ export function useDeletePinnedOptions(missionId: string) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () => deletePinnedOptions(missionId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
       toast('Pinned options cleared', 'success')
     },
     onError: (err: unknown) => toast(`Failed to clear pinned options: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
@@ -132,7 +132,7 @@ export function useUnpinAllOptions(missionId: string) {
       if (failed > 0) {
         toast(t('option.actions.unpinAllError', { count: failed }), 'error')
       }
-      qc.invalidateQueries({ queryKey: ['options', missionId] })
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
     },
   })
   return { unpinAllOptions: mutateAsync, isPending }

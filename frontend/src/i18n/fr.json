@@ -124,6 +124,7 @@
     "activityFeed": "Fil d'activité",
     "decisionMatrix": "Matrice de décision",
     "giftFinder": "Idées cadeaux",
+    "confirmDoneDesc": "Marquer cette mission comme terminée ? Vous pourrez toujours la modifier après.",
     "actions": {
       "archive": "Archiver",
       "archiveConfirm": "Archiver cette mission ?",

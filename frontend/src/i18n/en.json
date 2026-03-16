@@ -124,6 +124,7 @@
     "activityFeed": "Activity Feed",
     "decisionMatrix": "Decision Matrix",
     "giftFinder": "Gift Ideas",
+    "confirmDoneDesc": "Mark this mission as done? You can still edit it after.",
     "actions": {
       "archive": "Archive",
       "archiveConfirm": "Archive this mission?",

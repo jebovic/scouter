@@ -57,7 +57,7 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
         aria-hidden="true"
       >
         <span className={styles.swipeActionIcon}>📦</span>
-        <span className={styles.swipeActionLabel}>Archive</span>
+        <span className={styles.swipeActionLabel}>{t('mission.actions.archive')}</span>
       </div>
 
       {/* Research action hint (revealed on swipe-right) */}
@@ -66,7 +66,7 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
         aria-hidden="true"
       >
         <span className={styles.swipeActionIcon}>⚡</span>
-        <span className={styles.swipeActionLabel}>Research</span>
+        <span className={styles.swipeActionLabel}>{t('mission.runResearchAgent')}</span>
       </div>
 
       <div
