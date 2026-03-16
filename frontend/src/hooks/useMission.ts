@@ -8,19 +8,19 @@ import {
   deleteMission,
   duplicateMission,
   cloneMission,
+  archiveMission,
+  unarchiveMission,
 } from '../api'
 import { useToast } from '../components/scouter'
 import { queryKeys } from '../lib/queryKeys'
 import type { MissionCreateRequest, MissionUpdateRequest } from '../types'
 
-export function useMissions() {
-  const {
-    data: missions = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: queryKeys.missions.all(),
-    queryFn: listMissions,
+export function useMissions(opts?: { includeArchived?: boolean }) {
+  const { data: missions = [], isLoading, error } = useQuery({
+    queryKey: opts?.includeArchived
+      ? [...queryKeys.missions.all(), 'archived']
+      : queryKeys.missions.all(),
+    queryFn: () => listMissions(opts),
   })
   return { missions, isLoading, error }
 }
@@ -93,6 +93,36 @@ export function useDuplicateMission() {
     onError: (err: unknown) => toast(`Failed to duplicate mission: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { duplicateMission: mutateAsync, isPending }
+}
+
+export function useArchiveMission() {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { t } = useTranslation()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (missionId: string) => archiveMission(missionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
+      toast(t('mission.actions.archive'), 'success')
+    },
+    onError: (_err: unknown) => toast(t('common.error'), 'error'),
+  })
+  return { archiveMission: mutateAsync, isPending }
+}
+
+export function useUnarchiveMission() {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { t } = useTranslation()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (missionId: string) => unarchiveMission(missionId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.missions.all() })
+      toast(t('mission.actions.unarchive'), 'success')
+    },
+    onError: (_err: unknown) => toast(t('common.error'), 'error'),
+  })
+  return { unarchiveMission: mutateAsync, isPending }
 }
 
 export function useCloneMission() {
