@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -26,9 +25,9 @@ type UploaderConfig struct {
 }
 
 type Uploader struct {
-	client    *minio.Client
-	bucket    string
-	publicURL string
+	client *minio.Client
+	bucket string
+	pubURL *url.URL
 }
 
 func NewUploader(ctx context.Context, cfg UploaderConfig) (*Uploader, error) {
@@ -50,7 +49,12 @@ func NewUploader(ctx context.Context, cfg UploaderConfig) (*Uploader, error) {
 		}
 	}
 
-	return &Uploader{client: client, bucket: cfg.Bucket, publicURL: cfg.PublicURL}, nil
+	pubURL, err := url.Parse(cfg.PublicURL)
+	if err != nil {
+		return nil, fmt.Errorf("parse public URL: %w", err)
+	}
+
+	return &Uploader{client: client, bucket: cfg.Bucket, pubURL: pubURL}, nil
 }
 
 // Upload stores img in MinIO and returns the object key.
@@ -76,9 +80,8 @@ func (u *Uploader) PresignURL(ctx context.Context, key string) (string, error) {
 		return "", fmt.Errorf("presign %s: %w", key, err)
 	}
 	// Replace internal host with external public URL so browser gets HTTPS.
-	pub, _ := url.Parse(u.publicURL)
-	raw.Scheme = pub.Scheme
-	raw.Host = pub.Host
+	raw.Scheme = u.pubURL.Scheme
+	raw.Host = u.pubURL.Host
 	return raw.String(), nil
 }
 
@@ -92,7 +95,7 @@ func (u *Uploader) ListObjects(ctx context.Context) ([]minio.ObjectInfo, error) 
 	var objs []minio.ObjectInfo
 	for obj := range u.client.ListObjects(ctx, u.bucket, minio.ListObjectsOptions{Recursive: true}) {
 		if obj.Err != nil {
-			return nil, obj.Err
+			return nil, fmt.Errorf("list objects: %w", obj.Err)
 		}
 		objs = append(objs, obj)
 	}
@@ -114,6 +117,6 @@ func extensionForContentType(ct string) string {
 	case "image/gif":
 		return ".gif"
 	default:
-		return filepath.Ext(ct)
+		return ""
 	}
 }

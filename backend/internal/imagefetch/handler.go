@@ -2,6 +2,7 @@ package imagefetch
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -43,7 +44,12 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 
 	// Populate presigned URLs
 	for _, img := range images {
-		img.URL, _ = h.uploader.PresignURL(r.Context(), img.MinioKey)
+		u, err := h.uploader.PresignURL(r.Context(), img.MinioKey)
+		if err != nil {
+			log.Printf("imagefetch: presign %s: %v", img.MinioKey, err)
+			continue
+		}
+		img.URL = u
 	}
 	httputil.WriteJSON(w, http.StatusOK, images)
 }
@@ -84,7 +90,9 @@ func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Best-effort MinIO cleanup; log but don't fail.
-	_ = h.uploader.Delete(r.Context(), img.MinioKey)
+	if err := h.uploader.Delete(r.Context(), img.MinioKey); err != nil {
+		log.Printf("imagefetch: best-effort minio delete %s: %v", img.MinioKey, err)
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 }

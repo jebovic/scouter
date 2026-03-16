@@ -111,6 +111,9 @@ func (w *Worker) process(ctx context.Context, job OptionJob) {
 		})
 		if err != nil {
 			log.Printf("imagefetch: insert image row for %s: %v", job.ID, err)
+			if delErr := w.uploader.Delete(ctx, key); delErr != nil {
+				log.Printf("imagefetch: cleanup orphaned object %s: %v", key, delErr)
+			}
 		}
 	}
 }

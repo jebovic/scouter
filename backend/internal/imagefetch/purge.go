@@ -6,6 +6,7 @@ import (
 )
 
 // PurgeJob is a robfig/cron-compatible func that enforces the MinIO quota.
+// ctx must be the application-lifetime context (server root context), not a request context.
 // quotaMB is the total allowed storage in mebibytes.
 func PurgeJob(ctx context.Context, uploader *Uploader, repo *Repository, quotaMB int64) func() {
 	quotaBytes := quotaMB * 1024 * 1024
