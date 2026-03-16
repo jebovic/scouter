@@ -108,6 +108,61 @@
   margin-left: 0;
 }
 
+.langSwitcher {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.langBtn {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  /* Minimum 28px height to sit comfortably in the 52px topbar */
+  padding: 0.3rem 0.55rem;
+  font-size: 0.67rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  transition: color 0.12s, background 0.12s;
+  /* Expand hit area without growing visual footprint */
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.langBtn:last-child {
+  border-right: none;
+}
+
+.langBtn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.langBtn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+}
+
+.langBtnActive {
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+/* On small mobile, collapse to a minimal globe-icon trigger if needed */
+@media (max-width: 480px) {
+  .langSwitcher {
+    display: none;
+  }
+}
+
 .themeBtn {
   background: transparent;
   border: 1px solid var(--border);

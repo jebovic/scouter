@@ -25,7 +25,8 @@
     "add": "Hinzufügen",
     "adding": "Hinzufügen...",
     "search": "Suchen",
-    "noResults": "Keine Ergebnisse"
+    "noResults": "Keine Ergebnisse",
+    "switchLanguage": "Sprache wechseln"
   },
   "mission": {
     "create": "Neue Mission",
