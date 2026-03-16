@@ -20,7 +20,7 @@
 ## Core Rules
 - All Docker Compose commands use `make <target>` or `docker compose -f deployment/docker-compose.yml` — the compose file is no longer at the root
 - Always read a file before editing it
-- Always run test after your modifications
+- Always run test after your modifications (npm tests after frontend changes, go test after backend changes)
 - Never produce documentation unless explicitly asked
 - Update this file continuously, keeping it minimal
 - Prefer editing existing files over creating new ones

@@ -29,7 +29,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
   const { isDark, toggleTheme } = useTheme()
   const updateSettings = useUpdateSettings()
 
-  function switchLanguage(code: string, locale: string) {
+  function switchLanguage(_code: string, locale: string) {
     syncLanguageFromSettings(locale)
     updateSettings.mutate({ locale })
   }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useCashbackTracker } from '../../hooks/useCashbackTracker'
 import styles from './CashbackSummaryPanel.module.css'
 
@@ -16,14 +17,15 @@ function formatCurrency(amount: number, currency = 'EUR'): string {
 }
 
 export function CashbackSummaryPanel({ missionId, currency = 'EUR' }: Props) {
+  const { t } = useTranslation()
   const { data, isLoading, isError } = useCashbackTracker(missionId)
   const [isExpanded, setIsExpanded] = useState(true)
 
   if (isLoading) {
     return (
-      <section className={styles.card} aria-label="Estimé de cashback">
+      <section className={styles.card} aria-label={t('cashbackSummary.ariaLabel')}>
         <div className={styles.header}>
-          <span className={styles.title}>💰 Cashback Estimé</span>
+          <span className={styles.title}>💰 {t('cashbackSummary.title')}</span>
         </div>
         <div className={`${styles.skeleton} ${styles.skeletonLine}`} />
         <div className={styles.skeletonGrid}>
@@ -37,24 +39,24 @@ export function CashbackSummaryPanel({ missionId, currency = 'EUR' }: Props) {
 
   if (isError || !data) {
     return (
-      <section className={styles.card} aria-label="Estimé de cashback">
+      <section className={styles.card} aria-label={t('cashbackSummary.ariaLabel')}>
         <div className={styles.header}>
-          <span className={styles.title}>💰 Cashback Estimé</span>
+          <span className={styles.title}>💰 {t('cashbackSummary.title')}</span>
         </div>
-        <p className={styles.errorState}>Impossible de charger l'estimé de cashback.</p>
+        <p className={styles.errorState}>{t('cashbackSummary.error')}</p>
       </section>
     )
   }
 
   return (
-    <section className={styles.card} aria-label="Estimé de cashback">
+    <section className={styles.card} aria-label={t('cashbackSummary.ariaLabel')}>
       <div className={styles.header}>
         <button
           className={styles.toggleBtn}
           onClick={() => setIsExpanded(!isExpanded)}
           aria-expanded={isExpanded}
         >
-          <span className={styles.title}>💰 Cashback Estimé</span>
+          <span className={styles.title}>💰 {t('cashbackSummary.title')}</span>
           <span className={`${styles.toggleIcon} ${isExpanded ? styles.expanded : ''}`}>▼</span>
         </button>
       </div>
@@ -62,14 +64,14 @@ export function CashbackSummaryPanel({ missionId, currency = 'EUR' }: Props) {
       {isExpanded && (
         <>
           <div className={styles.totalAmount}>
-            <span className={styles.label}>Estimé total</span>
+            <span className={styles.label}>{t('cashbackSummary.estimatedTotal')}</span>
             <span className={styles.amount} style={{ '--success-color': 'var(--success)' } as React.CSSProperties}>
               {formatCurrency(data.totalEstimated, currency)}
             </span>
           </div>
 
           <div className={styles.bestPlatform}>
-            <span className={styles.platformLabel}>Meilleure plateforme:</span>
+            <span className={styles.platformLabel}>{t('cashbackSummary.bestPlatform')}</span>
             <span className={styles.platformBadge}>{data.bestPlatform}</span>
           </div>
 
@@ -80,11 +82,11 @@ export function CashbackSummaryPanel({ missionId, currency = 'EUR' }: Props) {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th className={styles.thMerchant}>Marchand</th>
-                    <th className={styles.thPlatform}>Plateforme</th>
-                    <th className={styles.thPct}>% Cashback</th>
-                    <th className={styles.thAmount}>Estimé</th>
-                    <th className={styles.thCount}>Articles</th>
+                    <th className={styles.thMerchant}>{t('cashbackSummary.colMerchant')}</th>
+                    <th className={styles.thPlatform}>{t('cashbackSummary.colPlatform')}</th>
+                    <th className={styles.thPct}>{t('cashbackSummary.colCashbackPct')}</th>
+                    <th className={styles.thAmount}>{t('cashbackSummary.colEstimated')}</th>
+                    <th className={styles.thCount}>{t('cashbackSummary.colItems')}</th>
                   </tr>
                 </thead>
                 <tbody>
