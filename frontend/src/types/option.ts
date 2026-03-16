@@ -16,6 +16,14 @@ export interface PriceRange {
   best: number
 }
 
+export interface TranslationBlob {
+  name?: string
+  notes?: string
+  warnings?: string[]
+  category?: string
+  attributes?: Array<{ label: string; value: string }>
+}
+
 export interface Option {
   id: string
   missionId: string
@@ -31,6 +39,7 @@ export interface Option {
   rejected: boolean
   rejectReason?: string
   createdAt: string
+  translations?: Record<string, TranslationBlob>
 }
 
 export interface OptionCreateRequest {

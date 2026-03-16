@@ -19,6 +19,16 @@ const PriceRangeSchema = z.object({
   best: z.number(),
 })
 
+const TranslationBlobSchema = z.object({
+  name: z.string().optional(),
+  notes: z.string().optional(),
+  warnings: z.array(z.string()).optional(),
+  category: z.string().optional(),
+  attributes: z
+    .array(z.object({ label: z.string(), value: z.string() }))
+    .optional(),
+})
+
 export const OptionSchema = z.object({
   id: z.string().uuid(),
   missionId: z.string().uuid(),
@@ -34,6 +44,7 @@ export const OptionSchema = z.object({
   rejected: z.boolean().default(false),
   rejectReason: z.string().nullish(),
   createdAt: z.string(),
+  translations: z.record(z.string(), TranslationBlobSchema).optional(),
 })
 
 export type OptionDTO = z.infer<typeof OptionSchema>
@@ -107,4 +118,11 @@ export async function deletePinnedOptions(missionId: string): Promise<void> {
 
 export function getOptionsExportURL(slug: string): string {
   return `/api/missions/${slug}/options/export.csv`
+}
+
+export async function retranslateOption(missionId: string, optionId: string): Promise<void> {
+  await apiFetch<void>(
+    `/api/missions/${missionId}/options/${optionId}/retranslate`,
+    { method: 'POST' },
+  )
 }
