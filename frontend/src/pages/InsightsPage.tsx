@@ -28,7 +28,7 @@ export default function InsightsPage() {
   const { t } = useTranslation()
   const { data: missions, isLoading } = useQuery({
     queryKey: ['missions'],
-    queryFn: listMissions,
+    queryFn: () => listMissions(),
     staleTime: 60_000,
   })
   const { currency, locale, fmt } = useFormatCurrency()

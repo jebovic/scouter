@@ -30,7 +30,7 @@ export function MissionCard({ mission, items = [], onArchive }: MissionCardProps
 
   useEffect(() => {
     if (!menuOpen) return
-    function handleOutside(e: MouseEvent) {
+    function handleOutside(_e: MouseEvent) {
       setMenuOpen(false)
     }
     document.addEventListener('mousedown', handleOutside)

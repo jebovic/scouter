@@ -21,7 +21,6 @@ import {
   usePinOption,
   useRejectOption,
   useUnrejectOption,
-  useDeletePinnedOptions,
   useUnpinAllOptions,
   useDecision,
   useAgentRuns,
@@ -53,7 +52,6 @@ export default function OptionsExplorer() {
   const { pinOption } = usePinOption(mission?.id ?? '')
   const { rejectOption } = useRejectOption(mission?.id ?? '')
   const { unrejectOption } = useUnrejectOption(mission?.id ?? '')
-  const { deletePinnedOptions } = useDeletePinnedOptions(mission?.id ?? '')
   const { unpinAllOptions } = useUnpinAllOptions(mission?.id ?? '')
   const { decision } = useDecision(mission?.id ?? '')
   const { runs, isLoading: runsLoading } = useAgentRuns(mission?.id ?? '', 'research')
