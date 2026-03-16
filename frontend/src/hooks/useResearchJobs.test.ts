@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { renderHook, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import { useResearchJobs } from './useResearchJobs'
@@ -100,33 +100,30 @@ describe('useResearchJobs', () => {
     expect(result.current.data?.jobs[0].status).toBe('done')
   })
 
-  it('polls every 3s when a job is running', async () => {
-    mockFetch.mockResolvedValue(runningJob)
-    const { wrapper, qc } = makeWrapper()
-    const { result } = renderHook(() => useResearchJobs('mission-1'), { wrapper })
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+  describe('polling', () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
 
-    // Check that refetchInterval returns 3000 for running jobs by inspecting
-    // the query options through the QueryClient cache
-    const queryCache = qc.getQueryCache()
-    const query = queryCache.find({ queryKey: ['research-jobs', 'mission-1'] })
-    expect(query).toBeDefined()
+    it('refetches every 3s when a job is running', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      mockFetch.mockResolvedValue(runningJob)
+      const { wrapper } = makeWrapper()
+      renderHook(() => useResearchJobs('mission-1'), { wrapper })
+      await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1))
+      await act(async () => { vi.advanceTimersByTime(3000); });
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
 
-    // The data has a running job, so the hook should schedule refetches
-    expect(result.current.data?.jobs[0].status).toBe('running')
-    expect(mockFetch).toHaveBeenCalled()
-  })
-
-  it('stops polling when all jobs are in terminal state', async () => {
-    mockFetch.mockResolvedValue(terminalJobs)
-    const { wrapper } = makeWrapper()
-    const { result } = renderHook(() => useResearchJobs('mission-1'), { wrapper })
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-
-    // All jobs are done/failed — no running/pending jobs
-    const jobs = result.current.data?.jobs ?? []
-    const hasActiveJob = jobs.some(j => j.status === 'running' || j.status === 'pending')
-    expect(hasActiveJob).toBe(false)
+    it('does not refetch when all jobs are terminal', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      mockFetch.mockResolvedValue(terminalJobs)
+      const { wrapper } = makeWrapper()
+      renderHook(() => useResearchJobs('mission-1'), { wrapper })
+      await waitFor(() => expect(mockFetch).toHaveBeenCalledTimes(1))
+      await act(async () => { vi.advanceTimersByTime(10000); });
+      expect(mockFetch).toHaveBeenCalledTimes(1); // no additional calls
+    });
   })
 
   it('invalidates options cache when job transitions to done', async () => {

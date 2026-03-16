@@ -17,7 +17,7 @@ export function useTriggerResearch(missionId: string) {
       if (err.message === 'already_running') {
         toast(t('research.alreadyRunning'), 'error')
       } else {
-        toast(`Research failed: ${err.message}`, 'error')
+        toast(t('research.triggerFailed', { message: err.message }), 'error')
       }
     },
   })
