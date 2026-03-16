@@ -3,6 +3,7 @@ package summary
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -90,7 +91,16 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	// Generate brief via LLM agent.
 	brief, err := h.briefer.Brief(r.Context(), *m, opts, items)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadGateway, "summary service unavailable")
+		// LLM unavailable: return a degraded-but-valid DTO so the frontend
+		// can render a useful state instead of an error. Do NOT cache this
+		// response — the next request will retry the LLM.
+		degraded := &MissionSummary{
+			MissionSlug: slug,
+			Bullets:     []string{"Service LLM temporairement indisponible"},
+			Verdict:     "research_more",
+			CachedAt:    time.Now().Unix(),
+		}
+		httputil.WriteJSON(w, http.StatusOK, degraded)
 		return
 	}
 

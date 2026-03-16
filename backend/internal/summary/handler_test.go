@@ -258,7 +258,7 @@ func TestHandler_Get_MissionRepoError_Returns500(t *testing.T) {
 	}
 }
 
-func TestHandler_Get_BrieferError_Returns502(t *testing.T) {
+func TestHandler_Get_BrieferError_ReturnsDegradedDTO(t *testing.T) {
 	br := &fakeBriefer{err: errors.New("llm unavailable")}
 	mget := &fakeMissionGetter{m: goodMission()}
 	olist := &fakeOptionLister{}
@@ -270,8 +270,63 @@ func TestHandler_Get_BrieferError_Returns502(t *testing.T) {
 	w := httptest.NewRecorder()
 	mountRouter(h).ServeHTTP(w, req)
 
-	if w.Code != http.StatusBadGateway {
-		t.Fatalf("expected 502, got %d: %s", w.Code, w.Body.String())
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 degraded DTO, got %d: %s", w.Code, w.Body.String())
+	}
+	var got summary.MissionSummary
+	if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
+		t.Fatalf("decode degraded DTO: %v", err)
+	}
+	if got.Verdict != "research_more" {
+		t.Errorf("expected verdict 'research_more', got %q", got.Verdict)
+	}
+	if len(got.Bullets) == 0 {
+		t.Error("expected at least one bullet in degraded DTO")
+	}
+	if got.CachedAt <= 0 {
+		t.Error("expected cachedAt > 0 in degraded DTO")
+	}
+	if got.MissionSlug != testSlug {
+		t.Errorf("expected missionSlug %q, got %q", testSlug, got.MissionSlug)
+	}
+}
+
+func TestHandler_Get_BrieferError_DegradedResponseNotCached(t *testing.T) {
+	br := &fakeBriefer{err: errors.New("llm unavailable")}
+	mget := &fakeMissionGetter{m: goodMission()}
+	olist := &fakeOptionLister{}
+	slist := &fakeShoppingLister{}
+	cache := summary.NewCache(time.Hour)
+	h := buildHandler(mget, olist, slist, br, cache)
+	router := mountRouter(h)
+
+	// First GET: briefer fails, returns degraded DTO.
+	r1 := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
+	w1 := httptest.NewRecorder()
+	router.ServeHTTP(w1, r1)
+	if w1.Code != http.StatusOK {
+		t.Fatalf("first GET: expected 200, got %d", w1.Code)
+	}
+
+	// Second GET: briefer should be called again (degraded response was not cached).
+	r2 := httptest.NewRequest(http.MethodGet, "/api/missions/"+testSlug+"/summary", nil)
+	w2 := httptest.NewRecorder()
+	router.ServeHTTP(w2, r2)
+	if w2.Code != http.StatusOK {
+		t.Fatalf("second GET: expected 200, got %d", w2.Code)
+	}
+
+	// Both responses must be valid degraded DTOs.
+	var got1, got2 summary.MissionSummary
+	_ = json.NewDecoder(w1.Body).Decode(&got1)
+	_ = json.NewDecoder(w2.Body).Decode(&got2)
+	if got1.Verdict != "research_more" || got2.Verdict != "research_more" {
+		t.Errorf("expected both responses to be degraded: got %q, %q", got1.Verdict, got2.Verdict)
+	}
+
+	// Briefer must have been called twice — degraded DTO was NOT served from cache.
+	if br.calls != 2 {
+		t.Errorf("expected briefer called 2 times (not cached), got %d", br.calls)
 	}
 }
 
