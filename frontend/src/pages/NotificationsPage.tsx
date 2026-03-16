@@ -9,6 +9,7 @@ import {
   useDeleteNotification,
 } from '../hooks'
 import type { Notification } from '../api/notifications'
+import { Topnav } from '../components/scouter/Topnav'
 import styles from './NotificationsPage.module.css'
 
 type FilterType = 'all' | 'price_drop' | 'target_hit' | 'trend_alert'
@@ -19,15 +20,15 @@ const TYPE_ICON: Record<string, string> = {
   trend_alert: '📈',
 }
 
-function relativeTime(iso: string): string {
+function relativeTime(iso: string, t: (key: string, opts?: Record<string, unknown>) => string): string {
   const diff = Date.now() - new Date(iso).getTime()
   const mins = Math.floor(diff / 60_000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 1) return t('notifications.justNow')
+  if (mins < 60) return t('notifications.minutesAgo', { count: mins })
   const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
+  if (hrs < 24) return t('notifications.hoursAgo', { count: hrs })
   const days = Math.floor(hrs / 24)
-  return `${days}d ago`
+  return t('notifications.daysAgo', { count: days })
 }
 
 export default function NotificationsPage() {
@@ -89,7 +90,9 @@ export default function NotificationsPage() {
   ]
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>{t('notifications.title').toUpperCase()}</h1>
         <button
@@ -147,8 +150,8 @@ export default function NotificationsPage() {
                       <div className={styles.notifTitle}>{n.title}</div>
                       <div className={styles.notifBody}>{n.body}</div>
                       <div className={styles.notifMeta}>
-                        <span className={styles.notifTime}>{relativeTime(n.createdAt)}</span>
-                        {!n.read && <span className={styles.unreadDot} aria-label="unread" />}
+                        <span className={styles.notifTime}>{relativeTime(n.createdAt, t)}</span>
+                        {!n.read && <span className={styles.unreadDot} aria-label={t('notifications.unreadLabel')} />}
                       </div>
                     </div>
                   </button>
@@ -167,5 +170,6 @@ export default function NotificationsPage() {
         )
       })}
     </main>
+    </>
   )
 }

@@ -6,7 +6,7 @@ export default function LoyaltyPage() {
   return (
     <>
       <Topnav />
-      <main className={styles.page}>
+      <main className={`page ${styles.page}`}>
         <div className={styles.header}>
           <h1 className={styles.title}>💎 Mes Points Fidélité</h1>
           <p className={styles.subtitle}>Suivi de vos programmes de fidélité</p>

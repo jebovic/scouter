@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useNotifications, useMarkNotificationRead, useMarkAllRead } from '../../hooks'
 import styles from './NotificationBell.module.css'
 
 export function NotificationBell() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const { notifications } = useNotifications()
   const unread = notifications.filter((n) => !n.read).length
@@ -35,7 +37,7 @@ export function NotificationBell() {
       <button
         className={styles.bell}
         onClick={() => setOpen((v) => !v)}
-        aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ''}`}
+        aria-label={unread > 0 ? t('notifications.bellAriaLabelUnread', { count: unread }) : t('notifications.bellAriaLabel')}
       >
         🔔
         {unread > 0 && (
@@ -46,16 +48,16 @@ export function NotificationBell() {
       {open && (
         <div className={styles.panel} role="region" aria-label="Notifications">
           <div className={styles.header}>
-            <span className={styles.title}>ALERTS</span>
+            <span className={styles.title}>{t('notifications.alerts')}</span>
             {unread > 0 && (
               <button className={styles.markAll} onClick={() => markAll()}>
-                mark all read
+                {t('notifications.markAllRead')}
               </button>
             )}
           </div>
 
           {notifications.length === 0 ? (
-            <p className={styles.empty}>No notifications</p>
+            <p className={styles.empty}>{t('notifications.empty')}</p>
           ) : (
             <ul className={styles.list}>
               {notifications.slice(0, 5).map((n) => (
@@ -80,7 +82,7 @@ export function NotificationBell() {
               className={styles.viewAll}
               onClick={() => setOpen(false)}
             >
-              View all →
+              {t('notifications.viewAll')}
             </Link>
           </div>
         </div>

@@ -124,7 +124,7 @@ export default function DealCalendarPage() {
   return (
     <>
       <Topnav />
-      <main className={styles.page}>
+      <main className={`page ${styles.page}`}>
         <UpcomingPromoStrip onEventClick={handlePromoEventClick} />
         <HolidayWidget />
         <SeasonalCalendar />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { useSettings, useUpdateSettings, useDeleteAllData } from '../hooks'
 import { CurrencyConverter } from '../components/scouter'
+import { Topnav } from '../components/scouter/Topnav'
 import { syncLanguageFromSettings } from '../i18n'
 import styles from './SettingsPage.module.css'
 
@@ -60,15 +61,20 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <main className={`page ${styles.page}`}>
-        <h1 className={styles.heading}>{t('settings.title')}</h1>
-        <div className={styles.loading}>{t('common.loading')}</div>
-      </main>
+      <>
+        <Topnav />
+        <main className={`page ${styles.page}`}>
+          <h1 className={styles.heading}>{t('settings.title')}</h1>
+          <div className={styles.loading}>{t('common.loading')}</div>
+        </main>
+      </>
     )
   }
 
   return (
-    <main className={`page ${styles.page}`}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <h1 className={styles.heading}>{t('settings.title')}</h1>
 
       <section className={styles.section}>
@@ -117,10 +123,10 @@ export default function SettingsPage() {
             </select>
           </div>
           <div className={styles.field}>
-            <label className={styles.label}>Mode Simplifié</label>
+            <label className={styles.label}>{t('settings.simpleMode')}</label>
             <div className={styles.toggleRow}>
               <span className={styles.toggleDesc}>
-                Masque les outils avancés dans la barre de navigation.
+                {t('settings.simpleModeDesc')}
               </span>
               <button
                 className={styles.toggle}
@@ -128,7 +134,7 @@ export default function SettingsPage() {
                 onClick={toggleSimpleMode}
                 aria-pressed={simpleMode}
               >
-                {simpleMode ? 'Activé' : 'Désactivé'}
+                {simpleMode ? t('settings.enabled') : t('settings.disabled')}
               </button>
             </div>
           </div>
@@ -203,5 +209,6 @@ export default function SettingsPage() {
         </div>
       )}
     </main>
+    </>
   )
 }

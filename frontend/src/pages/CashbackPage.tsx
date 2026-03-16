@@ -69,7 +69,7 @@ export default function CashbackPage() {
   return (
     <>
       <Topnav />
-      <main className={styles.page}>
+      <main className={`page ${styles.page}`}>
         <div className={styles.header}>
           <h1 className={styles.title}>Cashback Tracker</h1>
           <p className={styles.subtitle}>Suivez vos remboursements cashback</p>

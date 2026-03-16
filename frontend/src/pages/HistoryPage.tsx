@@ -5,6 +5,7 @@ import { useMissions } from '../hooks/useMission'
 import { useSettings } from '../hooks/useSettings'
 import { getPurchaseRecord } from '../api/purchase'
 import { StarRating } from '../components/scouter/StarRating'
+import { Topnav } from '../components/scouter/Topnav'
 import { formatCurrencyLocale, formatDate } from '../utils/format'
 import styles from './HistoryPage.module.css'
 
@@ -26,20 +27,25 @@ export default function HistoryPage() {
 
   if (doneMissions.length === 0) {
     return (
-      <main className={styles.page}>
-        <h1 className={styles.heading}>{t('purchase.history')}</h1>
-        <div className={styles.empty}>
-          <p className={styles.emptyIcon}>📦</p>
-          <p className={styles.emptyTitle}>{t('purchase.noHistory')}</p>
-          <p className={styles.emptyDesc}>{t('purchase.noHistoryDesc')}</p>
-          <Link to="/" className={styles.cta}>{t('purchase.goToDashboard')}</Link>
-        </div>
-      </main>
+      <>
+        <Topnav />
+        <main className={`page ${styles.page}`}>
+          <h1 className={styles.heading}>{t('purchase.history')}</h1>
+          <div className={styles.empty}>
+            <p className={styles.emptyIcon}>📦</p>
+            <p className={styles.emptyTitle}>{t('purchase.noHistory')}</p>
+            <p className={styles.emptyDesc}>{t('purchase.noHistoryDesc')}</p>
+            <Link to="/" className={styles.cta}>{t('purchase.goToDashboard')}</Link>
+          </div>
+        </main>
+      </>
     )
   }
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <h1 className={styles.heading}>{t('purchase.history')}</h1>
       <div className={styles.grid}>
         {doneMissions.map((mission, idx) => {
@@ -84,5 +90,6 @@ export default function HistoryPage() {
         })}
       </div>
     </main>
+    </>
   )
 }

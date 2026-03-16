@@ -70,7 +70,7 @@ export default function DigestPage() {
 
   return (
     <>
-      <main className={styles.page}>
+      <main className={`page ${styles.page}`}>
         <div className={styles.header}>
           <h1 className={styles.title}>Résumé de la semaine</h1>
           <p className={styles.subtitle}>

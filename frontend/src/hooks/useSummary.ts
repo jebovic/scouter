@@ -4,26 +4,26 @@ import type { ShoppingSummaryDTO, MissionSummaryDTO } from '../api/summary'
 
 // ── Legacy Shopping Summary hooks (Phase 43) ──────────────────────────────────
 
-const SUMMARY_KEY = (missionId: string) => ['summary', missionId] as const
+const SUMMARY_KEY = (missionSlug: string) => ['summary', missionSlug] as const
 
-export function useSummary(missionId: string) {
+export function useSummary(missionSlug: string) {
   const { data: summary, isLoading } = useQuery<ShoppingSummaryDTO | null>({
-    queryKey: SUMMARY_KEY(missionId),
-    queryFn: () => fetchSummary(missionId),
+    queryKey: SUMMARY_KEY(missionSlug),
+    queryFn: () => fetchSummary(missionSlug),
     staleTime: 24 * 60 * 60 * 1000, // 24 h
-    enabled: !!missionId,
+    enabled: !!missionSlug,
   })
 
   return { summary: summary ?? null, isLoading }
 }
 
-export function useGenerateSummary(missionId: string) {
+export function useGenerateSummary(missionSlug: string) {
   const qc = useQueryClient()
 
   const { mutate: generate, isPending, error } = useMutation<ShoppingSummaryDTO>({
-    mutationFn: () => generateSummary(missionId),
+    mutationFn: () => generateSummary(missionSlug),
     onSuccess: (data) => {
-      qc.setQueryData(SUMMARY_KEY(missionId), data)
+      qc.setQueryData(SUMMARY_KEY(missionSlug), data)
     },
   })
 

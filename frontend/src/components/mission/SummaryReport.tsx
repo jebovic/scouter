@@ -2,12 +2,12 @@ import { useSummary, useGenerateSummary } from '../../hooks/useSummary'
 import styles from './SummaryReport.module.css'
 
 interface Props {
-  missionId: string
+  missionSlug: string
 }
 
-export function SummaryReport({ missionId }: Props) {
-  const { summary, isLoading: loadingCached } = useSummary(missionId)
-  const { generate, isPending: generating } = useGenerateSummary(missionId)
+export function SummaryReport({ missionSlug }: Props) {
+  const { summary, isLoading: loadingCached } = useSummary(missionSlug)
+  const { generate, isPending: generating } = useGenerateSummary(missionSlug)
 
   const isPending = loadingCached || generating
 

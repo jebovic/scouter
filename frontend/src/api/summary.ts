@@ -12,16 +12,16 @@ export const ShoppingSummarySchema = z.object({
 
 export type ShoppingSummaryDTO = z.infer<typeof ShoppingSummarySchema>
 
-export async function generateSummary(missionId: string): Promise<ShoppingSummaryDTO> {
-  const data = await apiFetch<unknown>(`/api/missions/${missionId}/summary`, {
+export async function generateSummary(missionSlug: string): Promise<ShoppingSummaryDTO> {
+  const data = await apiFetch<unknown>(`/api/missions/${missionSlug}/summary`, {
     method: 'POST',
   })
   return ShoppingSummarySchema.parse(data)
 }
 
-export async function fetchSummary(missionId: string): Promise<ShoppingSummaryDTO | null> {
+export async function fetchSummary(missionSlug: string): Promise<ShoppingSummaryDTO | null> {
   try {
-    const data = await apiFetch<unknown>(`/api/missions/${missionId}/summary`)
+    const data = await apiFetch<unknown>(`/api/missions/${missionSlug}/summary`)
     return ShoppingSummarySchema.parse(data)
   } catch {
     return null

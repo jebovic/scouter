@@ -92,8 +92,9 @@ func (h *Handler) GetVoteSummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch options for this mission (name + price from options table).
+	// price_range is JSONB {min,max,best}; fall back to 0 if not set.
 	optRows, err := h.pool.Query(ctx, `
-		SELECT id, name, price
+		SELECT id, name, COALESCE((price_range->>'best')::numeric, 0) AS price
 		FROM options
 		WHERE mission_id = $1`, m.ID)
 	if err != nil {

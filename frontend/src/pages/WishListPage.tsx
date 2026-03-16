@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
 import { LoadingPulse } from '../components/scouter'
+import { Topnav } from '../components/scouter/Topnav'
 import { WishListItem } from '../components/wishlist'
 import { useWishList, useCreateWishListItem, useDeleteWishListItem } from '../hooks/useWishList'
 import { lookupProduct } from '../api/product'
@@ -31,8 +32,9 @@ function makeEmptyForm(defaultCurrency: string): AddFormState {
 }
 
 function WishlistPriorityCard() {
+  const { t } = useTranslation()
   const { data, isLoading, isError } = useWishlistPrioritizer()
-  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.85rem' }}>Calcul des priorités…</div>
+  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.85rem' }}>{t('wishlist.priorityLoading')}</div>
   if (isError || !data || data.items.length === 0) return null
   return (
     <div style={{
@@ -44,7 +46,7 @@ function WishlistPriorityCard() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
         <span style={{ fontSize: '1.1rem' }}>🏆</span>
-        <span style={{ fontWeight: 600, color: 'var(--text)' }}>Priorités intelligentes</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)' }}>{t('wishlist.priorityTitle')}</span>
         {data.topPick && (
           <span style={{
             marginLeft: 'auto',
@@ -53,7 +55,7 @@ function WishlistPriorityCard() {
             color: '#fff',
             borderRadius: '6px',
             padding: '2px 8px',
-          }}>Top: {data.topPick.name}</span>
+          }}>{t('wishlist.topPick', { name: data.topPick.name })}</span>
         )}
       </div>
       <p style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginBottom: '12px' }}>{data.summary}</p>
@@ -191,7 +193,9 @@ export default function WishListPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <div className={styles.header}>
         <div className={styles.headerRow}>
           <div>
@@ -204,7 +208,7 @@ export default function WishListPage() {
               className={styles.shareBtn}
               onClick={() => void handleShare()}
             >
-              {shareCopied ? 'Lien copié ! ✓' : 'Partager ma liste'}
+              {shareCopied ? t('wishlist.shareLinkCopied') : t('wishlist.shareMyList')}
             </button>
           )}
         </div>
@@ -390,5 +394,6 @@ export default function WishListPage() {
         </div>
       )}
     </main>
+    </>
   )
 }

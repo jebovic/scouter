@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocalEnvelopes } from '../hooks/useLocalEnvelopes'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
+import { Topnav } from '../components/scouter/Topnav'
 import { PRESET_COLORS, DEFAULT_EMOJIS, type Transaction } from '../utils/envelopes'
 import styles from './EnvelopesPage.module.css'
 
@@ -408,7 +409,9 @@ export default function EnvelopesPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       {/* Header */}
       <div className={styles.header}>
         <div>
@@ -507,5 +510,6 @@ export default function EnvelopesPage() {
         locale={locale}
       />
     </main>
+    </>
   )
 }

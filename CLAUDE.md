@@ -20,6 +20,7 @@
 ## Core Rules
 - All Docker Compose commands use `make <target>` or `docker compose -f deployment/docker-compose.yml` — the compose file is no longer at the root
 - Always read a file before editing it
+- Always run test after your modifications
 - Never produce documentation unless explicitly asked
 - Update this file continuously, keeping it minimal
 - Prefer editing existing files over creating new ones
@@ -27,6 +28,7 @@
 - Responses: short, direct, no filler
 - Immutability: always return new values, never mutate
 - Before commit, ensure no sensitive data will be send to git
+- **Multilingual**: The app is multi-language (EN/FR). Every string displayed in the interface MUST use `t()` from `react-i18next`. No hardcoded UI text. Add keys to both `en.json` and `fr.json` for every new string.
 
 ## Project Goal
 Full-stack personal spending intelligence tool. Research, compare, and budget any major purchase.

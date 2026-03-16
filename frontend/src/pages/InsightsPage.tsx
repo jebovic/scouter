@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { listMissions } from '../api/missions'
 import { analyzeSpending } from '../utils/spendingInsights'
 import { useFormatCurrency } from '../hooks/useFormatCurrency'
+import { Topnav } from '../components/scouter/Topnav'
 import styles from './InsightsPage.module.css'
 
 function SpendingBar({ pct, label }: { pct: number; label: string }) {
@@ -43,7 +44,7 @@ export default function InsightsPage() {
 
   if (isLoading) {
     return (
-      <main className={styles.main}>
+      <main className={`page ${styles.main}`}>
         <div className={styles.loading}>Analyse en cours…</div>
       </main>
     )
@@ -51,7 +52,7 @@ export default function InsightsPage() {
 
   if (!report || !missions || missions.length === 0) {
     return (
-      <main className={styles.main}>
+      <main className={`page ${styles.main}`}>
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>📊</div>
           <h2>Aucune donnée</h2>
@@ -64,7 +65,9 @@ export default function InsightsPage() {
   const { fmt } = useFormatCurrency()
 
   return (
-    <main className={styles.main}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.main}`}>
       <div className="container">
         <h1 className={styles.title}>📊 Insights Budget</h1>
 
@@ -128,5 +131,6 @@ export default function InsightsPage() {
         </section>
       </div>
     </main>
+    </>
   )
 }

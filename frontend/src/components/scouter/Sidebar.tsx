@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import type { Mission } from '../../types'
 import styles from './Sidebar.module.css'
 
@@ -9,6 +10,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, missions, onClose }: SidebarProps) {
+  const { t } = useTranslation()
   if (!open) return null
 
   return (
@@ -16,13 +18,13 @@ export function Sidebar({ open, missions, onClose }: SidebarProps) {
       <div role="presentation" className={styles.backdrop} onClick={onClose} />
       <nav aria-label="Missions" className={styles.panel}>
         <div className={styles.header}>
-          <span className={styles.title}>Missions</span>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close sidebar">
+          <span className={styles.title}>{t('common.missions')}</span>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t('common.closeSidebar')}>
             ✕
           </button>
         </div>
         {missions.length === 0 ? (
-          <p className={styles.empty}>No missions yet</p>
+          <p className={styles.empty}>{t('common.noMissionsYet')}</p>
         ) : (
           <ul className={styles.list}>
             {missions.map((m) => (

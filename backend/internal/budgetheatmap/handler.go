@@ -56,12 +56,12 @@ func (h *Handler) compute(r *http.Request) (*BudgetHeatmap, error) {
 
 	rows, err := h.pool.Query(ctx, `
 		SELECT si.cost_category,
-		       TO_CHAR(ph.created_at, 'YYYY-MM') AS month,
-		       SUM(ph.price)                      AS total,
-		       COUNT(*)                           AS count
+		       TO_CHAR(ph.recorded_at, 'YYYY-MM') AS month,
+		       SUM(ph.price)                       AS total,
+		       COUNT(*)                            AS count
 		FROM price_history ph
 		JOIN shopping_items si ON si.id = ph.item_id
-		WHERE ph.created_at > NOW() - INTERVAL '6 months'
+		WHERE ph.recorded_at > NOW() - INTERVAL '6 months'
 		GROUP BY si.cost_category, month
 		ORDER BY month, si.cost_category`)
 	if err != nil {

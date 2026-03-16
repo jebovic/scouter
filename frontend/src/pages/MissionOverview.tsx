@@ -17,14 +17,15 @@ import styles from './MissionOverview.module.css'
 
 function MissionScorecardSection({ missionId }: { missionId: string }) {
   const { data, isLoading } = useScorecard(missionId)
-  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>Calcul du bilan…</div>
+  const { t } = useTranslation()
+  if (isLoading) return <div style={{ padding: '12px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>{t('mission.scorecardLoading')}</div>
   if (!data) return null
   const gradeColor = { A: 'var(--status-buy)', B: 'var(--accent)', C: 'var(--status-watch)', D: 'var(--status-crisis)' }[data.grade] ?? 'var(--text-dim)'
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
         <span style={{ fontSize: '1.3rem' }}>🎖️</span>
-        <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>Bilan de mission</span>
+        <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>{t('mission.scorecardTitle')}</span>
         <span style={{
           marginLeft: 'auto',
           fontSize: '2rem',
@@ -36,10 +37,10 @@ function MissionScorecardSection({ missionId }: { missionId: string }) {
       <p style={{ fontSize: '0.85rem', color: 'var(--text-dim)', marginBottom: '14px' }}>{data.summary}</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '14px' }}>
         {[
-          { label: 'Recherche', value: data.dimensions.research },
-          { label: 'Prix', value: data.dimensions.pricing },
-          { label: 'Budget', value: data.dimensions.budgeting },
-          { label: 'Rapidité', value: data.dimensions.speed },
+          { label: t('mission.scorecardDimResearch'), value: data.dimensions.research },
+          { label: t('mission.scorecardDimPricing'), value: data.dimensions.pricing },
+          { label: t('mission.scorecardDimBudgeting'), value: data.dimensions.budgeting },
+          { label: t('mission.scorecardDimSpeed'), value: data.dimensions.speed },
         ].map((d) => (
           <div key={d.label} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>{d.value}</div>
@@ -175,8 +176,8 @@ export default function MissionOverview() {
                 className={styles.autotagBtn}
                 onClick={() => suggestCategory()}
                 disabled={isSuggesting}
-                title="Suggérer une catégorie"
-                aria-label="Suggérer une catégorie avec l'IA"
+                title={t('mission.suggestCategory')}
+                aria-label={t('mission.suggestCategoryAI')}
               >
                 {isSuggesting ? '⏳' : '🏷️'}
               </button>
@@ -276,7 +277,7 @@ export default function MissionOverview() {
 
         {/* Purchase Decision Matrix (Phase 142) */}
         <div className={styles.section}>
-          <h3 className={styles.cardLabel}>📊 Matrice de décision</h3>
+          <h3 className={styles.cardLabel}>📊 {t('mission.decisionMatrix').toUpperCase()}</h3>
           <DecisionMatrixTable missionId={mission.id} />
         </div>
 
@@ -302,7 +303,7 @@ export default function MissionOverview() {
 
         {/* Gift Finder Assistant (Phase 122) */}
         <div className={styles.section}>
-          <h3 className={styles.cardLabel}>🎁 IDÉES CADEAUX</h3>
+          <h3 className={styles.cardLabel}>🎁 {t('mission.giftFinder').toUpperCase()}</h3>
           <GiftFinderWidget missionId={mission.id} budget={mission.budget} />
         </div>
 
@@ -432,7 +433,7 @@ export default function MissionOverview() {
 
         {/* AI Shopping Summary Report (Phase 43) */}
         <div className={styles.section}>
-          <SummaryReport missionId={mission.id} />
+          <SummaryReport missionSlug={mission.slug} />
         </div>
 
         {/* AI Coach (Phase 47) */}
@@ -457,9 +458,9 @@ export default function MissionOverview() {
                 <button
                   className={styles.scannerBtn}
                   onClick={() => setShowScanner(true)}
-                  title="Scanner un reçu pour pré-remplir le formulaire"
+                  title={t('mission.scanReceiptTitle')}
                 >
-                  📷 Scanner un reçu
+                  📷 {t('mission.scanReceipt')}
                 </button>
               </div>
             )}

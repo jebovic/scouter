@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSearch } from '../hooks/useSearch'
 import { addToHistory } from '../utils/searchHistory'
+import { Topnav } from '../components/scouter/Topnav'
 import styles from './SearchPage.module.css'
 
 const POPULAR_TERMS: string[] = [
@@ -70,7 +71,9 @@ export function SearchPage() {
   const showEmpty = inputValue.trim().length < 2
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <div className={styles.header}>
         <div className={styles.title}>{t('search.title').toUpperCase()}</div>
         <div className={styles.subtitle}>{t('search.subtitle')}</div>
@@ -95,7 +98,7 @@ export function SearchPage() {
           </div>
 
           <div className={styles.popularSection}>
-            <div className={styles.popularLabel}>Recherches populaires</div>
+            <div className={styles.popularLabel}>{t('search.popularLabel')}</div>
             <div className={styles.chipList}>
               {POPULAR_TERMS.map((term) => (
                 <button
@@ -149,5 +152,6 @@ export function SearchPage() {
         </div>
       )}
     </main>
+    </>
   )
 }

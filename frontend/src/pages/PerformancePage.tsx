@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { usePerformanceMetrics } from '../hooks/usePerformanceMetrics'
+import { Topnav } from '../components/scouter/Topnav'
 import styles from './PerformancePage.module.css'
 
 function formatBytes(bytes: number | null): string {
@@ -26,7 +27,9 @@ export default function PerformancePage() {
   const heapColor = getColorClass(metrics.usedJSHeapSize, { green: 50000000, gold: 100000000 })
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <header className={styles.header}>
         <h1 className={styles.heading}>{t('performance.title', 'Perfs')}</h1>
         <button className={styles.refreshBtn} onClick={refresh} aria-label="Refresh metrics">
@@ -108,5 +111,6 @@ export default function PerformancePage() {
         </p>
       </section>
     </main>
+    </>
   )
 }

@@ -11,6 +11,7 @@ export const ModelStatusSchema = z.object({
 
 export const PoolHealthSchema = z.object({
   models: z.array(ModelStatusSchema),
+  checked_at: z.string().optional(),
 })
 
 export type ModelStatus = z.infer<typeof ModelStatusSchema>

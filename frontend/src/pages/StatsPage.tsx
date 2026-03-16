@@ -12,6 +12,7 @@ import type { CategoryStats, MerchantStats, TopItem, MonthStats } from '../api/s
 import BudgetHeatmapMission from '../components/mission/BudgetHeatmap'
 import CrossMissionPanel from '../components/mission/CrossMissionPanel'
 import { BadgeRow, BadgeToast, BudgetHeatmap, ShoppingPersonaCard } from '../components/scouter'
+import { Topnav } from '../components/scouter/Topnav'
 import { StarRating } from '../components/scouter/StarRating'
 import { SpendTrendChart } from '../components/charts/SpendTrendChart'
 import { CategoryDonutChart } from '../components/charts/CategoryDonutChart'
@@ -27,13 +28,14 @@ import styles from './StatsPage.module.css'
 // ---------------------------------------------------------------------------
 
 function BudgetBar({ spending, budget, pct, fmt }: { spending: number; budget: number; pct: number; fmt: (n: number) => string }) {
+  const { t } = useTranslation()
   const clampedPct = Math.min(100, pct)
   const isOver = pct > 100
   return (
     <div className={styles.budgetSection}>
       <div className={styles.budgetLabels}>
-        <span>{fmt(spending)} dépensé</span>
-        <span>{fmt(budget)} budget</span>
+        <span>{fmt(spending)} {t('stats.spent')}</span>
+        <span>{fmt(budget)} {t('stats.budget')}</span>
       </div>
       <div className={styles.budgetTrack}>
         <div
@@ -41,14 +43,15 @@ function BudgetBar({ spending, budget, pct, fmt }: { spending: number; budget: n
           style={{ '--w': `${clampedPct}%` } as React.CSSProperties}
         />
       </div>
-      <div className={styles.budgetPct}>{pct.toFixed(1)}% utilisé</div>
+      <div className={styles.budgetPct}>{t('stats.pctUsed', { pct: pct.toFixed(1) })}</div>
     </div>
   )
 }
 
 function CategoryDonut({ categories, fmt }: { categories: CategoryStats[]; fmt: (n: number) => string }) {
+  const { t } = useTranslation()
   if (categories.length === 0) {
-    return <div className={styles.analyticsEmpty}>Aucune donnée de catégorie</div>
+    return <div className={styles.analyticsEmpty}>{t('stats.noCategoryData')}</div>
   }
 
   const palette = [
@@ -84,15 +87,15 @@ function CategoryDonut({ categories, fmt }: { categories: CategoryStats[]; fmt: 
       <table className={styles.srOnly} aria-label="Category spending breakdown table">
         <thead>
           <tr>
-            <th scope="col">Catégorie</th>
-            <th scope="col">Montant</th>
-            <th scope="col">Pourcentage</th>
+            <th scope="col">{t('stats.categoryCol')}</th>
+            <th scope="col">{t('stats.amountCol')}</th>
+            <th scope="col">{t('stats.pctCol')}</th>
           </tr>
         </thead>
         <tbody>
           {categories.map((c) => (
             <tr key={c.category}>
-              <td>{c.category || 'Sans catégorie'}</td>
+              <td>{c.category || t('stats.uncategorized')}</td>
               <td>{fmt(c.total)}</td>
               <td>{c.pct.toFixed(1)}%</td>
             </tr>
@@ -106,7 +109,7 @@ function CategoryDonut({ categories, fmt }: { categories: CategoryStats[]; fmt: 
               className={styles.legendDot}
               style={{ background: palette[i % palette.length] } as React.CSSProperties}
             />
-            <span className={styles.legendLabel}>{c.category || 'Sans catégorie'}</span>
+            <span className={styles.legendLabel}>{c.category || t('stats.uncategorized')}</span>
             <span className={styles.legendValue}>{fmt(c.total)}</span>
             <span className={styles.legendPct}>{c.pct.toFixed(1)}%</span>
           </li>
@@ -117,15 +120,16 @@ function CategoryDonut({ categories, fmt }: { categories: CategoryStats[]; fmt: 
 }
 
 function MerchantBars({ merchants, fmt }: { merchants: MerchantStats[]; fmt: (n: number) => string }) {
+  const { t } = useTranslation()
   if (merchants.length === 0) {
-    return <div className={styles.analyticsEmpty}>Aucune donnée marchand</div>
+    return <div className={styles.analyticsEmpty}>{t('stats.noMerchantData')}</div>
   }
   const max = merchants[0].total
   return (
     <ul className={styles.merchantList}>
       {merchants.map((m) => (
         <li key={m.merchant} className={styles.merchantRow}>
-          <span className={styles.merchantName}>{m.merchant || 'Inconnu'}</span>
+          <span className={styles.merchantName}>{m.merchant || t('stats.unknownMerchant')}</span>
           <div className={styles.merchantTrack}>
             <div
               className={styles.merchantFill}
@@ -140,8 +144,9 @@ function MerchantBars({ merchants, fmt }: { merchants: MerchantStats[]; fmt: (n:
 }
 
 function TopItemsList({ items, fmt }: { items: TopItem[]; fmt: (n: number) => string }) {
+  const { t } = useTranslation()
   if (items.length === 0) {
-    return <div className={styles.analyticsEmpty}>Aucun article</div>
+    return <div className={styles.analyticsEmpty}>{t('stats.noItemData')}</div>
   }
   return (
     <ol className={styles.topList}>
@@ -160,8 +165,9 @@ function TopItemsList({ items, fmt }: { items: TopItem[]; fmt: (n: number) => st
 }
 
 function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) => string }) {
+  const { t } = useTranslation()
   if (months.length === 0) {
-    return <div className={styles.analyticsEmpty}>Aucune donnée mensuelle</div>
+    return <div className={styles.analyticsEmpty}>{t('stats.noMonthlyData')}</div>
   }
   const max = Math.max(...months.map((m) => m.avgPrice), 1)
   return (
@@ -174,8 +180,8 @@ function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) 
       <table className={styles.srOnly} aria-label="Monthly spending trend table">
         <thead>
           <tr>
-            <th scope="col">Mois</th>
-            <th scope="col">Prix moyen</th>
+            <th scope="col">{t('stats.monthCol')}</th>
+            <th scope="col">{t('stats.avgPriceCol')}</th>
           </tr>
         </thead>
         <tbody>
@@ -192,7 +198,7 @@ function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) 
           <div
             className={styles.monthFill}
             style={{ '--h': `${(m.avgPrice / max) * 100}%` } as React.CSSProperties}
-            title={`${m.month}: ${fmt(m.avgPrice)} moy.`}
+            title={`${m.month}: ${fmt(m.avgPrice)} ${t('stats.avgTooltip')}`}
           />
           <span className={styles.monthLabel}>{m.month.slice(5)}</span>
         </div>
@@ -206,21 +212,22 @@ function MonthlyChart({ months, fmt }: { months: MonthStats[]; fmt: (n: number) 
 // ---------------------------------------------------------------------------
 
 function AnalyticsTab() {
+  const { t } = useTranslation()
   const { data, isLoading, error } = useSpendingAnalytics()
   const { data: heatmapData } = useBudgetHeatmap()
   const { data: crossData } = useCrossMission()
   const { fmt, locale } = useFormatCurrency()
 
   if (isLoading) {
-    return <div className={styles.analyticsLoading}>Chargement des analytics…</div>
+    return <div className={styles.analyticsLoading}>{t('stats.analyticsLoading')}</div>
   }
 
   if (error || !data) {
     return (
       <div className={styles.analyticsEmptyState}>
         <div className={styles.analyticsEmptyIcon}>📊</div>
-        <h2>Données indisponibles</h2>
-        <p>Impossible de charger les analytics de dépenses.</p>
+        <h2>{t('stats.analyticsUnavailable')}</h2>
+        <p>{t('stats.analyticsUnavailableDesc')}</p>
       </div>
     )
   }
@@ -230,24 +237,24 @@ function AnalyticsTab() {
       <div className={styles.kpiRow}>
         <div className={styles.kpi}>
           <div className={styles.kpiValue}>{fmt(data.totalBudget)}</div>
-          <div className={styles.kpiLabel}>Budget total</div>
+          <div className={styles.kpiLabel}>{t('stats.totalBudgetKpi')}</div>
         </div>
         <div className={styles.kpi}>
           <div className={styles.kpiValue}>{fmt(data.totalSpending)}</div>
-          <div className={styles.kpiLabel}>Dépenses (achetés)</div>
+          <div className={styles.kpiLabel}>{t('stats.totalSpendingKpi')}</div>
         </div>
         <div className={styles.kpi}>
           <div className={styles.kpiValue}>{data.budgetUsagePct.toFixed(1)}%</div>
-          <div className={styles.kpiLabel}>Utilisation budget</div>
+          <div className={styles.kpiLabel}>{t('stats.budgetUsagePct')}</div>
         </div>
         <div className={styles.kpi}>
           <div className={styles.kpiValue}>{data.byCategory.length}</div>
-          <div className={styles.kpiLabel}>Catégories</div>
+          <div className={styles.kpiLabel}>{t('stats.categoriesKpi')}</div>
         </div>
       </div>
 
       <section className={styles.analyticsCard}>
-        <h2 className={styles.analyticsCardTitle}>Utilisation du budget</h2>
+        <h2 className={styles.analyticsCardTitle}>{t('stats.budgetUsageTitle')}</h2>
         <BudgetBar
           spending={data.totalSpending}
           budget={data.totalBudget}
@@ -257,41 +264,41 @@ function AnalyticsTab() {
       </section>
 
       <section className={styles.analyticsCard}>
-        <h2 className={styles.analyticsCardTitle}>Répartition par catégorie</h2>
+        <h2 className={styles.analyticsCardTitle}>{t('stats.categoryBreakdownTitle')}</h2>
         <CategoryDonut categories={data.byCategory} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
-        <h2 className={styles.analyticsCardTitle}>Top marchands</h2>
+        <h2 className={styles.analyticsCardTitle}>{t('stats.topMerchantsTitle')}</h2>
         <MerchantBars merchants={data.byMerchant} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
-        <h2 className={styles.analyticsCardTitle}>Articles les plus chers</h2>
+        <h2 className={styles.analyticsCardTitle}>{t('stats.topItemsTitle')}</h2>
         <TopItemsList items={data.topItems} fmt={fmt} />
       </section>
 
       <section className={styles.analyticsCard}>
-        <h2 className={styles.analyticsCardTitle}>Tendance mensuelle (6 mois)</h2>
+        <h2 className={styles.analyticsCardTitle}>{t('stats.monthlyTrendTitle')}</h2>
         <MonthlyChart months={data.monthlySummary} fmt={fmt} />
       </section>
 
       {heatmapData && (
         <section className={styles.analyticsCard}>
-          <h2 className={styles.analyticsCardTitle}>Heatmap des dépenses par catégorie</h2>
+          <h2 className={styles.analyticsCardTitle}>{t('stats.heatmapTitle')}</h2>
           <BudgetHeatmapMission data={heatmapData} />
         </section>
       )}
 
       {crossData && crossData.missions.length > 0 && (
         <section className={styles.analyticsCard}>
-          <h2 className={styles.analyticsCardTitle}>Comparaison inter-missions</h2>
+          <h2 className={styles.analyticsCardTitle}>{t('stats.crossMissionTitle')}</h2>
           <CrossMissionPanel data={crossData} />
         </section>
       )}
 
       <div className={styles.generatedAt}>
-        Données générées le{' '}
+        {t('stats.generatedAt')}{' '}
         {new Date(data.generatedAt).toLocaleString(locale, {
           dateStyle: 'medium',
           timeStyle: 'short',
@@ -357,7 +364,9 @@ export default function StatsPage() {
   }, [stats, missions.length, badges, unlock])
 
   return (
-    <main className={styles.page}>
+    <>
+      <Topnav />
+      <main className={`page ${styles.page}`}>
       <h1 className={styles.heading}>{t('stats.title')}</h1>
 
       {/* Tab switcher */}
@@ -370,7 +379,7 @@ export default function StatsPage() {
           className={`${styles.tab} ${activeTab === 'stats' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('stats')}
         >
-          Stats
+          {t('stats.tabStats')}
         </button>
         <button
           role="tab"
@@ -380,7 +389,7 @@ export default function StatsPage() {
           className={`${styles.tab} ${activeTab === 'analytics' ? styles.tabActive : ''}`}
           onClick={() => setActiveTab('analytics')}
         >
-          Analytics
+          {t('stats.tabAnalytics')}
         </button>
       </div>
 
@@ -495,7 +504,7 @@ export default function StatsPage() {
                   </section>
 
                   <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Vos badges</h2>
+                    <h2 className={styles.sectionTitle}>{t('stats.badges')}</h2>
                     <BadgeRow badges={badges} />
                   </section>
 
@@ -521,5 +530,6 @@ export default function StatsPage() {
 
       {newBadge && <BadgeToast badge={newBadge} onDismiss={() => setNewBadge(null)} />}
     </main>
+    </>
   )
 }

@@ -22,6 +22,7 @@ function daysUntil(isoDate: string): number {
 }
 
 function NextDealWidget() {
+  const { t } = useTranslation()
   const { events, isLoading } = useDealCalendar({ upcoming: true })
   const next = findNextDeal(events)
 
@@ -47,7 +48,7 @@ function NextDealWidget() {
 
   return (
     <div className={styles.nextDeal}>
-      <span className={styles.nextDealLabel}>PROCHAIN BON PLAN</span>
+      <span className={styles.nextDealLabel}>{t('hq.nextDealLabel')}</span>
       <div className={styles.nextDealBody}>
         <span className={styles.nextDealName}>{next.name}</span>
         <span
@@ -60,7 +61,7 @@ function NextDealWidget() {
       <div className={styles.nextDealMeta}>
         {dateStr}
         <Link to="/deal-calendar" className={styles.nextDealLink}>
-          Voir le calendrier →
+          {t('hq.viewCalendar')}
         </Link>
       </div>
     </div>
@@ -201,14 +202,14 @@ export default function HQDashboard() {
             <div className={styles.compareSection}>
               <div className={styles.compareHeader}>
                 <div>
-                  <h2 className={styles.compareTitle}>COMPARER DES MISSIONS</h2>
+                  <h2 className={styles.compareTitle}>{t('hq.compareMissions')}</h2>
                   <p className={styles.compareSubtitle}>
-                    Sélectionnez 2 à 4 missions pour une analyse côte à côte
+                    {t('hq.compareSubtitle')}
                   </p>
                 </div>
                 {compareIds.length > 0 && (
                   <button className={styles.clearBtn} onClick={clearCompare}>
-                    Effacer
+                    {t('hq.compareClear')}
                   </button>
                 )}
               </div>
@@ -224,7 +225,7 @@ export default function HQDashboard() {
                       data-disabled={disabled}
                       onClick={() => toggleCompare(mission.id)}
                       disabled={disabled}
-                      title={disabled ? 'Maximum 4 missions sélectionnées' : undefined}
+                      title={disabled ? t('hq.compareMax') : undefined}
                     >
                       <span>{mission.icon}</span>
                       <span>{mission.name}</span>

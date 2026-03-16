@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useSearchInput, useSearch } from '../../hooks/useSearch'
 import { useSearchSuggestions } from '../../hooks/useSearchSuggestions'
 import { addToHistory, removeFromHistory } from '../../utils/searchHistory'
@@ -15,6 +16,7 @@ function badgeColor(badge: string): string {
 }
 
 export function SearchDropdown() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { query, setQuery, isOpen, open, close, clear, inputRef } = useSearchInput()
   const { data: results = [], isFetching } = useSearch(query, MAX_DROPDOWN)
@@ -116,7 +118,7 @@ export function SearchDropdown() {
           ref={inputRef}
           className={styles.input}
           type="search"
-          placeholder="Rechercher…"
+          placeholder={t('search.dropdown.placeholder')}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -124,7 +126,7 @@ export function SearchDropdown() {
           }}
           onFocus={() => open()}
           onKeyDown={handleKeyDown}
-          aria-label="Rechercher des options"
+          aria-label={t('search.dropdown.ariaLabel')}
           aria-expanded={showResultsDropdown || showSuggestionsDropdown}
           aria-autocomplete="list"
         />
@@ -136,13 +138,13 @@ export function SearchDropdown() {
           {history.length > 0 && (
             <>
               <div className={styles.sectionHeader}>
-                <span>Recherches récentes</span>
+                <span>{t('search.dropdown.recentSearches')}</span>
                 <button
                   className={styles.clearBtn}
                   onClick={clearHistory}
-                  aria-label="Effacer l'historique"
+                  aria-label={t('search.dropdown.clearHistory')}
                 >
-                  Effacer l&apos;historique
+                  {t('search.dropdown.clearHistory')}
                 </button>
               </div>
               {history.map((entry) => (
@@ -158,7 +160,7 @@ export function SearchDropdown() {
                   <button
                     className={styles.removeBtn}
                     onClick={(e) => handleRemoveHistory(e, entry)}
-                    aria-label={`Supprimer "${entry}" de l'historique`}
+                    aria-label={t('search.dropdown.removeFromHistory', { entry })}
                   >
                     ×
                   </button>
@@ -168,7 +170,7 @@ export function SearchDropdown() {
           )}
 
           {history.length === 0 && trimmed.length === 0 && (
-            <div className={styles.empty}>Tapez pour rechercher…</div>
+            <div className={styles.empty}>{t('search.dropdown.typeToSearch')}</div>
           )}
         </div>
       )}
@@ -177,10 +179,10 @@ export function SearchDropdown() {
       {showResultsDropdown && (
         <div className={styles.dropdown} role="listbox" ref={dropdownRef} onKeyDown={handleDropdownKeyDown}>
           {isFetching && results.length === 0 && (
-            <div className={styles.empty}>Recherche en cours…</div>
+            <div className={styles.empty}>{t('search.dropdown.loading')}</div>
           )}
           {!isFetching && results.length === 0 && suggestions.length === 0 && (
-            <div className={styles.empty}>Aucun résultat pour &quot;{query}&quot;</div>
+            <div className={styles.empty}>{t('search.dropdown.noResultsFor')} &quot;{query}&quot;</div>
           )}
 
           {results.map((r) => (
@@ -211,7 +213,7 @@ export function SearchDropdown() {
           {suggestions.length > 0 && (
             <>
               <div className={styles.sectionHeader}>
-                <span>Suggestions</span>
+                <span>{t('search.dropdown.suggestions')}</span>
               </div>
               {suggestions.slice(0, 4).map((term) => (
                 <button
@@ -234,7 +236,7 @@ export function SearchDropdown() {
               type="button"
               onClick={() => navigateToSearch(trimmed)}
             >
-              Voir tous les résultats →
+              {t('search.dropdown.viewAll')}
             </button>
           )}
         </div>

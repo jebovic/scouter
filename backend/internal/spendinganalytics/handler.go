@@ -144,9 +144,9 @@ func (h *Handler) compute(r *http.Request) (*SpendingAnalytics, error) {
 
 	// 4. Monthly summary (last 6 months of price_history)
 	monthRows, err := h.pool.Query(ctx, `
-		SELECT TO_CHAR(created_at, 'YYYY-MM'), AVG(price), COUNT(*)
+		SELECT TO_CHAR(recorded_at, 'YYYY-MM'), AVG(price), COUNT(*)
 		FROM price_history
-		WHERE created_at > NOW() - INTERVAL '6 months'
+		WHERE recorded_at > NOW() - INTERVAL '6 months'
 		GROUP BY 1
 		ORDER BY 1`)
 	if err != nil {

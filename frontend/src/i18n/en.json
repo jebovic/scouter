@@ -1,6 +1,9 @@
 {
   "nav": {
     "hq": "Home",
+    "mainNavLabel": "Main navigation",
+    "logoTitle": "Home",
+    "homeAriaLabel": "SCOUTER — Home",
     "missionControl": "Mission Control",
     "overview": "Summary",
     "options": "Compare",
@@ -54,7 +57,13 @@
     "add": "Add",
     "adding": "Adding...",
     "search": "Search",
-    "noResults": "No results"
+    "noResults": "No results",
+    "openSidebar": "Open missions sidebar",
+    "closeSidebar": "Close sidebar",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "noMissionsYet": "No missions yet",
+    "missions": "Missions"
   },
   "mission": {
     "create": "New Mission",
@@ -92,7 +101,20 @@
       "done": "Done"
     },
     "cloned": "Mission cloned",
-    "cloneError": "Clone failed: {{message}}"
+    "cloneError": "Clone failed: {{message}}",
+    "scorecardLoading": "Calculating scorecard...",
+    "scorecardTitle": "Mission Scorecard",
+    "scorecardDimResearch": "Research",
+    "scorecardDimPricing": "Pricing",
+    "scorecardDimBudgeting": "Budget",
+    "scorecardDimSpeed": "Speed",
+    "suggestCategory": "Suggest a category",
+    "suggestCategoryAI": "Suggest a category with AI",
+    "scanReceiptTitle": "Scan a receipt to pre-fill the form",
+    "scanReceipt": "Scan a receipt",
+    "activityFeed": "Activity Feed",
+    "decisionMatrix": "Decision Matrix",
+    "giftFinder": "Gift Ideas"
   },
   "badges": {
     "buy": "Buy",
@@ -135,7 +157,27 @@
     "costBreakdown": "Cost Breakdown",
     "noItems": "No items yet. Run Price Intel to populate this list.",
     "itemCount_one": "{{count}} item tracked",
-    "itemCount_other": "{{count}} items tracked"
+    "itemCount_other": "{{count}} items tracked",
+    "frenchBenchmarkLoading": "Analyzing French market…",
+    "frenchBenchmarkTitle": "French Market Benchmark",
+    "medianMarket": "Market median",
+    "yourAverage": "Your average",
+    "verdictBonPrix": "✓ Good price",
+    "verdictEleve": "⚠ High",
+    "verdictMoyen": "~ Average",
+    "offersCount_one": "{{count}} offer",
+    "offersCount_other": "{{count}} offers",
+    "timelineTitle": "4-week purchase plan",
+    "totalItems_one": "{{count}} item",
+    "totalItems_other": "{{count}} items",
+    "noItemsInBucket": "No items",
+    "hideShareCard": "Hide Share Card",
+    "shareWishlist": "Share Wishlist",
+    "viewList": "≡ List",
+    "viewKanban": "⊞ Kanban",
+    "viewListTitle": "List view",
+    "viewKanbanTitle": "Kanban view",
+    "viewModeLabel": "View mode"
   },
   "options": {
     "all": "All",
@@ -216,6 +258,10 @@
     "defaultCurrency": "Default Currency",
     "locale": "Locale",
     "llmProvider": "LLM Provider",
+    "simpleMode": "Simple Mode",
+    "simpleModeDesc": "Hides advanced tools in the navigation bar.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "saved": "Settings saved.",
     "dangerZone": "Danger Zone",
     "deleteAllData": "Delete All Data",
@@ -246,7 +292,44 @@
     "budgetVariance": "Budget Variance Heatmap",
     "underBudget": "Under Budget",
     "attention": "Attention",
-    "overBudget": "Over Budget"
+    "spent": "spent",
+    "budget": "budget",
+    "pctUsed": "{{pct}}% used",
+    "noCategoryData": "No category data",
+    "categoryCol": "Category",
+    "amountCol": "Amount",
+    "pctCol": "Percentage",
+    "uncategorized": "Uncategorized",
+    "noMerchantData": "No merchant data",
+    "unknownMerchant": "Unknown",
+    "noItemData": "No items",
+    "noMonthlyData": "No monthly data",
+    "monthCol": "Month",
+    "avgPriceCol": "Avg. price",
+    "avgTooltip": "avg.",
+    "analyticsLoading": "Loading analytics…",
+    "analyticsUnavailable": "Data unavailable",
+    "analyticsUnavailableDesc": "Unable to load spending analytics.",
+    "totalBudgetKpi": "Total Budget",
+    "totalSpendingKpi": "Spending (purchased)",
+    "budgetUsagePct": "Budget usage",
+    "categoriesKpi": "Categories",
+    "budgetUsageTitle": "Budget usage",
+    "categoryBreakdownTitle": "Category breakdown",
+    "topMerchantsTitle": "Top merchants",
+    "topItemsTitle": "Most expensive items",
+    "monthlyTrendTitle": "Monthly trend (6 months)",
+    "heatmapTitle": "Spending heatmap by category",
+    "crossMissionTitle": "Cross-mission comparison",
+    "generatedAt": "Data generated on",
+    "tabStats": "Stats",
+    "tabAnalytics": "Analytics",
+    "badges": "Your badges"
+  },
+  "kanban": {
+    "title": "Mission Board",
+    "subtitle": "Visualize your missions by status",
+    "loading": "Loading missions..."
   },
   "search": {
     "title": "Semantic Search",
@@ -261,7 +344,20 @@
     "recommended": "Recommended",
     "alternative": "Alternative",
     "watch": "Watch",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "dropdown": {
+      "placeholder": "Search…",
+      "ariaLabel": "Search options",
+      "recentSearches": "Recent searches",
+      "clearHistory": "Clear history",
+      "removeFromHistory": "Remove \"{{entry}}\" from history",
+      "typeToSearch": "Type to search…",
+      "loading": "Searching…",
+      "noResultsFor": "No results for",
+      "suggestions": "Suggestions",
+      "viewAll": "View all results →"
+    },
+    "popularLabel": "Popular searches"
   },
   "onboarding": {
     "step0Title": "Welcome to SCOUTER",
@@ -274,7 +370,13 @@
   "hq": {
     "noMissions": "No Active Missions",
     "noMissionsDesc": "Create your first mission to start researching a purchase",
-    "newMission": "New Mission"
+    "newMission": "New Mission",
+    "nextDealLabel": "NEXT DEAL",
+    "viewCalendar": "View calendar →",
+    "compareMissions": "COMPARE MISSIONS",
+    "compareSubtitle": "Select 2 to 4 missions for a side-by-side analysis",
+    "compareClear": "Clear",
+    "compareMax": "Maximum 4 missions selected"
   },
   "quickNav": {
     "optionsExplorer": "Options Explorer",
@@ -294,7 +396,12 @@
     "empty": "No items in your wish list yet",
     "emptyDesc": "Add items you want to track for price drops",
     "delete": "Delete",
-    "loading": "Loading wish list..."
+    "loading": "Loading wish list...",
+    "priorityLoading": "Calculating priorities…",
+    "priorityTitle": "Smart priorities",
+    "topPick": "Top: {{name}}",
+    "shareLinkCopied": "Link copied! ✓",
+    "shareMyList": "Share my list"
   },
   "product": {
     "barcodeTitle": "Barcode Lookup",
@@ -353,15 +460,23 @@
   },
   "notifications": {
     "title": "Notifications",
+    "alerts": "ALERTS",
     "markAllRead": "Mark all read",
-    "empty": "No Notifications",
+    "empty": "No notifications",
     "emptyDesc": "Price alerts and trend notifications will appear here.",
     "viewAll": "View all →",
     "deleteConfirm": "Delete notification",
     "filterAll": "All",
     "filterPriceDrop": "Price Drop",
     "filterTargetHit": "Target Hit",
-    "filterTrendAlert": "Trend Alert"
+    "filterTrendAlert": "Trend Alert",
+    "bellAriaLabel": "Notifications",
+    "bellAriaLabelUnread": "Notifications ({{count}} unread)",
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "unreadLabel": "unread"
   },
   "reviews": {
     "title": "COMMUNITY REVIEWS",

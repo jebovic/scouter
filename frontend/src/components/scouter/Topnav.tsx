@@ -33,7 +33,7 @@ export function Topnav({ missionSlug, missionName }: TopnavProps) {
       </button>
 
       {/* Logo */}
-      <Link to="/" className={styles.logo} aria-label="SCOUTER — Home">
+      <Link to="/" className={styles.logo} aria-label={t('nav.homeAriaLabel')}>
         <Logo size="md" />
       </Link>
 

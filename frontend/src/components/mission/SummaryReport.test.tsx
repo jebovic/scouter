@@ -14,6 +14,8 @@ const mockUseGenerateSummary = vi.mocked(useGenerateSummary)
 
 const MISSION_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
 
+const MISSION_SLUG = 'test-mission'
+
 const sampleSummary = {
   id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
   missionId: MISSION_ID,
@@ -47,19 +49,19 @@ describe('SummaryReport', () => {
   // ── Initial empty state ────────────────────────────────────────────────────
 
   it('shows a generate button when no summary exists', () => {
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByRole('button', { name: /generer/i })).toBeTruthy()
   })
 
   it('shows a prompt text when no summary exists', () => {
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByText(/generer.*rapport/i)).toBeTruthy()
   })
 
   it('calls generate when the generate button is clicked', () => {
     const generate = vi.fn()
     mockUseGenerateSummary.mockReturnValue(makeGenerateMock({ generate }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     fireEvent.click(screen.getByRole('button', { name: /generer/i }))
     expect(generate).toHaveBeenCalledOnce()
   })
@@ -68,13 +70,13 @@ describe('SummaryReport', () => {
 
   it('shows loading message while generating', () => {
     mockUseGenerateSummary.mockReturnValue(makeGenerateMock({ isPending: true }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByText(/analyse votre mission/i)).toBeTruthy()
   })
 
   it('disables generate button while generating', () => {
     mockUseGenerateSummary.mockReturnValue(makeGenerateMock({ isPending: true }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     const btn = screen.getByRole('button', { name: /analyse/i })
     expect((btn as HTMLButtonElement).disabled).toBe(true)
   })
@@ -83,31 +85,31 @@ describe('SummaryReport', () => {
 
   it('renders markdown content when summary is available', () => {
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByText(/Contenu du rapport en markdown/)).toBeTruthy()
   })
 
   it('shows copy button when summary is available', () => {
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByRole('button', { name: /copier/i })).toBeTruthy()
   })
 
   it('shows download button when summary is available', () => {
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByRole('button', { name: /telecharger/i })).toBeTruthy()
   })
 
   it('shows regenerate button when summary is available', () => {
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByRole('button', { name: /regenerer/i })).toBeTruthy()
   })
 
   it('does not show initial generate button when summary exists', () => {
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     // The header generate button should not be present; only regenerate
     const buttons = screen.getAllByRole('button')
     const buttonLabels = buttons.map((b) => b.textContent ?? '')
@@ -118,7 +120,7 @@ describe('SummaryReport', () => {
     const generate = vi.fn()
     mockUseSummary.mockReturnValue(makeSummaryMock({ summary: sampleSummary }))
     mockUseGenerateSummary.mockReturnValue(makeGenerateMock({ generate }))
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     fireEvent.click(screen.getByRole('button', { name: /regenerer/i }))
     expect(generate).toHaveBeenCalledOnce()
   })
@@ -126,7 +128,7 @@ describe('SummaryReport', () => {
   // ── Header title ───────────────────────────────────────────────────────────
 
   it('renders the "Rapport IA" title', () => {
-    render(<SummaryReport missionId={MISSION_ID} />)
+    render(<SummaryReport missionSlug={MISSION_SLUG} />)
     expect(screen.getByText(/rapport ia/i)).toBeTruthy()
   })
 })

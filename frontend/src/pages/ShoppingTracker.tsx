@@ -23,7 +23,8 @@ import styles from './ShoppingTracker.module.css'
 function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
   const { data, isLoading } = useFrenchBenchmark(missionId)
   const { fmt } = useFormatCurrency()
-  if (isLoading) return <div style={{ padding: '10px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>Analyse du marché français…</div>
+  const { t } = useTranslation()
+  if (isLoading) return <div style={{ padding: '10px', color: 'var(--text-dim)', fontSize: '0.82rem' }}>{t('shopping.frenchBenchmarkLoading')}</div>
   if (!data) return null
   const verdictColor = data.verdictCode === 'bon_prix'
     ? 'var(--status-buy)'
@@ -34,20 +35,20 @@ function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
         <span style={{ fontSize: '1.1rem' }}>🇫🇷</span>
-        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>Benchmark Marché Français</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>{t('shopping.frenchBenchmarkTitle')}</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text)' }}>{fmt(data.medianPrice)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Médiane marché</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.medianMarket')}</div>
         </div>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--accent)' }}>{fmt(data.yourAvgPrice)}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Votre moyenne</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.yourAverage')}</div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: verdictColor }}>{data.verdictCode === 'bon_prix' ? '✓ Bon prix' : data.verdictCode === 'au_dessus_du_marche' ? '⚠ Élevé' : '~ Moyen'}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{data.sampleSize} offres</div>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: verdictColor }}>{data.verdictCode === 'bon_prix' ? t('shopping.verdictBonPrix') : data.verdictCode === 'au_dessus_du_marche' ? t('shopping.verdictEleve') : t('shopping.verdictMoyen')}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.offersCount', { count: data.sampleSize })}</div>
         </div>
       </div>
       <p style={{ fontSize: '0.8rem', color: verdictColor, fontWeight: 500, marginBottom: '8px' }}>{data.verdict}</p>
@@ -62,14 +63,15 @@ function FrenchBenchmarkPanel({ missionId }: { missionId: string }) {
 
 function PurchaseTimelineCard({ missionId }: { missionId: string }) {
   const { data, isLoading } = useTimelinePlanner(missionId)
+  const { t } = useTranslation()
   if (isLoading) return null
   if (!data || data.totalItems === 0) return null
   return (
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
         <span style={{ fontSize: '1.1rem' }}>📅</span>
-        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>Plan d'achat 4 semaines</span>
-        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-dim)' }}>{data.totalItems} article(s)</span>
+        <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.95rem' }}>{t('shopping.timelineTitle')}</span>
+        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: 'var(--text-dim)' }}>{t('shopping.totalItems', { count: data.totalItems })}</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
         {data.buckets.map((b) => (
@@ -85,7 +87,7 @@ function PurchaseTimelineCard({ missionId }: { missionId: string }) {
               ? b.items.map((item, i) => (
                   <div key={i} style={{ fontSize: '0.75rem', color: 'var(--text)', padding: '2px 0' }}>• {item}</div>
                 ))
-              : <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>Aucun article</div>
+              : <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>{t('shopping.noItemsInBucket')}</div>
             }
             <div style={{ marginTop: '6px', fontSize: '0.68rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>{b.promoHint}</div>
           </div>
@@ -189,7 +191,7 @@ export default function ShoppingTracker() {
                 onClick={() => setShowShareCard((v) => !v)}
                 aria-pressed={showShareCard}
               >
-                {showShareCard ? 'Hide Share Card' : 'Share Wishlist'}
+                {showShareCard ? t('shopping.hideShareCard') : t('shopping.shareWishlist')}
               </button>
               {items.length > 0 && mission && (
                 <button
@@ -202,22 +204,22 @@ export default function ShoppingTracker() {
               )}
               {mission && <MissionCSVExportButton missionId={mission.id} />}
               {/* View mode toggle */}
-              <div className={styles.viewToggle} role="group" aria-label="View mode">
+              <div className={styles.viewToggle} role="group" aria-label={t('shopping.viewModeLabel')}>
                 <button
                   className={`${styles.viewToggleBtn} ${viewMode === 'list' ? styles.viewToggleActive : ''}`}
                   onClick={() => setViewMode('list')}
                   aria-pressed={viewMode === 'list'}
-                  title="Vue liste"
+                  title={t('shopping.viewListTitle')}
                 >
-                  ≡ Liste
+                  {t('shopping.viewList')}
                 </button>
                 <button
                   className={`${styles.viewToggleBtn} ${viewMode === 'kanban' ? styles.viewToggleActive : ''}`}
                   onClick={() => setViewMode('kanban')}
                   aria-pressed={viewMode === 'kanban'}
-                  title="Vue Kanban"
+                  title={t('shopping.viewKanbanTitle')}
                 >
-                  ⊞ Kanban
+                  {t('shopping.viewKanban')}
                 </button>
               </div>
             </div>

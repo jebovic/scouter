@@ -1,6 +1,9 @@
 {
   "nav": {
     "hq": "Accueil",
+    "mainNavLabel": "Navigation principale",
+    "logoTitle": "Accueil",
+    "homeAriaLabel": "SCOUTER — Accueil",
     "missionControl": "Contrôle Mission",
     "overview": "Résumé",
     "options": "Comparatif",
@@ -54,7 +57,13 @@
     "add": "Ajouter",
     "adding": "Ajout...",
     "search": "Rechercher",
-    "noResults": "Aucun résultat"
+    "noResults": "Aucun résultat",
+    "openSidebar": "Ouvrir la barre de missions",
+    "closeSidebar": "Fermer la barre",
+    "switchToLight": "Passer en mode clair",
+    "switchToDark": "Passer en mode sombre",
+    "noMissionsYet": "Aucune mission pour l'instant",
+    "missions": "Missions"
   },
   "mission": {
     "create": "Nouvelle Mission",
@@ -92,7 +101,20 @@
       "done": "Terminé"
     },
     "cloned": "Mission clonée",
-    "cloneError": "Échec du clonage: {{message}}"
+    "cloneError": "Échec du clonage: {{message}}",
+    "scorecardLoading": "Calcul du bilan…",
+    "scorecardTitle": "Bilan de mission",
+    "scorecardDimResearch": "Recherche",
+    "scorecardDimPricing": "Prix",
+    "scorecardDimBudgeting": "Budget",
+    "scorecardDimSpeed": "Rapidité",
+    "suggestCategory": "Suggérer une catégorie",
+    "suggestCategoryAI": "Suggérer une catégorie avec l'IA",
+    "scanReceiptTitle": "Scanner un reçu pour pré-remplir le formulaire",
+    "scanReceipt": "Scanner un reçu",
+    "activityFeed": "Fil d'activité",
+    "decisionMatrix": "Matrice de décision",
+    "giftFinder": "Idées cadeaux"
   },
   "badges": {
     "buy": "Acheter",
@@ -135,7 +157,27 @@
     "costBreakdown": "Répartition des coûts",
     "noItems": "Aucun article. Lancez l'Intel Prix pour remplir cette liste.",
     "itemCount_one": "{{count}} article suivi",
-    "itemCount_other": "{{count}} articles suivis"
+    "itemCount_other": "{{count}} articles suivis",
+    "frenchBenchmarkLoading": "Analyse du marché français…",
+    "frenchBenchmarkTitle": "Benchmark Marché Français",
+    "medianMarket": "Médiane marché",
+    "yourAverage": "Votre moyenne",
+    "verdictBonPrix": "✓ Bon prix",
+    "verdictEleve": "⚠ Élevé",
+    "verdictMoyen": "~ Moyen",
+    "offersCount_one": "{{count}} offre",
+    "offersCount_other": "{{count}} offres",
+    "timelineTitle": "Plan d'achat 4 semaines",
+    "totalItems_one": "{{count}} article",
+    "totalItems_other": "{{count}} articles",
+    "noItemsInBucket": "Aucun article",
+    "hideShareCard": "Masquer la carte partage",
+    "shareWishlist": "Partager la liste",
+    "viewList": "≡ Liste",
+    "viewKanban": "⊞ Kanban",
+    "viewListTitle": "Vue liste",
+    "viewKanbanTitle": "Vue Kanban",
+    "viewModeLabel": "Mode d'affichage"
   },
   "options": {
     "all": "Tout",
@@ -216,6 +258,10 @@
     "defaultCurrency": "Devise par défaut",
     "locale": "Langue",
     "llmProvider": "Fournisseur LLM",
+    "simpleMode": "Mode Simplifié",
+    "simpleModeDesc": "Masque les outils avancés dans la barre de navigation.",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
     "saved": "Paramètres enregistrés.",
     "dangerZone": "Zone dangereuse",
     "deleteAllData": "Supprimer toutes les données",
@@ -246,7 +292,44 @@
     "budgetVariance": "Heatmap Budgétaire",
     "underBudget": "En dessous du budget",
     "attention": "Attention",
-    "overBudget": "Dépassé"
+    "spent": "dépensé",
+    "budget": "budget",
+    "pctUsed": "{{pct}}% utilisé",
+    "noCategoryData": "Aucune donnée de catégorie",
+    "categoryCol": "Catégorie",
+    "amountCol": "Montant",
+    "pctCol": "Pourcentage",
+    "uncategorized": "Sans catégorie",
+    "noMerchantData": "Aucune donnée marchand",
+    "unknownMerchant": "Inconnu",
+    "noItemData": "Aucun article",
+    "noMonthlyData": "Aucune donnée mensuelle",
+    "monthCol": "Mois",
+    "avgPriceCol": "Prix moyen",
+    "avgTooltip": "moy.",
+    "analyticsLoading": "Chargement des analytics…",
+    "analyticsUnavailable": "Données indisponibles",
+    "analyticsUnavailableDesc": "Impossible de charger les analytics de dépenses.",
+    "totalBudgetKpi": "Budget total",
+    "totalSpendingKpi": "Dépenses (achetés)",
+    "budgetUsagePct": "Utilisation budget",
+    "categoriesKpi": "Catégories",
+    "budgetUsageTitle": "Utilisation du budget",
+    "categoryBreakdownTitle": "Répartition par catégorie",
+    "topMerchantsTitle": "Top marchands",
+    "topItemsTitle": "Articles les plus chers",
+    "monthlyTrendTitle": "Tendance mensuelle (6 mois)",
+    "heatmapTitle": "Heatmap des dépenses par catégorie",
+    "crossMissionTitle": "Comparaison inter-missions",
+    "generatedAt": "Données générées le",
+    "tabStats": "Stats",
+    "tabAnalytics": "Analytics",
+    "badges": "Vos badges"
+  },
+  "kanban": {
+    "title": "Tableau de missions",
+    "subtitle": "Visualisez vos missions par statut",
+    "loading": "Chargement des missions..."
   },
   "search": {
     "title": "Recherche Sémantique",
@@ -261,7 +344,20 @@
     "recommended": "Recommandé",
     "alternative": "Alternatif",
     "watch": "À surveiller",
-    "rejected": "Rejeté"
+    "rejected": "Rejeté",
+    "dropdown": {
+      "placeholder": "Rechercher…",
+      "ariaLabel": "Rechercher des options",
+      "recentSearches": "Recherches récentes",
+      "clearHistory": "Effacer l'historique",
+      "removeFromHistory": "Supprimer \"{{entry}}\" de l'historique",
+      "typeToSearch": "Tapez pour rechercher…",
+      "loading": "Recherche en cours…",
+      "noResultsFor": "Aucun résultat pour",
+      "suggestions": "Suggestions",
+      "viewAll": "Voir tous les résultats →"
+    },
+    "popularLabel": "Recherches populaires"
   },
   "onboarding": {
     "step0Title": "Bienvenue sur SCOUTER",
@@ -274,7 +370,13 @@
   "hq": {
     "noMissions": "Aucune mission active",
     "noMissionsDesc": "Créez votre première mission pour commencer à rechercher un achat",
-    "newMission": "Nouvelle Mission"
+    "newMission": "Nouvelle Mission",
+    "nextDealLabel": "PROCHAIN BON PLAN",
+    "viewCalendar": "Voir le calendrier →",
+    "compareMissions": "COMPARER DES MISSIONS",
+    "compareSubtitle": "Sélectionnez 2 à 4 missions pour une analyse côte à côte",
+    "compareClear": "Effacer",
+    "compareMax": "Maximum 4 missions sélectionnées"
   },
   "quickNav": {
     "optionsExplorer": "Explorateur d'options",
@@ -294,7 +396,12 @@
     "empty": "Aucun article dans votre liste de souhaits",
     "emptyDesc": "Ajoutez des articles que vous souhaitez suivre pour les baisses de prix",
     "delete": "Supprimer",
-    "loading": "Chargement de la liste de souhaits..."
+    "loading": "Chargement de la liste de souhaits...",
+    "priorityLoading": "Calcul des priorités…",
+    "priorityTitle": "Priorités intelligentes",
+    "topPick": "Top : {{name}}",
+    "shareLinkCopied": "Lien copié ! ✓",
+    "shareMyList": "Partager ma liste"
   },
   "product": {
     "barcodeTitle": "Recherche par code-barres",
@@ -353,6 +460,7 @@
   },
   "notifications": {
     "title": "Notifications",
+    "alerts": "ALERTES",
     "markAllRead": "Tout marquer comme lu",
     "empty": "Aucune notification",
     "emptyDesc": "Les alertes de prix et les notifications de tendance apparaîtront ici.",
@@ -361,7 +469,14 @@
     "filterAll": "Tout",
     "filterPriceDrop": "Baisse de prix",
     "filterTargetHit": "Cible atteinte",
-    "filterTrendAlert": "Alerte tendance"
+    "filterTrendAlert": "Alerte tendance",
+    "bellAriaLabel": "Notifications",
+    "bellAriaLabelUnread": "Notifications ({{count}} non lues)",
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {{count}}m",
+    "hoursAgo": "il y a {{count}}h",
+    "daysAgo": "il y a {{count}}j",
+    "unreadLabel": "non lu"
   },
   "reviews": {
     "title": "AVIS COMMUNAUTÉ",
