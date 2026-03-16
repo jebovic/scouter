@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card, Badge } from '../scouter'
 import { AttributeRenderer } from './AttributeRenderer'
 import { VoteButtons } from './VoteButtons'
@@ -8,7 +9,9 @@ import { SubstituteSuggestions } from './SubstituteSuggestions'
 import { OptionNote } from './OptionNote'
 import { ImageStrip } from './ImageStrip'
 import { useOptionImages } from '../../hooks/useOptionImages'
+import { useTranslatedOption } from '../../hooks/useTranslatedOption'
 import type { Option } from '../../types'
+import styles from './OptionCard.module.css'
 
 interface OptionCardProps {
   option: Option
@@ -48,10 +51,13 @@ export function OptionCard({
   onToggleSelect,
   selectionFull = false,
 }: OptionCardProps) {
+  const { i18n, t } = useTranslation()
+  const displayOption = useTranslatedOption(option)
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
   const isDimmed = (isRejected || (compareMode && selectionFull && !selected))
   const { data: images = [], isLoading: imagesLoading } = useOptionImages(missionId, option.id)
+  const isPendingTranslation = i18n.language !== 'en' && !option.translations?.[i18n.language]
 
   return (
     <Card
@@ -111,10 +117,13 @@ export function OptionCard({
               color: 'var(--text)',
             }}
           >
-            {option.name}
+            {displayOption.name}
+            {isPendingTranslation && (
+              <span className={styles.translatingBadge}>🌐 {t('options.translating')}</span>
+            )}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: 2 }}>
-            {option.category}
+            {displayOption.category}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -164,16 +173,16 @@ export function OptionCard({
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {option.attributes.slice(0, 5).map((attr) => (
+        {displayOption.attributes.slice(0, 5).map((attr) => (
           <AttributeRenderer key={attr.key} attribute={attr} currency={currency} />
         ))}
       </div>
 
-      <RetailerLinks query={option.name} category={option.category} showStock={true} />
+      <RetailerLinks query={displayOption.name} category={displayOption.category} showStock={true} />
 
-      {option.warnings.length > 0 && (
+      {displayOption.warnings.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {option.warnings.map((w, i) => (
+          {displayOption.warnings.map((w, i) => (
             <div
               key={i}
               style={{
@@ -191,9 +200,9 @@ export function OptionCard({
         </div>
       )}
 
-      {option.notes && (
+      {displayOption.notes && (
         <p style={{ fontSize: '0.8rem', color: 'var(--text-mid)', margin: 0 }}>
-          {option.notes}
+          {displayOption.notes}
         </p>
       )}
 
