@@ -5,14 +5,14 @@ import { LoadingPulse, BudgetBar, StatusBadge, ToastContainer, useToasts, NextAc
 import { setLastVisitedMission } from '../components/scouter/LastVisitCard'
 import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { useScorecard } from '../hooks/useScorecard'
-import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard } from '../components/mission'
+import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard, ShortlistPanel } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
-import { useMission, useShopping, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory, useDeleteMission, useArchiveMission } from '../hooks'
+import { useMission, useShopping, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory, useDeleteMission, useArchiveMission, useOptions } from '../hooks'
 import { useTriggerResearch } from '../hooks/useResearch'
 import { MissionActionBar } from '../components/mission/MissionActionBar'
 import { MissionEditModal } from '../components/mission/MissionEditModal'
 import { ExpenseCategoryPanel } from '../components/mission'
-import type { MissionPhase } from '../types'
+import type { MissionPhase, Option } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
 import { PhaseSection } from './mission-overview/PhaseSection'
 import { QuickNavSection } from './mission-overview/QuickNavSection'
@@ -97,9 +97,13 @@ export default function MissionOverview() {
   const { archiveMission } = useArchiveMission()
   const [showEditModal, setShowEditModal] = useState(false)
   const { data: purchaseRecord } = usePurchaseRecord(mission?.id)
+  const { options = [] } = useOptions(mission?.id ?? '')
   const [showScanner, setShowScanner] = useState(false)
   const [scanPrefill, setScanPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
   const [scanKey, setScanKey] = useState(0)
+  const [shortlistPrefill, setShortlistPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
+  const [shortlistKey, setShortlistKey] = useState(0)
+  const [replacePrefillOption, setReplacePrefillOption] = useState<Option | null>(null)
   const { mutate: suggestCategory, isPending: isSuggesting, data: categorySuggestion } = useSuggestCategory(slug ?? '')
 
   const spent = items.reduce((sum, i) => sum + i.price, 0)
@@ -155,6 +159,30 @@ export default function MissionOverview() {
     p: () => { if (!pricingPending) handlePricing() },
   }), [researchPending, pricingPending]) // eslint-disable-line react-hooks/exhaustive-deps
   useKeyboardShortcuts(shortcuts)
+
+  function handleSelectShortlistOption(option: Option) {
+    if (purchaseRecord) {
+      setReplacePrefillOption(option)
+    } else {
+      setShortlistPrefill({
+        finalPrice: option.priceRange
+          ? Math.round((option.priceRange.min + option.priceRange.max) / 2)
+          : undefined,
+      })
+      setShortlistKey(k => k + 1)
+    }
+  }
+
+  function handleConfirmReplace() {
+    if (!replacePrefillOption) return
+    setShortlistPrefill({
+      finalPrice: replacePrefillOption.priceRange
+        ? Math.round((replacePrefillOption.priceRange.min + replacePrefillOption.priceRange.max) / 2)
+        : undefined,
+    })
+    setShortlistKey(k => k + 1)
+    setReplacePrefillOption(null)
+  }
 
   if (isLoading) {
     return (
@@ -480,6 +508,13 @@ export default function MissionOverview() {
         {/* Purchase section — visible in buying/done phases */}
         {(mission.phase === 'buying' || mission.phase === 'done') && (
           <div className={styles.section}>
+            {mission.phase === 'buying' && (
+              <ShortlistPanel
+                options={options}
+                missionSlug={mission.slug}
+                onSelect={handleSelectShortlistOption}
+              />
+            )}
             {!purchaseRecord && (
               <div className={styles.scannerTrigger}>
                 <button
@@ -492,10 +527,10 @@ export default function MissionOverview() {
               </div>
             )}
             <PurchaseForm
-              key={scanKey}
+              key={shortlistKey + scanKey}
               missionId={mission.id}
               existingRecord={purchaseRecord}
-              prefill={scanPrefill}
+              prefill={shortlistPrefill ?? scanPrefill}
             />
           </div>
         )}
@@ -589,6 +624,18 @@ export default function MissionOverview() {
           }}
           onClose={() => setShowEditModal(false)}
         />
+      )}
+
+      {replacePrefillOption && (
+        <div className={styles.overlay} onClick={() => setReplacePrefillOption(null)}>
+          <div className={styles.dialog} onClick={(e) => e.stopPropagation()}>
+            <p>{t('shortlist.replaceConfirm')}</p>
+            <div className={styles.dialogActions}>
+              <button onClick={() => setReplacePrefillOption(null)}>{t('common.cancel')}</button>
+              <button className={styles.confirmBtn} onClick={handleConfirmReplace}>{t('common.confirm')}</button>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   )
