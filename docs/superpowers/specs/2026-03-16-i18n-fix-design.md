@@ -15,7 +15,7 @@ Hardcoded French (and occasionally English) strings appear in the UI despite the
 - Development happens in a mixed EN/FR style — strings are written inline and never backfilled into i18n keys
 - Common leak patterns: form validation messages, ternary status labels, input placeholders, page titles, empty-state copy, button labels
 
-**Affected files (43 hardcoded strings total):**
+**Affected files (~43 hardcoded strings total):**
 
 | File | Count | Representative examples |
 |------|-------|------------------------|
@@ -30,156 +30,173 @@ Hardcoded French (and occasionally English) strings appear in the UI despite the
 
 ### Part 1 — ESLint guard (`eslint-plugin-i18next`)
 
-Install `eslint-plugin-i18next` and enable it in the existing ESLint 9 flat config (`eslint.config.js`). The rule `i18next/no-literal-string` flags any JSX text node or JSX string attribute that is not wrapped in a `t()` call.
+Install `eslint-plugin-i18next` as a devDependency and enable it in the existing ESLint 9 flat config. The rule `i18next/no-literal-string` flags any JSX text node or JSX string attribute not wrapped in a `t()` call.
 
-**Configuration approach:**
-- Use `i18next.configs['flat/recommended']` as the base
-- Override to `"error"` severity so `npm run lint` fails on violations
-- Tune ignore patterns to suppress false positives on: pure numbers, single characters, CSS class strings, `aria-*` attribute values, `data-*` attributes, and `key` props
+**Exact config block to add to `eslint.config.js`:**
+
+```js
+import i18next from 'eslint-plugin-i18next'
+
+// Add inside the defineConfig([...]) array, after existing rules:
+{
+  // files must come AFTER the spread to avoid being silently overridden
+  ...i18next.configs['flat/recommended'],
+  files: ['**/*.{ts,tsx}'],
+  rules: {
+    ...i18next.configs['flat/recommended'].rules,
+    'i18next/no-literal-string': ['error', {
+      mode: 'jsx-only',
+      'jsx-attributes': {
+        include: ['title', 'placeholder', 'aria-label', 'alt'],
+      },
+      // ignore: pure numbers, alphanumeric tokens (incl. spaces for placeholders like "MacBook Pro"), ALL_CAPS constants
+      ignore: [/^\d+(\.\d+)?$/, /^[a-zA-Z0-9_\-\.\/ ]+$/, /^[A-Z_]+$/],
+    }],
+  },
+},
+```
 
 This runs on every `npm run lint` invocation and in VSCode via the ESLint extension (real-time squiggles).
 
-### Part 2 — Fix pass on 43 occurrences
+### Part 2 — Fix pass on ~43 occurrences
 
 For each affected file:
-1. Ensure `const { t } = useTranslation()` is imported and called
+1. Ensure `const { t } = useTranslation()` is imported and called (**note: `InsightsPage.tsx` already has this — do not duplicate**)
 2. Replace every hardcoded string with `t('namespace.key')`
-3. Add the key to both `en.json` (English value) and `fr.json` (French value)
+3. Use interpolation for dynamic strings: `t('cashback.deleteAriaLabel', { name: entry.itemName })`
+4. Add every new key to both `en.json` and `fr.json`
 
-**Namespace conventions** (matching existing codebase patterns):
-- `cashback.*` — CashbackPage strings
-- `envelopes.*` — EnvelopesPage strings
-- `insights.*` — InsightsPage strings
-- `loyalty.*` — LoyaltyPage strings
-- `common.*` — shared strings (e.g., `common.cancel`, `common.save`, `common.loading`, `common.delete`)
+---
 
-**Key i18n entries to add (representative, not exhaustive):**
+## i18n Keys to Add
 
-```json
-// en.json additions
-{
-  "common": {
-    "cancel": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "loading": "Loading...",
-    "add": "Add",
-    "unknown": "Unknown"
-  },
-  "cashback": {
-    "title": "Cashback Tracker",
-    "subtitle": "Track your cashback refunds",
-    "pending": "Pending",
-    "confirmed": "Confirmed",
-    "received": "Received",
-    "addTitle": "Add cashback",
-    "item": "Item",
-    "merchant": "Merchant",
-    "amount": "Amount (€)",
-    "rate": "Rate (%)",
-    "status": "Status",
-    "myCashbacks": "My cashbacks",
-    "none": "No cashback recorded",
-    "noneDesc": "Use the form above to log your first refund."
-  },
-  "envelopes": {
-    "nameRequired": "Name is required",
-    "invalidBudget": "Invalid budget",
-    "newEnvelope": "New envelope",
-    "namePlaceholder": "e.g. Groceries, Entertainment…",
-    "budget": "Budget (€)",
-    "labelRequired": "Label is required",
-    "invalidAmount": "Invalid amount",
-    "addOperation": "Add transaction",
-    "expense": "Expense",
-    "topup": "Top-up",
-    "label": "Label",
-    "labelPlaceholder": "e.g. Supermarket, Netflix…",
-    "amount": "Amount (€)",
-    "date": "Date",
-    "spent": "Spent",
-    "remaining": "Remaining",
-    "overbudget": "Overbudget",
-    "addExpense": "+ Add expense",
-    "recentTransactions": "Recent transactions",
-    "deleteTransaction": "Delete transaction",
-    "title": "Envelope Budget",
-    "subtitle": "Manage your budget by category",
-    "newEnvelopeBtn": "+ New envelope",
-    "globalBudget": "GLOBAL BUDGET",
-    "none": "No envelopes",
-    "noneDesc": "Create envelopes to organise your budget by category.",
-    "createFirst": "Create my first envelope"
-  },
-  "insights": {
-    "loading": "Analysis in progress…",
-    "noData": "No data",
-    "noDataDesc": "Create missions to see your insights.",
-    "title": "Budget Insights",
-    "activeMissions": "Active missions",
-    "totalBudget": "Total budget",
-    "budgetUsage": "Budget usage",
-    "recommendations": "Recommendations",
-    "byCategory": "By category",
-    "allMissions": "All missions"
-  },
-  "loyalty": {
-    "title": "My Loyalty Points",
-    "subtitle": "Track your loyalty programmes"
-  }
-}
-```
+### Existing keys — do NOT re-add these
 
-```json
-// fr.json additions (mirror with French values)
-{
-  "common": {
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "delete": "Supprimer",
-    "loading": "Chargement...",
-    "add": "Ajouter",
-    "unknown": "Inconnu"
-  },
-  "cashback": { ... },
-  "envelopes": { ... },
-  "insights": { ... },
-  "loyalty": {
-    "title": "Mes Points Fidélité",
-    "subtitle": "Suivi de vos programmes de fidélité"
-  }
-}
-```
+These already exist in `en.json` / `fr.json` and must be **reused**, not duplicated:
+
+| Key | EN value | Note |
+|-----|----------|------|
+| `common.cancel` | "Cancel" | already exists |
+| `common.save` | "Save" | already exists |
+| `common.delete` | "Delete" | already exists |
+| `common.loading` | "Loading..." | already exists |
+| `common.add` | "Add" | already exists |
+| `envelopes.empty` | "No envelopes" | already exists — maps to `"Aucune enveloppe"` in FR |
+| `envelopes.emptyDesc` | (already exists) | maps to `"Créez des enveloppes…"` in FR |
+
+### New keys — add to both `en.json` and `fr.json`
+
+#### `common` additions
+
+| Key | EN | FR |
+|-----|----|----|
+| `common.unknown` | "Unknown" | "Inconnu" |
+
+#### `cashback` namespace (currently empty)
+
+| Key | EN | FR |
+|-----|----|----|
+| `cashback.title` | "Cashback Tracker" | "Cashback Tracker" |
+| `cashback.subtitle` | "Track your cashback refunds" | "Suivez vos remboursements cashback" |
+| `cashback.pending` | "Pending" | "En attente" |
+| `cashback.confirmed` | "Confirmed" | "Confirmé" |
+| `cashback.received` | "Received" | "Reçu" |
+| `cashback.addTitle` | "+ Add cashback" | "+ Ajouter un cashback" |
+| `cashback.item` | "Item" | "Article" |
+| `cashback.merchant` | "Merchant" | "Marchand" |
+| `cashback.amount` | "Amount (€)" | "Montant (€)" |
+| `cashback.rate` | "Rate (%)" | "Taux (%)" |
+| `cashback.status` | "Status" | "Statut" |
+| `cashback.notes` | "Notes" | "Notes" |
+| `cashback.optional` | "Optional" | "Optionnel" |
+| `cashback.adding` | "Adding..." | "Ajout..." |
+| `cashback.myCashbacks` | "My cashbacks" | "Mes cashbacks" |
+| `cashback.none` | "No cashback recorded" | "Aucun cashback enregistré" |
+| `cashback.noneDesc` | "Use the form above to log your first refund." | "Utilisez le formulaire ci-dessus pour logger votre premier remboursement." |
+| `cashback.delete` | "Delete" | "Supprimer" |
+| `cashback.deleteAriaLabel` | "Delete {{name}}" | "Supprimer {{name}}" |
+
+#### `envelopes` additions (namespace partially exists — keys below are all NEW)
+
+| Key | EN | FR |
+|-----|----|----|
+| `envelopes.title` | "Envelope Budget" | "Budget Enveloppes" |
+| `envelopes.pageSubtitle` | "Manage your budget by category" | "Gérez votre budget par catégorie" |
+| `envelopes.newBtn2` | "+ New envelope" | "+ Nouvelle enveloppe" |
+| `envelopes.globalBudget` | "GLOBAL BUDGET" | "BUDGET GLOBAL" |
+| `envelopes.nameRequired` | "Name is required" | "Le nom est requis" |
+| `envelopes.invalidBudget` | "Invalid budget" | "Budget invalide" |
+| `envelopes.newEnvelope` | "New envelope" | "Nouvelle enveloppe" |
+| `envelopes.namePlaceholder` | "e.g. Groceries, Entertainment…" | "ex: Alimentation, Loisirs…" |
+| `envelopes.budget` | "Budget (€)" | "Budget (€)" |
+| `envelopes.labelRequired` | "Label is required" | "Libellé requis" |
+| `envelopes.invalidAmount` | "Invalid amount" | "Montant invalide" |
+| `envelopes.addOperation` | "Add transaction" | "Ajouter une opération" |
+| `envelopes.expense` | "Expense" | "Dépense" |
+| `envelopes.topup` | "Top-up" | "Rechargement" |
+| `envelopes.label` | "Label" | "Libellé" |
+| `envelopes.labelPlaceholder` | "e.g. Supermarket, Netflix…" | "ex: Supermarché, Netflix…" |
+| `envelopes.amount` | "Amount (€)" | "Montant (€)" |
+| `envelopes.date` | "Date" | "Date" |
+| `envelopes.spent` | "Spent" | "Dépensé" |
+| `envelopes.remaining` | "Remaining" | "Restant" |
+| `envelopes.overbudget` | "Overbudget" | "Dépassé" |
+| `envelopes.addExpense` | "+ Add expense" | "+ Ajouter une dépense" |
+| `envelopes.recentTransactions` | "Recent transactions" | "Transactions récentes" |
+| `envelopes.deleteTransaction` | "Delete transaction" | "Supprimer la transaction" |
+| `envelopes.createFirst` | "Create my first envelope" | "Créer ma première enveloppe" |
+
+> **Do not add** `envelopes.empty` or `envelopes.emptyDesc` — they already exist and should be reused.
+
+#### `insights` additions (only `insights.crossMission` exists — all below are NEW)
+
+| Key | EN | FR |
+|-----|----|----|
+| `insights.loading` | "Analysis in progress…" | "Analyse en cours…" |
+| `insights.noData` | "No data" | "Aucune donnée" |
+| `insights.noDataDesc` | "Create missions to see your insights." | "Créez des missions pour voir vos insights." |
+| `insights.title` | "Budget Insights" | "Insights Budget" |
+| `insights.activeMissions` | "Active missions" | "Missions actives" |
+| `insights.totalBudget` | "Total budget" | "Budget total" |
+| `insights.budgetUsage` | "Budget usage" | "Utilisation budget" |
+| `insights.recommendations` | "Recommendations" | "Recommandations" |
+| `insights.byCategory` | "By category" | "Par catégorie" |
+| `insights.allMissions` | "All missions" | "Toutes les missions" |
+
+#### `loyalty` additions (namespace currently empty)
+
+| Key | EN | FR |
+|-----|----|----|
+| `loyalty.title` | "My Loyalty Points" | "Mes Points Fidélité" |
+| `loyalty.subtitle` | "Track your loyalty programmes" | "Suivi de vos programmes de fidélité" |
 
 ---
 
 ## Out of Scope
 
-- `de.json` (German stub — not actively supported)
+- `de.json` (German stub — falls back to EN, no native DE strings committed)
 - Backend strings
 - Pages not in the 4 identified above
-- Pre-commit hooks (ESLint via `npm run lint` is sufficient)
 
 ---
 
 ## Success Criteria
 
 1. `npm run lint` passes with zero `i18next/no-literal-string` errors after the fix pass
-2. All 4 affected pages render correctly in both EN and FR locales
-3. Switching language via the app settings shows correct translated text on all fixed pages
-4. Any future PR that introduces a hardcoded JSX string will fail `npm run lint`
+2. All 4 affected pages render correctly in both EN and FR locales (manual QA: switch language in Settings, verify text changes)
+3. Any future PR that introduces a hardcoded JSX string will fail `npm run lint`
 
 ---
 
 ## Implementation Order
 
-1. Install `eslint-plugin-i18next` as devDependency
-2. Update `eslint.config.js` to enable the rule
-3. Run `npm run lint` to confirm the 43 violations are surfaced
-4. Fix `en.json` and `fr.json` (add all missing keys)
-5. Fix `InsightsPage.tsx` (smallest, good smoke test)
-6. Fix `LoyaltyPage.tsx`
-7. Fix `CashbackPage.tsx`
-8. Fix `EnvelopesPage.tsx` (largest)
-9. Run `npm run lint` again — should be zero violations
-10. Run `npm run build` to confirm no type errors
+1. Install `eslint-plugin-i18next` as devDependency: `npm install -D eslint-plugin-i18next`
+2. Update `eslint.config.js` with the config block from Part 1 above
+3. Run `npm run lint` — confirm violations surface for the 4 pages
+4. Add all new keys from the tables above to `en.json` and `fr.json`
+5. Fix `LoyaltyPage.tsx` — add `useTranslation` import + hook, wrap 2 strings (smallest file, smoke test)
+6. Fix `InsightsPage.tsx` — `useTranslation` already imported; wrap ~10 strings
+7. Fix `CashbackPage.tsx` — add `useTranslation`, wrap ~18 strings including the interpolated `aria-label`
+8. Fix `EnvelopesPage.tsx` — `useTranslation` already imported (do not duplicate); wrap ~16 strings, reuse existing `envelopes.empty`/`envelopes.emptyDesc`
+9. Run `npm run lint` — expect zero violations
+10. Run `npm run build` — confirm no TypeScript errors
