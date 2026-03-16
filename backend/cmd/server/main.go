@@ -139,16 +139,25 @@ func main() {
 	researchAgent.SetImageChannel(imageWorker.Jobs())
 	researchAgent.SetRecorder(rec)
 
-	// Translation worker — init after researchAgent so we can wire the channel
-	supportedLocales := strings.Split(cfg.SupportedLocales, ",")
-	for i, l := range supportedLocales {
-		supportedLocales[i] = strings.TrimSpace(l)
+	// Translation worker — only when a SmartRouter is available (nil when LLM_PROVIDER=anthropic).
+	var translateWorker *translation.Worker
+	var translateHandler *translation.Handler
+	if smartRouter != nil {
+		rawLocales := strings.Split(cfg.SupportedLocales, ",")
+		var supportedLocales []string
+		for _, l := range rawLocales {
+			if t := strings.TrimSpace(l); t != "" {
+				supportedLocales = append(supportedLocales, t)
+			}
+		}
+		if len(supportedLocales) > 0 {
+			translator := translation.NewTranslator(smartRouter)
+			translateWorker = translation.NewWorker(translator, optionRepo, supportedLocales, nil)
+			translateWorker.Start(ctx)
+			translateHandler = translation.NewHandler(translateWorker.Submit)
+			researchAgent.SetTranslateChannel(translateWorker.Jobs())
+		}
 	}
-	translator := translation.NewTranslator(smartRouter)
-	translateWorker := translation.NewWorker(translator, optionRepo, supportedLocales, nil)
-	translateWorker.Start(ctx)
-	translateHandler := translation.NewHandler(translateWorker.Submit)
-	researchAgent.SetTranslateChannel(translateWorker.Jobs())
 
 	pricingAgent := pricing.NewAgent(provider, shoppingRepo, agentRunRepo, usageSvc)
 	pricingAgent.SetRecorder(rec)
@@ -330,12 +339,14 @@ func main() {
 		defer wg.Done()
 		imageWorker.Wait()
 	}()
-	// Wait for translation worker to drain in-flight jobs.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		translateWorker.Wait()
-	}()
+	// Wait for translation worker to drain in-flight jobs (nil when SmartRouter unavailable).
+	if translateWorker != nil {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			translateWorker.Wait()
+		}()
+	}
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Error("shutdown error", "err", err)
 	}
