@@ -22,6 +22,7 @@ import {
   useRejectOption,
   useUnrejectOption,
   useDeletePinnedOptions,
+  useUnpinAllOptions,
   useDecision,
   useAgentRuns,
   useComparisonMode,
@@ -53,6 +54,7 @@ export default function OptionsExplorer() {
   const { rejectOption } = useRejectOption(mission?.id ?? '')
   const { unrejectOption } = useUnrejectOption(mission?.id ?? '')
   const { deletePinnedOptions } = useDeletePinnedOptions(mission?.id ?? '')
+  const { unpinAllOptions } = useUnpinAllOptions(mission?.id ?? '')
   const { decision } = useDecision(mission?.id ?? '')
   const { runs, isLoading: runsLoading } = useAgentRuns(mission?.id ?? '', 'research')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
@@ -129,13 +131,13 @@ export default function OptionsExplorer() {
                 ))}
               </div>
 
-              {/* Clear pinned */}
+              {/* Unpin all */}
               {pinnedCount > 0 && (
                 <button
-                  onClick={() => deletePinnedOptions()}
+                  onClick={() => unpinAllOptions(options.filter((o) => o.pinned).map((o) => o.id))}
                   className={styles.clearPinnedBtn}
                 >
-                  {t('options.clearPinned', { count: pinnedCount })}
+                  {t('option.actions.unpinAll', { count: pinnedCount })}
                 </button>
               )}
 

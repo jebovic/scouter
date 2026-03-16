@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { listOptions, updateOption, deleteOption, pinOption, rejectOption, unrejectOption, deletePinnedOptions, retranslateOption } from '../api'
 import { useToast } from '../components/scouter'
 import { queryKeys } from '../lib/queryKeys'
@@ -112,4 +113,25 @@ export function useDeletePinnedOptions(missionId: string) {
     onError: (err: unknown) => toast(`Failed to clear pinned options: ${err instanceof Error ? err.message : 'Unknown error'}`, 'error'),
   })
   return { deletePinnedOptions: mutateAsync, isPending }
+}
+
+export function useUnpinAllOptions(missionId: string) {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  const { t } = useTranslation()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async (pinnedIds: string[]) => {
+      const results = await Promise.allSettled(
+        pinnedIds.map(id => pinOption(missionId, id))
+      )
+      const failed = results.filter(r => r.status === 'rejected').length
+      if (failed > 0) {
+        toast(t('option.actions.unpinAllError', { count: failed }), 'error')
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
+    },
+  })
+  return { unpinAllOptions: mutateAsync, isPending }
 }
