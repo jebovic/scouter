@@ -9,6 +9,7 @@ import {
   Settings, PanelLeftClose, PanelLeft,
 } from 'lucide-react'
 import type { Mission } from '../../types'
+import { Logo } from './Logo'
 import styles from './NavRail.module.css'
 
 interface NavRailProps {
@@ -106,13 +107,14 @@ export function NavRail({ missions, onNewMission }: NavRailProps) {
   return (
     <nav
       className={`${styles.rail} ${collapsed ? styles.collapsed : ''}`}
-      aria-label="Navigation principale"
+      aria-label={t('nav.mainNavLabel')}
     >
       {/* Logo */}
-      <Link to="/" className={styles.logo} title="Accueil">
-        <span className={styles.logoText}>
-          {collapsed ? 'S' : 'SCOUTER'}
-        </span>
+      <Link to="/" className={styles.logo} title={t('nav.logoTitle')}>
+        {collapsed
+          ? <Logo size="sm" iconOnly aria-label={t('nav.logoTitle')} />
+          : <Logo size="sm" />
+        }
       </Link>
 
       <div className={styles.sections}>
