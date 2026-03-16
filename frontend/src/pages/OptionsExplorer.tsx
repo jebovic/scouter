@@ -160,9 +160,11 @@ export default function OptionsExplorer() {
                       date: new Date(lastJob.completed_at ?? lastJob.created_at).toLocaleDateString(),
                       count: lastJob.options_count ?? 0,
                     })
-                  : t('research.lastRunFailed', {
+                  : lastJob.status === 'failed'
+                  ? t('research.lastRunFailed', {
                       date: new Date(lastJob.completed_at ?? lastJob.created_at).toLocaleDateString(),
                     })
+                  : null
                 }
               </span>
               {jobs.length > 1 && (
