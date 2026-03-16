@@ -1,4 +1,4 @@
-export * from './useMission'
+export { useMission, useMissions, useCreateMission, useUpdateMission, useDeleteMission, useArchiveMission, useUnarchiveMission, useDuplicateMission, useCloneMission } from './useMission'
 export * from './useOptions'
 export * from './useShopping'
 export * from './useResearch'

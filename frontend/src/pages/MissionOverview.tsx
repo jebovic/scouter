@@ -7,7 +7,9 @@ import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { useScorecard } from '../hooks/useScorecard'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory } from '../hooks'
+import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory, useDeleteMission, useArchiveMission } from '../hooks'
+import { MissionActionBar } from '../components/mission/MissionActionBar'
+import { MissionEditModal } from '../components/mission/MissionEditModal'
 import { ExpenseCategoryPanel } from '../components/mission'
 import type { MissionPhase } from '../types'
 import type { PurchaseFormPrefill } from '../components/mission/PurchaseForm'
@@ -90,6 +92,9 @@ export default function MissionOverview() {
   const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
   const { triggerPricing, isPending: pricingPending } = usePriceIntel(mission?.id ?? '')
   const { updateMission, isPending: updatePending } = useUpdateMission(slug!)
+  const { deleteMission } = useDeleteMission()
+  const { archiveMission } = useArchiveMission()
+  const [showEditModal, setShowEditModal] = useState(false)
   const { data: purchaseRecord } = usePurchaseRecord(mission?.id)
   const [showScanner, setShowScanner] = useState(false)
   const [scanPrefill, setScanPrefill] = useState<PurchaseFormPrefill | undefined>(undefined)
@@ -116,6 +121,18 @@ export default function MissionOverview() {
   async function confirmDone() {
     setShowDoneConfirm(false)
     await updateMission({ phase: 'done' })
+  }
+
+  async function handleArchive() {
+    if (!mission?.id) return
+    await archiveMission(mission.id)
+    navigate('/')
+  }
+
+  async function handleDelete() {
+    if (!mission?.slug) return
+    await deleteMission(mission.slug)
+    navigate('/')
   }
 
   async function handleResearch() {
@@ -184,6 +201,15 @@ export default function MissionOverview() {
             </div>
           </div>
         </div>
+
+        {mission && (
+          <MissionActionBar
+            mission={mission}
+            onEdit={() => setShowEditModal(true)}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+          />
+        )}
 
         <NextActionNudge mission={mission} />
 
@@ -552,6 +578,16 @@ export default function MissionOverview() {
             </div>
           </div>
         </div>
+      )}
+
+      {showEditModal && mission && (
+        <MissionEditModal
+          mission={mission}
+          onSave={(updates) => {
+            updateMission(updates, { onSuccess: () => setShowEditModal(false) })
+          }}
+          onClose={() => setShowEditModal(false)}
+        />
       )}
     </main>
   )
