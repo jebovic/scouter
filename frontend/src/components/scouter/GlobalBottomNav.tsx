@@ -45,7 +45,7 @@ export function GlobalBottomNav() {
   // Don't render on shared wishlist
   if (location.pathname.startsWith('/wishlist/shared')) return null
 
-  const isAchats = ['/kanban', '/wishlist', '/history', '/notifications'].some(p =>
+  const isAchats = ['/kanban', '/wishlist', '/notifications'].some(p =>
     location.pathname === p
   )
   const isPlans = ['/deal-calendar', '/insights', '/digest'].some(p =>
@@ -106,7 +106,7 @@ export function GlobalBottomNav() {
           className={`${styles.tab} ${isStats ? styles.tabActive : ''}`}
         >
           <BarChart2 size={20} aria-hidden="true" />
-          <span className={styles.tabLabel}>Stats</span>
+          <span className={styles.tabLabel}>Bilan</span>
         </NavLink>
       </nav>
     </>

@@ -41,3 +41,6 @@ deployment/certs/
 
 # Logs
 *.log
+
+# Playwright MCP
+.playwright-mcp
