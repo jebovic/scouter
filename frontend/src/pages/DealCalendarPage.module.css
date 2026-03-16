@@ -99,7 +99,8 @@
 
 .collapsibleInner {
   min-height: 0;
-  overflow: hidden;
+  overflow-y: clip;
+  overflow-x: auto;
 }
 
 /* ── Section divider ─────────────────────────────────── */
