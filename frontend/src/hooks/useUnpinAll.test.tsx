@@ -49,4 +49,25 @@ describe('useUnpinAllOptions', () => {
     expect(pinOption).toHaveBeenCalledWith('mission-1', 'opt-1')
     expect(pinOption).toHaveBeenCalledWith('mission-1', 'opt-2')
   })
+
+  it('shows an error toast when some pinOption calls fail', async () => {
+    const { pinOption } = await import('../api/options')
+    const { useUnpinAllOptions } = await import('./useOptions')
+
+    const mockPinOption = pinOption as ReturnType<typeof vi.fn>
+    mockPinOption
+      .mockResolvedValueOnce({ id: 'opt-1', pinned: false })
+      .mockRejectedValueOnce(new Error('Network error'))
+
+    mockToast.mockClear()
+
+    const { result } = renderHook(() => useUnpinAllOptions('mission-1'), { wrapper })
+    await act(async () => {
+      await result.current.unpinAllOptions(['opt-1', 'opt-2'])
+    })
+
+    expect(mockToast).toHaveBeenCalled()
+    const toastCall = mockToast.mock.calls[0][0]
+    expect(typeof toastCall).toBe('string')
+  })
 })
