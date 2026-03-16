@@ -17,8 +17,9 @@ import (
 func RetryAsJSON(ctx context.Context, provider Provider, orig CompletionRequest, toolName string) (CompletionResponse, error) {
 	// Build JSON-mode prompt
 	sysMsg := fmt.Sprintf(
-		"Respond with a single raw JSON object. No markdown, no explanation, no code fences. "+
-			"The JSON must match the schema for the tool named %q.", toolName)
+		"You MUST respond with a single raw JSON object only. "+
+			"Do NOT use tool calls. Do NOT wrap in markdown. Do NOT add any explanation. "+
+			"Output ONLY the JSON that matches the schema for %q.", toolName)
 
 	msgs := make([]Message, 0, len(orig.Messages)+1)
 	msgs = append(msgs, Message{Role: "system", Content: sysMsg})
@@ -33,6 +34,16 @@ func RetryAsJSON(ctx context.Context, provider Provider, orig CompletionRequest,
 	resp, err := provider.Complete(ctx, jsonReq)
 	if err != nil {
 		return CompletionResponse{}, fmt.Errorf("json fallback llm call: %w", err)
+	}
+
+	// If content is empty but the model still returned a tool call (e.g. deepseek
+	// ignoring the JSON-only instruction), use the matching tool call directly.
+	if strings.TrimSpace(resp.Content) == "" {
+		for _, tc := range resp.ToolCalls {
+			if tc.Name == toolName {
+				return resp, nil
+			}
+		}
 	}
 
 	// Strip markdown fences if present

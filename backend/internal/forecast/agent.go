@@ -69,7 +69,7 @@ func (a *ForecastAgent) Run(ctx context.Context, missionID string) (ForecastResu
 
 	resp, err := a.provider.Complete(llmCtx, req)
 	if err != nil {
-		return ForecastResult{}, fmt.Errorf("forecast llm call: %w", err)
+		return a.computedFallback(ctx, missionID, m, items), nil
 	}
 
 	partial, err := parseToolResponse(resp)
@@ -81,11 +81,11 @@ func (a *ForecastAgent) Run(ctx context.Context, missionID string) (ForecastResu
 		})
 		resp, err = llm.RetryAsJSON(retryCtx, a.provider, req, "budget_forecast")
 		if err != nil {
-			return ForecastResult{}, fmt.Errorf("forecast json fallback: %w", err)
+			return a.computedFallback(ctx, missionID, m, items), nil
 		}
 		partial, err = parseToolResponse(resp)
 		if err != nil {
-			return ForecastResult{}, fmt.Errorf("parse forecast response: %w", err)
+			return a.computedFallback(ctx, missionID, m, items), nil
 		}
 	}
 
@@ -197,6 +197,39 @@ func forecastTool() llm.Tool {
 				},
 			},
 		},
+	}
+}
+
+// computedFallback builds a deterministic ForecastResult from DB data when the LLM
+// is unavailable. It is not persisted so the next request will retry the LLM.
+func (a *ForecastAgent) computedFallback(_ context.Context, missionID string, m missionRow, items []shoppingItemRow) ForecastResult {
+	var totalSpent float64
+	for _, item := range items {
+		totalSpent += item.Price
+	}
+
+	estimated := m.Budget
+	if totalSpent > 0 {
+		estimated = totalSpent
+	}
+
+	recs := []string{
+		"Compare prices across multiple merchants before purchasing.",
+		"Set a target price alert to track price drops.",
+		"Consider buying during seasonal sales for better deals.",
+	}
+	risks := []string{
+		"Price fluctuations may affect final cost.",
+		"Budget forecast is estimated — LLM analysis unavailable.",
+	}
+
+	confidence := "low"
+	return ForecastResult{
+		MissionID:       missionID,
+		EstimatedTotal:  &estimated,
+		Confidence:      confidence,
+		Recommendations: recs,
+		RiskFactors:     risks,
 	}
 }
 
