@@ -124,13 +124,15 @@ export function useUnpinAllOptions(missionId: string) {
       const results = await Promise.allSettled(
         pinnedIds.map(id => pinOption(missionId, id))
       )
-      const failed = results.filter(r => r.status === 'rejected').length
+      // pinOption is a toggle — call only with currently-pinned option IDs
+      // to guarantee we toggle from pinned → unpinned, not the reverse
+      return { failed: results.filter(r => r.status === 'rejected').length }
+    },
+    onSuccess: ({ failed }) => {
       if (failed > 0) {
         toast(t('option.actions.unpinAllError', { count: failed }), 'error')
       }
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.options.all(missionId) })
+      qc.invalidateQueries({ queryKey: ['options', missionId] })
     },
   })
   return { unpinAllOptions: mutateAsync, isPending }

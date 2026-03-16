@@ -66,8 +66,9 @@ describe('useUnpinAllOptions', () => {
       await result.current.unpinAllOptions(['opt-1', 'opt-2'])
     })
 
-    expect(mockToast).toHaveBeenCalled()
-    const toastCall = mockToast.mock.calls[0][0]
-    expect(typeof toastCall).toBe('string')
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.stringContaining('option.actions.unpinAllError'),
+      'error'
+    )
   })
 })
