@@ -20,12 +20,57 @@
     linear-gradient(var(--border) 1px, transparent 1px),
     linear-gradient(90deg, var(--border) 1px, transparent 1px);
   background-size: 48px 48px;
-  opacity: 0.35;
-  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%);
+  opacity: 0.3;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
 }
 
-/* ── Content card ──────────────────────────────────────── */
+/* ── Scanline overlay (on root, not content) ───────────── */
+.scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 3px,
+    rgba(0, 229, 255, 0.012) 3px,
+    rgba(0, 229, 255, 0.012) 4px
+  );
+  pointer-events: none;
+  animation: scan 10s linear infinite;
+  z-index: 1;
+}
+
+@keyframes scan {
+  from { background-position: 0 0; }
+  to   { background-position: 0 100vh; }
+}
+
+/* ── HUD corner decorations ────────────────────────────── */
+.cornerTL,
+.cornerBR {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cornerTL {
+  top: 24px;
+  left: 24px;
+  border-top: 1px solid var(--cyan-dim);
+  border-left: 1px solid var(--cyan-dim);
+}
+
+.cornerBR {
+  bottom: 24px;
+  right: 24px;
+  border-bottom: 1px solid var(--cyan-dim);
+  border-right: 1px solid var(--cyan-dim);
+}
+
+/* ── Content ───────────────────────────────────────────── */
 .content {
   position: relative;
   display: flex;
@@ -34,7 +79,7 @@
   text-align: center;
   max-width: 560px;
   width: 100%;
-  gap: 0;
+  z-index: 2;
   animation: fadeUp 0.5s ease both;
 }
 
@@ -51,38 +96,57 @@
   color: var(--coral);
   text-transform: uppercase;
   margin-bottom: 2rem;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-/* ── 404 digits ────────────────────────────────────────── */
+/* ── 404 digits wrapper ────────────────────────────────── */
 .codeWrap {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.05em;
+  gap: 0.04em;
   margin-bottom: 2rem;
   line-height: 1;
 }
 
-.digit,
-.digitGlitch {
+/* ── Ambient bloom behind the number ──────────────────── */
+.bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  height: 200px;
+  background: radial-gradient(ellipse at center, var(--cyan-dim) 0%, transparent 70%);
+  filter: blur(32px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Individual digit ──────────────────────────────────── */
+.digit {
   font-family: var(--font-display);
-  font-size: clamp(6rem, 20vw, 11rem);
+  font-size: clamp(5.5rem, 18vw, 10rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: transparent;
   -webkit-text-stroke: 2px var(--cyan);
-  text-stroke: 2px var(--cyan);
   user-select: none;
-  filter: drop-shadow(0 0 20px var(--cyan));
+  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.5));
 }
 
+/* ── Glitch digit ──────────────────────────────────────── */
 .digitGlitch {
   position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(5.5rem, 18vw, 10rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--cyan);
   -webkit-text-stroke: 0;
-  text-stroke: 0;
-  filter: drop-shadow(0 0 24px var(--cyan));
-  animation: glitch 3.5s infinite;
+  user-select: none;
+  filter: drop-shadow(0 0 24px rgba(0, 229, 255, 0.7));
+  animation: glitch 4s infinite;
 }
 
 .digitGlitch::before,
@@ -94,49 +158,55 @@
   font-size: inherit;
   font-weight: inherit;
   letter-spacing: inherit;
+  opacity: 0;
 }
 
+/* Top half — coral aberration */
 .digitGlitch::before {
   color: var(--coral);
-  animation: glitchTop 3.5s infinite;
-  clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+  animation: glitchTop 4s infinite;
 }
 
+/* Bottom half — purple aberration */
 .digitGlitch::after {
   color: var(--purple);
-  animation: glitchBot 3.5s infinite;
-  clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+  animation: glitchBot 4s infinite;
 }
 
 @keyframes glitch {
-  0%, 90%, 100% { transform: translate(0); }
-  91%           { transform: translate(-2px, 1px); }
-  93%           { transform: translate(2px, -1px); }
-  95%           { transform: translate(-1px, 2px); }
+  0%, 88%, 100% { transform: translate(0); }
+  89%           { transform: translate(-3px, 1px); }
+  91%           { transform: translate(3px, -2px); }
+  93%           { transform: translate(-2px, 0); }
+  95%           { transform: translate(1px, 2px); }
   97%           { transform: translate(0); }
 }
 
 @keyframes glitchTop {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  91%           { transform: translate(-4px, 0); opacity: 0.7; }
-  94%           { transform: translate(3px, 0); opacity: 0.5; }
+  0%, 88%, 100% { transform: translate(0); opacity: 0; }
+  89%           { transform: translate(-5px, 0); opacity: 0.75; }
+  92%           { transform: translate(4px, 0);  opacity: 0.5; }
+  95%           { transform: translate(-2px, 0); opacity: 0.3; }
   97%           { transform: translate(0); opacity: 0; }
 }
 
 @keyframes glitchBot {
-  0%, 90%, 100% { transform: translate(0); opacity: 0; }
-  92%           { transform: translate(4px, 0); opacity: 0.6; }
-  95%           { transform: translate(-2px, 0); opacity: 0.4; }
+  0%, 88%, 100% { transform: translate(0); opacity: 0; }
+  90%           { transform: translate(5px, 0);  opacity: 0.7; }
+  93%           { transform: translate(-3px, 0); opacity: 0.45; }
+  96%           { transform: translate(1px, 0);  opacity: 0.2; }
   97%           { transform: translate(0); opacity: 0; }
 }
 
 /* ── Title ─────────────────────────────────────────────── */
 .title {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
-  letter-spacing: 0.06em;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  letter-spacing: 0.08em;
   color: var(--text);
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
   text-transform: uppercase;
 }
 
@@ -145,9 +215,34 @@
   font-family: var(--font-mono);
   font-size: 0.82rem;
   color: var(--text-dim);
-  line-height: 1.7;
-  margin: 0 0 2.5rem;
-  max-width: 400px;
+  line-height: 1.75;
+  margin: 0 0 2rem;
+  max-width: 380px;
+}
+
+/* ── Divider ───────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 2rem;
+}
+
+.divider span {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.dividerDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--cyan-dim) !important;
+  flex: unset !important;
+  box-shadow: 0 0 6px var(--cyan);
 }
 
 /* ── Action buttons ────────────────────────────────────── */
@@ -173,8 +268,8 @@
 }
 
 .btnPrimary:hover {
-  background: var(--cyan-glow);
-  box-shadow: 0 0 16px var(--cyan-dim);
+  background: rgba(0, 229, 255, 0.12);
+  box-shadow: 0 0 20px var(--cyan-dim);
 }
 
 .btnPrimary:focus-visible {
@@ -206,30 +301,26 @@
   outline-offset: 3px;
 }
 
-/* ── Scanline overlay ──────────────────────────────────── */
-.scanline {
-  position: absolute;
-  inset: -100%;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 3px,
-    rgba(0, 229, 255, 0.015) 3px,
-    rgba(0, 229, 255, 0.015) 4px
-  );
-  pointer-events: none;
-  animation: scan 8s linear infinite;
-}
-
-@keyframes scan {
-  from { transform: translateY(-50%); }
-  to   { transform: translateY(50%); }
-}
-
 /* ── Responsive ────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .codeWrap {
-    gap: 0.02em;
+  .cornerTL,
+  .cornerBR {
+    width: 32px;
+    height: 32px;
+    top: 16px;
+    left: 16px;
+  }
+
+  .cornerBR {
+    top: auto;
+    left: auto;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .bloom {
+    width: 240px;
+    height: 140px;
   }
 
   .actions {
@@ -244,10 +335,11 @@
   }
 }
 
+/* ── Reduced motion ────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .content { animation: none; }
+  .scanline { animation: none; }
   .digitGlitch,
   .digitGlitch::before,
   .digitGlitch::after { animation: none; }
-  .scanline { animation: none; }
 }

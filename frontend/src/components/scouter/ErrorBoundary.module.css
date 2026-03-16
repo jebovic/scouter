@@ -8,7 +8,9 @@
   justify-content: center;
   min-height: 100dvh;
   padding: var(--gap-lg);
-  background: var(--void);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 61, 113, 0.05) 0%, transparent 100%),
+    var(--void);
   color: var(--text);
 }
 

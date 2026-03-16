@@ -7,11 +7,13 @@ export default function NotFoundPage() {
   return (
     <div className={styles.root}>
       <div className={styles.grid} aria-hidden="true" />
+      <div className={styles.scanline} aria-hidden="true" />
 
       <div className={styles.content}>
         <div className={styles.tag}>[ SECTOR_NOT_FOUND ]</div>
 
         <div className={styles.codeWrap} aria-label="404">
+          <div className={styles.bloom} aria-hidden="true" />
           <span className={styles.digit}>4</span>
           <span className={styles.digitGlitch} data-text="0">0</span>
           <span className={styles.digit}>4</span>
@@ -20,9 +22,14 @@ export default function NotFoundPage() {
         <h1 className={styles.title}>Route Inconnue</h1>
         <p className={styles.description}>
           La page que vous cherchez n'existe pas ou a été déplacée.
-          <br />
           Vérifiez l'URL ou revenez au quartier général.
         </p>
+
+        <div className={styles.divider} aria-hidden="true">
+          <span />
+          <span className={styles.dividerDot} />
+          <span />
+        </div>
 
         <div className={styles.actions}>
           <button className={styles.btnPrimary} onClick={() => navigate('/')}>
@@ -32,9 +39,10 @@ export default function NotFoundPage() {
             Page précédente
           </button>
         </div>
-
-        <div className={styles.scanline} aria-hidden="true" />
       </div>
+
+      <div className={styles.cornerTL} aria-hidden="true" />
+      <div className={styles.cornerBR} aria-hidden="true" />
     </div>
   )
 }
