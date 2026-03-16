@@ -122,7 +122,7 @@ func (h *Handler) GetCashbackSummary(w http.ResponseWriter, r *http.Request) {
 // buildCashbackResponse computes the CashbackSummary from raw merchant data. Pure function, testable without DB.
 func buildCashbackResponse(missionID string, merchants []merchantRow) *CashbackSummary {
 	// Compute cashback for each merchant.
-	var cashbacks []MerchantCashback
+	cashbacks := make([]MerchantCashback, 0)
 	platformTotals := make(map[string]float64)
 
 	for _, m := range merchants {

@@ -11,7 +11,7 @@ const MerchantCashbackSchema = z.object({
 
 export const CashbackSummarySchema = z.object({
   missionId: z.string(),
-  merchantCashback: z.array(MerchantCashbackSchema),
+  merchantCashback: z.array(MerchantCashbackSchema).nullable().default([]),
   totalEstimated: z.number(),
   bestPlatform: z.string(),
   tip: z.string(),
@@ -21,5 +21,6 @@ export type MerchantCashback = z.infer<typeof MerchantCashbackSchema>
 export type CashbackSummary = z.infer<typeof CashbackSummarySchema>
 
 export async function getCashbackSummary(missionId: string): Promise<CashbackSummary> {
-  return apiFetch<CashbackSummary>(`/api/missions/${missionId}/cashback`)
+  const data = await apiFetch<unknown>(`/api/missions/${missionId}/cashback`)
+  return CashbackSummarySchema.parse(data)
 }
