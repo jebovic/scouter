@@ -119,7 +119,15 @@
     "rerunResearch": "Recherche wiederholen",
     "running": "Läuft...",
     "rerunResearchTitle": "Recherche wiederholen",
-    "rejectOption": "Option ablehnen"
+    "rejectOption": "Option ablehnen",
+    "images": {
+      "loading": "Bilder werden geladen…",
+      "lightboxClose": "Schließen",
+      "gallery": "Produktbilder",
+      "view": "Bild anzeigen",
+      "prevImage": "Vorheriges Bild",
+      "nextImage": "Nächstes Bild"
+    }
   },
   "purchase": {
     "record": "Kauf erfassen",

@@ -202,7 +202,10 @@
     "rerunResearchTitle": "Re-Run Research",
     "rejectOption": "Reject Option",
     "images": {
+      "loading": "Loading images…",
       "lightboxClose": "Close image",
+      "gallery": "Product images",
+      "view": "View image",
       "prevImage": "Previous image",
       "nextImage": "Next image"
     }

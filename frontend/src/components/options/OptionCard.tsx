@@ -6,10 +6,13 @@ import { PriceComparisonPanel } from './PriceComparisonPanel'
 import { RetailerLinks } from './RetailerLinks'
 import { SubstituteSuggestions } from './SubstituteSuggestions'
 import { OptionNote } from './OptionNote'
+import { ImageStrip } from './ImageStrip'
+import { useOptionImages } from '../../hooks/useOptionImages'
 import type { Option } from '../../types'
 
 interface OptionCardProps {
   option: Option
+  missionId: string
   currency?: string
   score?: number
   onBadgeChange?: (badge: Option['badge']) => void
@@ -33,6 +36,7 @@ function scoreColor(s: number): { text: string; bg: string } {
 
 export function OptionCard({
   option,
+  missionId,
   currency = 'USD',
   score,
   onBadgeChange,
@@ -47,6 +51,7 @@ export function OptionCard({
   const isRecommended = option.badge === 'recommended'
   const isRejected = option.badge === 'rejected'
   const isDimmed = (isRejected || (compareMode && selectionFull && !selected))
+  const { data: images = [], isLoading: imagesLoading } = useOptionImages(missionId, option.id)
 
   return (
     <Card
@@ -62,6 +67,8 @@ export function OptionCard({
         boxShadow: selected ? '0 0 0 2px var(--cyan-dim)' : undefined,
       }}
     >
+      <ImageStrip images={images} loading={imagesLoading} />
+
       {/* Compare mode checkbox overlay */}
       {compareMode && (
         <button

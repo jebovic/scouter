@@ -202,7 +202,10 @@
     "rerunResearchTitle": "Relancer la Recherche",
     "rejectOption": "Rejeter l'option",
     "images": {
+      "loading": "Chargement des images…",
       "lightboxClose": "Fermer l'image",
+      "gallery": "Images du produit",
+      "view": "Voir l'image",
       "prevImage": "Image précédente",
       "nextImage": "Image suivante"
     }

@@ -207,6 +207,7 @@ export default function OptionsExplorer() {
                   <div key={option.id}>
                     <OptionCard
                       option={option}
+                      missionId={mission?.id ?? ''}
                       score={decision?.scores.find((s) => s.optionId === option.id)?.score}
                       onPin={(id) => pinOption(id)}
                       onReject={(id) => setRejectTarget(id)}
