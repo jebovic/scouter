@@ -2,6 +2,7 @@ package embedding_test
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -60,6 +61,9 @@ func (f *fakeOptRepo) Unreject(_ context.Context, _ uuid.UUID) (*option.Option, 
 	return nil, nil
 }
 func (f *fakeOptRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (f *fakeOptRepo) SaveTranslations(_ context.Context, _ uuid.UUID, _ string, _ json.RawMessage) error {
+	return nil
+}
 
 type fakeEmbedRepo struct {
 	ids    []uuid.UUID

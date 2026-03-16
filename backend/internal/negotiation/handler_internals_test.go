@@ -10,9 +10,11 @@ package negotiation_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -21,7 +23,6 @@ import (
 	"github.com/jibei/scouter/internal/negotiation"
 	"github.com/jibei/scouter/internal/option"
 	"github.com/jibei/scouter/internal/shopping"
-	"time"
 )
 
 // --- stub repositories ---
@@ -58,6 +59,9 @@ func (r *stubOptionRepo) Unreject(_ context.Context, _ uuid.UUID) (*option.Optio
 	return nil, nil
 }
 func (r *stubOptionRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (r *stubOptionRepo) SaveTranslations(_ context.Context, _ uuid.UUID, _ string, _ json.RawMessage) error {
+	return nil
+}
 
 type stubMissionRepo struct {
 	m   *mission.Mission

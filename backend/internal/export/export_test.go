@@ -98,6 +98,9 @@ func (s *stubOptionRepo) Unreject(_ context.Context, _ uuid.UUID) (*option.Optio
 	return nil, nil
 }
 func (s *stubOptionRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (s *stubOptionRepo) SaveTranslations(_ context.Context, _ uuid.UUID, _ string, _ json.RawMessage) error {
+	return nil
+}
 
 type stubShoppingRepo struct {
 	items    []shopping.Item

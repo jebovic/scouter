@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"os"
 	"testing"
@@ -96,6 +97,9 @@ func (m *mockOptionRepo) Unreject(_ context.Context, _ uuid.UUID) (*option.Optio
 	return nil, nil
 }
 func (m *mockOptionRepo) DeletePinned(_ context.Context, _ uuid.UUID) error { return nil }
+func (m *mockOptionRepo) SaveTranslations(_ context.Context, _ uuid.UUID, _ string, _ json.RawMessage) error {
+	return nil
+}
 
 // trackingOptionRepo records which mission IDs were queried.
 type trackingOptionRepo struct {

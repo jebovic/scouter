@@ -90,6 +90,10 @@ func (m *MockOptionRepository) DeletePinned(ctx context.Context, missionID uuid.
 	return nil
 }
 
+func (m *MockOptionRepository) SaveTranslations(_ context.Context, _ uuid.UUID, _ string, _ json.RawMessage) error {
+	return nil
+}
+
 // MockShoppingRepository provides items for a mission.
 type MockShoppingRepository struct {
 	itemsByMission map[uuid.UUID][]shopping.Item
