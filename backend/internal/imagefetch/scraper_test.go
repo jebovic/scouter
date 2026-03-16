@@ -11,10 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// allowAllURLs is a test-only URL filter that bypasses the SSRF guard,
-// allowing httptest.NewServer loopback addresses to be fetched.
-func allowAllURLs(_ string) bool { return true }
-
 func TestScraper_ExtractsOGImage(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/img.jpg" {
@@ -29,7 +25,7 @@ func TestScraper_ExtractsOGImage(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	s := imagefetch.NewScraperWithFilter(allowAllURLs)
+	s := imagefetch.NewScraperForTest()
 	imgs, err := s.Fetch(t.Context(), srv.URL, nil)
 	require.NoError(t, err)
 	assert.Len(t, imgs, 1)
@@ -54,7 +50,7 @@ func TestScraper_DeduplicatesSourceURL(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	s := imagefetch.NewScraperWithFilter(allowAllURLs)
+	s := imagefetch.NewScraperForTest()
 	imgs, err := s.Fetch(t.Context(), srv.URL, nil)
 	require.NoError(t, err)
 	assert.Len(t, imgs, 1, "duplicate URL should be deduplicated")
@@ -75,7 +71,7 @@ func TestScraper_SkipsSmallImages(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	s := imagefetch.NewScraperWithFilter(allowAllURLs)
+	s := imagefetch.NewScraperForTest()
 	imgs, err := s.Fetch(t.Context(), srv.URL, nil)
 	require.NoError(t, err)
 	assert.Empty(t, imgs, "small img (width<300) should be skipped")
@@ -96,7 +92,7 @@ func TestScraper_SkipsExistingURLs(t *testing.T) {
 	defer srv.Close()
 
 	existing := map[string]bool{srv.URL + "/img.jpg": true}
-	s := imagefetch.NewScraperWithFilter(allowAllURLs)
+	s := imagefetch.NewScraperForTest()
 	imgs, err := s.Fetch(t.Context(), srv.URL, existing)
 	require.NoError(t, err)
 	assert.Empty(t, imgs, "image already in DB should be skipped via existingURLs")

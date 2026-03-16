@@ -22,32 +22,58 @@ const (
 	userAgent          = "Mozilla/5.0 (compatible; Scouter/1.0)"
 )
 
-// Scraper fetches HTML pages and extracts product image candidates.
-type Scraper struct {
-	client    *http.Client
-	urlFilter func(string) bool // defaults to isSafeURL; overridable in tests
-}
+var defaultDialer = &net.Dialer{Timeout: scrapeTimeout}
 
-// NewScraper returns a Scraper with a default HTTP client and SSRF filter.
-func NewScraper() *Scraper {
-	return &Scraper{
-		client:    &http.Client{Timeout: scrapeTimeout},
-		urlFilter: isSafeURL,
+// newSafeTransport returns an http.Transport whose DialContext rejects
+// connections to loopback, link-local, and private IP addresses.
+// This prevents SSRF and DNS-rebinding attacks: addr is the already-resolved
+// IP:port, so the check happens after DNS resolution.
+func newSafeTransport() *http.Transport {
+	return &http.Transport{
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, _, err := net.SplitHostPort(addr)
+			if err != nil {
+				return nil, fmt.Errorf("split host: %w", err)
+			}
+			ip := net.ParseIP(host)
+			if ip != nil && (ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate()) {
+				return nil, fmt.Errorf("SSRF: blocked connection to private address %s", addr)
+			}
+			return defaultDialer.DialContext(ctx, network, addr)
+		},
 	}
 }
 
-// NewScraperWithFilter returns a Scraper with a custom URL safety filter.
-// Intended for testing only.
-func NewScraperWithFilter(filter func(string) bool) *Scraper {
+// Scraper fetches HTML pages and extracts product image candidates.
+type Scraper struct {
+	client *http.Client
+}
+
+// NewScraper returns a Scraper with a DNS-rebinding-safe HTTP transport.
+func NewScraper() *Scraper {
 	return &Scraper{
-		client:    &http.Client{Timeout: scrapeTimeout},
-		urlFilter: filter,
+		client: &http.Client{
+			Timeout:   scrapeTimeout,
+			Transport: newSafeTransport(),
+		},
+	}
+}
+
+// NewScraperForTest creates a scraper with no SSRF protection — for unit tests only.
+func NewScraperForTest() *Scraper {
+	return &Scraper{
+		client: &http.Client{Timeout: scrapeTimeout},
 	}
 }
 
 // Fetch scrapes pageURL and returns up to maxImagesPerOption images.
 // existingURLs is the set of source_url values already stored for deduplication.
 func (s *Scraper) Fetch(ctx context.Context, pageURL string, existingURLs map[string]bool) ([]FetchedImage, error) {
+	u, err := url.Parse(pageURL)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		return nil, fmt.Errorf("invalid page URL: %s", pageURL)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, pageURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request for %s: %w", pageURL, err)
@@ -91,23 +117,21 @@ func (s *Scraper) Fetch(ctx context.Context, pageURL string, existingURLs map[st
 }
 
 func (s *Scraper) downloadImage(ctx context.Context, imgURL string) (*FetchedImage, error) {
-	if !s.urlFilter(imgURL) {
-		return nil, fmt.Errorf("rejected unsafe URL: %s", imgURL)
-	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, imgURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request for %s: %w", imgURL, err)
 	}
 	req.Header.Set("User-Agent", userAgent)
+
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetch image %s: %w", imgURL, err)
 	}
 	defer resp.Body.Close()
 
 	data, err := io.ReadAll(io.LimitReader(resp.Body, maxImageBytes))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read image %s: %w", imgURL, err)
 	}
 	if len(data) == 0 {
 		return nil, fmt.Errorf("empty response")
@@ -126,33 +150,6 @@ func (s *Scraper) downloadImage(ctx context.Context, imgURL string) (*FetchedIma
 		ContentType: ct,
 		SourceURL:   imgURL,
 	}, nil
-}
-
-// isSafeURL rejects URLs that point to loopback, link-local, or private addresses.
-func isSafeURL(rawURL string) bool {
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return false
-	}
-	if u.Scheme != "http" && u.Scheme != "https" {
-		return false
-	}
-	host := u.Hostname()
-	ips, err := net.LookupHost(host)
-	if err != nil {
-		// Can't resolve — allow it (scraper runs with network access; DNS failure ≠ malicious)
-		return true
-	}
-	for _, ipStr := range ips {
-		ip := net.ParseIP(ipStr)
-		if ip == nil {
-			continue
-		}
-		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsPrivate() {
-			return false
-		}
-	}
-	return true
 }
 
 // extractCandidates returns image URLs in priority order:
