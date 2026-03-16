@@ -92,17 +92,18 @@ type shoppingItem struct {
 
 func (h *Handler) load(ctx context.Context, missionID string) (*Timeline, error) {
 	var missionName string
+	var missionUUID string
 	err := h.pool.QueryRow(ctx,
-		`SELECT name FROM missions WHERE id::text = $1`,
+		`SELECT id::text, name FROM missions WHERE id::text = $1 OR slug = $1`,
 		missionID,
-	).Scan(&missionName)
+	).Scan(&missionUUID, &missionName)
 	if err != nil {
 		return nil, err
 	}
 
 	rows, err := h.pool.Query(ctx,
 		`SELECT id::text, name, COALESCE(status, 'pending') FROM shopping_items WHERE mission_id::text = $1 ORDER BY created_at`,
-		missionID,
+		missionUUID,
 	)
 	if err != nil {
 		return nil, err

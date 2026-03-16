@@ -38,7 +38,7 @@ SELECT
   si.id::text        AS item_id,
   si.name            AS item_name,
   COALESCE(si.merchant, '') AS merchant,
-  COALESCE(si.currency, 'EUR') AS currency,
+  COALESCE(m.currency, 'EUR') AS currency,
   w.price            AS price_before,
   l.price            AS price_now,
   m.id::text         AS mission_id,

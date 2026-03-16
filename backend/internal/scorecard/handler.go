@@ -110,8 +110,8 @@ func (h *Handler) load(ctx context.Context, missionID string) (*Scorecard, error
 	var m missionData
 	err := h.pool.QueryRow(ctx,
 		`SELECT id::text, name, created_at,
-		        (SELECT purchased_at FROM purchase_records WHERE mission_id::text = $1 LIMIT 1)
-		 FROM missions WHERE id::text = $1`,
+		        (SELECT purchased_at FROM purchase_records WHERE mission_id = missions.id LIMIT 1)
+		 FROM missions WHERE id::text = $1 OR slug = $1`,
 		missionID,
 	).Scan(&m.id, &m.name, &m.createdAt, &m.completedAt)
 	if err != nil {
@@ -123,25 +123,25 @@ func (h *Handler) load(ctx context.Context, missionID string) (*Scorecard, error
 	// Count options/research depth.
 	_ = h.pool.QueryRow(ctx,
 		`SELECT COUNT(*) FROM options WHERE mission_id::text = $1`,
-		missionID,
+		m.id,
 	).Scan(&stats.optionCount)
 
 	// Count price checks (shopping items).
 	_ = h.pool.QueryRow(ctx,
 		`SELECT COUNT(*) FROM shopping_items WHERE mission_id::text = $1`,
-		missionID,
+		m.id,
 	).Scan(&stats.priceCheckCnt)
 
 	// Budget constraint.
 	_ = h.pool.QueryRow(ctx,
 		`SELECT (constraints->>'budget')::float FROM missions WHERE id::text = $1 AND constraints->>'budget' IS NOT NULL`,
-		missionID,
+		m.id,
 	).Scan(&stats.budget)
 
 	// Actual purchase price.
 	_ = h.pool.QueryRow(ctx,
 		`SELECT price FROM purchase_records WHERE mission_id::text = $1 LIMIT 1`,
-		missionID,
+		m.id,
 	).Scan(&stats.purchasePrice)
 
 	return buildScorecard(m, stats), nil

@@ -14,10 +14,11 @@ type Pinger interface {
 
 // ModelStatus holds the health status of a single model entry.
 type ModelStatus struct {
-	Name         string   `json:"name"`
-	Healthy      bool     `json:"healthy"`
-	CircuitState string   `json:"circuit_state"` // "open" | "half_open" | "closed"
-	Capabilities []string `json:"capabilities"`
+	Name          string   `json:"name"`
+	Healthy       bool     `json:"healthy"`
+	CircuitState  string   `json:"circuit_state"` // "open" | "half_open" | "closed"
+	LastLatencyMS int64    `json:"last_latency_ms"`
+	Capabilities  []string `json:"capabilities"`
 }
 
 // PoolHealth is the aggregate health report for the entire model pool.
@@ -51,9 +52,12 @@ func (h *HealthChecker) Check(ctx context.Context) PoolHealth {
 		circuitOpen := circuitState == "open"
 
 		healthy := false
+		var latencyMS int64
 		if pinger, ok := entry.Provider.(Pinger); ok {
 			pingCtx, pingCancel := context.WithTimeout(ctx, 5*time.Second)
+			start := time.Now()
 			err := pinger.Ping(pingCtx)
+			latencyMS = time.Since(start).Milliseconds()
 			pingCancel()
 			healthy = err == nil && !circuitOpen
 		} else {
@@ -61,10 +65,11 @@ func (h *HealthChecker) Check(ctx context.Context) PoolHealth {
 		}
 
 		statuses = append(statuses, ModelStatus{
-			Name:         entry.Name,
-			Healthy:      healthy,
-			CircuitState: circuitState,
-			Capabilities: capabilityNames(entry.Capabilities),
+			Name:          entry.Name,
+			Healthy:       healthy,
+			CircuitState:  circuitState,
+			LastLatencyMS: latencyMS,
+			Capabilities:  capabilityNames(entry.Capabilities),
 		})
 	}
 

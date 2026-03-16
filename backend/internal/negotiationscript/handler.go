@@ -54,9 +54,13 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetScript handles GET /api/missions/{missionId}/items/{itemId}/negotiation-script.
 func (h *Handler) GetScript(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionId"))
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+	missionParam := chi.URLParam(r, "missionId")
+	var missionUUID string
+	if err := h.pool.QueryRow(r.Context(),
+		`SELECT id::text FROM missions WHERE id::text = $1 OR slug = $1`,
+		missionParam,
+	).Scan(&missionUUID); err != nil {
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
 		return
 	}
 	itemID, err := uuid.Parse(chi.URLParam(r, "itemId"))
@@ -75,7 +79,7 @@ func (h *Handler) GetScript(w http.ResponseWriter, r *http.Request) {
 		h.cache.Delete(key)
 	}
 
-	resp, found, err := h.build(r, missionID, itemID)
+	resp, found, err := h.build(r, missionUUID, itemID)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -99,7 +103,7 @@ type itemRow struct {
 	status       string
 }
 
-func (h *Handler) build(r *http.Request, missionID, itemID uuid.UUID) (Response, bool, error) {
+func (h *Handler) build(r *http.Request, missionID string, itemID uuid.UUID) (Response, bool, error) {
 	ctx := r.Context()
 
 	// Fetch item details.
@@ -108,7 +112,7 @@ func (h *Handler) build(r *http.Request, missionID, itemID uuid.UUID) (Response,
 	err := h.pool.QueryRow(ctx,
 		`SELECT id, name, price, target_price, merchant, cost_category, status
 		 FROM shopping_items
-		 WHERE id = $1 AND mission_id = $2`,
+		 WHERE id = $1 AND mission_id::text = $2`,
 		itemID, missionID,
 	).Scan(&item.id, &item.name, &item.price, &targetPriceVal, &item.merchant, &item.costCategory, &item.status)
 	if err != nil {

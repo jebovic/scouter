@@ -14,6 +14,19 @@ import (
 	"github.com/jibei/scouter/internal/httputil"
 )
 
+// resolveMissionID resolves a slug-or-UUID string to a UUID by querying the missions table.
+func resolveMissionID(ctx context.Context, pool *pgxpool.Pool, param string) (uuid.UUID, error) {
+	var idStr string
+	err := pool.QueryRow(ctx,
+		`SELECT id::text FROM missions WHERE id::text = $1 OR slug = $1`,
+		param,
+	).Scan(&idStr)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return uuid.Parse(idStr)
+}
+
 // Handler analyzes purchase regret for a mission based on pricing signals.
 type Handler struct {
 	pool  *pgxpool.Pool
@@ -36,9 +49,10 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetAnalysis handles GET /api/missions/{missionId}/regret-analysis
 func (h *Handler) GetAnalysis(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionId"))
+	missionParam := chi.URLParam(r, "missionId")
+	missionID, err := resolveMissionID(r.Context(), h.pool, missionParam)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
 		return
 	}
 
@@ -152,9 +166,9 @@ func (h *Handler) fetchShoppingItems(ctx context.Context, missionID uuid.UUID) (
 	rows, err := h.pool.Query(ctx, `
 		SELECT id, name, price, status, target_price, original_estimate
 		FROM shopping_items
-		WHERE mission_id = $1
+		WHERE mission_id::text = $1
 		ORDER BY created_at ASC
-	`, missionID)
+	`, missionID.String())
 	if err != nil {
 		return nil, fmt.Errorf("fetch shopping items: %w", err)
 	}

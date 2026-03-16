@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jibei/scouter/internal/httputil"
@@ -37,15 +36,14 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetAdvice handles GET /api/missions/{missionId}/budget-advice
 func (h *Handler) GetAdvice(w http.ResponseWriter, r *http.Request) {
-	missionIDStr := chi.URLParam(r, "missionId")
-	missionID, err := uuid.Parse(missionIDStr)
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+	missionParam := chi.URLParam(r, "missionId")
+	if missionParam == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "missionId required")
 		return
 	}
 
 	// Check cache first
-	if cached, ok := h.cache.Load(missionID.String()); ok {
+	if cached, ok := h.cache.Load(missionParam); ok {
 		entry := cached.(*cacheEntry)
 		if time.Since(entry.timestamp) < cacheTTL {
 			httputil.WriteJSON(w, http.StatusOK, entry.advice)
@@ -53,7 +51,7 @@ func (h *Handler) GetAdvice(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	advice, err := h.computeAdvice(r.Context(), missionID)
+	advice, err := h.computeAdvice(r.Context(), missionParam)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			httputil.WriteError(w, http.StatusNotFound, "mission not found")
@@ -64,7 +62,7 @@ func (h *Handler) GetAdvice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store in cache
-	h.cache.Store(missionID.String(), &cacheEntry{
+	h.cache.Store(missionParam, &cacheEntry{
 		advice:    advice,
 		timestamp: time.Now(),
 	})
@@ -72,28 +70,29 @@ func (h *Handler) GetAdvice(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteJSON(w, http.StatusOK, advice)
 }
 
-func (h *Handler) computeAdvice(ctx context.Context, missionID uuid.UUID) (*BudgetAdvice, error) {
-	// 1. Query mission budget
+func (h *Handler) computeAdvice(ctx context.Context, missionParam string) (*BudgetAdvice, error) {
+	// 1. Query mission budget, resolve by UUID or slug
+	var missionUUID string
 	var totalBudget float64
-	err := h.pool.QueryRow(ctx, "SELECT budget FROM missions WHERE id = $1", missionID).Scan(&totalBudget)
+	err := h.pool.QueryRow(ctx, "SELECT id::text, budget FROM missions WHERE id::text = $1 OR slug = $1", missionParam).Scan(&missionUUID, &totalBudget)
 	if err != nil {
 		return nil, err
 	}
 
 	// 2. Query items excluding 'defer' status
 	rows, err := h.pool.Query(ctx,
-		`SELECT id, name, price, status, target_price
+		`SELECT id::text, name, price, status, target_price
 		 FROM shopping_items
-		 WHERE mission_id = $1 AND status != 'defer'
+		 WHERE mission_id::text = $1 AND status != 'defer'
 		 ORDER BY created_at`,
-		missionID)
+		missionUUID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	type item struct {
-		id          uuid.UUID
+		id          string
 		name        string
 		price       float64
 		status      string
@@ -155,7 +154,7 @@ func (h *Handler) computeAdvice(ctx context.Context, missionID uuid.UUID) (*Budg
 		}
 
 		allocations = append(allocations, allocItem{
-			itemID:          it.id.String(),
+			itemID:          it.id,
 			name:            it.name,
 			price:           it.price,
 			allocatedBudget: allocBudget,
@@ -202,7 +201,7 @@ func (h *Handler) computeAdvice(ctx context.Context, missionID uuid.UUID) (*Budg
 	advice := h.buildAdvice(surplus, totalAllocated, remaining)
 
 	return &BudgetAdvice{
-		MissionID:      missionID.String(),
+		MissionID:      missionUUID,
 		TotalBudget:    totalBudget,
 		Spent:          spent,
 		Remaining:      remaining,

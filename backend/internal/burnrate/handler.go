@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -32,21 +31,22 @@ type dayRow struct {
 
 // GetBurnRate handles GET /api/missions/{missionId}/burn-rate.
 func (h *Handler) GetBurnRate(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionId"))
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid missionId")
+	missionParam := chi.URLParam(r, "missionId")
+	if missionParam == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "missionId required")
 		return
 	}
 
 	ctx := r.Context()
 
-	// Fetch mission budget and creation date.
+	// Resolve mission by UUID or slug, fetch budget and creation date.
+	var missionUUID string
 	var budget float64
 	var createdAt time.Time
-	err = h.pool.QueryRow(ctx,
-		`SELECT budget, created_at FROM missions WHERE id = $1`,
-		missionID,
-	).Scan(&budget, &createdAt)
+	err := h.pool.QueryRow(ctx,
+		`SELECT id::text, budget, created_at FROM missions WHERE id::text = $1 OR slug = $1`,
+		missionParam,
+	).Scan(&missionUUID, &budget, &createdAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		httputil.WriteError(w, http.StatusNotFound, "mission not found")
 		return
@@ -58,12 +58,12 @@ func (h *Handler) GetBurnRate(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch daily purchase totals.
 	rows, err := h.pool.Query(ctx, `
-		SELECT DATE(purchased_at) AS day, SUM(final_price) AS amount
-		FROM purchases
-		WHERE mission_id = $1 AND purchased_at IS NOT NULL
+		SELECT DATE(purchased_at)::text AS day, SUM(final_price) AS amount
+		FROM purchase_records
+		WHERE mission_id::text = $1 AND purchased_at IS NOT NULL
 		GROUP BY DATE(purchased_at)
 		ORDER BY day ASC`,
-		missionID,
+		missionUUID,
 	)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "failed to query purchases")
@@ -85,7 +85,7 @@ func (h *Handler) GetBurnRate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := buildResponse(missionID.String(), budget, createdAt, days)
+	resp := buildResponse(missionUUID, budget, createdAt, days)
 	httputil.WriteJSON(w, http.StatusOK, resp)
 }
 

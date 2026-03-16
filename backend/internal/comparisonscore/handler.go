@@ -80,9 +80,10 @@ func (h *Handler) compute(ctx context.Context, missionID string) (ComparisonRepo
 		Summary:    "",
 	}
 
-	// Query budget from mission
+	// Query budget and UUID from mission
+	var missionUUID string
 	var budget float64
-	err := h.pool.QueryRow(ctx, `SELECT budget FROM missions WHERE id = $1`, missionID).Scan(&budget)
+	err := h.pool.QueryRow(ctx, `SELECT id::text, budget FROM missions WHERE id::text = $1 OR slug = $1`, missionID).Scan(&missionUUID, &budget)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			report.Summary = "Aucun article à comparer"
@@ -95,9 +96,9 @@ func (h *Handler) compute(ctx context.Context, missionID string) (ComparisonRepo
 	rows, err := h.pool.Query(ctx, `
 		SELECT id, name, price, target_price, status
 		FROM shopping_items
-		WHERE mission_id = $1 AND status != 'defer'
+		WHERE mission_id::text = $1 AND status != 'defer'
 		ORDER BY created_at
-	`, missionID)
+	`, missionUUID)
 	if err != nil {
 		return report, err
 	}

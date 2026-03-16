@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -35,14 +34,14 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetReport handles GET /api/missions/{missionId}/spending-velocity.
 func (h *Handler) GetReport(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionId"))
-	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid missionId")
+	missionParam := chi.URLParam(r, "missionId")
+	if missionParam == "" {
+		httputil.WriteError(w, http.StatusBadRequest, "missionId required")
 		return
 	}
 
-	// Check cache
-	if cached, ok := h.cache.Load(missionID.String()); ok {
+	// Check cache (keyed by raw param — slug or uuid)
+	if cached, ok := h.cache.Load(missionParam); ok {
 		entry := cached.(cacheEntry)
 		if time.Since(entry.timestamp) < cacheTTL {
 			httputil.WriteJSON(w, http.StatusOK, entry.report)
@@ -52,13 +51,14 @@ func (h *Handler) GetReport(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	// Fetch mission budget and creation date
+	// Resolve mission by UUID or slug, fetch budget and creation date
+	var missionUUID string
 	var budget float64
 	var createdAt time.Time
-	err = h.pool.QueryRow(ctx,
-		`SELECT budget, created_at FROM missions WHERE id = $1`,
-		missionID,
-	).Scan(&budget, &createdAt)
+	err := h.pool.QueryRow(ctx,
+		`SELECT id::text, budget, created_at FROM missions WHERE id::text = $1 OR slug = $1`,
+		missionParam,
+	).Scan(&missionUUID, &budget, &createdAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		httputil.WriteError(w, http.StatusNotFound, "mission not found")
 		return
@@ -71,8 +71,8 @@ func (h *Handler) GetReport(w http.ResponseWriter, r *http.Request) {
 	// Fetch total spent from buy items
 	var totalSpent float64
 	err = h.pool.QueryRow(ctx,
-		`SELECT COALESCE(SUM(price), 0) FROM shopping_items WHERE mission_id = $1 AND status = 'buy'`,
-		missionID,
+		`SELECT COALESCE(SUM(price), 0) FROM shopping_items WHERE mission_id::text = $1 AND status = 'buy'`,
+		missionUUID,
 	).Scan(&totalSpent)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "failed to query shopping items")
@@ -80,10 +80,10 @@ func (h *Handler) GetReport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build report
-	report := buildReport(missionID.String(), budget, createdAt, totalSpent)
+	report := buildReport(missionUUID, budget, createdAt, totalSpent)
 
 	// Cache result
-	h.cache.Store(missionID.String(), cacheEntry{
+	h.cache.Store(missionParam, cacheEntry{
 		report:    report,
 		timestamp: time.Now(),
 	})

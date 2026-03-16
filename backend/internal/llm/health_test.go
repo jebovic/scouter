@@ -252,6 +252,65 @@ func TestHealthChecker_Check_EmptyPool(t *testing.T) {
 	}
 }
 
+func TestModelStatus_LastLatencyMS_NonNegative(t *testing.T) {
+	prov := &pingableMock{}
+	pool := ModelPool{makePoolEntry("latency-model", prov, CapText)}
+	checker := NewHealthChecker(pool, nil)
+
+	health := checker.Check(context.Background())
+
+	if len(health.Models) != 1 {
+		t.Fatalf("expected 1 model, got %d", len(health.Models))
+	}
+	// last_latency_ms must be present (>= 0) so the frontend Zod schema can parse it
+	if health.Models[0].LastLatencyMS < 0 {
+		t.Errorf("LastLatencyMS must be non-negative, got %d", health.Models[0].LastLatencyMS)
+	}
+}
+
+func TestModelStatus_LastLatencyMS_ReflectsPingDuration(t *testing.T) {
+	const minLatency = 10 * time.Millisecond
+	prov := &pingableMock{latency: minLatency}
+	pool := ModelPool{makePoolEntry("slow-model", prov, CapText)}
+	checker := NewHealthChecker(pool, nil)
+
+	health := checker.Check(context.Background())
+
+	status := health.Models[0]
+	if status.LastLatencyMS < int64(minLatency.Milliseconds()) {
+		t.Errorf("LastLatencyMS: want >= %d ms, got %d ms", minLatency.Milliseconds(), status.LastLatencyMS)
+	}
+}
+
+func TestHealthHandler_LastLatencyMS_InJSON(t *testing.T) {
+	prov := &pingableMock{}
+	pool := ModelPool{makePoolEntry("json-model", prov, CapText)}
+	checker := NewHealthChecker(pool, nil)
+
+	handler := HealthHandler(checker)
+	req := httptest.NewRequest(http.MethodGet, "/api/health/llm", nil)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+
+	// Decode into a raw map so we can verify the key is present in JSON
+	var raw map[string]interface{}
+	body := rec.Body.Bytes()
+	if err := json.Unmarshal(body, &raw); err != nil {
+		t.Fatalf("failed to decode response: %v", err)
+	}
+	models, ok := raw["models"].([]interface{})
+	if !ok || len(models) == 0 {
+		t.Fatalf("expected models array in response")
+	}
+	m, ok := models[0].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected models[0] to be an object")
+	}
+	if _, exists := m["last_latency_ms"]; !exists {
+		t.Error("last_latency_ms field must be present in JSON response for frontend schema compatibility")
+	}
+}
+
 func TestCircuitBreaker_State(t *testing.T) {
 	t.Run("new circuit is closed", func(t *testing.T) {
 		cb := newCircuitBreaker()

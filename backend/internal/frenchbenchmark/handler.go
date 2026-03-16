@@ -86,7 +86,7 @@ type missionRow struct {
 func (h *Handler) load(ctx context.Context, missionID string) (*BenchmarkResult, error) {
 	var m missionRow
 	err := h.pool.QueryRow(ctx,
-		`SELECT id::text, name FROM missions WHERE id::text = $1`,
+		`SELECT id::text, name FROM missions WHERE id::text = $1 OR slug = $1`,
 		missionID,
 	).Scan(&m.id, &m.name)
 	if err != nil {
@@ -95,8 +95,8 @@ func (h *Handler) load(ctx context.Context, missionID string) (*BenchmarkResult,
 
 	// Fetch current prices from shopping_items for this mission.
 	rows, err := h.pool.Query(ctx,
-		`SELECT current_price FROM shopping_items WHERE mission_id::text = $1 AND current_price IS NOT NULL`,
-		missionID,
+		`SELECT price FROM shopping_items WHERE mission_id::text = $1 AND price IS NOT NULL`,
+		m.id,
 	)
 	if err != nil {
 		return nil, err

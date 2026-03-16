@@ -798,9 +798,14 @@ func registerRoutes(r chi.Router, d *routeDeps) {
 	timelinePlannerHandler := timelineplanner.NewHandler(d.pool)
 	r.Get("/api/missions/{missionId}/purchase-timeline", timelinePlannerHandler.GetTimeline)
 
-	// LLM pool health (nil when provider is Anthropic-only)
-	if d.smartRouter != nil {
-		checker := llm.NewHealthChecker(d.smartRouter.Pool(), d.smartRouter.Breakers())
+	// LLM pool health — always registered; returns empty pool when provider is not routing
+	{
+		var checker *llm.HealthChecker
+		if d.smartRouter != nil {
+			checker = llm.NewHealthChecker(d.smartRouter.Pool(), d.smartRouter.Breakers())
+		} else {
+			checker = llm.NewHealthChecker(llm.ModelPool{}, nil)
+		}
 		r.Get("/api/health/llm", llm.HealthHandler(checker))
 	}
 

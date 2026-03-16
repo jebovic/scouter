@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jibei/scouter/internal/httputil"
 )
@@ -47,13 +46,18 @@ func NewHandler(pool *pgxpool.Pool) *Handler {
 
 // GetOutcomes handles GET /api/missions/{missionId}/negotiation-outcomes.
 func (h *Handler) GetOutcomes(w http.ResponseWriter, r *http.Request) {
-	missionID, err := uuid.Parse(chi.URLParam(r, "missionId"))
+	missionParam := chi.URLParam(r, "missionId")
+	var missionUUID string
+	err := h.pool.QueryRow(r.Context(),
+		`SELECT id::text FROM missions WHERE id::text = $1 OR slug = $1`,
+		missionParam,
+	).Scan(&missionUUID)
 	if err != nil {
-		httputil.WriteError(w, http.StatusBadRequest, "invalid mission id")
+		httputil.WriteError(w, http.StatusNotFound, "mission not found")
 		return
 	}
 
-	key := missionID.String()
+	key := missionUUID
 	if v, ok := h.cache.Load(key); ok {
 		entry := v.(cacheEntry)
 		if time.Now().Before(entry.expiresAt) {
@@ -63,7 +67,7 @@ func (h *Handler) GetOutcomes(w http.ResponseWriter, r *http.Request) {
 		h.cache.Delete(key)
 	}
 
-	summary, err := h.build(r, missionID)
+	summary, err := h.build(r, missionUUID)
 	if err != nil {
 		httputil.WriteError(w, http.StatusInternalServerError, "internal server error")
 		return
@@ -80,13 +84,13 @@ type itemRow struct {
 	price    float64
 }
 
-func (h *Handler) build(r *http.Request, missionID uuid.UUID) (Summary, error) {
+func (h *Handler) build(r *http.Request, missionID string) (Summary, error) {
 	ctx := r.Context()
 
 	rows, err := h.pool.Query(ctx,
 		`SELECT id, name, merchant, price
 		 FROM shopping_items
-		 WHERE mission_id = $1
+		 WHERE mission_id::text = $1
 		 ORDER BY name`,
 		missionID,
 	)

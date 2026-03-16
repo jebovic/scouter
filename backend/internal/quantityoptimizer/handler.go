@@ -100,7 +100,9 @@ type itemRow struct {
 func (h *Handler) load(ctx context.Context, missionID, itemID string) (*OptimizerReport, error) {
 	var item itemRow
 	err := h.pool.QueryRow(ctx,
-		`SELECT id::text, name, current_price FROM shopping_items WHERE id::text = $1 AND mission_id::text = $2`,
+		`SELECT id::text, name, price FROM shopping_items
+		 WHERE id::text = $1
+		   AND mission_id = (SELECT id FROM missions WHERE id::text = $2 OR slug = $2)`,
 		itemID, missionID,
 	).Scan(&item.id, &item.name, &item.currentPrice)
 	if err != nil {
@@ -110,7 +112,7 @@ func (h *Handler) load(ctx context.Context, missionID, itemID string) (*Optimize
 	// Fetch mission budget constraint (optional).
 	var budget *float64
 	_ = h.pool.QueryRow(ctx,
-		`SELECT (constraints->>'budget')::float FROM missions WHERE id::text = $1 AND constraints->>'budget' IS NOT NULL`,
+		`SELECT (constraints->>'budget')::float FROM missions WHERE (id::text = $1 OR slug = $1) AND constraints->>'budget' IS NOT NULL`,
 		missionID,
 	).Scan(&budget)
 

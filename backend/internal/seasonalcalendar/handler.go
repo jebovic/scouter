@@ -61,7 +61,7 @@ func (h *Handler) GetCalendar(w http.ResponseWriter, r *http.Request) {
 
 	// Query mission category
 	var category string
-	err := h.pool.QueryRow(r.Context(), "SELECT category FROM missions WHERE id = $1", missionID).Scan(&category)
+	err := h.pool.QueryRow(r.Context(), "SELECT category FROM missions WHERE id::text = $1 OR slug = $1", missionID).Scan(&category)
 	if err != nil {
 		httputil.WriteError(w, http.StatusNotFound, "Mission not found")
 		return
