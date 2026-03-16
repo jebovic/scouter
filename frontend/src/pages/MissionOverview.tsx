@@ -7,7 +7,8 @@ import { useBudgetAlerts } from '../hooks/useBudgetAlerts'
 import { useScorecard } from '../hooks/useScorecard'
 import { CategoryTemplate, DecisionPanel, MissionTimeline, PurchaseForm, LessonsField, CollaboratorsPanel, TravelSearchWidget, TimingAdvisorCard, ExportPanel, ReceiptScanner, SummaryReport, CoachPanel, HealthScoreCard, MissionSummaryCard, CommentThread, CategoryBadge, MissionGoalTracker, BudgetRecommendations, SalesCalendar, EcoScorePanel, MissionProgressWidget, GiftFinderWidget, LoyaltySummaryPanel, MissionROICard, InflationTrackerPanel, DecisionMatrixTable, SmartAlertsPanel, VoteSummaryPanel, MissionReportButton, ReorderSuggestionsPanel, NegotiationOutcomePanel, BundleDealsPanel, BurnRateCard, RegretAnalyzerCard, ListOptimizerPanel, CashbackSummaryPanel, PriceDropWatchlist, SeasonalCalendarPanel, BudgetAdvisorPanel, ComparisonScorePanel, PriceAlertDigestPanel, SpendingVelocityCard } from '../components/mission'
 import { ForecastPanel } from '../components/forecast'
-import { useMission, useShopping, useResearch, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory, useDeleteMission, useArchiveMission } from '../hooks'
+import { useMission, useShopping, usePriceIntel, useUpdateMission, useKeyboardShortcuts, usePurchaseRecord, useSuggestCategory, useDeleteMission, useArchiveMission } from '../hooks'
+import { useTriggerResearch } from '../hooks/useResearch'
 import { MissionActionBar } from '../components/mission/MissionActionBar'
 import { MissionEditModal } from '../components/mission/MissionEditModal'
 import { ExpenseCategoryPanel } from '../components/mission'
@@ -89,7 +90,7 @@ export default function MissionOverview() {
   const navigate = useNavigate()
   const { mission, isLoading } = useMission(slug!)
   const { items } = useShopping(mission?.id ?? '')
-  const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
+  const { mutateAsync: triggerResearch, isPending: researchPending } = useTriggerResearch(mission?.id ?? '')
   const { triggerPricing, isPending: pricingPending } = usePriceIntel(mission?.id ?? '')
   const { updateMission, isPending: updatePending } = useUpdateMission(slug!)
   const { deleteMission } = useDeleteMission()

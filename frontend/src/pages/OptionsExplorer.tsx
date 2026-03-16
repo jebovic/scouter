@@ -21,11 +21,12 @@ import {
   useRejectOption,
   useUnrejectOption,
   useDeletePinnedOptions,
-  useResearch,
   useDecision,
   useAgentRuns,
   useComparisonMode,
 } from '../hooks'
+import { useTriggerResearch } from '../hooks/useResearch'
+import { useResearchJobs } from '../hooks/useResearchJobs'
 import type { OptionBadge } from '../types'
 import styles from './OptionsExplorer.module.css'
 
@@ -38,7 +39,14 @@ export default function OptionsExplorer() {
   const { t } = useTranslation()
   const { mission, isLoading: missionLoading } = useMission(slug!)
   const { options, isLoading: optionsLoading } = useOptions(mission?.id ?? '')
-  const { triggerResearch, isPending: researchPending } = useResearch(mission?.id ?? '')
+  const { mutate: triggerResearch, isPending: isResearching } = useTriggerResearch(mission?.id ?? '')
+  const { data: jobsData } = useResearchJobs(mission?.id ?? '')
+  const jobs = jobsData?.jobs ?? []
+  const activeJob = jobs.find(j => j.status === 'running' || j.status === 'pending')
+  const lastJob = jobs[0]
+  const isRunning = !!activeJob
+  const researchPending = isRunning || isResearching
+  const [showHistory, setShowHistory] = useState(false)
   const { pinOption } = usePinOption(mission?.id ?? '')
   const { rejectOption } = useRejectOption(mission?.id ?? '')
   const { unrejectOption } = useUnrejectOption(mission?.id ?? '')
@@ -132,13 +140,59 @@ export default function OptionsExplorer() {
               {/* Research button */}
               <button
                 onClick={() => setShowFeedback(true)}
-                disabled={researchPending}
+                disabled={isRunning || isResearching}
                 className={styles.researchBtn}
               >
-                <span aria-hidden="true">⚡</span>{researchPending ? ` ${t('options.running')}` : ` ${t('options.rerunResearch')}`}
+                <span aria-hidden="true">⚡</span>{(isRunning || isResearching) ? ` ${t('options.running')}` : ` ${t('options.rerunResearch')}`}
               </button>
             </div>
           </div>
+
+          {/* Status bar */}
+          {isRunning && (
+            <p className={styles.researchStatus}>{t('research.running')}</p>
+          )}
+          {!isRunning && lastJob && (
+            <div className={styles.researchLastRun}>
+              <span>
+                {lastJob.status === 'done'
+                  ? t('research.lastRunSuccess', {
+                      date: new Date(lastJob.completed_at ?? lastJob.created_at).toLocaleDateString(),
+                      count: lastJob.options_count ?? 0,
+                    })
+                  : t('research.lastRunFailed', {
+                      date: new Date(lastJob.completed_at ?? lastJob.created_at).toLocaleDateString(),
+                    })
+                }
+              </span>
+              {jobs.length > 1 && (
+                <button
+                  className={styles.historyToggle}
+                  onClick={() => setShowHistory(h => !h)}
+                >
+                  {showHistory ? t('research.hideHistory') : t('research.showHistory')}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* History list */}
+          {showHistory && (
+            <ul className={styles.jobHistory}>
+              {jobs.map(job => (
+                <li key={job.id} className={styles.jobHistoryItem}>
+                  <span className={styles.jobStatusIcon}>
+                    {t(`research.historyStatus.${job.status}`)}
+                  </span>
+                  <span>
+                    {new Date(job.completed_at ?? job.created_at).toLocaleDateString()}
+                    {job.status === 'done' && job.options_count != null && ` · ${job.options_count} options`}
+                    {job.status === 'failed' && job.error && ` · ${job.error}`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {/* Badge filters */}
           <div className={styles.filterBar}>
@@ -254,12 +308,9 @@ export default function OptionsExplorer() {
         <FeedbackModal
           title={t('feedbackModal.rerunResearch')}
           placeholder={t('feedbackModal.rerunResearchPlaceholder')}
-          onConfirm={async (feedback) => {
-            try {
-              await triggerResearch(feedback || undefined)
-            } finally {
-              setShowFeedback(false)
-            }
+          onConfirm={(feedback) => {
+            triggerResearch(feedback || undefined)
+            setShowFeedback(false)
           }}
           onClose={() => setShowFeedback(false)}
           isPending={researchPending}
