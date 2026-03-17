@@ -83,4 +83,22 @@ Phases 90–172 compute modules follow: FNV-32a seed for deterministic pseudo-ra
 
 | Phase | Name | Type | Priority | Status |
 |-------|------|------|----------|--------|
-| 173 | _(next phase)_ | — | — | 📋 Planned |
+| 173 | Mission & Option Management | Frontend | High | ✅ Done |
+| 174 | _(next phase)_ | — | — | 📋 Planned |
+
+---
+
+## Phase 173 — Mission & Option Management (2026-03-17)
+
+**Goal:** Close three friction points blocking effective mission management.
+
+**Delivered:**
+- **MissionActionBar** — edit/archive/delete actions in MissionOverview header; `MissionEditModal` pre-fills current values, calls `PATCH /api/missions/{slug}` on save
+- **MissionCard ⋯ menu** — archive/delete overflow menu on HQ Dashboard cards; archived badge variant
+- **HQ Dashboard "Show archived" toggle** — `include_archived=true` query, archived missions shown with badge and Unarchive option
+- **OptionEditModal** — edit name, badge, price range, notes, warnings via `PUT /api/missions/{missionId}/options/{optionId}`
+- **OptionCard ⋯ menu** — edit/delete overflow menu alongside existing pin/reject buttons
+- **"Unpin All"** — renamed from "Clear Pinned"; now parallel-unpins all pinned options (keeps them in explorer); partial-failure toast if some fail
+- **ShortlistPanel** — buying-phase panel surfacing pinned options as compact cards with Select button; pre-fills purchase form (name + price midpoint); replace-confirm dialog if purchase record already exists; empty-state prompt with link to Options Explorer
+- **i18n** — all new keys in `en.json` and `fr.json`
+- **E2E tests** — 11 tests in `frontend/e2e/mission-management.spec.ts` covering the full management flow

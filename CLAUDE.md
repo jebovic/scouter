@@ -2,7 +2,7 @@
 
 ## ACTIVE ROADMAP → READ FIRST
 **`ROADMAP.md`** is the source of truth for all remaining work.
-- **v0.1.0 released** — Phases 1–172 complete. All planned phases delivered.
+- **v0.2.0 in progress** — Phase 173 complete (Mission & Option Management). Phases 1–173 complete.
 - Each phase session starts with: `/everything-claude-code:plan` + architect review
 - Phase workflow:
   1. /everything-claude-code:plan + architect  →  detailed plan for the phase
@@ -161,7 +161,8 @@ See `.env.example` — required: `DATABASE_URL`. Phase 9 adds model pool vars.
 - **Phase 170**: `MissionScorecardSection` in MissionOverview — grade badge (A/B/C/D), 2×2 stats grid, achievements, lessons (shown on completed missions only)
 - **Phase 171**: `QuantityOptimizerPanel` in ShoppingTracker — tier cards with FNV-32a discount curve
 - **Phase 172**: `PurchaseTimelineCard` (4-week vertical timeline with budget bars) in ShoppingTracker
-- **Test suite**: Vitest + jsdom + Testing Library; 71+ tests across 10+ files
+- **Phase 173**: `MissionActionBar` (edit/archive/delete in MissionOverview header); `MissionEditModal` (PATCH mission); `MissionCard` ⋯ menu (archive/delete/unarchive); HQ Dashboard "Show archived" toggle; `OptionEditModal` (PUT option); `OptionCard` ⋯ menu (edit/delete); "Unpin All" with `Promise.allSettled` parallel unpin + partial-failure toast; `ShortlistPanel` (buying-phase pinned-options → purchase form prefill with replace-confirm dialog); all i18n keys in EN/FR
+- **Test suite**: Vitest + jsdom + Testing Library; 71+ unit tests across 10+ files; 11 Playwright E2E tests in `frontend/e2e/mission-management.spec.ts`
 
 ## CSS Conventions
 - Import `frontend/src/styles/theme.css` for all SCOUTER tokens
