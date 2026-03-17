@@ -291,7 +291,7 @@ export const MISSION_1_SHOPPING = [
 
 export const SETTINGS = {
   currency: 'EUR',
-  locale: 'fr-FR',
+  locale: 'en-US',
   llm_provider: 'ollama',
 }
 
@@ -392,17 +392,49 @@ export async function mockApiRoutes(page: Page, overrides: MockRoutes = {}): Pro
     '**/api/persona': { type: 'balanced', score: 0.5 },
     '**/api/kanban/columns': { columns: [] },
     '**/api/cashback/programs': { items: [] },
-    // Home server mission-specific routes (populate with real data)
+    // Home server mission-specific routes — keyed by UUID (what the app actually fetches)
+    // and by slug (for routes where slug is used, e.g. mission detail)
+    [`**/api/missions/${MISSION_1.id}/options`]: missionOptionsResponse,
+    [`**/api/missions/${MISSION_1.id}/shopping`]: missionShoppingResponse,
+    // Slug-based fallbacks kept for any routes that still use slug
     '**/api/missions/home-server-2026/options': missionOptionsResponse,
     '**/api/missions/home-server-2026/shopping': missionShoppingResponse,
+    // Research jobs — used by OptionsExplorer to show agent run status
+    '**/api/missions/*/research/jobs': { jobs: [] },
+    // Comparison weights / matrix — used by ComparisonMatrix on options page
+    '**/api/missions/*/comparison-weights': { weights: [] },
+    '**/api/missions/*/comparison-score': { missionId: MISSION_1.id, itemScores: [], topPick: '', summary: '' },
+    '**/api/missions/*/matrix': { matrix: [] },
+    // Duplicate detector — used by DuplicateAlert on shopping page
+    '**/api/missions/*/duplicates': { missionId: '', groups: [], totalDupes: 0, generatedAt: new Date().toISOString() },
+    // Sorted items — used by ShoppingList smart sort
+    '**/api/missions/*/sorted-items': { items: [], sortedBy: 'price' },
+    // Eco score and other panel routes
+    '**/api/missions/*/eco-score': { score: 0, label: 'N/A', breakdown: [] },
     // Generic wildcard fallbacks (lower priority — specific routes above win)
     '**/api/missions/*/options': { items: [], total: 0, page: 1, limit: 20 },
     '**/api/missions/*/shopping': { items: [], total: 0, page: 1, limit: 20 },
     '**/api/missions/*/agent-runs': { items: [] },
     '**/api/missions/*/coach': { suggestions: [] },
-    '**/api/missions/*/scorecard': { grade: 'B', score: 72, achievements: ['First options researched'] },
-    '**/api/missions/*/french-benchmark': { median: 450, verdict: 'bon_prix' },
-    '**/api/missions/*/purchase-timeline': { weeks: [] },
+    '**/api/missions/*/scorecard': { grade: 'B', score: 72, summary: 'Good progress', dimensions: { research: 80, pricing: 70, budgeting: 65, speed: 72 }, achievements: ['First options researched'] },
+    '**/api/missions/*/french-benchmark': {
+      missionId: MISSION_1.id,
+      missionName: MISSION_1.name,
+      medianPrice: 450,
+      yourAvgPrice: 400,
+      verdict: 'Bon prix',
+      verdictCode: 'bon_prix',
+      sampleSize: 12,
+      priceRange: [300, 600],
+      tips: [],
+    },
+    '**/api/missions/*/purchase-timeline': {
+      missionId: MISSION_1.id,
+      missionName: MISSION_1.name,
+      buckets: [],
+      summary: '',
+      totalItems: 0,
+    },
     '**/api/missions/*/purchase': null,
     '**/api/missions/*/invites': { items: [] },
     '**/api/missions/*/collaborators': { items: [] },
